@@ -44,7 +44,7 @@ class PanelCreator{
         JPanel pnNewGame   = configurePanelNewGame(pnOuterMost, cardLayout);
         JPanel pnLoad      = configurePanelLoad(pnOuterMost, cardLayout);
         JPanel pnSettings  = configurePanelSettings(pnOuterMost, cardLayout);
-        JPanel pnHowToPlay = configurePanelPlay(pnOuterMost, cardLayout);
+        JPanel pnHowToPlay = configurePanelHowToPlay(pnOuterMost, cardLayout);
         JPanel pnCredits   = configurePanelCredits(pnOuterMost, cardLayout);
         JPanel pnExit      = configurePanelExit(pnOuterMost, cardLayout);
 
@@ -59,7 +59,6 @@ class PanelCreator{
         pnOuterMost.add(pnExit, EXIT);
         return pnOuterMost;
     }
-
 
     //================================================================================================================//
     //============================================= Menu Panels ======================================================//
@@ -84,30 +83,73 @@ class PanelCreator{
         jlWelcome.setAlignmentX(CENTER_ALIGNMENT);
         jlWelcome.setFont(new Font(FONT, STYLE, 80));
 
-        // assemble this frame
+        // assemble this panel
         pnMenu.add(jlWelcome);
         pnMenu.add(Box.createVerticalGlue());
-        setLabelsAndAttachToPanel(pnMenu, labels, pnOuterMost, cardLayout);
+        labels.forEach(l->{
+            l.addMouseListener(new MouseAdapter() {
+                public void mouseEntered(MouseEvent e){l.setForeground(Color.RED);}
+                public void mouseExited(MouseEvent e) {l.setForeground(Color.BLACK);}
+                public void mousePressed(MouseEvent e) {
+                    // trigger panel switching
+                    cardLayout.show(pnOuterMost, l.getText());
+                }
+            });
+            l.setAlignmentX(CENTER_ALIGNMENT);
+            l.setFont(new Font(FONT, STYLE, 40));
+            pnMenu.add(l);
+        });
         return pnMenu;
     }
 
-    private static JPanel configurePanelCredits(JPanel pnOuterMost, CardLayout cardLayout) {
-        return new JPanel();
-    }
-
-    private static JPanel configurePanelPlay(JPanel pnOuterMost, CardLayout cardLayout) {
-        return new JPanel();
-    }
-
-    private static JPanel configurePanelSettings(JPanel pnOuterMost, CardLayout cardLayout) {
+    private static JPanel configurePanelNewGame(JPanel pnOuterMost, CardLayout cardLayout) {
+        System.out.println("Configuring: NewGame");
         return new JPanel();
     }
 
     private static JPanel configurePanelLoad(JPanel pnOuterMost, CardLayout cardLayout) {
+        System.out.println("Configuring: Load");
         return new JPanel();
     }
 
-    private static JPanel configurePanelNewGame(JPanel pnOuterMost, CardLayout cardLayout) {
+    private static JPanel configurePanelSettings(JPanel pnOuterMost, CardLayout cardLayout) {
+        System.out.println("Configuring: Settings");
+
+        var pnSettings = new JPanel();
+        var pnBindings = new JPanel();
+        var jlSettings = new JLabel("Settings");
+        var jlConfirm = new JLabel("Confirm"){{
+            addMouseListener(new MouseAdapter() {
+                public void mouseEntered(MouseEvent e){setForeground(Color.RED);}
+                public void mouseExited(MouseEvent e) {setForeground(Color.BLACK);}
+                public void mouseClicked(MouseEvent e) {cardLayout.show(pnOuterMost, MENU);}
+        });}};
+
+        // setting layout
+        pnSettings.setLayout(new BoxLayout(pnSettings, BoxLayout.Y_AXIS));
+        pnSettings.setBackground(Color.PINK);
+        setAllAlignmentX(CENTER_ALIGNMENT, jlSettings, jlConfirm);
+        jlSettings.setFont(new Font(FONT, STYLE, TITLE_SIZE));
+        jlConfirm.setFont(new Font(FONT, STYLE, TEXT_SIZE));
+
+        // assemble this panel
+        pnSettings.add(jlSettings);
+        pnSettings.add(Box.createVerticalGlue());
+        // add keybinding labels here
+        pnSettings.add(Box.createVerticalGlue());
+        pnSettings.add(jlConfirm);
+        return pnSettings;
+    }
+
+    private static JPanel configurePanelHowToPlay(JPanel pnOuterMost, CardLayout cardLayout) {
+        System.out.println("Configuring: HowToPlay");
+
+        return new JPanel();
+    }
+
+    private static JPanel configurePanelCredits(JPanel pnOuterMost, CardLayout cardLayout) {
+        System.out.println("Configuring: Credits");
+
         return new JPanel();
     }
 
@@ -134,12 +176,10 @@ class PanelCreator{
         // setting layout
         pnExit.setLayout(new BoxLayout(pnExit, BoxLayout.Y_AXIS));
         pnOption.setLayout(new BoxLayout(pnOption, BoxLayout.X_AXIS));
-        pnExit.setBackground(Color.PINK);
-        pnOption.setBackground(Color.PINK);
-        jlWelcome.setAlignmentX(CENTER_ALIGNMENT);
-        jlText.setAlignmentX(CENTER_ALIGNMENT);
         jlWelcome.setFont(new Font(FONT, STYLE, TITLE_SIZE));
-        setFontAll(FONT, STYLE, TEXT_SIZE, jlText, jlYes, jlNo);
+        setAllFont(FONT, STYLE, TEXT_SIZE, jlText, jlYes, jlNo);
+        setAllBackground(Color.PINK, pnExit, pnOption);
+        setAllAlignmentX(CENTER_ALIGNMENT, jlWelcome, jlText, jlYes, jlNo);
 
         // assemble options panel
         pnOption.add(Box.createHorizontalGlue());
@@ -157,33 +197,20 @@ class PanelCreator{
         return pnExit;
     }
 
-
-
-
     //================================================================================================================//
     //=========================================== Helper Method ======================================================//
     //================================================================================================================//
 
-    private static void setFontAll(String font, int style, int size, JLabel... labels) {
-        Arrays.stream(labels).forEach(label -> label.setFont(new Font(font, style, size)));
+    private static void setAllFont(String font, int style, int size, JLabel... labels) {
+        Arrays.stream(labels).forEach(l -> l.setFont(new Font(font, style, size)));
+    }
+    private static void setAllBackground(Color color, JPanel... labels) {
+        Arrays.stream(labels).forEach(p -> p.setBackground(color));
+    }
+    private static void setAllAlignmentX(float alignment, JLabel... labels) {
+        Arrays.stream(labels).forEach(label -> label.setAlignmentX(alignment));
     }
 
-    public static void setLabelsAndAttachToPanel(JPanel pnToAttach, List<JLabel> labels,
-                                                 JPanel pnOuterMost, CardLayout cardLayout) {
-        labels.forEach(l->{
-            l.addMouseListener(new MouseAdapter() {
-                public void mouseEntered(MouseEvent e){l.setForeground(Color.RED);}
-                public void mouseExited(MouseEvent e) {l.setForeground(Color.BLACK);}
-                public void mousePressed(MouseEvent e) {
-                    // trigger panel switching
-                    cardLayout.show(pnOuterMost, l.getText());
-                }
-            });
-            l.setAlignmentX(CENTER_ALIGNMENT);
-            l.setFont(new Font(FONT, STYLE, 40));
-            pnToAttach.add(l);
-        });
-    }
 
 
 /*
