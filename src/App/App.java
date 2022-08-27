@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static App.PanelCreator.*;
+
 /**
  * Main class of the application. Includes the main method, GUI, and the main loop.
  *
@@ -40,31 +42,31 @@ public class App extends JFrame {
     }
 
     private void menuScreen(){
+        // shell to hold all the components
         var pnOuterMost = new JPanel();
-        var jlWelcome = new JLabel("Chaps Challenge!");
-        List<JLabel> labels = new ArrayList<>(List.of(
-                new JLabel("Start New Game!"),
-                new JLabel("Load Game"),
-                new JLabel("Settings"),
-                new JLabel("How to play"),
-                new JLabel("Credits"),
-                new JLabel("Exit"))
-        );
-        activateStages();
-        // setting layout
-        pnOuterMost.setLayout(new BoxLayout(pnOuterMost, BoxLayout.Y_AXIS));
-        pnOuterMost.setBackground(Color.PINK);
-        jlWelcome.setAlignmentX(CENTER_ALIGNMENT);
-        jlWelcome.setFont(new Font(FONT, STYLE, 80));
+        var cardLayout = new CardLayout();
 
-        // assemble this frame
-        pnOuterMost.add(jlWelcome);
-        pnOuterMost.add(Box.createVerticalGlue());
-        setLabelsAndAttachToPanel(pnOuterMost, labels);
-        add(pnOuterMost);
+        // components to be added to the shell
+        var pnMenu = PanelCreator.configurePanelMenu(pnOuterMost, cardLayout);
+        var pnSettings = new JPanel();
+        var pnHowToPlay = new JPanel();
+        var pnCredits = new JPanel();
+        var pnStart = new JPanel();
+        var pnLoad = new JPanel();
+        var pnExit = PanelCreator.configurePanelExit(pnOuterMost, cardLayout);
 
-        closePhase.run();
-        closePhase = () -> remove(pnOuterMost);
+        // add components to the shell
+        pnOuterMost.setLayout(cardLayout);
+        pnOuterMost.add(pnMenu, MENU);
+        pnOuterMost.add(pnStart, NEW_GAME);
+        pnOuterMost.add(pnLoad, LOAD_GAME);
+        pnOuterMost.add(pnSettings, SETTINGS);
+        pnOuterMost.add(pnHowToPlay, HOW_TO_PLAY);
+        pnOuterMost.add(pnCredits, CREDITS);
+        pnOuterMost.add(pnExit, EXIT);
+
+        this.setContentPane(pnOuterMost);
+        cardLayout.show(pnOuterMost, MENU);
         setPreferredSize(new Dimension(1200, 600));
         pack();
     }
@@ -159,6 +161,38 @@ public class App extends JFrame {
 
     private void stageSettings() {
         System.out.println("Settings");
+        var pnOuterMost = new JPanel();
+        var pnTop = new JPanel();
+        var lbHeading = new JLabel("Settings");
+        var lbBack = new JLabel("Back");
+        List<JLabel> labels = new ArrayList<>(List.of(
+                new JLabel("Start New Game!"),
+                new JLabel("Load Game"),
+                new JLabel("Settings"),
+                new JLabel("How to play"),
+                new JLabel("Credits"),
+                new JLabel("Exit"))
+        );
+        // setting layout
+        pnOuterMost.setLayout(new BoxLayout(pnOuterMost, BoxLayout.Y_AXIS));
+        pnOuterMost.setBackground(Color.PINK);
+        lbBack.setAlignmentX(LEFT_ALIGNMENT);
+        lbHeading.setAlignmentX(CENTER_ALIGNMENT);
+
+        // assemble this frame
+        pnTop.add(lbBack);
+        pnTop.add(Box.createHorizontalGlue());
+        pnTop.add(lbHeading);
+        pnOuterMost.add(pnTop);
+        pnOuterMost.add(Box.createVerticalGlue());
+        setLabelsAndAttachToPanel(pnOuterMost, labels);
+        add(pnOuterMost);
+
+
+        closePhase.run();
+        closePhase = () -> remove(pnOuterMost);
+        repaint();
+        pack();
     }
 
     private void stageInstructions() {
