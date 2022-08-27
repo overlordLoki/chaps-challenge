@@ -1,21 +1,27 @@
 package App;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.awt.Component.CENTER_ALIGNMENT;
 
 /**
- * Main class of the application. Includes the main method, GUI, and the main loop.
+ * Package-private class for creating panels used by the App.
  *
  * @author Jeff Lin
  */
-public class PanelCreator{
+class PanelCreator{
     private static final String FONT = "Agency FB";
     private static final int STYLE = Font.BOLD;
+    private static final int TITLE_SIZE = 80;
+    private static final int TEXT_SIZE = 40;
 
     public static final String MENU        = "Menu";
     public static final String NEW_GAME    = "New Game";
@@ -32,38 +38,31 @@ public class PanelCreator{
     private PanelCreator(){
     }
 
-    private void menuScreen(){
-        /*// shell to hold all the components
-        var pnOuterMost = new JPanel();
-        var cardLayout = new CardLayout();
-
+    public static JPanel configureMenuScreen(JPanel pnOuterMost, CardLayout cardLayout){
         // components to be added to the shell
-        var pnMenu = configurePanelMenu(pnOuterMost, cardLayout);
-        var pnSettings = new JPanel();
-        var pnHowToPlay = new JPanel();
-        var pnCredits = new JPanel();
-        var pnStart = new JPanel();
-        var pnLoad = new JPanel();
-        var pnExit = configurePanelExit(pnOuterMost, cardLayout);
+        JPanel pnMenu      = configurePanelMenu(pnOuterMost, cardLayout);
+        JPanel pnNewGame   = configurePanelNewGame(pnOuterMost, cardLayout);
+        JPanel pnLoad      = configurePanelLoad(pnOuterMost, cardLayout);
+        JPanel pnSettings  = configurePanelSettings(pnOuterMost, cardLayout);
+        JPanel pnHowToPlay = configurePanelPlay(pnOuterMost, cardLayout);
+        JPanel pnCredits   = configurePanelCredits(pnOuterMost, cardLayout);
+        JPanel pnExit      = configurePanelExit(pnOuterMost, cardLayout);
 
         // add components to the shell
         pnOuterMost.setLayout(cardLayout);
         pnOuterMost.add(pnMenu, MENU);
-        pnOuterMost.add(pnStart, "start");
-        pnOuterMost.add(pnLoad, "load");
-        pnOuterMost.add(pnSettings, "settings");
-        pnOuterMost.add(pnHowToPlay, "howToPlay");
-        pnOuterMost.add(pnCredits, "credits");
+        pnOuterMost.add(pnNewGame, NEW_GAME);
+        pnOuterMost.add(pnLoad, LOAD_GAME);
+        pnOuterMost.add(pnSettings, SETTINGS);
+        pnOuterMost.add(pnHowToPlay, HOW_TO_PLAY);
+        pnOuterMost.add(pnCredits, CREDITS);
         pnOuterMost.add(pnExit, EXIT);
-
-        this.setContentPane(pnOuterMost);
-        cardLayout.show(pnOuterMost, MENU);
-        setPreferredSize(new Dimension(1200, 600));
-        pack();*/
+        return pnOuterMost;
     }
 
+
     //================================================================================================================//
-    //============================================= Menu Stages ======================================================//
+    //============================================= Menu Panels ======================================================//
     //================================================================================================================//
 
     public static JPanel configurePanelMenu(JPanel pnOuterMost, CardLayout cardLayout) {
@@ -92,6 +91,26 @@ public class PanelCreator{
         return pnMenu;
     }
 
+    private static JPanel configurePanelCredits(JPanel pnOuterMost, CardLayout cardLayout) {
+        return new JPanel();
+    }
+
+    private static JPanel configurePanelPlay(JPanel pnOuterMost, CardLayout cardLayout) {
+        return new JPanel();
+    }
+
+    private static JPanel configurePanelSettings(JPanel pnOuterMost, CardLayout cardLayout) {
+        return new JPanel();
+    }
+
+    private static JPanel configurePanelLoad(JPanel pnOuterMost, CardLayout cardLayout) {
+        return new JPanel();
+    }
+
+    private static JPanel configurePanelNewGame(JPanel pnOuterMost, CardLayout cardLayout) {
+        return new JPanel();
+    }
+
     public static JPanel configurePanelExit(JPanel pnOuterMost, CardLayout cardLayout) {
         System.out.println("Configuring: Exit");
 
@@ -114,15 +133,13 @@ public class PanelCreator{
 
         // setting layout
         pnExit.setLayout(new BoxLayout(pnExit, BoxLayout.Y_AXIS));
-        pnExit.setBackground(Color.PINK);
         pnOption.setLayout(new BoxLayout(pnOption, BoxLayout.X_AXIS));
+        pnExit.setBackground(Color.PINK);
         pnOption.setBackground(Color.PINK);
         jlWelcome.setAlignmentX(CENTER_ALIGNMENT);
-        jlWelcome.setFont(new Font(FONT, STYLE, 80));
         jlText.setAlignmentX(CENTER_ALIGNMENT);
-        jlText.setFont(new Font(FONT, STYLE, 40));
-        jlYes.setFont(new Font(FONT, STYLE, 40));
-        jlNo.setFont(new Font(FONT, STYLE, 40));
+        jlWelcome.setFont(new Font(FONT, STYLE, TITLE_SIZE));
+        setFontAll(FONT, STYLE, TEXT_SIZE, jlText, jlYes, jlNo);
 
         // assemble options panel
         pnOption.add(Box.createHorizontalGlue());
@@ -141,20 +158,24 @@ public class PanelCreator{
     }
 
 
+
+
     //================================================================================================================//
     //=========================================== Helper Method ======================================================//
     //================================================================================================================//
 
+    private static void setFontAll(String font, int style, int size, JLabel... labels) {
+        Arrays.stream(labels).forEach(label -> label.setFont(new Font(font, style, size)));
+    }
 
-
-    public static void setLabelsAndAttachToPanel(JPanel pnToAttach, List<JLabel> labels, JPanel pnOuterMost, CardLayout cardLayout) {
+    public static void setLabelsAndAttachToPanel(JPanel pnToAttach, List<JLabel> labels,
+                                                 JPanel pnOuterMost, CardLayout cardLayout) {
         labels.forEach(l->{
             l.addMouseListener(new MouseAdapter() {
                 public void mouseEntered(MouseEvent e){l.setForeground(Color.RED);}
                 public void mouseExited(MouseEvent e) {l.setForeground(Color.BLACK);}
                 public void mousePressed(MouseEvent e) {
                     // trigger panel switching
-                    System.out.println(l.getText());
                     cardLayout.show(pnOuterMost, l.getText());
                 }
             });
@@ -163,4 +184,29 @@ public class PanelCreator{
             pnToAttach.add(l);
         });
     }
+
+
+/*
+    private List<JButton> createButtons(List<JButton> keyBindingButtons) {
+        IntStream.range(0, keyNames.size()).forEach(i -> {
+            var button = new JButton(keyNames.get(i) + keyBindings.get(i));
+            button.addActionListener(unused -> settingKey = keyBindingButtons.indexOf(button));
+            button.addKeyListener(new KeyListener() {
+                public void keyTyped(KeyEvent e) {}
+                public void keyPressed(KeyEvent e) {}
+                public void keyReleased(KeyEvent e) {
+                    if (settingKey == -1) return;
+                    if (keyBindings.contains(KeyEvent.getKeyText(e.getKeyCode()))){
+                        settingKey = -1;
+                        return;
+                    }
+                    keyBindings.set(settingKey, KeyEvent.getKeyText(e.getKeyCode()));
+                    button.setText(keyNames.get(settingKey) + KeyEvent.getKeyText(e.getKeyCode()));
+                    settingKey = -1;
+                }
+            });
+            keyBindingButtons.add(button);
+        });
+        return keyBindingButtons;
+    }*/
 }
