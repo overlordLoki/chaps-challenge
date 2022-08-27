@@ -47,58 +47,50 @@ public class App extends JFrame {
     }
 
     private void menuScreen(){
-        var jpOuterMost = new JPanel();
-        var jpWelcome = new JPanel();
-        var jpMenu = new JPanel();
+        var pnOuterMost = new JPanel();
 
         var jlWelcome = new JLabel("Chaps Challenge!");
-        var btnStart = new JButton("Start!");
-        var btnLoad = new JButton("Load");
-        var btnSettings = new JButton("Controls");
-        var btnInstructions = new JButton("How to play");
-        var btnCredits = new JLabel("Credits");
-        var btnExit = new JButton("Exit");
-
-
-        var test = new JLabel("Controls");
-        test.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent e){test.setForeground(Color.RED);}
-            public void mouseExited(MouseEvent e) {test.setForeground(Color.BLACK);}
-            public void mouseClicked(MouseEvent e) {
-                JFrame jf=new JFrame("new one");
-                jf.setBackground(Color.BLACK);
-                jf.setSize(new Dimension(200,70));
-                jf.setVisible(true);
-                jf.setDefaultCloseOperation(EXIT_ON_CLOSE);
-            }
-        });
-        test.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent e) {
-            }
-        });
+        List<JLabel> labels = new ArrayList<>(List.of(
+                new JLabel("Start!"),
+                new JLabel("Load"),
+                new JLabel("Settings"),
+                new JLabel("How to play"),
+                new JLabel("Credits"),
+                new JLabel("Exit"))
+        );
 
         // setting layout
-        jlWelcome.setHorizontalAlignment(CENTER);
-        jpOuterMost.setLayout(new BoxLayout(jpOuterMost, BoxLayout.Y_AXIS));
-        test.setAlignmentX(CENTER_ALIGNMENT);
+        pnOuterMost.setLayout(new BoxLayout(pnOuterMost, BoxLayout.Y_AXIS));
+        jlWelcome.setAlignmentX(CENTER_ALIGNMENT);
+        jlWelcome.setFont(new Font("Agency FB", Font.BOLD, 80));
 
 
         // assemble this frame
-        jpOuterMost.add(jlWelcome);
-//        createButtons(new ArrayList<>()).forEach(pnOuterMost::add);
-        jpOuterMost.add(test);
-        jpOuterMost.add(new JLabel(""));
-        jpOuterMost.add(btnStart);
+        pnOuterMost.add(jlWelcome);
+        pnOuterMost.add(Box.createVerticalGlue());
+        labels.forEach(l->{
+            l.addMouseListener(new MouseAdapter() {
+                public void mouseEntered(MouseEvent e){l.setForeground(Color.RED);}
+                public void mouseExited(MouseEvent e) {l.setForeground(Color.BLACK);}
+                public void mouseClicked(MouseEvent e) {
+                    // trigger panel switching
+                }
+            });
+            l.addKeyListener(new KeyAdapter() {
+                public void keyReleased(KeyEvent e) {
+                    // trigger key binding
+                }
+            });
+            l.setAlignmentX(CENTER_ALIGNMENT);
+            l.setFont(new Font("Agency FB", Font.BOLD, 40));
+            pnOuterMost.add(l);
+        });
+        add(pnOuterMost);
 
 
-
-
-
-        add(jpOuterMost);
         closePhase.run();
-        closePhase = () -> remove(jpOuterMost);
-        btnStart.addActionListener(e -> level());
-        setPreferredSize(new Dimension(800, 400));
+        closePhase = () -> remove(pnOuterMost);
+        setPreferredSize(new Dimension(1200, 600));
         pack();
     }
 
