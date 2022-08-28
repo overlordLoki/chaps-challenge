@@ -52,7 +52,7 @@ public class Renderer extends JPanel{
     private BufferedImage getImage(Tile object) {
         String name = object.getImg();
         try {
-            return ImageIO.read(getClass().getResource("/render/textures/" + texturePack + "/" + name + ".png"));
+            return ImageIO.read(getClass().getResource("/Renderer/textures/" + texturePack + "/" + name + ".png"));
         } catch (IOException e) {throw new RuntimeException(e);}
     }
 
@@ -62,7 +62,7 @@ public class Renderer extends JPanel{
     */
     private BufferedImage getEmptyTile() {
         try {
-            return ImageIO.read(getClass().getResource("/render/textures/" + texturePack + "/empty_tile.png"));
+            return ImageIO.read(getClass().getResource("/Renderer/textures/" + texturePack + "/empty_tile.png"));
         } catch (IOException e) {throw new RuntimeException(e);}
     }
 
