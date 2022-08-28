@@ -20,5 +20,7 @@ public class Maze {
                 gameArray[i][j] = new Empty_tile();
             }
         }
+        //added chap for testing
+        gameArray[0][0] = new Chap();
     }
 }
