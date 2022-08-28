@@ -49,12 +49,49 @@ public class Renderer extends JPanel{
      * @param Tile
      * @return BufferedImage
      */
-    public BufferedImage getImage(Tile object) {
+    private BufferedImage getImage(Tile object) {
         String name = object.getImg();
         try {
             return ImageIO.read(getClass().getResource("/render/textures/" + texturePack + "/" + name + ".png"));
         } catch (IOException e) {throw new RuntimeException(e);}
     }
 
+    /* 
+    * get the image of EmptyTile
+    * @return BufferedImage
+    */
+    private BufferedImage getEmptyTile() {
+        try {
+            return ImageIO.read(getClass().getResource("/render/textures/" + texturePack + "/empty_tile.png"));
+        } catch (IOException e) {throw new RuntimeException(e);}
+    }
+
+    /*
+     * paint the maze
+     * @param Graphics
+     */
+    @Override
+    public void paintComponent(Graphics g) {
+        //call superclass to paint background
+        super.paintComponent(g);
+        //get the maze array
+        gameArray = maze.getGameArray();
+        //get the width and height of the maze
+        int tileWidth = (getWidth() / gameArray.length);
+        int tileHeight = (getHeight() / gameArray[1].length);
+        //loop through the maze array and paint the black tile as a background
+        for (int i = 0; i < gameArray.length; i++) {
+            for (int j = 0; j < gameArray[1].length; j++) {
+                g.drawImage(getEmptyTile(), i * tileWidth, j * tileHeight, tileWidth, tileHeight, null);
+            }
+        }
+        //loop through the maze array and paint the tiles
+        for (int i = 0; i < gameArray.length; i++) {
+            for (int j = 0; j < gameArray[1].length; j++) {
+                Tile tile = gameArray[i][j];
+                g.drawImage(getImage(tile), i * tileWidth, j * tileHeight, tileWidth, tileHeight, null);
+            }
+        }
+    }
 
 }
