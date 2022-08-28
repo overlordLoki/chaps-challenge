@@ -103,20 +103,20 @@ class PanelCreator{
         System.out.println("Configuring: NewGame");
 
         var pnStartNew = new JPanel();
-        var jlHowToPlay = new JLabel("Starting new game...");
-        var jlConfirm = createBackToMenuLabel("Back", pnOuterMost, cardLayout, Color.RED);
+        var jlTitle = new JLabel("Starting new game...");
+        var jlConfirm = createBackToMenuLabel("Confirm", pnOuterMost, cardLayout, Color.RED);
 
         // setting layout
         pnStartNew.setLayout(new BoxLayout(pnStartNew, BoxLayout.Y_AXIS));
         pnStartNew.setBackground(Color.PINK);
-        setAllAlignmentX(CENTER_ALIGNMENT, jlHowToPlay, jlConfirm);
-        jlHowToPlay.setFont(new Font(FONT, STYLE, TITLE_SIZE));
+        setAllAlignmentX(CENTER_ALIGNMENT, jlTitle, jlConfirm);
+        jlTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
         jlConfirm.setFont(new Font(FONT, STYLE, TEXT_SIZE));
 
         // assemble this panel
-        pnStartNew.add(jlHowToPlay);
+        pnStartNew.add(jlTitle);
         pnStartNew.add(Box.createVerticalGlue());
-        // add how to play text here
+        // add image here?
         pnStartNew.add(Box.createVerticalGlue());
         pnStartNew.add(jlConfirm);
         return pnStartNew;
@@ -126,20 +126,20 @@ class PanelCreator{
         System.out.println("Configuring: Load");
 
         var pnLoad = new JPanel();
-        var jlHowToPlay = new JLabel("Load and Resume Saved Games");
+        var jlTitle = new JLabel("Load and Resume Saved Games");
         var jlConfirm = createBackToMenuLabel("Confirm", pnOuterMost, cardLayout, Color.RED);
 
         // setting layout
         pnLoad.setLayout(new BoxLayout(pnLoad, BoxLayout.Y_AXIS));
         pnLoad.setBackground(Color.PINK);
-        setAllAlignmentX(CENTER_ALIGNMENT, jlHowToPlay, jlConfirm);
-        jlHowToPlay.setFont(new Font(FONT, STYLE, TITLE_SIZE));
+        setAllAlignmentX(CENTER_ALIGNMENT, jlTitle, jlConfirm);
+        jlTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
         jlConfirm.setFont(new Font(FONT, STYLE, TEXT_SIZE));
 
         // assemble this panel
-        pnLoad.add(jlHowToPlay);
+        pnLoad.add(jlTitle);
         pnLoad.add(Box.createVerticalGlue());
-        // add how to play text here
+        // add Loading box here?
         pnLoad.add(Box.createVerticalGlue());
         pnLoad.add(jlConfirm);
         return pnLoad;
@@ -150,18 +150,18 @@ class PanelCreator{
 
         var pnSettings = new JPanel();
         var pnBindings = new JPanel();
-        var jlSettings = new JLabel("Settings");
+        var jlTitle = new JLabel("Settings");
         var jlConfirm = createBackToMenuLabel("Confirm", pnOuterMost, cardLayout, Color.RED);
 
         // setting layout
         pnSettings.setLayout(new BoxLayout(pnSettings, BoxLayout.Y_AXIS));
         pnSettings.setBackground(Color.PINK);
-        setAllAlignmentX(CENTER_ALIGNMENT, jlSettings, jlConfirm);
-        jlSettings.setFont(new Font(FONT, STYLE, TITLE_SIZE));
+        setAllAlignmentX(CENTER_ALIGNMENT, jlTitle, jlConfirm);
+        jlTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
         jlConfirm.setFont(new Font(FONT, STYLE, TEXT_SIZE));
 
         // assemble this panel
-        pnSettings.add(jlSettings);
+        pnSettings.add(jlTitle);
         pnSettings.add(Box.createVerticalGlue());
         // add keybinding labels here
         pnSettings.add(Box.createVerticalGlue());
@@ -173,22 +173,22 @@ class PanelCreator{
         System.out.println("Configuring: HowToPlay");
 
         var pnHowToPlay = new JPanel();
-        var jlHowToPlay = new JLabel("How to play");
-        var jlConfirm = createBackToMenuLabel("Confirm", pnOuterMost, cardLayout, Color.RED);
+        var jlTitle = new JLabel("How to play");
+        var jlBack = createBackToMenuLabel("Back", pnOuterMost, cardLayout, Color.RED);
 
         // setting layout
         pnHowToPlay.setLayout(new BoxLayout(pnHowToPlay, BoxLayout.Y_AXIS));
         pnHowToPlay.setBackground(Color.PINK);
-        setAllAlignmentX(CENTER_ALIGNMENT, jlHowToPlay, jlConfirm);
-        jlHowToPlay.setFont(new Font(FONT, STYLE, TITLE_SIZE));
-        jlConfirm.setFont(new Font(FONT, STYLE, TEXT_SIZE));
+        setAllAlignmentX(CENTER_ALIGNMENT, jlTitle, jlBack);
+        jlTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
+        jlBack.setFont(new Font(FONT, STYLE, TEXT_SIZE));
 
         // assemble this panel
-        pnHowToPlay.add(jlHowToPlay);
+        pnHowToPlay.add(jlTitle);
         pnHowToPlay.add(Box.createVerticalGlue());
         // add how to play text here
         pnHowToPlay.add(Box.createVerticalGlue());
-        pnHowToPlay.add(jlConfirm);
+        pnHowToPlay.add(jlBack);
         return pnHowToPlay;
     }
 
@@ -196,8 +196,8 @@ class PanelCreator{
         System.out.println("Configuring: Credits");
 
         var pnCredits = new JPanel();
-        var jlCredits = new JLabel("Credits");
-        var jlConfirm = createBackToMenuLabel("Back", pnOuterMost, cardLayout, Color.RED);
+        var jlTitle = new JLabel("Credits");
+        var jlBack = createBackToMenuLabel("Back", pnOuterMost, cardLayout, Color.RED);
 
         List<JLabel> credits = new ArrayList<>(List.of(
                 new JLabel("App: Jeff"),
@@ -211,12 +211,12 @@ class PanelCreator{
         // setting layout
         pnCredits.setLayout(new BoxLayout(pnCredits, BoxLayout.Y_AXIS));
         pnCredits.setBackground(Color.PINK);
-        setAllAlignmentX(CENTER_ALIGNMENT, jlCredits, jlConfirm);
-        jlCredits.setFont(new Font(FONT, STYLE, TITLE_SIZE));
-        jlConfirm.setFont(new Font(FONT, STYLE, TEXT_SIZE));
+        setAllAlignmentX(CENTER_ALIGNMENT, jlTitle, jlBack);
+        jlTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
+        jlBack.setFont(new Font(FONT, STYLE, TEXT_SIZE));
 
         // assemble this panel
-        pnCredits.add(jlCredits);
+        pnCredits.add(jlTitle);
         pnCredits.add(Box.createVerticalGlue());
         IntStream.range(0, credits.size()).forEach(i -> {
             JLabel credit = credits.get(i);
@@ -226,7 +226,7 @@ class PanelCreator{
         });
         credits.forEach(pnCredits::add);
         pnCredits.add(Box.createVerticalGlue());
-        pnCredits.add(jlConfirm);
+        pnCredits.add(jlBack);
 
 
 
@@ -239,8 +239,8 @@ class PanelCreator{
 
         var pnExit = new JPanel();
         var pnOption = new JPanel();
-        var jlWelcome = new JLabel("Chaps Challenge!");
-        var jlText = new JLabel("Are you sure you want to exit?");
+        var jlTitle = new JLabel("Chaps Challenge!");
+        var jlMessage = new JLabel("Are you sure you want to exit?");
         var jlYes = new JLabel("Yes"){{
             addMouseListener(new MouseAdapter() {
                 public void mouseEntered(MouseEvent e){setForeground(Color.RED);}
@@ -252,10 +252,10 @@ class PanelCreator{
         // setting layout
         pnExit.setLayout(new BoxLayout(pnExit, BoxLayout.Y_AXIS));
         pnOption.setLayout(new BoxLayout(pnOption, BoxLayout.X_AXIS));
-        jlWelcome.setFont(new Font(FONT, STYLE, TITLE_SIZE));
-        setAllFont(FONT, STYLE, TEXT_SIZE, jlText, jlYes, jlNo);
+        jlTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
+        setAllFont(FONT, STYLE, TEXT_SIZE, jlMessage, jlYes, jlNo);
         setAllBackground(Color.PINK, pnExit, pnOption);
-        setAllAlignmentX(CENTER_ALIGNMENT, jlWelcome, jlText, jlYes, jlNo);
+        setAllAlignmentX(CENTER_ALIGNMENT, jlTitle, jlMessage, jlYes, jlNo);
 
         // assemble options panel
         pnOption.add(Box.createHorizontalGlue());
@@ -264,9 +264,9 @@ class PanelCreator{
         pnOption.add(jlYes);
         pnOption.add(Box.createHorizontalGlue());
         // assemble Exit panel
-        pnExit.add(jlWelcome);
+        pnExit.add(jlTitle);
         pnExit.add(Box.createVerticalGlue());
-        pnExit.add(jlText);
+        pnExit.add(jlMessage);
         pnExit.add(Box.createVerticalGlue());
         pnExit.add(pnOption);
         pnExit.add(Box.createVerticalGlue());
