@@ -1,5 +1,4 @@
 package Renderer;
-import Domain.*;
 import Persistency.*;
 import Persistency.Tiles.Tile;
 import java.awt.image.BufferedImage;
@@ -14,13 +13,22 @@ public class Renderer extends JPanel{
     private String texturePack = "Original";
     //maze array
     private Tile[][] gameArray;
-    //maze
+    //the maze
     private Maze maze;
 
+    /*
+     * Constructor. Takes a maze as parameters.
+     * @param maze Maze to be rendered.
+     */
     public Renderer(Maze maze) {
         this.maze = maze;
     }
 
+    /*
+     * set the current texturePack and returns the new background image
+     * @param texturePack
+     * @return BufferedImage
+     */
     public BufferedImage setTexturePack(String texturePack) {
         this.texturePack = texturePack;
         try {
@@ -28,8 +36,25 @@ public class Renderer extends JPanel{
         } catch (IOException e) {throw new RuntimeException(e);}
     }
 
+    /*
+     * get this Renderer
+     * @return this Renderer
+     */
     public Renderer getWindow(){
         return this;
     }
+
+    /*
+     * get the image of the tile
+     * @param Tile
+     * @return BufferedImage
+     */
+    public BufferedImage getImage(Tile object) {
+        String name = object.getImg();
+        try {
+            return ImageIO.read(getClass().getResource("/render/textures/" + texturePack + "/" + name + ".png"));
+        } catch (IOException e) {throw new RuntimeException(e);}
+    }
+
 
 }
