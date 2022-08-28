@@ -7,4 +7,5 @@ public class Renderer {
 
 >>>>>>> loki
     public String testing = "this is a change";
+=======
 }
