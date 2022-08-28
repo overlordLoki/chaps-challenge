@@ -1,4 +1,4 @@
-package Persistency.Tiles;
+package Renderer.tempDomain.Tiles;
 
 public interface Tile {
     public String img = "";

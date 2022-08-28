@@ -1,6 +1,6 @@
-package Persistency;
+package Renderer.tempDomain;
 
-import Persistency.Tiles.*;
+import Renderer.tempDomain.Tiles.*;
 
 public class Maze {
     

@@ -1,6 +1,6 @@
 package Renderer;
-import Persistency.*;
-import Persistency.Tiles.Tile;
+import Renderer.tempDomain.*;
+import Renderer.tempDomain.Tiles.Tile;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
