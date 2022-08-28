@@ -1,14 +1,13 @@
 package App;
 
 import javax.swing.*;
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static java.awt.Component.CENTER_ALIGNMENT;
 
@@ -24,19 +23,17 @@ class PanelCreator{
     private static final int TEXT_SIZE = 40;
 
     public static final String MENU        = "Menu";
-    public static final String NEW_GAME    = "New Game";
+    public static final String NEW_GAME    = "Start New Game!";
     public static final String LOAD_GAME   = "Load Game";
     public static final String SETTINGS    = "Settings";
     public static final String HOW_TO_PLAY = "How to play";
     public static final String CREDITS     = "Credits";
     public static final String EXIT        = "Exit";
 
-
     /**
-     * Constructor for the App class. Initializes the GUI and the main loop.
+     * Should never be called directly.
      */
-    private PanelCreator(){
-    }
+    private PanelCreator(){}
 
     public static JPanel configureMenuScreen(JPanel pnOuterMost, CardLayout cardLayout){
         // components to be added to the shell
@@ -70,11 +67,11 @@ class PanelCreator{
         var pnMenu = new JPanel();
         var jlWelcome = new JLabel("Chaps Challenge!");
         List<JLabel> labels = new ArrayList<>(List.of(
-                new JLabel("Start New Game!"),
-                new JLabel("Load Game"),
-                new JLabel("Settings"),
-                new JLabel("How to play"),
-                new JLabel("Credits"),
+                new JLabel(NEW_GAME),
+                new JLabel(LOAD_GAME),
+                new JLabel(SETTINGS),
+                new JLabel(HOW_TO_PLAY),
+                new JLabel(CREDITS),
                 new JLabel(EXIT))
         );
         // setting layout
@@ -104,12 +101,48 @@ class PanelCreator{
 
     private static JPanel configurePanelNewGame(JPanel pnOuterMost, CardLayout cardLayout) {
         System.out.println("Configuring: NewGame");
-        return new JPanel();
+
+        var pnStartNew = new JPanel();
+        var jlHowToPlay = new JLabel("Starting new game...");
+        var jlConfirm = createBackToMenuLabel("Back", pnOuterMost, cardLayout, Color.RED);
+
+        // setting layout
+        pnStartNew.setLayout(new BoxLayout(pnStartNew, BoxLayout.Y_AXIS));
+        pnStartNew.setBackground(Color.PINK);
+        setAllAlignmentX(CENTER_ALIGNMENT, jlHowToPlay, jlConfirm);
+        jlHowToPlay.setFont(new Font(FONT, STYLE, TITLE_SIZE));
+        jlConfirm.setFont(new Font(FONT, STYLE, TEXT_SIZE));
+
+        // assemble this panel
+        pnStartNew.add(jlHowToPlay);
+        pnStartNew.add(Box.createVerticalGlue());
+        // add how to play text here
+        pnStartNew.add(Box.createVerticalGlue());
+        pnStartNew.add(jlConfirm);
+        return pnStartNew;
     }
 
     private static JPanel configurePanelLoad(JPanel pnOuterMost, CardLayout cardLayout) {
         System.out.println("Configuring: Load");
-        return new JPanel();
+
+        var pnLoad = new JPanel();
+        var jlHowToPlay = new JLabel("Load and Resume Saved Games");
+        var jlConfirm = createBackToMenuLabel("Confirm", pnOuterMost, cardLayout, Color.RED);
+
+        // setting layout
+        pnLoad.setLayout(new BoxLayout(pnLoad, BoxLayout.Y_AXIS));
+        pnLoad.setBackground(Color.PINK);
+        setAllAlignmentX(CENTER_ALIGNMENT, jlHowToPlay, jlConfirm);
+        jlHowToPlay.setFont(new Font(FONT, STYLE, TITLE_SIZE));
+        jlConfirm.setFont(new Font(FONT, STYLE, TEXT_SIZE));
+
+        // assemble this panel
+        pnLoad.add(jlHowToPlay);
+        pnLoad.add(Box.createVerticalGlue());
+        // add how to play text here
+        pnLoad.add(Box.createVerticalGlue());
+        pnLoad.add(jlConfirm);
+        return pnLoad;
     }
 
     private static JPanel configurePanelSettings(JPanel pnOuterMost, CardLayout cardLayout) {
@@ -118,12 +151,7 @@ class PanelCreator{
         var pnSettings = new JPanel();
         var pnBindings = new JPanel();
         var jlSettings = new JLabel("Settings");
-        var jlConfirm = new JLabel("Confirm"){{
-            addMouseListener(new MouseAdapter() {
-                public void mouseEntered(MouseEvent e){setForeground(Color.RED);}
-                public void mouseExited(MouseEvent e) {setForeground(Color.BLACK);}
-                public void mouseClicked(MouseEvent e) {cardLayout.show(pnOuterMost, MENU);}
-        });}};
+        var jlConfirm = createBackToMenuLabel("Confirm", pnOuterMost, cardLayout, Color.RED);
 
         // setting layout
         pnSettings.setLayout(new BoxLayout(pnSettings, BoxLayout.Y_AXIS));
@@ -144,13 +172,66 @@ class PanelCreator{
     private static JPanel configurePanelHowToPlay(JPanel pnOuterMost, CardLayout cardLayout) {
         System.out.println("Configuring: HowToPlay");
 
-        return new JPanel();
+        var pnHowToPlay = new JPanel();
+        var jlHowToPlay = new JLabel("How to play");
+        var jlConfirm = createBackToMenuLabel("Confirm", pnOuterMost, cardLayout, Color.RED);
+
+        // setting layout
+        pnHowToPlay.setLayout(new BoxLayout(pnHowToPlay, BoxLayout.Y_AXIS));
+        pnHowToPlay.setBackground(Color.PINK);
+        setAllAlignmentX(CENTER_ALIGNMENT, jlHowToPlay, jlConfirm);
+        jlHowToPlay.setFont(new Font(FONT, STYLE, TITLE_SIZE));
+        jlConfirm.setFont(new Font(FONT, STYLE, TEXT_SIZE));
+
+        // assemble this panel
+        pnHowToPlay.add(jlHowToPlay);
+        pnHowToPlay.add(Box.createVerticalGlue());
+        // add how to play text here
+        pnHowToPlay.add(Box.createVerticalGlue());
+        pnHowToPlay.add(jlConfirm);
+        return pnHowToPlay;
     }
 
     private static JPanel configurePanelCredits(JPanel pnOuterMost, CardLayout cardLayout) {
         System.out.println("Configuring: Credits");
 
-        return new JPanel();
+        var pnCredits = new JPanel();
+        var jlCredits = new JLabel("Credits");
+        var jlConfirm = createBackToMenuLabel("Back", pnOuterMost, cardLayout, Color.RED);
+
+        List<JLabel> credits = new ArrayList<>(List.of(
+                new JLabel("App: Jeff"),
+                new JLabel("Domain: Madhi"),
+                new JLabel("Fuzz: Ray"),
+                new JLabel("Persistency: Ben"),
+                new JLabel("Recorder: Jayden"),
+                new JLabel("Renderer: Loki")
+        ));
+
+        // setting layout
+        pnCredits.setLayout(new BoxLayout(pnCredits, BoxLayout.Y_AXIS));
+        pnCredits.setBackground(Color.PINK);
+        setAllAlignmentX(CENTER_ALIGNMENT, jlCredits, jlConfirm);
+        jlCredits.setFont(new Font(FONT, STYLE, TITLE_SIZE));
+        jlConfirm.setFont(new Font(FONT, STYLE, TEXT_SIZE));
+
+        // assemble this panel
+        pnCredits.add(jlCredits);
+        pnCredits.add(Box.createVerticalGlue());
+        IntStream.range(0, credits.size()).forEach(i -> {
+            JLabel credit = credits.get(i);
+            credit.setFont(new Font(FONT, STYLE, TEXT_SIZE));
+            setAllAlignmentX(CENTER_ALIGNMENT, credits.toArray(new JLabel[0]));
+            pnCredits.add(credit);
+        });
+        credits.forEach(pnCredits::add);
+        pnCredits.add(Box.createVerticalGlue());
+        pnCredits.add(jlConfirm);
+
+
+
+
+        return pnCredits;
     }
 
     public static JPanel configurePanelExit(JPanel pnOuterMost, CardLayout cardLayout) {
@@ -166,12 +247,7 @@ class PanelCreator{
                 public void mouseExited(MouseEvent e) {setForeground(Color.BLACK);}
                 public void mousePressed(MouseEvent e) {System.exit(0);}
         });}};
-        var jlNo = new JLabel("No"){{
-            addMouseListener(new MouseAdapter() {
-                public void mouseEntered(MouseEvent e){setForeground(Color.GREEN);}
-                public void mouseExited(MouseEvent e) {setForeground(Color.BLACK);}
-                public void mousePressed(MouseEvent e) {cardLayout.show(pnOuterMost, MENU);}
-        });}};
+        var jlNo = createBackToMenuLabel("No", pnOuterMost, cardLayout, Color.GREEN);
 
         // setting layout
         pnExit.setLayout(new BoxLayout(pnExit, BoxLayout.Y_AXIS));
@@ -211,6 +287,18 @@ class PanelCreator{
         Arrays.stream(labels).forEach(label -> label.setAlignmentX(alignment));
     }
 
+    private static void setAllAlignmentY(float alignment, JLabel... labels) {
+        Arrays.stream(labels).forEach(label -> label.setAlignmentY(alignment));
+    }
+
+    private static JLabel createBackToMenuLabel(String text, JPanel pnOuterMost, CardLayout cardLayout, Color color) {
+        return new JLabel(text) {{
+            addMouseListener(new MouseAdapter() {
+                public void mouseEntered(MouseEvent e){setForeground(color);}
+                public void mouseExited(MouseEvent e) {setForeground(Color.BLACK);}
+                public void mousePressed(MouseEvent e) {cardLayout.show(pnOuterMost, MENU);}
+        });}};
+    }
 
 
 /*
