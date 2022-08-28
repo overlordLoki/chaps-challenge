@@ -1,13 +1,18 @@
 package App;
 
+import Renderer.tempDomain.*;
 import Renderer.Renderer;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static App.PanelCreator.*;
 
@@ -19,11 +24,11 @@ import static App.PanelCreator.*;
 public class App extends JFrame {
     private static final String FONT = "Agency FB";
     private static final int STYLE = Font.BOLD;
-    private Controller controller;
+    public Controller controller;
     private List<String> keyBindings = new ArrayList<>(List.of("Up","Down","Left","Right","Space","Esc","1","2","X","S","R","Ctrl"));
     private List<String> keyNames = List.of("Up","Down","Left","Right","Space","Esc","1","2","X","S","R","Ctrl");
     private int settingKey = -1;
-    private Runnable closePhase = ()->{};
+    public Runnable closePhase = ()->{};
     private List<Runnable> stages = new ArrayList<>();
 
     /**
@@ -32,38 +37,40 @@ public class App extends JFrame {
     public App(){
         assert SwingUtilities.isEventDispatchThread();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        menuScreen();
         setVisible(true);
         addWindowListener(new WindowAdapter() {
             public void windowClosed(WindowEvent e) {
                 closePhase.run();
             }
         });
+        menuScreen();
     }
 
     private void menuScreen(){
         // shell to hold all the components
         var pnOuterMost = new JPanel();
         var cardLayout = new CardLayout();
-        this.setContentPane(PanelCreator.configureMenuScreen(pnOuterMost, cardLayout));
+        this.setContentPane(PanelCreator.configureMenuScreen(this, pnOuterMost, cardLayout));
+        closePhase.run();
+        closePhase = ()->remove(pnOuterMost);
         cardLayout.show(pnOuterMost, MENU);
         setPreferredSize(new Dimension(1200, 600));
         pack();
     }
 
-    private void level(){
-        // need to invoke persistent package to create level here
-//        mazeRender = setLevel(Persistency.level());
-    }
-
-    private void deathScreen(){
-        // need to invoke Render package to create create death screen here
-//        mazeRender = Renderer.death();
-    }
-
-    private void victoryScreen(){
-        // need to invoke Render package to create create death screen here
-//        mazeRender = Renderer.victory();
+    /**
+     *
+     */
+    public void gameScreen(){
+        var pnOuterMost = new JPanel();
+        var cardLayout = new CardLayout();
+        this.setContentPane(PanelCreator.configureGameScreen(pnOuterMost, cardLayout,
+                this, new Renderer(new Maze())));
+        cardLayout.show(pnOuterMost, MENU);
+        closePhase.run();
+        closePhase = ()->remove(pnOuterMost);
+        setPreferredSize(new Dimension(1200, 600));
+        pack();
     }
 
     private JPanel setLevel(Renderer l){
@@ -72,6 +79,13 @@ public class App extends JFrame {
         return null;
     }
 
+    public int getCurrentLevel() {
+        return 1;
+    }
+
+    public int getTreasuresLeft() {
+        return 12;
+    }
 
     //================================================================================================================//
     //============================================= Main Method ======================================================//

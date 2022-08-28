@@ -1,6 +1,11 @@
 package App;
 
-import javax.swing.*;
+import Renderer.*;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -30,15 +35,19 @@ class PanelCreator{
     public static final String CREDITS     = "Credits";
     public static final String EXIT        = "Exit";
 
+    public static final String GAME        = "Game";
+    public static final String DEATH       = "Death";
+    public static final String VICTORY     = "Victory";
+
     /**
-     * Should never be called directly.
+     * Should never be called.
      */
     private PanelCreator(){}
 
-    public static JPanel configureMenuScreen(JPanel pnOuterMost, CardLayout cardLayout){
+    public static JPanel configureMenuScreen(App app, JPanel pnOuterMost, CardLayout cardLayout){
         // components to be added to the shell
         JPanel pnMenu      = configurePanelMenu(pnOuterMost, cardLayout);
-        JPanel pnNewGame   = configurePanelNewGame(pnOuterMost, cardLayout);
+        JPanel pnNewGame   = configurePanelNewGame(app, pnOuterMost, cardLayout);
         JPanel pnLoad      = configurePanelLoad(pnOuterMost, cardLayout);
         JPanel pnSettings  = configurePanelSettings(pnOuterMost, cardLayout);
         JPanel pnHowToPlay = configurePanelHowToPlay(pnOuterMost, cardLayout);
@@ -56,6 +65,21 @@ class PanelCreator{
         pnOuterMost.add(pnExit, EXIT);
         return pnOuterMost;
     }
+
+    public static JPanel configureGameScreen(JPanel pnOuterMost, CardLayout cardLayout, App app, Renderer r){
+        // components to be added to the shell
+        JPanel pnGameWindow  = configurePanelGame(pnOuterMost, cardLayout, app, r);
+        JPanel pnGameDeath   = configurePanelDeath(pnOuterMost, cardLayout);
+        JPanel pnGameVictory = configurePanelVictory(pnOuterMost, cardLayout);
+
+        // add components to the shell
+        pnOuterMost.setLayout(cardLayout);
+        pnOuterMost.add(pnGameWindow, GAME);
+        pnOuterMost.add(pnGameDeath, DEATH);
+        pnOuterMost.add(pnGameVictory, VICTORY);
+        return pnOuterMost;
+    }
+
 
     //================================================================================================================//
     //============================================= Menu Panels ======================================================//
@@ -99,12 +123,17 @@ class PanelCreator{
         return pnMenu;
     }
 
-    private static JPanel configurePanelNewGame(JPanel pnOuterMost, CardLayout cardLayout) {
+    private static JPanel configurePanelNewGame(App app, JPanel pnOuterMost, CardLayout cardLayout) {
         System.out.println("Configuring: NewGame");
 
         var pnStartNew = new JPanel();
         var jlTitle = new JLabel("Starting new game...");
-        var jlConfirm = createBackToMenuLabel("Confirm", pnOuterMost, cardLayout, Color.RED);
+        var jlConfirm = new JLabel("Start") {{
+            addMouseListener(new MouseAdapter() {
+                public void mouseEntered(MouseEvent e){setForeground(Color.RED);}
+                public void mouseExited(MouseEvent e) {setForeground(Color.BLACK);}
+                public void mousePressed(MouseEvent e) { app.gameScreen();}
+        });}};
 
         // setting layout
         pnStartNew.setLayout(new BoxLayout(pnStartNew, BoxLayout.Y_AXIS));
@@ -273,6 +302,74 @@ class PanelCreator{
         return pnExit;
     }
 
+
+    //================================================================================================================//
+    //============================================= Game Panels ======================================================//
+    //================================================================================================================//
+
+    private static JPanel configurePanelGame(JPanel pnOuterMost, CardLayout cardLayout,App app, Renderer mazeRender) {
+        var pnGame = new JPanel();
+        var pnStatus = new JPanel();
+
+        var lbLevelTitle = new JLabel("Level");
+        var lbLevel = new JLabel(app.getCurrentLevel()+"");
+        var lbTimerTitle = new JLabel("Time Left");
+        var lbTimer = new JLabel("120");
+        var lbTreasuresTitle = new JLabel("Treasures Left");
+        var lbTreasures = new JLabel(app.getTreasuresLeft()+"");
+        var lbInventoryTitle = new JLabel("Inventory");
+        var pnInventory = new JPanel();
+
+        mazeRender.addKeyListener(app.controller);
+        mazeRender.setFocusable(true);
+        /*Timer timer = new Timer(34, unused -> {
+            assert SwingUtilities.isEventDispatchThread();
+            r.repaint();
+        });*/
+        pnGame.setLayout(new BoxLayout(pnGame, BoxLayout.X_AXIS));
+        pnStatus.setLayout(new BoxLayout(pnStatus, BoxLayout.Y_AXIS));
+        pnInventory.setLayout(new GridLayout(2,4));
+        mazeRender.setPreferredSize(new Dimension(app.getHeight(), app.getHeight()));
+        mazeRender.setMaximumSize(new Dimension(app.getHeight(), app.getHeight()));
+
+        setAllFont(FONT, STYLE, TEXT_SIZE, lbLevelTitle, lbLevel, lbTimerTitle, lbTimer, lbTreasuresTitle, lbTreasures, lbInventoryTitle);
+        pnStatus.setBackground(Color.PINK);
+        pnGame.setBackground(Color.PINK);
+        pnInventory.setBackground(Color.CYAN);
+
+        int x=1;
+        for(int i = 0; i < 2; i++) {
+            for (int j = 0; j < 4; j++) {
+                pnInventory.add(new JLabel(x + ""));
+                x++;
+            }
+        }
+        pnStatus.add(lbLevelTitle);
+        pnStatus.add(lbLevel);
+        pnStatus.add(Box.createVerticalGlue());
+        pnStatus.add(lbTimerTitle);
+        pnStatus.add(lbTimer);
+        pnStatus.add(Box.createVerticalGlue());
+        pnStatus.add(lbTreasuresTitle);
+        pnStatus.add(lbTreasures);
+        pnStatus.add(Box.createVerticalGlue());
+        pnStatus.add(lbInventoryTitle);
+        pnStatus.add(pnInventory);
+
+        pnGame.add(mazeRender);
+        pnGame.add(pnStatus);
+        return pnGame;
+    }
+
+    private static JPanel configurePanelVictory(JPanel pnOuterMost, CardLayout cardLayout) {
+        return new JPanel();
+    }
+
+    private static JPanel configurePanelDeath(JPanel pnOuterMost, CardLayout cardLayout) {
+        return new JPanel();
+    }
+
+
     //================================================================================================================//
     //=========================================== Helper Method ======================================================//
     //================================================================================================================//
@@ -299,7 +396,6 @@ class PanelCreator{
                 public void mousePressed(MouseEvent e) {cardLayout.show(pnOuterMost, MENU);}
         });}};
     }
-
 
 /*
     private List<JButton> createButtons(List<JButton> keyBindingButtons) {
