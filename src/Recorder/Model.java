@@ -16,20 +16,22 @@ class Model {
     private final StartStop recordStartStop;
     private final StartStop replayStartStop;
     private final Recorder recorder;
+    private final Replay replay;
 
     public Model(){
         // currentState = 0;
         // currentTime = 0;
         // speed = 1;
         recorder = new Recorder();
-        recordStartStop = new StartStop(new RecordStopCommand(recorder), new RecordStartCommand(recorder));
-        Replay replay = new Replay();
+        recordStartStop = new StartStop(new RecordStartCommand(recorder), new RecordStopCommand(recorder));
+        replay = new Replay();
         replayStartStop = new StartStop(new ReplayStartCommand(replay), new ReplayStopCommand(replay));
     }
 
     public void startRecording(){recordStartStop.start();}
-    public void addToRecording(Map<Integer, List<String>> timeActions){recorder.addActions(timeActions);}
+    public void addToRecording(int time, List<String> action){recorder.addActions(time, action);}
     public void stopRecording(){recordStartStop.stop();}
+    public void loadGame(String game){replay.load(game);} // persistency.load(game);}
     public void startReplay(){replayStartStop.start();}
     public void stopReplay(){replayStartStop.stop();}
 }

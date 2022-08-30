@@ -6,20 +6,25 @@ import java.util.Stack;
 
 public class Replay {
     Stack<Map<Integer, List<String>>> FutureActions;    // time, actions
-    int CurrentState;
+    int CurrentState;   
     int currentTime;
     double speed;
+    String game;
 
+    public void load(String game){
+        // FutureActions = Persistency.load(game);
+        this.game = game;
+        System.out.println("Loading game: " + game);
+    }
     public void startReplay(){
+        if(game == null){
+            System.out.println("No game loaded");
+            return;
+        }
         System.out.println("Replay started");
     }
     public void stopReplay(){
         System.out.println("Replay stopped");
-    }
-    public void addActions(Map<Integer, List<String>> actions) {
-        System.out.println("Actions adding...");
-        FutureActions.add(actions);
-        System.out.println("Actions added");
     }
 }
 

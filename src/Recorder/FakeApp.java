@@ -8,25 +8,21 @@ import java.util.Map;
 public class FakeApp {
     
     public static void main(String[] args){
-        Model recorder = new Model();
-        recorder.startRecording();
+        Model model = new Model();
+        model.startRecording();
 
-        
-        Map<Integer, List<String>> timeActions = new HashMap<Integer, List<String>>();
         List<String> actions = List.of("character spawned", "bug moved");
-        timeActions.put(0, actions);
-        recorder.addToRecording(timeActions);
+        int time = 0;
+        model.addToRecording(time++, actions);
         actions = List.of("up", "down");
-        timeActions.put(1, actions);
-        recorder.addToRecording(timeActions);
+        model.addToRecording(time++, actions);
         actions = List.of("left", "right");
-        timeActions.put(2, actions);
-        recorder.addToRecording(timeActions);
+        model.addToRecording(time++, actions);
         // actions.put(1, "character moved up");
         
         
-        recorder.stopRecording();
-        recorder.startReplay();
-        recorder.stopReplay();
+        model.stopRecording();
+        model.startReplay();
+        model.stopReplay();
     }
 }
