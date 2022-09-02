@@ -1,32 +1,25 @@
 package Recorder;
 
-import java.util.ArrayDeque;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-
 import App.*;
 import Persistency.*;
 
 public class Recorder {
-    private Queue<List<String>> actions;   // time, actions
-    
+    private Timeline timeline;
 
     public void startRecording(){
         System.out.println("Recording started");
-        this.actions = new ArrayDeque<>();
+        this.timeline = new Timeline();
     }
     public void addActions(List<String> actions) {
-        this.actions.add(actions);
+        this.timeline.add(new Pair(FakeApp.time, actions));
         System.out.println("Adding Action: " + actions.toString()); 
     }
     public void stopRecording(){
         System.out.println("Recording stopped");
-        System.out.println("Saving to disk..." + this.actions.toString());
+        System.out.println("Saving to disk..." + this.timeline.toString());
         // Persistency.save(actions);
         System.out.println("Recording saved");
-        // get rid of actions
     }
 }
 

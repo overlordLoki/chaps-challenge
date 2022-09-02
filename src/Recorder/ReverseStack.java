@@ -3,6 +3,11 @@ package Recorder;
 import java.util.List;
 import java.util.Stack;
 
+
+/**
+ * Old code, not currently used.
+ * Keeping it for potential future use.
+ */
 public class ReverseStack {
     Stack<List<String>> stack;
 

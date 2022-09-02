@@ -22,7 +22,7 @@ class Model {
         recordStartStop.start();
     }
     public void stopRecording(){recordStartStop.stop();}
-    public void addToRecording(List<String> action){recorder.addActions(action);}
+    public void addToRecording(List<String> actions){recorder.addActions(actions);}
 
     // Methods used to replay a game
     public void startReplay(String game){
@@ -32,8 +32,7 @@ class Model {
     }
     public void autoPlay(){replayStartStop.start();}
     public void setReplaySpeed(float speed){replay.setSpeed(speed);}
-    public void stepForwardReplay(){replay.stepForward();}
-    public void stepBackwardReplay(){replay.stepBackward();}
+    public void stepForwardReplay(){replay.step();}
     public void stopReplay(){replayStartStop.stop();}
 
     // testing methods only
