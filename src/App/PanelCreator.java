@@ -182,6 +182,20 @@ class PanelCreator{
         var jlTitle = new JLabel("Settings");
         var jlConfirm = createBackToMenuLabel("Confirm", pnOuterMost, cardLayout, Color.RED);
 
+
+
+
+
+        // important changes: demo
+
+
+
+
+
+
+
+
+        
         // setting layout
         pnSettings.setLayout(new BoxLayout(pnSettings, BoxLayout.Y_AXIS));
         pnSettings.setBackground(Color.PINK);
