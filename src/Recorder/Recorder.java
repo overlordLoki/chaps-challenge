@@ -1,30 +1,32 @@
 package Recorder;
 
+import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 import App.*;
 import Persistency.*;
 
 public class Recorder {
-    private Map<Integer, List<String>> timeActions;   // time, actions
+    private Queue<List<String>> actions;   // time, actions
+    
 
     public void startRecording(){
         System.out.println("Recording started");
-        timeActions = new HashMap<>();
+        this.actions = new ArrayDeque<>();
     }
-    public void addActions(int time, List<String> actions) {
-        timeActions.put(time, actions);
-        System.out.println("Adding... : Time: " + time + ", Action: " + actions.toString()); 
+    public void addActions(List<String> actions) {
+        this.actions.add(actions);
+        System.out.println("Adding Action: " + actions.toString()); 
     }
     public void stopRecording(){
         System.out.println("Recording stopped");
-        System.out.println("Saving to disk..." + timeActions.toString());
-        // Persistency.save(timeActions);
+        System.out.println("Saving to disk..." + this.actions.toString());
+        // Persistency.save(actions);
         System.out.println("Recording saved");
-        // get rid of timeActions
-        // timeActions = null ?? will it be garbage collected?
+        // get rid of actions
     }
 }
 
@@ -41,3 +43,4 @@ record RecordStopCommand(Recorder recorder) implements Command {
         recorder.stopRecording();
     }
 }
+

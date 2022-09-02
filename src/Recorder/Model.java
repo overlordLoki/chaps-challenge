@@ -10,28 +10,32 @@ import javax.xml.namespace.QName;
  * The Model handles the recording a replay functionalities.
  */
 class Model {
-    // private int currentState;
-    // private int currentTime;
-    // private double speed;
-    private final StartStop recordStartStop;
-    private final StartStop replayStartStop;
-    private final Recorder recorder;
-    private final Replay replay;
+    private StartStop recordStartStop;
+    private StartStop replayStartStop;
+    private Recorder recorder;
+    private Replay replay;
 
-    public Model(){
-        // currentState = 0;
-        // currentTime = 0;
-        // speed = 1;
+    // Methods used to record a game
+    public void startRecording(){
         recorder = new Recorder();
         recordStartStop = new StartStop(new RecordStartCommand(recorder), new RecordStopCommand(recorder));
+        recordStartStop.start();
+    }
+    public void stopRecording(){recordStartStop.stop();}
+    public void addToRecording(List<String> action){recorder.addActions(action);}
+
+    // Methods used to replay a game
+    public void startReplay(String game){
         replay = new Replay();
         replayStartStop = new StartStop(new ReplayStartCommand(replay), new ReplayStopCommand(replay));
+        replay.load(game); // persistency.load(game);}
     }
-
-    public void startRecording(){recordStartStop.start();}
-    public void addToRecording(int time, List<String> action){recorder.addActions(time, action);}
-    public void stopRecording(){recordStartStop.stop();}
-    public void loadGame(String game){replay.load(game);} // persistency.load(game);}
-    public void startReplay(){replayStartStop.start();}
+    public void autoPlay(){replayStartStop.start();}
+    public void setReplaySpeed(float speed){replay.setSpeed(speed);}
+    public void stepForwardReplay(){replay.stepForward();}
+    public void stepBackwardReplay(){replay.stepBackward();}
     public void stopReplay(){replayStartStop.stop();}
+
+    // testing methods only
+    public void addReplayActions(){replay.addActions();}
 }
