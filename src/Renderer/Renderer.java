@@ -10,7 +10,7 @@ import java.awt.Graphics;
 public class Renderer extends JPanel{
     static final long serialVersionUID = 1L;
     //default texturePack
-    private String texturePack = "Original";
+    private String texturePack = "Cats";
     //maze array
     private Tile[][] gameArray;
     //the maze

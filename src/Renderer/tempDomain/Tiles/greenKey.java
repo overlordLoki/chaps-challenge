@@ -1,8 +1,9 @@
 package Renderer.tempDomain.Tiles;
 
-public class Chap implements Tile {
-    public String img = "chap";
+public class greenKey implements Tile {
+    public String img = "greenKey";
     public String getImg(){
         return img;
     }
+    
 }
