@@ -1,6 +1,5 @@
 package App;
 
-import Renderer.*;
 import Renderer.Renderer;
 
 import javax.swing.*;
@@ -49,7 +48,7 @@ class PanelCreator{
         JPanel pnMenu      = configurePanelMenu(pnOuterMost, cardLayout);
         JPanel pnNewGame   = configurePanelNewGame(app, pnOuterMost, cardLayout);
         JPanel pnLoad      = configurePanelLoad(pnOuterMost, cardLayout);
-        JPanel pnSettings  = configurePanelSettings(pnOuterMost, cardLayout, keyBindings, keyNames);
+        JPanel pnSettings  = configurePanelSettings(pnOuterMost, cardLayout, app, keyBindings, keyNames);
         JPanel pnHowToPlay = configurePanelHowToPlay(pnOuterMost, cardLayout);
         JPanel pnCredits   = configurePanelCredits(pnOuterMost, cardLayout);
         JPanel pnExit      = configurePanelExit(pnOuterMost, cardLayout);
@@ -174,7 +173,7 @@ class PanelCreator{
         return pnLoad;
     }
 
-    private static JPanel configurePanelSettings(JPanel pnOuterMost, CardLayout cardLayout, List<String> keyBindings, List<String> keyNames) {
+    private static JPanel configurePanelSettings(JPanel pnOuterMost, CardLayout cardLayout, App app, List<String> keyBindings, List<String> keyNames) {
         System.out.println("Configuring: Settings");
 
         var pnSettings = new JPanel();
@@ -184,18 +183,44 @@ class PanelCreator{
         var jlTitle = new JLabel("Settings");
         var jlConfirm = createBackToMenuLabel("Confirm", pnOuterMost, cardLayout, Color.RED);
 
-        List<JLabel> actionNames = new ArrayList<>();
-        List<JLabel> actionKeys = new ArrayList<>();
+        List<JLabel> lbsActionNames = new ArrayList<>();
+        List<JLabel> lbsActionKeys = new ArrayList<>();
         for (int i = 0; i < keyBindings.size(); i++) {
-            actionNames.add(new JLabel(keyNames.get(i)));
-            actionKeys.add(new JLabel(keyBindings.get(i)));
+            lbsActionNames.add(new JLabel(keyNames.get(i)));
+            int finalI = i;
+            lbsActionKeys.add(new JLabel(finalI < 6 ? keyBindings.get(finalI): "Ctrl + " + keyBindings.get(finalI)){{
+                setFocusable(true);
+                addMouseListener(new MouseAdapter() {
+                    public void mouseEntered(MouseEvent e){setForeground(Color.ORANGE);}
+                    public void mouseExited(MouseEvent e) {setForeground(Color.BLACK);}
+                    public void mousePressed(MouseEvent e){
+                        System.out.println("Pressed: " + getText());
+                        setForeground(Color.RED);
+                        app.settingKey = finalI;}
+                });
+            }});
         }
+
+        app.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent e) {
+                if (app.settingKey == -1) return;
+                if (keyBindings.contains(KeyEvent.getKeyText(e.getKeyCode()))){
+                    app.settingKey = -1;
+                    return;
+                }
+                keyBindings.set(app.settingKey, KeyEvent.getKeyText(e.getKeyCode()));
+                lbsActionKeys.get(app.settingKey).setText((app.settingKey < 6 ? "": "Ctrl + " ) + KeyEvent.getKeyText(e.getKeyCode()));
+                app.settingKey = -1;
+            }
+        });
 
         // setting layout
         pnSettings.setLayout(new BoxLayout(pnSettings, BoxLayout.Y_AXIS));
         pnBindingL.setLayout(new BoxLayout(pnBindingL, BoxLayout.Y_AXIS));
         pnBindingR.setLayout(new BoxLayout(pnBindingR, BoxLayout.Y_AXIS));
         pnBindings.setLayout(new BoxLayout(pnBindings, BoxLayout.X_AXIS));
+        pnBindingL.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
+        pnBindingR.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
         pnBindings.setOpaque(false);
         pnBindingL.setOpaque(false);
         pnBindingR.setOpaque(false);
@@ -203,18 +228,15 @@ class PanelCreator{
         setAllAlignmentX(CENTER_ALIGNMENT, jlTitle, jlConfirm);
         jlTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
         jlConfirm.setFont(new Font(FONT, STYLE, TEXT_SIZE));
-        setAllFont(FONT, STYLE, TEXT_SIZE-10, actionNames.toArray(new JLabel[0]));
-        setAllFont(FONT, STYLE, TEXT_SIZE-10, actionKeys.toArray(new JLabel[0]));
+        setAllFont(FONT, STYLE, TEXT_SIZE-10, lbsActionNames.toArray(new JLabel[0]));
+        setAllFont(FONT, STYLE, TEXT_SIZE-10, lbsActionKeys.toArray(new JLabel[0]));
 
         // assemble Binding panel
-        actionNames.forEach(pnBindingL::add);
-        actionKeys.forEach(pnBindingR::add);
-        pnBindings.add(Box.createHorizontalGlue());
+        lbsActionNames.forEach(pnBindingL::add);
+        lbsActionKeys.forEach(pnBindingR::add);
         pnBindings.add(Box.createHorizontalGlue());
         pnBindings.add(pnBindingL);
-        pnBindings.add(Box.createHorizontalGlue());
         pnBindings.add(pnBindingR);
-        pnBindings.add(Box.createHorizontalGlue());
         pnBindings.add(Box.createHorizontalGlue());
 
         // assemble this panel

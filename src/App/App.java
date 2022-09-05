@@ -27,7 +27,7 @@ public class App extends JFrame {
     private List<String> keyBindings = new ArrayList<>(List.of("Up","Down","Left","Right","Space","Escape","1","2","X","S","R"));
     private List<String> keyNames = List.of("Move Up","Move Down","Move Left","Move Right","Pause Game",
             "Resume Game","Jump To Level 1","Jump To Level 2","Quit Game","Save And Quit Game","Reload Game");
-    private int settingKey = -1;
+    int settingKey = -1;
 
     public Game game;
 
