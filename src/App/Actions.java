@@ -9,7 +9,7 @@ import App.tempDomain.Game;
  */
 public class Actions {
 
-    private Game game;
+    private final Game game;
 
     /**
      * Constructor for the Actions class.

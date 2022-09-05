@@ -24,6 +24,7 @@ import static App.PanelCreator.*;
 public class App extends JFrame {
     private final List<String> actionNames = List.of("Move Up","Move Down","Move Left","Move Right","Pause Game",
             "Resume Game","Jump To Level 1","Jump To Level 2","Quit Game","Save And Quit Game","Reload Game");
+    @SuppressWarnings("FieldMayBeFinal")
     private List<String> actionKeyBindings = new ArrayList<>(List.of("Up","Down","Left","Right","Space",
             "Escape","1","2","X","S","R"));
     private int indexOfKeyToSet = -1;
@@ -62,7 +63,7 @@ public class App extends JFrame {
 
     /**
      * Enters the game screen, and starts the game loop.
-     *
+     * <p></p>
      * This method is called when the user clicks the "Start Game" button.
      * It initializes the game and controller, then starts the game loop.
      */
