@@ -191,25 +191,35 @@ class PanelCreator{
             lbsActionKeys.add(new JLabel(finalI < 6 ? keyBindings.get(finalI): "Ctrl + " + keyBindings.get(finalI)){{
                 setFocusable(true);
                 addMouseListener(new MouseAdapter() {
-                    public void mouseEntered(MouseEvent e){setForeground(Color.ORANGE);}
-                    public void mouseExited(MouseEvent e) {setForeground(Color.BLACK);}
+                    public void mouseEntered(MouseEvent e){
+                        if (app.settingKey != -1) return;
+                        setForeground(Color.ORANGE);
+                    }
+                    public void mouseExited(MouseEvent e) {
+                        if (app.settingKey != -1) return;
+                        setForeground(Color.BLACK);
+                    }
                     public void mousePressed(MouseEvent e){
-                        System.out.println("Pressed: " + getText());
+                        if (app.settingKey != -1) return;
                         setForeground(Color.RED);
-                        app.settingKey = finalI;}
+                        app.settingKey = finalI;
+                    }
                 });
             }});
         }
 
         app.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent e) {
+            public void keyPressed(KeyEvent e) {
                 if (app.settingKey == -1) return;
+                var label = lbsActionKeys.get(app.settingKey);
                 if (keyBindings.contains(KeyEvent.getKeyText(e.getKeyCode()))){
                     app.settingKey = -1;
+                    label.setForeground(Color.BLACK);
                     return;
                 }
                 keyBindings.set(app.settingKey, KeyEvent.getKeyText(e.getKeyCode()));
-                lbsActionKeys.get(app.settingKey).setText((app.settingKey < 6 ? "": "Ctrl + " ) + KeyEvent.getKeyText(e.getKeyCode()));
+                label.setText((app.settingKey < 6 ? "": "Ctrl + " ) + KeyEvent.getKeyText(e.getKeyCode()));
+                label.setForeground(Color.BLACK);
                 app.settingKey = -1;
             }
         });
