@@ -24,7 +24,8 @@ class PanelCreator{
     private static final String FONT = "Agency FB";
     private static final int STYLE = Font.BOLD;
     private static final int TITLE_SIZE = 80;
-    private static final int TEXT_SIZE = 40;
+    private static final int TEXT_SIZE_1 = 40;
+    private static final int TEXT_SIZE_2 = 30;
 
     public static final String MENU        = "Menu";
     public static final String NEW_GAME    = "Start New Game!";
@@ -139,7 +140,7 @@ class PanelCreator{
         pnStartNew.setBackground(Color.PINK);
         setAllAlignmentX(CENTER_ALIGNMENT, jlTitle, jlConfirm);
         jlTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
-        jlConfirm.setFont(new Font(FONT, STYLE, TEXT_SIZE));
+        jlConfirm.setFont(new Font(FONT, STYLE, TEXT_SIZE_1));
 
         // assemble this panel
         pnStartNew.add(jlTitle);
@@ -162,7 +163,7 @@ class PanelCreator{
         pnLoad.setBackground(Color.PINK);
         setAllAlignmentX(CENTER_ALIGNMENT, jlTitle, jlConfirm);
         jlTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
-        jlConfirm.setFont(new Font(FONT, STYLE, TEXT_SIZE));
+        jlConfirm.setFont(new Font(FONT, STYLE, TEXT_SIZE_1));
 
         // assemble this panel
         pnLoad.add(jlTitle);
@@ -236,9 +237,9 @@ class PanelCreator{
         pnSettings.setBackground(Color.PINK);
         setAllAlignmentX(CENTER_ALIGNMENT, jlTitle, jlConfirm);
         jlTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
-        jlConfirm.setFont(new Font(FONT, STYLE, TEXT_SIZE));
-        setAllFont(FONT, STYLE, TEXT_SIZE-10, lbsActionNames.toArray(new JLabel[0]));
-        setAllFont(FONT, STYLE, TEXT_SIZE-10, lbsActionKeys.toArray(new JLabel[0]));
+        jlConfirm.setFont(new Font(FONT, STYLE, TEXT_SIZE_1));
+        setAllFont(FONT, STYLE, TEXT_SIZE_2, lbsActionNames.toArray(new JLabel[0]));
+        setAllFont(FONT, STYLE, TEXT_SIZE_2, lbsActionKeys.toArray(new JLabel[0]));
 
         // assemble Binding panel
         lbsActionNames.forEach(pnBindingL::add);
@@ -269,7 +270,7 @@ class PanelCreator{
         pnHowToPlay.setBackground(Color.PINK);
         setAllAlignmentX(CENTER_ALIGNMENT, jlTitle, jlBack);
         jlTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
-        jlBack.setFont(new Font(FONT, STYLE, TEXT_SIZE));
+        jlBack.setFont(new Font(FONT, STYLE, TEXT_SIZE_1));
 
         // assemble this panel
         pnHowToPlay.add(jlTitle);
@@ -301,14 +302,14 @@ class PanelCreator{
         pnCredits.setBackground(Color.PINK);
         setAllAlignmentX(CENTER_ALIGNMENT, jlTitle, jlBack);
         jlTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
-        jlBack.setFont(new Font(FONT, STYLE, TEXT_SIZE));
+        jlBack.setFont(new Font(FONT, STYLE, TEXT_SIZE_1));
 
         // assemble this panel
         pnCredits.add(jlTitle);
         pnCredits.add(Box.createVerticalGlue());
         IntStream.range(0, credits.size()).forEach(i -> {
             JLabel credit = credits.get(i);
-            credit.setFont(new Font(FONT, STYLE, TEXT_SIZE));
+            credit.setFont(new Font(FONT, STYLE, TEXT_SIZE_1));
             setAllAlignmentX(CENTER_ALIGNMENT, credits.toArray(new JLabel[0]));
             pnCredits.add(credit);
         });
@@ -341,7 +342,7 @@ class PanelCreator{
         pnExit.setLayout(new BoxLayout(pnExit, BoxLayout.Y_AXIS));
         pnOption.setLayout(new BoxLayout(pnOption, BoxLayout.X_AXIS));
         jlTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
-        setAllFont(FONT, STYLE, TEXT_SIZE, jlMessage, jlYes, jlNo);
+        setAllFont(FONT, STYLE, TEXT_SIZE_1, jlMessage, jlYes, jlNo);
         setAllBackground(Color.PINK, pnExit, pnOption);
         setAllAlignmentX(CENTER_ALIGNMENT, jlTitle, jlMessage, jlYes, jlNo);
 
@@ -391,7 +392,7 @@ class PanelCreator{
         mazeRender.setPreferredSize(new Dimension(app.getHeight(), app.getHeight()));
         mazeRender.setMaximumSize(new Dimension(app.getHeight(), app.getHeight()));
 
-        setAllFont(FONT, STYLE, TEXT_SIZE, lbLevelTitle, lbLevel, lbTimerTitle, lbTimer, lbTreasuresTitle, lbTreasures, lbInventoryTitle);
+        setAllFont(FONT, STYLE, TEXT_SIZE_1, lbLevelTitle, lbLevel, lbTimerTitle, lbTimer, lbTreasuresTitle, lbTreasures, lbInventoryTitle);
         pnStatus.setBackground(Color.PINK);
         pnGame.setBackground(Color.PINK);
         pnInventory.setBackground(Color.CYAN);
