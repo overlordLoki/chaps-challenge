@@ -189,7 +189,6 @@ class PanelCreator{
             lbsActionNames.add(new JLabel(keyNames.get(i)));
             int finalI = i;
             lbsActionKeys.add(new JLabel(finalI < 6 ? keyBindings.get(finalI): "Ctrl + " + keyBindings.get(finalI)){{
-                setFocusable(true);
                 addMouseListener(new MouseAdapter() {
                     public void mouseEntered(MouseEvent e){
                         if (app.settingKey != -1) return;
@@ -437,9 +436,11 @@ class PanelCreator{
     private static void setAllFont(String font, int style, int size, JLabel... labels) {
         Arrays.stream(labels).forEach(l -> l.setFont(new Font(font, style, size)));
     }
+
     private static void setAllBackground(Color color, JPanel... labels) {
         Arrays.stream(labels).forEach(p -> p.setBackground(color));
     }
+
     private static void setAllAlignmentX(float alignment, JLabel... labels) {
         Arrays.stream(labels).forEach(label -> label.setAlignmentX(alignment));
     }
@@ -463,27 +464,4 @@ class PanelCreator{
         });}};
     }
 
-/*
-    private List<JButton> createButtons(List<JButton> keyBindingButtons) {
-        IntStream.range(0, keyNames.size()).forEach(i -> {
-            var button = new JButton(keyNames.get(i) + keyBindings.get(i));
-            button.addActionListener(unused -> settingKey = keyBindingButtons.indexOf(button));
-            button.addKeyListener(new KeyListener() {
-                public void keyTyped(KeyEvent e) {}
-                public void keyPressed(KeyEvent e) {}
-                public void keyReleased(KeyEvent e) {
-                    if (settingKey == -1) return;
-                    if (keyBindings.contains(KeyEvent.getKeyText(e.getKeyCode()))){
-                        settingKey = -1;
-                        return;
-                    }
-                    keyBindings.set(settingKey, KeyEvent.getKeyText(e.getKeyCode()));
-                    button.setText(keyNames.get(settingKey) + KeyEvent.getKeyText(e.getKeyCode()));
-                    settingKey = -1;
-                }
-            });
-            keyBindingButtons.add(button);
-        });
-        return keyBindingButtons;
-    }*/
 }
