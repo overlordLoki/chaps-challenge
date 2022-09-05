@@ -1,5 +1,6 @@
 package App;
 
+import App.tempDomain.Game;
 import Renderer.tempDomain.*;
 import Renderer.Renderer;
 
@@ -22,14 +23,14 @@ import static App.PanelCreator.*;
  * @author Jeff Lin
  */
 public class App extends JFrame {
-    private static final String FONT = "Agency FB";
-    private static final int STYLE = Font.BOLD;
     public Controller controller;
     private List<String> keyBindings = new ArrayList<>(List.of("Up","Down","Left","Right","Space","Esc","1","2","X","S","R","Ctrl"));
     private List<String> keyNames = List.of("Up","Down","Left","Right","Space","Esc","1","2","X","S","R","Ctrl");
     private int settingKey = -1;
+
+    public Game game;
+
     public Runnable closePhase = ()->{};
-    private List<Runnable> stages = new ArrayList<>();
 
     /**
      * Constructor for the App class. Initializes the GUI and the main loop.
@@ -64,27 +65,23 @@ public class App extends JFrame {
     public void gameScreen(){
         var pnOuterMost = new JPanel();
         var cardLayout = new CardLayout();
+
+        // initialise game settings
+        controller = new Controller(keyBindings);
+        game = new Game();
+        var gameRenderer = new Renderer(new Maze());
+        gameRenderer.addKeyListener(controller);
+
+        // set up the GUI
         this.setContentPane(PanelCreator.configureGameScreen(pnOuterMost, cardLayout,
-                this, new Renderer(new Maze())));
+                this, gameRenderer));
         cardLayout.show(pnOuterMost, MENU);
+
+        // kickstart the game panel
         closePhase.run();
         closePhase = ()->remove(pnOuterMost);
         setPreferredSize(new Dimension(1200, 600));
         pack();
-    }
-
-    private JPanel setLevel(Renderer l){
-        // use the level model provided from persistent to generate the level and pass information to domain
-
-        return null;
-    }
-
-    public int getCurrentLevel() {
-        return 1;
-    }
-
-    public int getTreasuresLeft() {
-        return 12;
     }
 
     //================================================================================================================//

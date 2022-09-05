@@ -326,11 +326,11 @@ class PanelCreator{
         var pnStatus = new JPanel();
 
         var lbLevelTitle = new JLabel("Level");
-        var lbLevel = new JLabel(app.getCurrentLevel()+"");
+        var lbLevel = new JLabel(app.game.getCurrentLevel()+"");
         var lbTimerTitle = new JLabel("Time Left");
         var lbTimer = new JLabel("120");
         var lbTreasuresTitle = new JLabel("Treasures Left");
-        var lbTreasures = new JLabel(app.getTreasuresLeft()+"");
+        var lbTreasures = new JLabel(app.game.getTreasuresLeft()+"");
         var lbInventoryTitle = new JLabel("Inventory");
         var pnInventory = new JPanel();
 

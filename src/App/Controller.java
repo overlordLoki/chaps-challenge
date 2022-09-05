@@ -1,8 +1,6 @@
 package App;
 
 
-import Domain.Domain;
-
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -24,19 +22,18 @@ class Controller implements KeyListener {
     }
 
     public void setController(List<String> keyBindings){
-        /*
-        setAction(keyBindings.get(0), c.set(Domain.Direction::up), c.set(Domain.Direction::unUp));
-        setAction(keyBindings.get(1), c.set(Domain.Direction::up), c.set(Domain.Direction::unUp));
-        setAction(keyBindings.get(2), c.set(Domain.Direction::up), c.set(Domain.Direction::unUp));
-        setAction(keyBindings.get(3), c.set(Domain.Direction::up), c.set(Domain.Direction::unUp));
-        setAction(keyBindings.get(4), Controller::actionPause, ()->{});
-        setAction(keyBindings.get(5), Controller::actionResume, ()->{});
-        setAction(keyBindings.get(6), Controller::actionLevel1, ()->{});
-        setAction(keyBindings.get(7), Controller::actionLevel2, ()->{});
-        setAction(keyBindings.get(8), Controller::actionQuit, ()->{});
-        setAction(keyBindings.get(9), Controller::actionSaveAndQuit, ()->{});
-        setAction(keyBindings.get(10), Controller::actionResumeSelection, ()->{});
-        setAction(keyBindings.get(11), ()->setCtrl(true), ()->setCtrl(false));*/
+        setAction(keyBindings.get(0), Actions::actionUp, ()->{});
+        setAction(keyBindings.get(1), Actions::actionDown, ()->{});
+        setAction(keyBindings.get(2), Actions::actionLeft, ()->{});
+        setAction(keyBindings.get(3), Actions::actionRight, ()->{});
+        setAction(keyBindings.get(4), Actions::actionStart, ()->{});
+        setAction(keyBindings.get(5), Actions::actionResume, ()->{});
+        setAction(keyBindings.get(6), ()->{}, ()->{}); // level 1
+        setAction(keyBindings.get(7), ()->{}, ()->{}); // level 2
+        setAction(keyBindings.get(8), Actions::actionQuit, ()->{});
+        setAction(keyBindings.get(9), Actions::actionSave, ()->{});
+        setAction(keyBindings.get(10), Actions::actionResume, ()->{});
+        setAction(keyBindings.get(11), ()->setCtrl(true), ()->setCtrl(false));
     }
 
     public void setAction(String keyName, Runnable onPressed, Runnable onReleased) {
@@ -59,6 +56,7 @@ class Controller implements KeyListener {
     }
 
     private void setCtrl(boolean isPressed){
+        System.out.println("ctrl pressed: " + isPressed);
         ctrlPressed = isPressed;
     }
 
@@ -86,6 +84,16 @@ class Controller implements KeyListener {
     }
     private void actionResumeSelection(){
         if (! ctrlPressed) return;
+    }
+
+
+    //=========================================================================//
+    //========================== PLAYER METHODS ===============================//
+    //=========================================================================//
+
+    private void actionMoveUp(App app) {
+        if (!ctrlPressed) return;
+        app.game.moveUp();
     }
 
 }
