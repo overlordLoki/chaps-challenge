@@ -1,11 +1,9 @@
 package App;
 
 import Renderer.*;
+import Renderer.Renderer;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -46,12 +44,12 @@ class PanelCreator{
      */
     private PanelCreator(){}
 
-    public static JPanel configureMenuScreen(App app, JPanel pnOuterMost, CardLayout cardLayout){
+    public static JPanel configureMenuScreen(App app, JPanel pnOuterMost, CardLayout cardLayout, List<String> keyBindings, List<String> keyNames){
         // components to be added to the shell
         JPanel pnMenu      = configurePanelMenu(pnOuterMost, cardLayout);
         JPanel pnNewGame   = configurePanelNewGame(app, pnOuterMost, cardLayout);
         JPanel pnLoad      = configurePanelLoad(pnOuterMost, cardLayout);
-        JPanel pnSettings  = configurePanelSettings(pnOuterMost, cardLayout);
+        JPanel pnSettings  = configurePanelSettings(pnOuterMost, cardLayout, keyBindings, keyNames);
         JPanel pnHowToPlay = configurePanelHowToPlay(pnOuterMost, cardLayout);
         JPanel pnCredits   = configurePanelCredits(pnOuterMost, cardLayout);
         JPanel pnExit      = configurePanelExit(pnOuterMost, cardLayout);
@@ -176,39 +174,53 @@ class PanelCreator{
         return pnLoad;
     }
 
-    private static JPanel configurePanelSettings(JPanel pnOuterMost, CardLayout cardLayout) {
+    private static JPanel configurePanelSettings(JPanel pnOuterMost, CardLayout cardLayout, List<String> keyBindings, List<String> keyNames) {
         System.out.println("Configuring: Settings");
 
         var pnSettings = new JPanel();
         var pnBindings = new JPanel();
+        var pnBindingL = new JPanel();
+        var pnBindingR = new JPanel();
         var jlTitle = new JLabel("Settings");
         var jlConfirm = createBackToMenuLabel("Confirm", pnOuterMost, cardLayout, Color.RED);
 
+        List<JLabel> actionNames = new ArrayList<>();
+        List<JLabel> actionKeys = new ArrayList<>();
+        for (int i = 0; i < keyBindings.size(); i++) {
+            actionNames.add(new JLabel(keyNames.get(i)));
+            actionKeys.add(new JLabel(keyBindings.get(i)));
+        }
 
-
-
-
-        // important changes: demo
-
-
-
-
-
-
-
-
-        
         // setting layout
         pnSettings.setLayout(new BoxLayout(pnSettings, BoxLayout.Y_AXIS));
+        pnBindingL.setLayout(new BoxLayout(pnBindingL, BoxLayout.Y_AXIS));
+        pnBindingR.setLayout(new BoxLayout(pnBindingR, BoxLayout.Y_AXIS));
+        pnBindings.setLayout(new BoxLayout(pnBindings, BoxLayout.X_AXIS));
+        pnBindings.setOpaque(false);
+        pnBindingL.setOpaque(false);
+        pnBindingR.setOpaque(false);
         pnSettings.setBackground(Color.PINK);
         setAllAlignmentX(CENTER_ALIGNMENT, jlTitle, jlConfirm);
         jlTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
         jlConfirm.setFont(new Font(FONT, STYLE, TEXT_SIZE));
+        setAllFont(FONT, STYLE, TEXT_SIZE-10, actionNames.toArray(new JLabel[0]));
+        setAllFont(FONT, STYLE, TEXT_SIZE-10, actionKeys.toArray(new JLabel[0]));
+
+        // assemble Binding panel
+        actionNames.forEach(pnBindingL::add);
+        actionKeys.forEach(pnBindingR::add);
+        pnBindings.add(Box.createHorizontalGlue());
+        pnBindings.add(Box.createHorizontalGlue());
+        pnBindings.add(pnBindingL);
+        pnBindings.add(Box.createHorizontalGlue());
+        pnBindings.add(pnBindingR);
+        pnBindings.add(Box.createHorizontalGlue());
+        pnBindings.add(Box.createHorizontalGlue());
 
         // assemble this panel
         pnSettings.add(jlTitle);
         pnSettings.add(Box.createVerticalGlue());
-        // add keybinding labels here
+        pnSettings.add(pnBindings);
         pnSettings.add(Box.createVerticalGlue());
         pnSettings.add(jlConfirm);
         return pnSettings;
@@ -398,6 +410,12 @@ class PanelCreator{
     }
     private static void setAllAlignmentX(float alignment, JLabel... labels) {
         Arrays.stream(labels).forEach(label -> label.setAlignmentX(alignment));
+    }
+
+    private static void setAllAlignmentX(float alignment, List<JLabel> l1, List<JLabel> l2, JLabel... labels) {
+        Arrays.stream(labels).forEach(label -> label.setAlignmentX(alignment));
+        l1.forEach(label -> label.setAlignmentX(alignment));
+        l2.forEach(label -> label.setAlignmentX(alignment));
     }
 
     private static void setAllAlignmentY(float alignment, JLabel... labels) {
