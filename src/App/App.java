@@ -9,7 +9,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import java.awt.CardLayout;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -23,15 +22,16 @@ import static App.PanelCreator.*;
  * @author Jeff Lin
  */
 public class App extends JFrame {
-    public Controller controller;
-    private List<String> keyBindings = new ArrayList<>(List.of("Up","Down","Left","Right","Space","Escape","1","2","X","S","R"));
-    private List<String> keyNames = List.of("Move Up","Move Down","Move Left","Move Right","Pause Game",
+    private final List<String> actionNames = List.of("Move Up","Move Down","Move Left","Move Right","Pause Game",
             "Resume Game","Jump To Level 1","Jump To Level 2","Quit Game","Save And Quit Game","Reload Game");
-    int settingKey = -1;
+    private List<String> actionKeyBindings = new ArrayList<>(List.of("Up","Down","Left","Right","Space",
+            "Escape","1","2","X","S","R"));
+    private int indexOfKeyToSet = -1;
+    private Controller controller;
 
-    public Game game;
+    private Game game;
 
-    public Runnable closePhase = ()->{};
+    private Runnable closePhase = ()->{};
 
     /**
      * Constructor for the App class. Initializes the GUI and the main loop.
@@ -52,7 +52,7 @@ public class App extends JFrame {
         // shell to hold all the components
         var pnOuterMost = new JPanel();
         var cardLayout = new CardLayout();
-        this.setContentPane(PanelCreator.configureMenuScreen(this, pnOuterMost, cardLayout, keyBindings, keyNames));
+        this.setContentPane(PanelCreator.configureMenuScreen(this, pnOuterMost, cardLayout, actionKeyBindings, actionNames));
         closePhase.run();
         closePhase = ()->remove(pnOuterMost);
         cardLayout.show(pnOuterMost, MENU);
@@ -61,7 +61,10 @@ public class App extends JFrame {
     }
 
     /**
+     * Enters the game screen, and starts the game loop.
      *
+     * This method is called when the user clicks the "Start Game" button.
+     * It initializes the game and controller, then starts the game loop.
      */
     public void gameScreen(){
         var pnOuterMost = new JPanel();
@@ -69,7 +72,7 @@ public class App extends JFrame {
 
         // initialise game settings
         game = new Game();
-        controller = new Controller(keyBindings, game);
+        controller = new Controller(actionKeyBindings, game);
         var gameRenderer = new Renderer(new Maze());
 
         // set up the GUI
@@ -83,6 +86,70 @@ public class App extends JFrame {
         setPreferredSize(new Dimension(1200, 600));
         pack();
     }
+
+
+    //================================================================================================================//
+    //============================================ Setter Method =====================================================//
+    //================================================================================================================//
+
+    /**
+     * Sets the index of the action to set a different key binding.
+     *
+     * @param indexOfKeyToSet the index of the action to set key
+     */
+    public void setIndexOfKeyToSet(int indexOfKeyToSet) {
+        this.indexOfKeyToSet = indexOfKeyToSet;
+    }
+
+    /**
+     * exits the key setting mode so another action can be selected for setting key binding.
+     */
+    public void exitKeySettingMode(){
+        indexOfKeyToSet = -1;
+    }
+
+
+    //================================================================================================================//
+    //============================================ Getter Method =====================================================//
+    //================================================================================================================//
+
+    /**
+     * Gets the current game.
+     *
+     * @return the game object
+     */
+    public Game getGame() {
+        return game;
+    }
+
+    /**
+     * Gets the current controller.
+     *
+     * @return the controller object
+     */
+    public Controller getController() {
+        return controller;
+    }
+
+
+    /**
+     * Gets the index of the action to set a different key binding.
+     *
+     * @return the setting key
+     */
+    public int indexOfKeyToSet() {
+        return indexOfKeyToSet;
+    }
+
+    /**
+     * Returns if any action is ready to be set to  different key binding.
+     *
+     * @return true if the key is bound to an action, false otherwise
+     */
+    public boolean inSettingKeyMode(){
+        return indexOfKeyToSet != -1;
+    }
+
 
     //================================================================================================================//
     //============================================= Main Method ======================================================//

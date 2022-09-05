@@ -50,6 +50,20 @@ public class Game {
         System.out.println("Player moved right");
     }
 
+    public void replayMode() {
+        System.out.println("Replay mode started");
+    }
+
+    public void replayAuto() {
+        for (int i = 0; i < 10; i++) {
+            System.out.println("Replay auto step " + i);
+        }
+    }
+
+    public void replayStep() {
+        System.out.println("Replay step");
+    }
+
     public int getCurrentLevel() {
         return 1;
     }

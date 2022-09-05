@@ -44,6 +44,17 @@ class PanelCreator{
      */
     private PanelCreator(){}
 
+    /**
+     * Creates the menu screen.
+     *
+     * @param app The App object.
+     * @param pnOuterMost The outermost panel for everything to assemble to.
+     * @param cardLayout The card layout for toggling between scenes.
+     * @param keyBindings The list of key bindings.
+     * @param keyNames The list of action names.
+     *
+     * @return The menu screen.
+     */
     public static JPanel configureMenuScreen(App app, JPanel pnOuterMost, CardLayout cardLayout, List<String> keyBindings, List<String> keyNames){
         // components to be added to the shell
         JPanel pnMenu      = configurePanelMenu(pnOuterMost, cardLayout);
@@ -66,6 +77,16 @@ class PanelCreator{
         return pnOuterMost;
     }
 
+    /**
+     * Creates the Game Screen panel.
+     *
+     * @param pnOuterMost The outermost panel for everything to assemble to.
+     * @param cardLayout The card layout for toggling between scenes.
+     * @param app The App object.
+     * @param r The Renderer object.
+     *
+     * @return The Game Screen panel.
+     */
     public static JPanel configureGameScreen(JPanel pnOuterMost, CardLayout cardLayout, App app, Renderer r){
         // components to be added to the shell
         JPanel pnGameWindow  = configurePanelGame(pnOuterMost, cardLayout, app, r);
@@ -189,20 +210,20 @@ class PanelCreator{
         for (int i = 0; i < keyBindings.size(); i++) {
             lbsActionNames.add(new JLabel(keyNames.get(i)));
             int finalI = i;
-            lbsActionKeys.add(new JLabel(finalI < 6 ? keyBindings.get(finalI): "Ctrl + " + keyBindings.get(finalI)){{
+            lbsActionKeys.add(new JLabel((finalI < 6 ? "": "Ctrl + ") + keyBindings.get(finalI)){{
                 addMouseListener(new MouseAdapter() {
                     public void mouseEntered(MouseEvent e){
-                        if (app.settingKey != -1) return;
+                        if (app.inSettingKeyMode()) return;
                         setForeground(Color.ORANGE);
                     }
                     public void mouseExited(MouseEvent e) {
-                        if (app.settingKey != -1) return;
+                        if (app.inSettingKeyMode()) return;
                         setForeground(Color.BLACK);
                     }
                     public void mousePressed(MouseEvent e){
-                        if (app.settingKey != -1) return;
+                        if (app.inSettingKeyMode()) return;
                         setForeground(Color.RED);
-                        app.settingKey = finalI;
+                        app.setIndexOfKeyToSet(finalI);
                     }
                 });
             }});
@@ -210,17 +231,17 @@ class PanelCreator{
 
         app.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
-                if (app.settingKey == -1) return;
-                var label = lbsActionKeys.get(app.settingKey);
+                if (! app.inSettingKeyMode()) return;
+                var label = lbsActionKeys.get(app.indexOfKeyToSet());
                 if (keyBindings.contains(KeyEvent.getKeyText(e.getKeyCode()))){
-                    app.settingKey = -1;
+                    app.exitKeySettingMode();
                     label.setForeground(Color.BLACK);
                     return;
                 }
-                keyBindings.set(app.settingKey, KeyEvent.getKeyText(e.getKeyCode()));
-                label.setText((app.settingKey < 6 ? "": "Ctrl + " ) + KeyEvent.getKeyText(e.getKeyCode()));
+                keyBindings.set(app.indexOfKeyToSet(), KeyEvent.getKeyText(e.getKeyCode()));
+                label.setText((app.indexOfKeyToSet() < 6 ? "": "Ctrl + " ) + KeyEvent.getKeyText(e.getKeyCode()));
                 label.setForeground(Color.BLACK);
-                app.settingKey = -1;
+                app.exitKeySettingMode();
             }
         });
 
@@ -372,15 +393,15 @@ class PanelCreator{
         var pnStatus = new JPanel();
 
         var lbLevelTitle = new JLabel("Level");
-        var lbLevel = new JLabel(app.game.getCurrentLevel()+"");
+        var lbLevel = new JLabel(app.getGame().getCurrentLevel()+"");
         var lbTimerTitle = new JLabel("Time Left");
         var lbTimer = new JLabel("120");
         var lbTreasuresTitle = new JLabel("Treasures Left");
-        var lbTreasures = new JLabel(app.game.getTreasuresLeft()+"");
+        var lbTreasures = new JLabel(app.getGame().getTreasuresLeft()+"");
         var lbInventoryTitle = new JLabel("Inventory");
         var pnInventory = new JPanel();
 
-        app.addKeyListener(app.controller);
+        app.addKeyListener(app.getController());
         mazeRender.setFocusable(true);
         /*Timer timer = new Timer(34, unused -> {
             assert SwingUtilities.isEventDispatchThread();

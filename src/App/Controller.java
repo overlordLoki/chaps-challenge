@@ -1,9 +1,8 @@
 package App;
 
-
 import App.tempDomain.Game;
 
-import javax.swing.*;
+import javax.swing.SwingUtilities;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashMap;
@@ -12,6 +11,11 @@ import java.util.Map;
 
 import static java.awt.event.KeyEvent.VK_CONTROL;
 
+/**
+ * Controller class for the App class. Handles all the controllable key actions.
+ *
+ * @author Jeff Lin
+ */
 class Controller implements KeyListener {
     Actions actions;
     List<String> keyBindings;
@@ -19,13 +23,19 @@ class Controller implements KeyListener {
     private Map<String, Runnable> actionsReleased = new HashMap<>();
     Boolean ctrlPressed = false;
 
+    /**
+     * Constructor for the Controller class. Initializes the actions and key bindings.
+     *
+     * @param keyBindings List of key bindings.
+     * @param game The game for the controller to be attached to.
+     */
     public Controller(List<String> keyBindings, Game game) {
         this.keyBindings = keyBindings;
         this.actions = new Actions(game);
         setController(keyBindings);
     }
 
-    public void setController(List<String> keyBindings){
+    private void setController(List<String> keyBindings){
         setAction(keyBindings.get(0), actions::actionUp, ()->{});    // up
         setAction(keyBindings.get(1), actions::actionDown, ()->{});  // down
         setAction(keyBindings.get(2), actions::actionLeft, ()->{});  // left
@@ -39,13 +49,15 @@ class Controller implements KeyListener {
         setAction(keyBindings.get(10), this::reloadGame, ()->{});   // Reload game
     }
 
-    public void setAction(String keyName, Runnable onPressed, Runnable onReleased) {
+    private void setAction(String keyName, Runnable onPressed, Runnable onReleased) {
         actionsPressed.put(keyName, onPressed);
         actionsReleased.put(keyName, onReleased);
     }
 
+    @Override
     public void keyTyped(KeyEvent e) {}
 
+    @Override
     public void keyPressed(KeyEvent e) {
         assert SwingUtilities.isEventDispatchThread();
 //        System.out.print("keyPressed="+KeyEvent.getKeyText(e.getKeyCode()) + "  ");
@@ -53,6 +65,7 @@ class Controller implements KeyListener {
         actionsPressed.getOrDefault(KeyEvent.getKeyText(e.getKeyCode()), ()->{}).run();
     }
 
+    @Override
     public void keyReleased(KeyEvent e) {
         assert SwingUtilities.isEventDispatchThread();
         if (e.getKeyCode() == VK_CONTROL) ctrlPressed = false;
@@ -68,6 +81,7 @@ class Controller implements KeyListener {
         if (! ctrlPressed) return;
         System.out.println("Jump to Level 1");
     }
+
     private void level2(){
         if (! ctrlPressed) return;
         System.out.println("Jump to Level 2");
@@ -77,10 +91,12 @@ class Controller implements KeyListener {
         if (! ctrlPressed) return;
         actions.actionQuit();
     }
+
     private void saveAndQuit(){
         if (! ctrlPressed) return;
         actions.actionSave();
     }
+
     private void reloadGame(){
         if (! ctrlPressed) return;
         actions.actionLoad();
