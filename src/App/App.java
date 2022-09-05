@@ -24,8 +24,8 @@ import static App.PanelCreator.*;
  */
 public class App extends JFrame {
     public Controller controller;
-    private List<String> keyBindings = new ArrayList<>(List.of("Up","Down","Left","Right","Space","Esc","1","2","X","S","R","Ctrl"));
-    private List<String> keyNames = List.of("Up","Down","Left","Right","Space","Esc","1","2","X","S","R","Ctrl");
+    private List<String> keyBindings = new ArrayList<>(List.of("Up","Down","Left","Right","Space","Escape","1","2","X","S","R"));
+    private List<String> keyNames = List.of("Up","Down","Left","Right","Space","Esc","1","2","X","S","R");
     private int settingKey = -1;
 
     public Game game;
@@ -67,10 +67,9 @@ public class App extends JFrame {
         var cardLayout = new CardLayout();
 
         // initialise game settings
-        controller = new Controller(keyBindings);
         game = new Game();
+        controller = new Controller(keyBindings, game);
         var gameRenderer = new Renderer(new Maze());
-        gameRenderer.addKeyListener(controller);
 
         // set up the GUI
         this.setContentPane(PanelCreator.configureGameScreen(pnOuterMost, cardLayout,

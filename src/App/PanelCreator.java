@@ -7,6 +7,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -334,7 +336,7 @@ class PanelCreator{
         var lbInventoryTitle = new JLabel("Inventory");
         var pnInventory = new JPanel();
 
-        mazeRender.addKeyListener(app.controller);
+        app.addKeyListener(app.controller);
         mazeRender.setFocusable(true);
         /*Timer timer = new Timer(34, unused -> {
             assert SwingUtilities.isEventDispatchThread();

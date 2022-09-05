@@ -1,6 +1,8 @@
 package App;
 
 
+import App.tempDomain.Game;
+
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -11,29 +13,30 @@ import java.util.Map;
 import static java.awt.event.KeyEvent.VK_CONTROL;
 
 class Controller implements KeyListener {
+    Actions actions;
     List<String> keyBindings;
     private Map<String, Runnable> actionsPressed = new HashMap<>();
     private Map<String, Runnable> actionsReleased = new HashMap<>();
     Boolean ctrlPressed = false;
 
-    public Controller(List<String> keyBindings) {
+    public Controller(List<String> keyBindings, Game game) {
         this.keyBindings = keyBindings;
+        this.actions = new Actions(game);
         setController(keyBindings);
     }
 
     public void setController(List<String> keyBindings){
-        setAction(keyBindings.get(0), Actions::actionUp, ()->{});
-        setAction(keyBindings.get(1), Actions::actionDown, ()->{});
-        setAction(keyBindings.get(2), Actions::actionLeft, ()->{});
-        setAction(keyBindings.get(3), Actions::actionRight, ()->{});
-        setAction(keyBindings.get(4), Actions::actionStart, ()->{});
-        setAction(keyBindings.get(5), Actions::actionResume, ()->{});
-        setAction(keyBindings.get(6), ()->{}, ()->{}); // level 1
-        setAction(keyBindings.get(7), ()->{}, ()->{}); // level 2
-        setAction(keyBindings.get(8), Actions::actionQuit, ()->{});
-        setAction(keyBindings.get(9), Actions::actionSave, ()->{});
-        setAction(keyBindings.get(10), Actions::actionResume, ()->{});
-        setAction(keyBindings.get(11), ()->setCtrl(true), ()->setCtrl(false));
+        setAction(keyBindings.get(0), actions::actionUp, ()->{});    // up
+        setAction(keyBindings.get(1), actions::actionDown, ()->{});  // down
+        setAction(keyBindings.get(2), actions::actionLeft, ()->{});  // left
+        setAction(keyBindings.get(3), actions::actionRight, ()->{}); // right
+        setAction(keyBindings.get(4), actions::actionPause, ()->{});    // Pause game
+        setAction(keyBindings.get(5), actions::actionResume, ()->{});   // Resume game
+        setAction(keyBindings.get(6), this::level1, ()->{});    // level 1
+        setAction(keyBindings.get(7), this::level2, ()->{});    // level 2
+        setAction(keyBindings.get(8), this::quitGame, ()->{});      // Quit game
+        setAction(keyBindings.get(9), this::saveAndQuit, ()->{});   // Save game
+        setAction(keyBindings.get(10), this::reloadGame, ()->{});   // Reload game
     }
 
     public void setAction(String keyName, Runnable onPressed, Runnable onReleased) {
@@ -45,6 +48,7 @@ class Controller implements KeyListener {
 
     public void keyPressed(KeyEvent e) {
         assert SwingUtilities.isEventDispatchThread();
+//        System.out.print("keyPressed="+KeyEvent.getKeyText(e.getKeyCode()) + "  ");
         if (e.getKeyCode() == VK_CONTROL) ctrlPressed = true;
         actionsPressed.getOrDefault(KeyEvent.getKeyText(e.getKeyCode()), ()->{}).run();
     }
@@ -55,45 +59,30 @@ class Controller implements KeyListener {
         actionsReleased.getOrDefault(KeyEvent.getKeyText(e.getKeyCode()), ()->{}).run();
     }
 
-    private void setCtrl(boolean isPressed){
-        System.out.println("ctrl pressed: " + isPressed);
-        ctrlPressed = isPressed;
-    }
 
     //=========================================================================//
-    //=========================== GUI METHODS =================================//
+    //=========================== CTRL METHODS ================================//
     //=========================================================================//
 
-    private void actionPause(){}
-    private void actionResume(){}
-
-    private void actionLevel1(){
+    private void level1(){
         if (! ctrlPressed) return;
-//        Domain.currentLevel = level1;
+        System.out.println("Jump to Level 1");
     }
-    private void actionLevel2(){
+    private void level2(){
         if (! ctrlPressed) return;
-//        Domain.currentLevel = level1;
+        System.out.println("Jump to Level 2");
     }
 
-    private void actionQuit(){
+    private void quitGame(){
         if (! ctrlPressed) return;
+        actions.actionQuit();
     }
-    private void actionSaveAndQuit(){
+    private void saveAndQuit(){
         if (! ctrlPressed) return;
+        actions.actionSave();
     }
-    private void actionResumeSelection(){
+    private void reloadGame(){
         if (! ctrlPressed) return;
+        actions.actionLoad();
     }
-
-
-    //=========================================================================//
-    //========================== PLAYER METHODS ===============================//
-    //=========================================================================//
-
-    private void actionMoveUp(App app) {
-        if (!ctrlPressed) return;
-        app.game.moveUp();
-    }
-
 }

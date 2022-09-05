@@ -4,57 +4,45 @@ import App.tempDomain.Game;
 
 public class Actions {
 
-    private static  Game game;
+    private Game game;
 
     public Actions(Game game){
-        Actions.game = game;
+        this.game = game;
     }
 
-    public static void actionStart(){
-        game.startGame();
-    }
-
-    public static void actionEnd(){
-        game.endGame();
-    }
-
-    public static void actionPause(){
+    public void actionPause(){
         game.pauseGame();
     }
 
-    public static void actionResume(){
+    public void actionResume(){
         game.resumeGame();
     }
 
-    public static void actionRestart(){
-        game.restartGame();
-    }
-
-    public static void actionSave(){
+    public void actionSave(){
         game.saveGame();
     }
 
-    public static void actionLoad(){
+    public void actionLoad(){
         game.loadGame();
     }
 
-    public static void actionQuit(){
+    public void actionQuit(){
         game.quitGame();
     }
 
-    public static void actionUp(){
+    public void actionUp(){
         game.moveUp();
     }
 
-    public static void actionDown(){
+    public void actionDown(){
         game.moveDown();
     }
 
-    public static void actionLeft(){
+    public void actionLeft(){
         game.moveLeft();
     }
 
-    public static void actionRight(){
+    public void actionRight(){
         game.moveRight();
     }
 
