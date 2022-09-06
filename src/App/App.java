@@ -12,6 +12,7 @@ import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static App.PanelCreator.*;
@@ -49,11 +50,14 @@ public class App extends JFrame {
         menuScreen();
     }
 
+    /**
+     * Enters the menu screen, where the user can start a new game, load a game, quit the game, or change key bindings.
+     */
     private void menuScreen(){
         // shell to hold all the components
         var pnOuterMost = new JPanel();
         var cardLayout = new CardLayout();
-        this.setContentPane(PanelCreator.configureMenuScreen(this, pnOuterMost, cardLayout, actionKeyBindings, actionNames));
+        setContentPane(PanelCreator.configureMenuScreen(this, pnOuterMost, cardLayout, actionKeyBindings, actionNames));
         closePhase.run();
         closePhase = ()->remove(pnOuterMost);
         cardLayout.show(pnOuterMost, MENU);

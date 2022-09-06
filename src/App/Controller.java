@@ -12,16 +12,17 @@ import java.util.Map;
 import static java.awt.event.KeyEvent.VK_CONTROL;
 
 /**
- * Controller class for the App class. Handles all the controllable key actions.
+ * Package-private class for Controller class for the App class. Handles all the controllable key actions.
  *
  * @author Jeff Lin
  */
 class Controller implements KeyListener {
-    Actions actions;
-    List<String> keyBindings;
+    @SuppressWarnings("FieldMayBeFinal")
     private Map<String, Runnable> actionsPressed = new HashMap<>();
+    @SuppressWarnings("FieldMayBeFinal")
     private Map<String, Runnable> actionsReleased = new HashMap<>();
-    Boolean ctrlPressed = false;
+    private final Actions actions;
+    private Boolean ctrlPressed = false;
 
     /**
      * Constructor for the Controller class. Initializes the actions and key bindings.
@@ -30,7 +31,6 @@ class Controller implements KeyListener {
      * @param game The game for the controller to be attached to.
      */
     public Controller(List<String> keyBindings, Game game) {
-        this.keyBindings = keyBindings;
         this.actions = new Actions(game);
         setController(keyBindings);
     }
@@ -73,9 +73,9 @@ class Controller implements KeyListener {
     }
 
 
-    //=========================================================================//
-    //=========================== CTRL METHODS ================================//
-    //=========================================================================//
+    //===================================================================================================//
+    //======================================== CTRL METHODS =============================================//
+    //===================================================================================================//
 
     private void level1(){
         if (! ctrlPressed) return;
