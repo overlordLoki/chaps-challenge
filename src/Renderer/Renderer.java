@@ -7,6 +7,11 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import java.awt.Graphics;
 
+/**
+ * makes a jPanel that can be added to a JFrame
+ * 
+ * @author Loki
+ */
 public class Renderer extends JPanel{
     static final long serialVersionUID = 1L;
     //default texturePack
@@ -16,39 +21,41 @@ public class Renderer extends JPanel{
     //the maze
     private Maze maze;
 
-    /*
+    /**
      * Constructor. Takes a maze as parameters.
+     * 
      * @param maze Maze to be rendered.
      */
     public Renderer(Maze maze) {
         this.maze = maze;
     }
 
-    /*
+    /**
      * set the current texturePack and returns the new background image
+     * 
      * @param texturePack
      * @return BufferedImage
      */
-    public BufferedImage setTexturePack(String texturePack) {
+    public void setTexturePack(String texturePack) {
         this.texturePack = texturePack;
+    }
+
+    /**
+     * get this Renderer
+     * 
+     * @return this Renderer
+     */
+    public BufferedImage getImage(String image){
         try {
-            return ImageIO.read(getClass().getResource("/render/textures/" + texturePack + "/background.png"));
+            return ImageIO.read(getClass().getResource("/Renderer/textures/" + texturePack + "/" + image + ".png"));
         } catch (IOException e) {throw new RuntimeException(e);}
     }
 
-    /*
-     * get this Renderer
-     * @return this Renderer
-     */
-    public Renderer getWindow(){
-        return this;
-    }
-
-    /*
-     * get the image of the tile
-     * @param Tile
-     * @return BufferedImage
-     */
+    /**
+    * get the image of EmptyTile
+    *
+    * @return BufferedImage
+    */
     private BufferedImage getImage(Tile object) {
         String name = object.getImg();
         try {
@@ -56,8 +63,9 @@ public class Renderer extends JPanel{
         } catch (IOException e) {throw new RuntimeException(e);}
     }
 
-    /* 
+    /**
     * get the image of EmptyTile
+
     * @return BufferedImage
     */
     private BufferedImage getEmptyTile() {
@@ -66,10 +74,7 @@ public class Renderer extends JPanel{
         } catch (IOException e) {throw new RuntimeException(e);}
     }
 
-    /*
-     * paint the maze
-     * @param Graphics
-     */
+   
     @Override
     public void paintComponent(Graphics g) {
         //call superclass to paint background
