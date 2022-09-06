@@ -70,7 +70,6 @@ public class Renderer extends JPanel{
         }
 
         public static BufferedImage getImage(Tile tile){
-            System.out.println(tile.getImg()); 
             return switch(tile.getImg()){
                 case "empty_tile" -> Images.Empty_tile.getImg();
                 case "hero" -> Images.Hero.getImg();
