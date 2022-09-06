@@ -15,11 +15,15 @@ import java.awt.Graphics;
 public class Renderer extends JPanel{
     static final long serialVersionUID = 1L;
     //default texturePack
-    private String texturePack = "Cats";
+    private TexturePack texturePack = TexturePack.Cats;
     //maze array
     private Tile[][] gameArray;
     //the maze
     private Maze maze;
+
+    public enum TexturePack{
+        Original, Cats, Dogs, Emoji;
+    }
 
     /**
      * Constructor. Takes a maze as parameters.
@@ -36,7 +40,7 @@ public class Renderer extends JPanel{
      * @param texturePack
      * @return BufferedImage
      */
-    public void setTexturePack(String texturePack) {
+    public void setTexturePack(TexturePack texturePack) {
         this.texturePack = texturePack;
     }
 
