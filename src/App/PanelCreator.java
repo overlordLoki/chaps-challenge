@@ -1,6 +1,7 @@
 package App;
 
 import Renderer.Renderer;
+import Renderer.tempDomain.Maze;
 
 import javax.swing.*;
 import java.awt.*;
@@ -109,7 +110,13 @@ class PanelCreator{
     public static JPanel configurePanelMenu(JPanel pnOuterMost, CardLayout cardLayout) {
         System.out.println("Configuring: Menu");
 
-        var pnMenu = new JPanel();
+        Renderer r = new Renderer(new Maze());
+        var pnMenu = new JPanel(){
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(r.getImage("background"), 0, 0, this.getWidth(), this.getHeight(), null);
+            }
+        };
         var jlWelcome = new JLabel("Chaps Challenge!");
         List<JLabel> labels = new ArrayList<>(List.of(
                 new JLabel(NEW_GAME),
@@ -121,7 +128,7 @@ class PanelCreator{
         );
         // setting layout
         pnMenu.setLayout(new BoxLayout(pnMenu, BoxLayout.Y_AXIS));
-        pnMenu.setBackground(Color.PINK);
+
         jlWelcome.setAlignmentX(CENTER_ALIGNMENT);
         jlWelcome.setFont(new Font(FONT, STYLE, 80));
 
