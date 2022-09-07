@@ -1,43 +1,11 @@
 package App.tempDomain;
 
-import Renderer.Renderer.Images;
-import Renderer.tempDomain.Tiles.Tile;
+import Renderer.tempDomain.Tiles.*;
 
-import static Renderer.Renderer.Images.*;
+import java.util.List;
+
 
 public class Game {
-
-    public void startGame(){
-        System.out.println("Game started");
-    }
-
-    public void endGame(){
-        System.out.println("Game ended");
-    }
-
-    public void pauseGame(){
-        System.out.println("Game paused");
-    }
-
-    public void resumeGame(){
-        System.out.println("Game resumed");
-    }
-
-    public void restartGame(){
-        System.out.println("Game restarted");
-    }
-
-    public void saveGame(){
-        System.out.println("Game saved");
-    }
-
-    public void loadGame(){
-        System.out.println("Game loaded");
-    }
-
-    public void quitGame(){
-        System.out.println("Game quit");
-    }
 
     public void moveUp(){
         System.out.println("Player moved up");
@@ -55,20 +23,6 @@ public class Game {
         System.out.println("Player moved right");
     }
 
-    public void replayMode() {
-        System.out.println("Replay mode started");
-    }
-
-    public void replayAuto() {
-        for (int i = 0; i < 10; i++) {
-            System.out.println("Replay auto step " + i);
-        }
-    }
-
-    public void replayStep() {
-        System.out.println("Replay step");
-    }
-
     public int getCurrentLevel() {
         return 1;
     }
@@ -77,7 +31,8 @@ public class Game {
         return 12;
     }
 
-    public Images[] getInventory() {
-        return new Images[]{YellowKey,OrangeKey,GreenKey,BlueKey,null,null,null,null};
+    public List<Tile> getInventory() {
+        // currently just a fixed list of 4 different keys
+        return List.of(new yellowKey(), new greenKey(), new blueKey(), new orangeKey());
     }
 }

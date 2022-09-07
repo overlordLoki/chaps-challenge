@@ -52,35 +52,35 @@ public class Actions {
      * Pause the game.
      */
     public void actionPause(){
-        game.pauseGame();
+        System.out.println("Game paused");
     }
 
     /**
      * Resume the game.
      */
     public void actionResume(){
-        game.resumeGame();
+        System.out.println("Game resumed");
     }
 
     /**
      * Load a saved game.
      */
     public void actionLoad(){
-        game.loadGame();
+        System.out.println("Game loaded");
     }
 
     /**
      * Save and quits the current game.
      */
     public void actionSave(){
-        game.saveGame();
+        System.out.println("Game saved");
     }
 
     /**
      * Quit the game without saving.
      */
     public void actionQuit(){
-        game.quitGame();
+        System.out.println("Game quit");
     }
 
     /**
@@ -101,21 +101,23 @@ public class Actions {
      * Enters replay mode from a played game.
      */
     public void actionReplayMode(){
-        game.replayMode();
+        System.out.println("Replay mode started");
     }
 
     /**
      * Auto reply through the game.
      */
     public void actionReplayAuto(){
-        game.replayAuto();
+        for (int i = 0; i < 10; i++) {
+            System.out.println("Replay auto step " + i);
+        }
     }
 
     /**
      * Replays the game step by step, with the user pressing a button to move to the next step.
      */
     public void actionReplayStep(){
-        game.replayStep();
+        System.out.println("Replay step");
     }
 }
 
