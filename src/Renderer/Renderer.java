@@ -23,6 +23,12 @@ public class Renderer extends JPanel{
 
     public BufferedImage background;
 
+    private int patternSize = 100;
+
+    public int getPatternSize() {
+        return patternSize;
+    }
+
 
     private static TexturePack currentTP = TexturePack.Cats;
 
@@ -32,7 +38,7 @@ public class Renderer extends JPanel{
 
     public enum Images{
         Background("background"),
-        pattern("pattern"),
+        Pattern("pattern"),
         
         Hero("hero"),
         Enemy("enemy"),
@@ -74,7 +80,7 @@ public class Renderer extends JPanel{
             return switch(tile.getImg()){
                 case "empty_tile" -> Images.Empty_tile.getImg();
                 case "hero" -> Images.Hero.getImg();
-                case "pattern" -> Images.pattern.getImg();
+                case "pattern" -> Images.Pattern.getImg();
                 case "enemy" -> Images.Enemy.getImg();
                 case "wall_tile" -> Images.Wall.getImg();
                 case "blueKey" -> Images.BlueKey.getImg();
@@ -129,6 +135,7 @@ public class Renderer extends JPanel{
         this.texturePack = texturePack;
         this.currentTP = texturePack;
         Images.reloadAllTexturepack();
+        patternSize = 100;
     }
 
     /**
