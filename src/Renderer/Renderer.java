@@ -32,6 +32,7 @@ public class Renderer extends JPanel{
 
     public enum Images{
         Background("background"),
+        pattern("pattern"),
         
         Hero("hero"),
         Enemy("enemy"),
@@ -73,6 +74,7 @@ public class Renderer extends JPanel{
             return switch(tile.getImg()){
                 case "empty_tile" -> Images.Empty_tile.getImg();
                 case "hero" -> Images.Hero.getImg();
+                case "pattern" -> Images.pattern.getImg();
                 case "enemy" -> Images.Enemy.getImg();
                 case "wall_tile" -> Images.Wall.getImg();
                 case "blueKey" -> Images.BlueKey.getImg();
