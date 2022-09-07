@@ -3,7 +3,8 @@ package App;
 import App.tempDomain.Game;
 import Renderer.tempDomain.Maze;
 import Renderer.Renderer;
-import Renderer.Renderer.Images;
+import Renderer.TexturePack.Images;
+import Renderer.tempDomain.Tiles.Tile;
 
 import javax.swing.*;
 import java.awt.*;
@@ -454,24 +455,20 @@ class PanelCreator{
         pnStatusTop.setOpaque(false);
 //        pnGame.setBackground(Color.PINK);
         pnInventory.setBackground(Color.CYAN);
-        Images[] inventory = new Game().getInventory();
-        int x=1;
-        for(int i = 0; i < 2; i++) {
-            for (int j = 0; j < 4; j++) {
-                int finalX = x-1;
-                pnInventory.add(new JLabel(finalX + ""){
-                    @Override
-                    public void paintComponent(Graphics g) {
-                        super.paintComponent(g);
-                        BufferedImage img =  Images.Empty_tile.getImg();
-                        g.drawImage(img, 0, 0, getWidth(),getHeight(),null);
-                        int size = Math.min(getWidth(), getHeight());
-                        if(inventory[finalX] == null) return;
-                        g.drawImage(inventory[finalX].getImg(), (getWidth()-size)/2, (getHeight()-size)/2, size,size,null);
-                    }
-                });
-                x++;
-            }
+        List<Tile> inventory = new Game().getInventory();
+        for(int i = 0; i < 8; i++) {
+            int finalX = i;
+            pnInventory.add(new JLabel(){
+                @Override
+                public void paintComponent(Graphics g) {
+                    super.paintComponent(g);
+                    BufferedImage img =  Images.Empty_tile.getImg();
+                    g.drawImage(img, 0, 0, getWidth(),getHeight(),null);
+                    int size = Math.min(getWidth(), getHeight());
+                    if (finalX >= inventory.size()) return;
+                    g.drawImage(Images.getImage(inventory.get(finalX)), (getWidth()-size)/2, (getHeight()-size)/2, size,size,null);
+                }
+            });
         }
 
         pnStatusTop.add(lbLevelTitle);

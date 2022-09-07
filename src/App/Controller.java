@@ -3,6 +3,7 @@ package App;
 import App.tempDomain.Game;
 
 import javax.swing.SwingUtilities;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashMap;
@@ -16,7 +17,7 @@ import static java.awt.event.KeyEvent.VK_CONTROL;
  *
  * @author Jeff Lin
  */
-class Controller implements KeyListener {
+class Controller extends KeyAdapter {
     @SuppressWarnings("FieldMayBeFinal")
     private Map<String, Runnable> actionsPressed = new HashMap<>();
     @SuppressWarnings("FieldMayBeFinal")
@@ -55,12 +56,8 @@ class Controller implements KeyListener {
     }
 
     @Override
-    public void keyTyped(KeyEvent e) {}
-
-    @Override
     public void keyPressed(KeyEvent e) {
         assert SwingUtilities.isEventDispatchThread();
-//        System.out.print("keyPressed="+KeyEvent.getKeyText(e.getKeyCode()) + "  ");
         if (e.getKeyCode() == VK_CONTROL) ctrlPressed = true;
         actionsPressed.getOrDefault(KeyEvent.getKeyText(e.getKeyCode()), ()->{}).run();
     }
