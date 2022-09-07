@@ -2,6 +2,7 @@ package App;
 
 import App.tempDomain.Game;
 import Renderer.Renderer;
+import Renderer.TexturePack;
 import Renderer.TexturePack.Images;
 import Renderer.tempDomain.Tiles.Tile;
 
@@ -84,14 +85,13 @@ class PanelCreator{
     /**
      * Creates the Game Screen panel.
      *
+     * @param app         The App object.
      * @param pnOuterMost The outermost panel for everything to assemble to.
-     * @param cardLayout The card layout for toggling between scenes.
-     * @param app The App object.
-     * @param r The Renderer object.
-     *
+     * @param cardLayout  The card layout for toggling between scenes.
+     * @param r           The Renderer object.
      * @return The Game Screen panel.
      */
-    public static JPanel configureGameScreen(JPanel pnOuterMost, CardLayout cardLayout, App app, Renderer r){
+    public static JPanel configureGameScreen(App app, JPanel pnOuterMost, CardLayout cardLayout, Renderer r){
         // components to be added to the shell
         JPanel pnGameWindow  = configurePanelGame(pnOuterMost, cardLayout, app, r);
         JPanel pnGameDeath   = configurePanelDeath(pnOuterMost, cardLayout);
@@ -209,11 +209,38 @@ class PanelCreator{
         System.out.println("Configuring: Settings");
 
         var pnSettings = new JPanel();
-        var pnBindings = new JPanel();
+        var pnMiddle = new JPanel();
         var pnBindingL = new JPanel();
         var pnBindingR = new JPanel();
         var jlTitle = new JLabel("Settings");
         var jlConfirm = createBackToMenuLabel("Confirm", pnOuterMost, cardLayout, Color.RED);
+
+        var pnTexturePack = new JPanel();
+        var jlTexturePack = new JLabel("Texture Pack");
+        var jlCurrentTexture = new JLabel(app.getCurrentTexture()+"");
+        var jlNextTexture = new JLabel("  >>>") {{
+            addMouseListener(new MouseAdapter() {
+                public void mouseEntered(MouseEvent e){setForeground(Color.RED);}
+                public void mouseExited(MouseEvent e) {setForeground(Color.BLACK);}
+                public void mousePressed(MouseEvent e) {
+                    TexturePack currentPack = TexturePack.values()[(app.getCurrentTexture().ordinal()+1)%TexturePack.values().length];
+                    app.setTexturePack(currentPack);
+                    jlCurrentTexture.setText(currentPack+"");
+                }
+            });
+        }};
+        var jlPrevTexture = new JLabel("<<<  ") {{
+            addMouseListener(new MouseAdapter() {
+                public void mouseEntered(MouseEvent e){setForeground(Color.RED);}
+                public void mouseExited(MouseEvent e) {setForeground(Color.BLACK);}
+                public void mousePressed(MouseEvent e) {
+                    int ordinal = app.getCurrentTexture().ordinal()-1;
+                    TexturePack currentPack = TexturePack.values()[(ordinal < 0? TexturePack.values().length-1: ordinal)];
+                    app.setTexturePack(currentPack);
+                    jlCurrentTexture.setText(currentPack+"");
+                }
+            });
+        }};
 
         List<JLabel> lbsActionNames = new ArrayList<>();
         List<JLabel> lbsActionKeys = new ArrayList<>();
@@ -259,31 +286,41 @@ class PanelCreator{
         pnSettings.setLayout(new BoxLayout(pnSettings, BoxLayout.Y_AXIS));
         pnBindingL.setLayout(new BoxLayout(pnBindingL, BoxLayout.Y_AXIS));
         pnBindingR.setLayout(new BoxLayout(pnBindingR, BoxLayout.Y_AXIS));
-        pnBindings.setLayout(new BoxLayout(pnBindings, BoxLayout.X_AXIS));
+        pnMiddle.setLayout(new BoxLayout(pnMiddle, BoxLayout.X_AXIS));
+        pnTexturePack.setLayout(new BoxLayout(pnTexturePack, BoxLayout.X_AXIS));
         pnBindingL.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
         pnBindingR.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
-        pnBindings.setOpaque(false);
+        pnMiddle.setOpaque(false);
         pnBindingL.setOpaque(false);
         pnBindingR.setOpaque(false);
+        pnTexturePack.setOpaque(false);
         pnSettings.setBackground(Color.PINK);
         setAllAlignmentX(CENTER_ALIGNMENT, jlTitle, jlConfirm);
         jlTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
         jlConfirm.setFont(new Font(FONT, STYLE, TEXT_SIZE_1));
         setAllFont(FONT, STYLE, TEXT_SIZE_2, lbsActionNames.toArray(new JLabel[0]));
         setAllFont(FONT, STYLE, TEXT_SIZE_2, lbsActionKeys.toArray(new JLabel[0]));
+        setAllFont(FONT, STYLE, TEXT_SIZE_2, jlTexturePack,jlNextTexture, jlPrevTexture, jlCurrentTexture);
 
+        // assemble texture pack panel
+        pnTexturePack.add(jlPrevTexture);
+        pnTexturePack.add(jlCurrentTexture);
+        pnTexturePack.add(jlNextTexture);
         // assemble Binding panel
+        pnBindingL.add(jlTexturePack);
+        pnBindingR.add(pnTexturePack);
         lbsActionNames.forEach(pnBindingL::add);
         lbsActionKeys.forEach(pnBindingR::add);
-        pnBindings.add(Box.createHorizontalGlue());
-        pnBindings.add(pnBindingL);
-        pnBindings.add(pnBindingR);
-        pnBindings.add(Box.createHorizontalGlue());
+
+        pnMiddle.add(Box.createHorizontalGlue());
+        pnMiddle.add(pnBindingL);
+        pnMiddle.add(pnBindingR);
+        pnMiddle.add(Box.createHorizontalGlue());
 
         // assemble this panel
         pnSettings.add(jlTitle);
         pnSettings.add(Box.createVerticalGlue());
-        pnSettings.add(pnBindings);
+        pnSettings.add(pnMiddle);
         pnSettings.add(Box.createVerticalGlue());
         pnSettings.add(jlConfirm);
         return pnSettings;

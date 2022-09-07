@@ -3,6 +3,7 @@ package App;
 import App.tempDomain.Game;
 import Renderer.tempDomain.*;
 import Renderer.Renderer;
+import Renderer.TexturePack;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -31,6 +32,7 @@ public class App extends JFrame {
     private int indexOfKeyToSet = -1;
 
     private Game game;
+    public Renderer render;
     private Controller controller;
 
     static final int WIDTH = 1200;
@@ -68,9 +70,9 @@ public class App extends JFrame {
         outerPanel.setLayout(outerCardLayout);
         game = new Game();
         controller = new Controller(actionKeyBindings, game);
-        var gameRenderer = new Renderer(new Maze());
+        render = new Renderer(new Maze());
         PanelCreator.configureMenuScreen(this, menuPanel, menuCardLayout, actionKeyBindings, actionNames);
-        PanelCreator.configureGameScreen(gamePanel, gameCardLayout,this, gameRenderer);
+        PanelCreator.configureGameScreen(this, gamePanel, gameCardLayout, render);
         outerPanel.add(menuPanel, MENU);
         outerPanel.add(gamePanel, GAME);
         transitionToMenuScreen();
@@ -171,5 +173,13 @@ public class App extends JFrame {
      */
     public static void main(String... args){
         SwingUtilities.invokeLater(App::new);
+    }
+
+    TexturePack current = TexturePack.Cats;
+    public void setTexturePack(TexturePack pack){
+        current = pack;
+    }
+    public <E extends Enum<E>> Enum<E> getCurrentTexture() {
+        return (Enum<E>) current;
     }
 }
