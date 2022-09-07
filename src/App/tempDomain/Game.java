@@ -1,5 +1,10 @@
 package App.tempDomain;
 
+import Renderer.Renderer.Images;
+import Renderer.tempDomain.Tiles.Tile;
+
+import static Renderer.Renderer.Images.*;
+
 public class Game {
 
     public void startGame(){
@@ -70,5 +75,9 @@ public class Game {
 
     public int getTreasuresLeft() {
         return 12;
+    }
+
+    public Images[] getInventory() {
+        return new Images[]{YellowKey,OrangeKey,GreenKey,BlueKey,null,null,null,null};
     }
 }

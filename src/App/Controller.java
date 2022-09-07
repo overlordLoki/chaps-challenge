@@ -42,11 +42,11 @@ class Controller implements KeyListener {
         setAction(keyBindings.get(3), actions::actionRight, ()->{}); // right
         setAction(keyBindings.get(4), actions::actionPause, ()->{});    // Pause game
         setAction(keyBindings.get(5), actions::actionResume, ()->{});   // Resume game
-        setAction(keyBindings.get(6), this::level1, ()->{});    // level 1
-        setAction(keyBindings.get(7), this::level2, ()->{});    // level 2
-        setAction(keyBindings.get(8), this::quitGame, ()->{});      // Quit game
-        setAction(keyBindings.get(9), this::saveAndQuit, ()->{});   // Save game
-        setAction(keyBindings.get(10), this::reloadGame, ()->{});   // Reload game
+        setAction(keyBindings.get(6), runIfCtrlPressed(actions::actionToLevel2), ()->{});  // level 1
+        setAction(keyBindings.get(7), runIfCtrlPressed(actions::actionToLevel1), ()->{});  // level 2
+        setAction(keyBindings.get(8), runIfCtrlPressed(actions::actionQuit), ()->{});  // Quit game
+        setAction(keyBindings.get(9), runIfCtrlPressed(actions::actionSave), ()->{});  // Save game
+        setAction(keyBindings.get(10), runIfCtrlPressed(actions::actionLoad), ()->{}); // Reload game
     }
 
     private void setAction(String keyName, Runnable onPressed, Runnable onReleased) {
@@ -77,28 +77,7 @@ class Controller implements KeyListener {
     //======================================== CTRL METHODS =============================================//
     //===================================================================================================//
 
-    private void level1(){
-        if (! ctrlPressed) return;
-        System.out.println("Jump to Level 1");
-    }
-
-    private void level2(){
-        if (! ctrlPressed) return;
-        System.out.println("Jump to Level 2");
-    }
-
-    private void quitGame(){
-        if (! ctrlPressed) return;
-        actions.actionQuit();
-    }
-
-    private void saveAndQuit(){
-        if (! ctrlPressed) return;
-        actions.actionSave();
-    }
-
-    private void reloadGame(){
-        if (! ctrlPressed) return;
-        actions.actionLoad();
+    private Runnable runIfCtrlPressed(Runnable runnable){
+        return () -> {if (ctrlPressed) runnable.run();};
     }
 }

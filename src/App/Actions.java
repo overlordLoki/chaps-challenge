@@ -84,6 +84,20 @@ public class Actions {
     }
 
     /**
+     * Go to level 1.
+     */
+    public void actionToLevel1(){
+        System.out.println("Jump to Level 1");
+    }
+
+    /**
+     * Go to level 2.
+     */
+    public void actionToLevel2(){
+        System.out.println("Jump to Level 2");
+    }
+
+    /**
      * Enters replay mode from a played game.
      */
     public void actionReplayMode(){

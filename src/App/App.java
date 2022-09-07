@@ -33,7 +33,16 @@ public class App extends JFrame {
 
     private Game game;
 
-    private Runnable closePhase = ()->{};
+    Runnable closePhase = ()->{};
+
+
+    static final long serialVersionUID = 1L;
+    static final int WIDTH = 1200;
+    static final int HEIGHT = 800;
+    JPanel menuPanel = new JPanel();
+    JPanel gamePanel = new JPanel();
+    CardLayout menuCardLayout = new CardLayout();
+    CardLayout gameCardLayout = new CardLayout();
 
     /**
      * Constructor for the App class. Initializes the GUI and the main loop.
@@ -55,13 +64,16 @@ public class App extends JFrame {
      */
     private void menuScreen(){
         // shell to hold all the components
-        var pnOuterMost = new JPanel();
-        var cardLayout = new CardLayout();
-        setContentPane(PanelCreator.configureMenuScreen(this, pnOuterMost, cardLayout, actionKeyBindings, actionNames));
+        menuPanel = new JPanel();
+        menuCardLayout = new CardLayout();
+        setContentPane(PanelCreator.configureMenuScreen(this, menuPanel, menuCardLayout, actionKeyBindings, actionNames));
         closePhase.run();
-        closePhase = ()->remove(pnOuterMost);
-        cardLayout.show(pnOuterMost, MENU);
-        setPreferredSize(new Dimension(1200, 600));
+        closePhase = ()-> {
+            menuPanel.setVisible(false);
+            gamePanel.setVisible(true);
+        };
+        menuCardLayout.show(menuPanel, MENU);
+        setPreferredSize(new Dimension(WIDTH, HEIGHT));
         pack();
     }
 
@@ -72,8 +84,8 @@ public class App extends JFrame {
      * It initializes the game and controller, then starts the game loop.
      */
     public void gameScreen(){
-        var pnOuterMost = new JPanel();
-        var cardLayout = new CardLayout();
+        gamePanel = new JPanel();
+        gameCardLayout = new CardLayout();
 
         // initialise game settings
         game = new Game();
@@ -81,14 +93,23 @@ public class App extends JFrame {
         var gameRenderer = new Renderer(new Maze());
 
         // set up the GUI
-        this.setContentPane(PanelCreator.configureGameScreen(pnOuterMost, cardLayout,
-                this, gameRenderer));
-        cardLayout.show(pnOuterMost, MENU);
+        JPanel p = PanelCreator.configureGameScreen(gamePanel, gameCardLayout,
+                this, gameRenderer);
+        this.setContentPane(p);
+//        this.add(p);
+        gameCardLayout.show(gamePanel, MENU);
 
         // kickstart the game panel
         closePhase.run();
-        closePhase = ()->remove(pnOuterMost);
-        setPreferredSize(new Dimension(1200, 600));
+        closePhase = ()->{
+            gamePanel.setVisible(false);
+            menuPanel.setVisible(true);
+            System.out.println("Game ended");
+            menuCardLayout.show(menuPanel, MENU);
+            System.out.println("Menu shown");
+        };
+        setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        setMinimumSize(new Dimension(900, 600));
         pack();
     }
 

@@ -1,7 +1,9 @@
 package App;
 
-import Renderer.Renderer;
+import App.tempDomain.Game;
 import Renderer.tempDomain.Maze;
+import Renderer.Renderer;
+import Renderer.Renderer.Images;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,6 +11,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -110,14 +113,13 @@ class PanelCreator{
     public static JPanel configurePanelMenu(JPanel pnOuterMost, CardLayout cardLayout) {
         System.out.println("Configuring: Menu");
 
-        Renderer r = new Renderer(new Maze());
         var pnMenu = new JPanel(){
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.drawImage(r.getImage("background"), 0, 0, this.getWidth(), this.getHeight(), null);
+                g.drawImage(Images.getImage(Images.Background), 0, 0, this.getWidth(), this.getHeight(), null);
             }
         };
-        var jlWelcome = new JLabel("Chaps Challenge!");
+//        var jlWelcome = new JLabel("Chaps Challenge!");
         List<JLabel> labels = new ArrayList<>(List.of(
                 new JLabel(NEW_GAME),
                 new JLabel(LOAD_GAME),
@@ -129,11 +131,11 @@ class PanelCreator{
         // setting layout
         pnMenu.setLayout(new BoxLayout(pnMenu, BoxLayout.Y_AXIS));
 
-        jlWelcome.setAlignmentX(CENTER_ALIGNMENT);
-        jlWelcome.setFont(new Font(FONT, STYLE, 80));
+//        jlWelcome.setAlignmentX(CENTER_ALIGNMENT);
+//        jlWelcome.setFont(new Font(FONT, STYLE, 80));
 
         // assemble this panel
-        pnMenu.add(jlWelcome);
+//        pnMenu.add(jlWelcome);
         pnMenu.add(Box.createVerticalGlue());
         labels.forEach(l->{
             l.addMouseListener(new MouseAdapter() {
@@ -396,8 +398,32 @@ class PanelCreator{
     //================================================================================================================//
 
     private static JPanel configurePanelGame(JPanel pnOuterMost, CardLayout cardLayout,App app, Renderer mazeRender) {
-        var pnGame = new JPanel();
+        var pnGame = new JPanel(){
+
+            @Override
+            public void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                BufferedImage img =  Images.Pattern.getImg();
+                int size = mazeRender.getPatternSize();
+                for (int i = 0; i < this.getWidth(); i+=size) {
+                    for (int j = 0; j < this.getHeight(); j+=size) {
+                        g.drawImage(img, i, j, size,size,null);
+                    }
+                }
+            }
+        };
         var pnStatus = new JPanel();
+
+        var pnStatusTop = new JPanel();
+        var lbPause = new JLabel("Pause") {{
+            addMouseListener(new MouseAdapter() {
+                public void mouseEntered(MouseEvent e){setForeground(Color.RED);}
+                public void mouseExited(MouseEvent e) {setForeground(Color.BLACK);}
+                public void mousePressed(MouseEvent e) {
+                    app.closePhase.run();
+//                    app.menuCardLayout.show(app.menuPanel, MENU);
+                }
+            });}};
 
         var lbLevelTitle = new JLabel("Level");
         var lbLevel = new JLabel(app.getGame().getCurrentLevel()+"");
@@ -416,23 +442,42 @@ class PanelCreator{
         });*/
         pnGame.setLayout(new BoxLayout(pnGame, BoxLayout.X_AXIS));
         pnStatus.setLayout(new BoxLayout(pnStatus, BoxLayout.Y_AXIS));
+        pnStatusTop.setLayout(new BoxLayout(pnStatusTop, BoxLayout.X_AXIS));
         pnInventory.setLayout(new GridLayout(2,4));
-        mazeRender.setPreferredSize(new Dimension(app.getHeight(), app.getHeight()));
-        mazeRender.setMaximumSize(new Dimension(app.getHeight(), app.getHeight()));
+        int size = 600;
+        mazeRender.setPreferredSize(new Dimension(size, size));
+        mazeRender.setMaximumSize(new Dimension(size, size));
+        mazeRender.setMinimumSize(new Dimension(size, size));
 
-        setAllFont(FONT, STYLE, TEXT_SIZE_1, lbLevelTitle, lbLevel, lbTimerTitle, lbTimer, lbTreasuresTitle, lbTreasures, lbInventoryTitle);
-        pnStatus.setBackground(Color.PINK);
-        pnGame.setBackground(Color.PINK);
+        setAllFont(FONT, STYLE, TEXT_SIZE_1, lbLevelTitle, lbPause, lbLevel, lbTimerTitle, lbTimer, lbTreasuresTitle, lbTreasures, lbInventoryTitle);
+        pnStatus.setOpaque(false);
+        pnStatusTop.setOpaque(false);
+//        pnGame.setBackground(Color.PINK);
         pnInventory.setBackground(Color.CYAN);
-
+        Images[] inventory = new Game().getInventory();
         int x=1;
         for(int i = 0; i < 2; i++) {
             for (int j = 0; j < 4; j++) {
-                pnInventory.add(new JLabel(x + ""));
+                int finalX = x-1;
+                pnInventory.add(new JLabel(finalX + ""){
+                    @Override
+                    public void paintComponent(Graphics g) {
+                        super.paintComponent(g);
+                        BufferedImage img =  Images.Empty_tile.getImg();
+                        g.drawImage(img, 0, 0, getWidth(),getHeight(),null);
+                        int size = Math.min(getWidth(), getHeight());
+                        if(inventory[finalX] == null) return;
+                        g.drawImage(inventory[finalX].getImg(), (getWidth()-size)/2, (getHeight()-size)/2, size,size,null);
+                    }
+                });
                 x++;
             }
         }
-        pnStatus.add(lbLevelTitle);
+
+        pnStatusTop.add(lbLevelTitle);
+        pnStatusTop.add(Box.createHorizontalGlue());
+        pnStatusTop.add(lbPause);
+        pnStatus.add(pnStatusTop);
         pnStatus.add(lbLevel);
         pnStatus.add(Box.createVerticalGlue());
         pnStatus.add(lbTimerTitle);
