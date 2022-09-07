@@ -12,7 +12,6 @@ import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static App.PanelCreator.*;
@@ -39,8 +38,10 @@ public class App extends JFrame {
     static final long serialVersionUID = 1L;
     static final int WIDTH = 1200;
     static final int HEIGHT = 800;
+    JPanel outerPanel = new JPanel();
     JPanel menuPanel = new JPanel();
     JPanel gamePanel = new JPanel();
+    CardLayout outerCardLayout = new CardLayout();
     CardLayout menuCardLayout = new CardLayout();
     CardLayout gameCardLayout = new CardLayout();
 
@@ -54,25 +55,44 @@ public class App extends JFrame {
         addWindowListener(new WindowAdapter() {
             public void windowClosed(WindowEvent e) {
                 closePhase.run();
-            }
-        });
-        menuScreen();
+            }}
+        );
+        loadScreens();
+    }
+
+    private void loadScreens(){
+        outerPanel.setLayout(outerCardLayout);
+        loadMenuScreen();
+        loadGameScreen();
+        setContentPane(outerPanel);
+        transitionToMenuScreen();
+    }
+
+    /***/
+    public void transitionToMenuScreen(){
+        System.out.println("Toggling to menu screen");
+        menuCardLayout.show(menuPanel, MENU);
+        outerCardLayout.show(outerPanel, MENU);
+        System.out.println("Menu shown");
+    }
+
+    /***/
+    public void transitionToGameScreen(){
+        System.out.println("Toggling to game screen");
+        gameCardLayout.show(gamePanel, GAME);
+        outerCardLayout.show(outerPanel, GAME);
+        System.out.println("Game shown");
     }
 
     /**
      * Enters the menu screen, where the user can start a new game, load a game, quit the game, or change key bindings.
      */
-    private void menuScreen(){
+    private void loadMenuScreen(){
         // shell to hold all the components
         menuPanel = new JPanel();
         menuCardLayout = new CardLayout();
-        setContentPane(PanelCreator.configureMenuScreen(this, menuPanel, menuCardLayout, actionKeyBindings, actionNames));
-        closePhase.run();
-        closePhase = ()-> {
-            menuPanel.setVisible(false);
-            gamePanel.setVisible(true);
-        };
-        menuCardLayout.show(menuPanel, MENU);
+        PanelCreator.configureMenuScreen(this, menuPanel, menuCardLayout, actionKeyBindings, actionNames);
+        outerPanel.add(menuPanel, MENU);
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         pack();
     }
@@ -83,31 +103,19 @@ public class App extends JFrame {
      * This method is called when the user clicks the "Start Game" button.
      * It initializes the game and controller, then starts the game loop.
      */
-    public void gameScreen(){
+    public void loadGameScreen(){
         gamePanel = new JPanel();
         gameCardLayout = new CardLayout();
 
         // initialise game settings
         game = new Game();
         controller = new Controller(actionKeyBindings, game);
+
         var gameRenderer = new Renderer(new Maze());
+        PanelCreator.configureGameScreen(gamePanel, gameCardLayout,this, gameRenderer);
+        outerPanel.add(gamePanel, GAME);
+//        gameCardLayout.show(gamePanel, MENU);
 
-        // set up the GUI
-        JPanel p = PanelCreator.configureGameScreen(gamePanel, gameCardLayout,
-                this, gameRenderer);
-        this.setContentPane(p);
-//        this.add(p);
-        gameCardLayout.show(gamePanel, MENU);
-
-        // kickstart the game panel
-        closePhase.run();
-        closePhase = ()->{
-            gamePanel.setVisible(false);
-            menuPanel.setVisible(true);
-            System.out.println("Game ended");
-            menuCardLayout.show(menuPanel, MENU);
-            System.out.println("Menu shown");
-        };
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setMinimumSize(new Dimension(900, 600));
         pack();

@@ -1,7 +1,6 @@
 package App;
 
 import App.tempDomain.Game;
-import Renderer.tempDomain.Maze;
 import Renderer.Renderer;
 import Renderer.TexturePack.Images;
 import Renderer.tempDomain.Tiles.Tile;
@@ -163,7 +162,8 @@ class PanelCreator{
             addMouseListener(new MouseAdapter() {
                 public void mouseEntered(MouseEvent e){setForeground(Color.RED);}
                 public void mouseExited(MouseEvent e) {setForeground(Color.BLACK);}
-                public void mousePressed(MouseEvent e) { app.gameScreen();}
+                public void mousePressed(MouseEvent e) {
+                    app.transitionToGameScreen();}
         });}};
 
         // setting layout
@@ -416,13 +416,12 @@ class PanelCreator{
         var pnStatus = new JPanel();
 
         var pnStatusTop = new JPanel();
-        var lbPause = new JLabel("Pause") {{
+        var lbPause = new JLabel("Menu") {{
             addMouseListener(new MouseAdapter() {
                 public void mouseEntered(MouseEvent e){setForeground(Color.RED);}
                 public void mouseExited(MouseEvent e) {setForeground(Color.BLACK);}
                 public void mousePressed(MouseEvent e) {
-                    app.closePhase.run();
-//                    app.menuCardLayout.show(app.menuPanel, MENU);
+                    app.transitionToMenuScreen();
                 }
             });}};
 
