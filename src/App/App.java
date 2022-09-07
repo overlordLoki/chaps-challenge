@@ -22,28 +22,27 @@ import static App.PanelCreator.*;
  * @author Jeff Lin
  */
 public class App extends JFrame {
+    static final long serialVersionUID = 1L;
     private final List<String> actionNames = List.of("Move Up","Move Down","Move Left","Move Right","Pause Game",
             "Resume Game","Jump To Level 1","Jump To Level 2","Quit Game","Save And Quit Game","Reload Game");
     @SuppressWarnings("FieldMayBeFinal")
     private List<String> actionKeyBindings = new ArrayList<>(List.of("Up","Down","Left","Right","Space",
             "Escape","1","2","X","S","R"));
     private int indexOfKeyToSet = -1;
-    private Controller controller;
 
     private Game game;
+    private Controller controller;
 
-    Runnable closePhase = ()->{};
-
-
-    static final long serialVersionUID = 1L;
     static final int WIDTH = 1200;
     static final int HEIGHT = 800;
-    JPanel outerPanel = new JPanel();
-    JPanel menuPanel = new JPanel();
-    JPanel gamePanel = new JPanel();
-    CardLayout outerCardLayout = new CardLayout();
-    CardLayout menuCardLayout = new CardLayout();
-    CardLayout gameCardLayout = new CardLayout();
+    private final JPanel outerPanel = new JPanel();
+    private final JPanel menuPanel = new JPanel();
+    private final JPanel gamePanel = new JPanel();
+    private final CardLayout outerCardLayout = new CardLayout();
+    private final CardLayout menuCardLayout = new CardLayout();
+    private final CardLayout gameCardLayout = new CardLayout();
+
+    Runnable closePhase = ()->{};
 
     /**
      * Constructor for the App class. Initializes the GUI and the main loop.
@@ -57,18 +56,30 @@ public class App extends JFrame {
                 closePhase.run();
             }}
         );
-        loadScreens();
+        initialiseGUI();
     }
 
-    private void loadScreens(){
+    /**
+     * Initializes the GUI and displays menu screen.
+     */
+    private void initialiseGUI(){
+        this.setMinimumSize(new Dimension(WIDTH, HEIGHT));
+        this.setContentPane(outerPanel);
         outerPanel.setLayout(outerCardLayout);
-        loadMenuScreen();
-        loadGameScreen();
-        setContentPane(outerPanel);
+        game = new Game();
+        controller = new Controller(actionKeyBindings, game);
+        var gameRenderer = new Renderer(new Maze());
+        PanelCreator.configureMenuScreen(this, menuPanel, menuCardLayout, actionKeyBindings, actionNames);
+        PanelCreator.configureGameScreen(gamePanel, gameCardLayout,this, gameRenderer);
+        outerPanel.add(menuPanel, MENU);
+        outerPanel.add(gamePanel, GAME);
         transitionToMenuScreen();
+        pack();
     }
 
-    /***/
+    /**
+     * Transitions to the menu screen.
+     */
     public void transitionToMenuScreen(){
         System.out.println("Toggling to menu screen");
         menuCardLayout.show(menuPanel, MENU);
@@ -76,51 +87,15 @@ public class App extends JFrame {
         System.out.println("Menu shown");
     }
 
-    /***/
+    /**
+     * Transitions to the game screen.
+     */
     public void transitionToGameScreen(){
         System.out.println("Toggling to game screen");
         gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
         System.out.println("Game shown");
     }
-
-    /**
-     * Enters the menu screen, where the user can start a new game, load a game, quit the game, or change key bindings.
-     */
-    private void loadMenuScreen(){
-        // shell to hold all the components
-        menuPanel = new JPanel();
-        menuCardLayout = new CardLayout();
-        PanelCreator.configureMenuScreen(this, menuPanel, menuCardLayout, actionKeyBindings, actionNames);
-        outerPanel.add(menuPanel, MENU);
-        setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        pack();
-    }
-
-    /**
-     * Enters the game screen, and starts the game loop.
-     * <p></p>
-     * This method is called when the user clicks the "Start Game" button.
-     * It initializes the game and controller, then starts the game loop.
-     */
-    public void loadGameScreen(){
-        gamePanel = new JPanel();
-        gameCardLayout = new CardLayout();
-
-        // initialise game settings
-        game = new Game();
-        controller = new Controller(actionKeyBindings, game);
-
-        var gameRenderer = new Renderer(new Maze());
-        PanelCreator.configureGameScreen(gamePanel, gameCardLayout,this, gameRenderer);
-        outerPanel.add(gamePanel, GAME);
-//        gameCardLayout.show(gamePanel, MENU);
-
-        setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        setMinimumSize(new Dimension(900, 600));
-        pack();
-    }
-
 
     //================================================================================================================//
     //============================================ Setter Method =====================================================//
