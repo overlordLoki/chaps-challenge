@@ -13,6 +13,7 @@ public enum TexturePack{
     public enum Images{
         Background("background"),
         Pattern("pattern"),
+        Floor("floor"),
         
         Hero("hero"),
         Enemy("enemy"),
@@ -52,6 +53,7 @@ public enum TexturePack{
     
         public static BufferedImage getImage(Tile tile){
             return switch(tile.getImg()){
+                case "floor" -> Images.Floor.getImg();
                 case "empty_tile" -> Images.Empty_tile.getImg();
                 case "hero" -> Images.Hero.getImg();
                 case "pattern" -> Images.Pattern.getImg();
