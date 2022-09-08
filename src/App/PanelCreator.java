@@ -113,13 +113,12 @@ class PanelCreator{
     public static JPanel configurePanelMenu(JPanel pnOuterMost, CardLayout cardLayout) {
         System.out.println("Configuring: Menu");
 
-        var pnMenu = new JPanel(){
+        JPanel pnMenu = new JPanel(){
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 g.drawImage(Images.getImage(Images.Background), 0, 0, this.getWidth(), this.getHeight(), null);
             }
         };
-//        var jlWelcome = new JLabel("Chaps Challenge!");
         List<JLabel> labels = new ArrayList<>(List.of(
                 new JLabel(NEW_GAME),
                 new JLabel(LOAD_GAME),
@@ -130,12 +129,6 @@ class PanelCreator{
         );
         // setting layout
         pnMenu.setLayout(new BoxLayout(pnMenu, BoxLayout.Y_AXIS));
-
-//        jlWelcome.setAlignmentX(CENTER_ALIGNMENT);
-//        jlWelcome.setFont(new Font(FONT, STYLE, 80));
-
-        // assemble this panel
-//        pnMenu.add(jlWelcome);
         pnMenu.add(Box.createVerticalGlue());
         labels.forEach(l->{
             l.addMouseListener(new MouseAdapter() {
@@ -157,28 +150,17 @@ class PanelCreator{
         System.out.println("Configuring: NewGame");
 
         var pnStartNew = new JPanel();
-        var jlTitle = new JLabel("Starting new game...");
-        var jlConfirm = new JLabel("Start") {{
-            addMouseListener(new MouseAdapter() {
-                public void mouseEntered(MouseEvent e){setForeground(Color.RED);}
-                public void mouseExited(MouseEvent e) {setForeground(Color.BLACK);}
-                public void mousePressed(MouseEvent e) {
-                    app.transitionToGameScreen();}
-        });}};
+        var lbTitle = new JLabel("Starting new game...");
+        var lbConfirm = createActionLabel("Confirm", app::transitionToGameScreen);
 
         // setting layout
         pnStartNew.setLayout(new BoxLayout(pnStartNew, BoxLayout.Y_AXIS));
         pnStartNew.setBackground(Color.PINK);
-        setAllAlignmentX(CENTER_ALIGNMENT, jlTitle, jlConfirm);
-        jlTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
-        jlConfirm.setFont(new Font(FONT, STYLE, TEXT_SIZE_1));
-
+        setAllAlignmentX(CENTER_ALIGNMENT, lbTitle, lbConfirm);
+        lbTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
+        lbConfirm.setFont(new Font(FONT, STYLE, TEXT_SIZE_1));
         // assemble this panel
-        pnStartNew.add(jlTitle);
-        pnStartNew.add(Box.createVerticalGlue());
-        // add image here?
-        pnStartNew.add(Box.createVerticalGlue());
-        pnStartNew.add(jlConfirm);
+        addAll(pnStartNew, lbTitle, Box.createVerticalGlue(), Box.createVerticalGlue(), lbConfirm);
         return pnStartNew;
     }
 
@@ -186,61 +168,50 @@ class PanelCreator{
         System.out.println("Configuring: Load");
 
         var pnLoad = new JPanel();
-        var jlTitle = new JLabel("Load and Resume Saved Games");
-        var jlConfirm = createBackToMenuLabel("Confirm", pnOuterMost, cardLayout, Color.RED);
+        var lbTitle = new JLabel("Load and Resume Saved Games");
+        var lbConfirm = createBackToMenuLabel("Confirm", pnOuterMost, cardLayout, Color.RED);
 
         // setting layout
         pnLoad.setLayout(new BoxLayout(pnLoad, BoxLayout.Y_AXIS));
         pnLoad.setBackground(Color.PINK);
-        setAllAlignmentX(CENTER_ALIGNMENT, jlTitle, jlConfirm);
-        jlTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
-        jlConfirm.setFont(new Font(FONT, STYLE, TEXT_SIZE_1));
+        setAllAlignmentX(CENTER_ALIGNMENT, lbTitle, lbConfirm);
+        lbTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
+        lbConfirm.setFont(new Font(FONT, STYLE, TEXT_SIZE_1));
 
         // assemble this panel
-        pnLoad.add(jlTitle);
+        pnLoad.add(lbTitle);
         pnLoad.add(Box.createVerticalGlue());
         // add Loading box here?
         pnLoad.add(Box.createVerticalGlue());
-        pnLoad.add(jlConfirm);
+        pnLoad.add(lbConfirm);
         return pnLoad;
     }
 
     private static JPanel configurePanelSettings(JPanel pnOuterMost, CardLayout cardLayout, App app, List<String> keyBindings, List<String> keyNames) {
         System.out.println("Configuring: Settings");
 
-        var pnSettings = new JPanel();
-        var pnMiddle = new JPanel();
-        var pnBindingL = new JPanel();
-        var pnBindingR = new JPanel();
-        var jlTitle = new JLabel("Settings");
-        var jlConfirm = createBackToMenuLabel("Confirm", pnOuterMost, cardLayout, Color.RED);
+        JPanel pnSettings = new JPanel();
+        JPanel pnMiddle = new JPanel();
+        JPanel pnBindingL = new JPanel();
+        JPanel pnBindingR = new JPanel();
+        JPanel pnTexturePack = new JPanel();
 
-        var pnTexturePack = new JPanel();
-        var jlTexturePack = new JLabel("Texture Pack");
-        var jlCurrentTexture = new JLabel(app.getCurrentTexture()+"");
-        var jlNextTexture = new JLabel("  >>>") {{
-            addMouseListener(new MouseAdapter() {
-                public void mouseEntered(MouseEvent e){setForeground(Color.RED);}
-                public void mouseExited(MouseEvent e) {setForeground(Color.BLACK);}
-                public void mousePressed(MouseEvent e) {
-                    TexturePack currentPack = TexturePack.values()[(app.getCurrentTexture().ordinal()+1)%TexturePack.values().length];
-                    app.setTexturePack(currentPack);
-                    jlCurrentTexture.setText(currentPack+"");
-                }
-            });
-        }};
-        var jlPrevTexture = new JLabel("<<<  ") {{
-            addMouseListener(new MouseAdapter() {
-                public void mouseEntered(MouseEvent e){setForeground(Color.RED);}
-                public void mouseExited(MouseEvent e) {setForeground(Color.BLACK);}
-                public void mousePressed(MouseEvent e) {
-                    int ordinal = app.getCurrentTexture().ordinal()-1;
-                    TexturePack currentPack = TexturePack.values()[(ordinal < 0? TexturePack.values().length-1: ordinal)];
-                    app.setTexturePack(currentPack);
-                    jlCurrentTexture.setText(currentPack+"");
-                }
-            });
-        }};
+        JLabel lbTitle = new JLabel("Settings");
+        JLabel lbConfirm = createBackToMenuLabel("Confirm", pnOuterMost, cardLayout, Color.RED);
+        JLabel lbTexturePack = new JLabel("Texture Pack");
+        JLabel lbCurrentTexture = new JLabel(app.getCurrentTexture()+"");
+        JLabel lbNextTexture = createActionLabel("  >>>", ()->{
+            int newTexture = (app.getRender().getCurrentTexturePack().ordinal()+1)%TexturePack.values().length;
+            TexturePack currentPack = TexturePack.values()[newTexture];
+            app.getRender().setTexturePack(currentPack);
+            lbCurrentTexture.setText(currentPack+"");
+        });
+        JLabel lbPrevTexture = createActionLabel("<<<  ", ()->{
+            int newTexture = (app.getRender().getCurrentTexturePack().ordinal()-1+TexturePack.values().length)%TexturePack.values().length;
+            TexturePack currentPack = TexturePack.values()[newTexture];
+            app.getRender().setTexturePack(currentPack);
+            lbCurrentTexture.setText(currentPack+"");
+        });
 
         List<JLabel> lbsActionNames = new ArrayList<>();
         List<JLabel> lbsActionKeys = new ArrayList<>();
@@ -283,150 +254,97 @@ class PanelCreator{
         });
 
         // setting layout
-        pnSettings.setLayout(new BoxLayout(pnSettings, BoxLayout.Y_AXIS));
-        pnBindingL.setLayout(new BoxLayout(pnBindingL, BoxLayout.Y_AXIS));
-        pnBindingR.setLayout(new BoxLayout(pnBindingR, BoxLayout.Y_AXIS));
-        pnMiddle.setLayout(new BoxLayout(pnMiddle, BoxLayout.X_AXIS));
-        pnTexturePack.setLayout(new BoxLayout(pnTexturePack, BoxLayout.X_AXIS));
+        setAllBoxLayout(BoxLayout.Y_AXIS, pnSettings, pnBindingL, pnBindingR);
+        setAllBoxLayout(BoxLayout.X_AXIS, pnMiddle, pnTexturePack);
         pnBindingL.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
         pnBindingR.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
-        pnMiddle.setOpaque(false);
-        pnBindingL.setOpaque(false);
-        pnBindingR.setOpaque(false);
-        pnTexturePack.setOpaque(false);
+        setAllOpaque(false, pnMiddle, pnBindingL, pnBindingR, pnTexturePack);
         pnSettings.setBackground(Color.PINK);
-        setAllAlignmentX(CENTER_ALIGNMENT, jlTitle, jlConfirm);
-        jlTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
-        jlConfirm.setFont(new Font(FONT, STYLE, TEXT_SIZE_1));
+        setAllAlignmentX(CENTER_ALIGNMENT, lbTitle, lbConfirm);
+        lbTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
+        lbConfirm.setFont(new Font(FONT, STYLE, TEXT_SIZE_1));
         setAllFont(FONT, STYLE, TEXT_SIZE_2, lbsActionNames.toArray(new JLabel[0]));
         setAllFont(FONT, STYLE, TEXT_SIZE_2, lbsActionKeys.toArray(new JLabel[0]));
-        setAllFont(FONT, STYLE, TEXT_SIZE_2, jlTexturePack,jlNextTexture, jlPrevTexture, jlCurrentTexture);
-
-        // assemble texture pack panel
-        pnTexturePack.add(jlPrevTexture);
-        pnTexturePack.add(jlCurrentTexture);
-        pnTexturePack.add(jlNextTexture);
-        // assemble Binding panel
-        pnBindingL.add(jlTexturePack);
+        setAllFont(FONT, STYLE, TEXT_SIZE_2, lbTexturePack,lbNextTexture, lbPrevTexture, lbCurrentTexture);
+        // assemble this panel
+        addAll(pnTexturePack, lbPrevTexture, lbCurrentTexture, lbNextTexture);
+        pnBindingL.add(lbTexturePack);
         pnBindingR.add(pnTexturePack);
         lbsActionNames.forEach(pnBindingL::add);
         lbsActionKeys.forEach(pnBindingR::add);
-
-        pnMiddle.add(Box.createHorizontalGlue());
-        pnMiddle.add(pnBindingL);
-        pnMiddle.add(pnBindingR);
-        pnMiddle.add(Box.createHorizontalGlue());
-
-        // assemble this panel
-        pnSettings.add(jlTitle);
-        pnSettings.add(Box.createVerticalGlue());
-        pnSettings.add(pnMiddle);
-        pnSettings.add(Box.createVerticalGlue());
-        pnSettings.add(jlConfirm);
+        addAll(pnMiddle, Box.createHorizontalGlue(), pnBindingL, pnBindingR, Box.createHorizontalGlue());
+        addAll(pnSettings, lbTitle, Box.createVerticalGlue(), pnMiddle, Box.createVerticalGlue(), lbConfirm);
         return pnSettings;
     }
 
     private static JPanel configurePanelHowToPlay(JPanel pnOuterMost, CardLayout cardLayout) {
         System.out.println("Configuring: HowToPlay");
 
-        var pnHowToPlay = new JPanel();
-        var jlTitle = new JLabel("How to play");
-        var jlBack = createBackToMenuLabel("Back", pnOuterMost, cardLayout, Color.RED);
+        JPanel pnHowToPlay = new JPanel();
+        JLabel lbTitle = new JLabel("How to play");
+        JLabel lbBack = createBackToMenuLabel("Back", pnOuterMost, cardLayout, Color.RED);
 
         // setting layout
         pnHowToPlay.setLayout(new BoxLayout(pnHowToPlay, BoxLayout.Y_AXIS));
         pnHowToPlay.setBackground(Color.PINK);
-        setAllAlignmentX(CENTER_ALIGNMENT, jlTitle, jlBack);
-        jlTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
-        jlBack.setFont(new Font(FONT, STYLE, TEXT_SIZE_1));
-
+        setAllAlignmentX(CENTER_ALIGNMENT, lbTitle, lbBack);
+        lbTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
+        lbBack.setFont(new Font(FONT, STYLE, TEXT_SIZE_1));
         // assemble this panel
-        pnHowToPlay.add(jlTitle);
-        pnHowToPlay.add(Box.createVerticalGlue());
-        // add how to play text here
-        pnHowToPlay.add(Box.createVerticalGlue());
-        pnHowToPlay.add(jlBack);
+        addAll(pnHowToPlay, lbTitle, Box.createVerticalGlue(), Box.createVerticalGlue(), lbBack);
         return pnHowToPlay;
     }
 
     private static JPanel configurePanelCredits(JPanel pnOuterMost, CardLayout cardLayout) {
         System.out.println("Configuring: Credits");
 
-        var pnCredits = new JPanel();
-        var jlTitle = new JLabel("Credits");
-        var jlBack = createBackToMenuLabel("Back", pnOuterMost, cardLayout, Color.RED);
-
-        List<JLabel> credits = new ArrayList<>(List.of(
+        JPanel pnCredits = new JPanel();
+        JLabel lbTitle = new JLabel("Credits");
+        JLabel lbBack = createBackToMenuLabel("Back", pnOuterMost, cardLayout, Color.RED);
+        JLabel[] credits = new JLabel[]{
                 new JLabel("App: Jeff"),
-                new JLabel("Domain: Madhi"),
+                new JLabel("Domain: Matty"),
                 new JLabel("Fuzz: Ray"),
                 new JLabel("Persistency: Ben"),
                 new JLabel("Recorder: Jayden"),
                 new JLabel("Renderer: Loki")
-        ));
+        };
 
         // setting layout
         pnCredits.setLayout(new BoxLayout(pnCredits, BoxLayout.Y_AXIS));
         pnCredits.setBackground(Color.PINK);
-        setAllAlignmentX(CENTER_ALIGNMENT, jlTitle, jlBack);
-        jlTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
-        jlBack.setFont(new Font(FONT, STYLE, TEXT_SIZE_1));
-
+        setAllAlignmentX(CENTER_ALIGNMENT, lbTitle, lbBack);
+        setAllAlignmentX(CENTER_ALIGNMENT, credits);
+        lbTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
+        lbBack.setFont(new Font(FONT, STYLE, TEXT_SIZE_1));
+        setAllFont(FONT, STYLE, TEXT_SIZE_1, credits);
         // assemble this panel
-        pnCredits.add(jlTitle);
-        pnCredits.add(Box.createVerticalGlue());
-        IntStream.range(0, credits.size()).forEach(i -> {
-            JLabel credit = credits.get(i);
-            credit.setFont(new Font(FONT, STYLE, TEXT_SIZE_1));
-            setAllAlignmentX(CENTER_ALIGNMENT, credits.toArray(new JLabel[0]));
-            pnCredits.add(credit);
-        });
-        credits.forEach(pnCredits::add);
-        pnCredits.add(Box.createVerticalGlue());
-        pnCredits.add(jlBack);
-
-
-
-
+        addAll(pnCredits, lbTitle, Box.createVerticalGlue());
+        addAll(pnCredits, credits);
+        addAll(pnCredits, Box.createVerticalGlue(), lbBack);
         return pnCredits;
     }
 
     public static JPanel configurePanelExit(JPanel pnOuterMost, CardLayout cardLayout) {
         System.out.println("Configuring: Exit");
 
-        var pnExit = new JPanel();
-        var pnOption = new JPanel();
-        var jlTitle = new JLabel("Chaps Challenge!");
-        var jlMessage = new JLabel("Are you sure you want to exit?");
-        var jlYes = new JLabel("Yes"){{
-            addMouseListener(new MouseAdapter() {
-                public void mouseEntered(MouseEvent e){setForeground(Color.RED);}
-                public void mouseExited(MouseEvent e) {setForeground(Color.BLACK);}
-                public void mousePressed(MouseEvent e) {System.exit(0);}
-        });}};
-        var jlNo = createBackToMenuLabel("No", pnOuterMost, cardLayout, Color.GREEN);
+        JPanel pnExit = new JPanel();
+        JPanel pnOption = new JPanel();
+        JLabel lbTitle = new JLabel("Chaps Challenge!");
+        JLabel lbMessage = new JLabel("Are you sure you want to exit?");
+        JLabel lbYes = createActionLabel("Yes", ()->System.exit(0));
+        JLabel lbNo = createBackToMenuLabel("No", pnOuterMost, cardLayout, Color.GREEN);
 
         // setting layout
         pnExit.setLayout(new BoxLayout(pnExit, BoxLayout.Y_AXIS));
         pnOption.setLayout(new BoxLayout(pnOption, BoxLayout.X_AXIS));
-        jlTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
-        setAllFont(FONT, STYLE, TEXT_SIZE_1, jlMessage, jlYes, jlNo);
+        lbTitle.setFont(new Font(FONT, STYLE, TITLE_SIZE));
+        setAllFont(FONT, STYLE, TEXT_SIZE_1, lbMessage, lbYes, lbNo);
         setAllBackground(Color.PINK, pnExit, pnOption);
-        setAllAlignmentX(CENTER_ALIGNMENT, jlTitle, jlMessage, jlYes, jlNo);
-
-        // assemble options panel
-        pnOption.add(Box.createHorizontalGlue());
-        pnOption.add(jlNo);
-        pnOption.add(Box.createHorizontalGlue());
-        pnOption.add(jlYes);
-        pnOption.add(Box.createHorizontalGlue());
-        // assemble Exit panel
-        pnExit.add(jlTitle);
-        pnExit.add(Box.createVerticalGlue());
-        pnExit.add(jlMessage);
-        pnExit.add(Box.createVerticalGlue());
-        pnExit.add(pnOption);
-        pnExit.add(Box.createVerticalGlue());
+        setAllAlignmentX(CENTER_ALIGNMENT, lbTitle, lbMessage, lbYes, lbNo);
+        // combine all components
+        addAll(pnOption, Box.createHorizontalGlue(), lbNo, Box.createHorizontalGlue(), lbYes, Box.createHorizontalGlue());
+        addAll(pnExit, lbTitle, Box.createVerticalGlue(), lbMessage, Box.createVerticalGlue(), pnOption, Box.createVerticalGlue());
         return pnExit;
     }
 
@@ -436,9 +354,16 @@ class PanelCreator{
     //================================================================================================================//
 
     private static JPanel configurePanelGame(JPanel pnOuterMost, CardLayout cardLayout,App app, Renderer mazeRender) {
-        var pnGame = new JPanel(){
+        app.addKeyListener(app.getController());
+        mazeRender.setFocusable(true);
+//        app.setTimer(new Timer(34, unused -> {
+//            assert SwingUtilities.isEventDispatchThread();
+////            app.getGame().pingAll();
+//            mazeRender.repaint();
+//        }));
 
-            @Override
+        // outermost panel
+        var pnGame = new JPanel(){
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 BufferedImage img =  Images.Pattern.getImg();
@@ -450,52 +375,45 @@ class PanelCreator{
                 }
             }
         };
-        var pnStatus = new JPanel();
+        // 3 panels on top of outermost panel: left/mid/right
+        JPanel pnStatus = new JPanel();
+        JPanel pnMaze = new JPanel();
+        JPanel pnRight = new JPanel();
+        // inner panels for panels: left/mid/right
+        JPanel pnStatusTop = new JPanel();
+        JPanel pnStatusMid = new JPanel();
+        JPanel pnStatusBot = new JPanel();
+        JPanel pnInventory = new JPanel();
+        JPanel pnInventories = new JPanel();
+        // status bars
+        JLabel lbLevelTitle = new JLabel("Level");
+        JLabel lbLevel = new JLabel(app.getGame().getCurrentLevel()+"");
+        JLabel lbTimerTitle = new JLabel("Time Left");
+        JLabel lbTimer = new JLabel("120");
+        JLabel lbTreasuresTitle = new JLabel("Treasures");
+        JLabel lbTreasures = new JLabel(app.getGame().getTreasuresLeft()+"");
+        JLabel lbPause = createActionLabel("Menu", app::transitionToMenuScreen);
+        JLabel lbInventoryTitle = new JLabel("Inventory");
 
-        var pnStatusTop = new JPanel();
-        var lbPause = new JLabel("Menu") {{
-            addMouseListener(new MouseAdapter() {
-                public void mouseEntered(MouseEvent e){setForeground(Color.RED);}
-                public void mouseExited(MouseEvent e) {setForeground(Color.BLACK);}
-                public void mousePressed(MouseEvent e) {
-                    app.transitionToMenuScreen();
-                }
-            });}};
-
-        var lbLevelTitle = new JLabel("Level");
-        var lbLevel = new JLabel(app.getGame().getCurrentLevel()+"");
-        var lbTimerTitle = new JLabel("Time Left");
-        var lbTimer = new JLabel("120");
-        var lbTreasuresTitle = new JLabel("Treasures Left");
-        var lbTreasures = new JLabel(app.getGame().getTreasuresLeft()+"");
-        var lbInventoryTitle = new JLabel("Inventory");
-        var pnInventory = new JPanel();
-
-        app.addKeyListener(app.getController());
-        mazeRender.setFocusable(true);
-        /*Timer timer = new Timer(34, unused -> {
-            assert SwingUtilities.isEventDispatchThread();
-            r.repaint();
-        });*/
+        // setting layout
         pnGame.setLayout(new BoxLayout(pnGame, BoxLayout.X_AXIS));
-        pnStatus.setLayout(new BoxLayout(pnStatus, BoxLayout.Y_AXIS));
-        pnStatusTop.setLayout(new BoxLayout(pnStatusTop, BoxLayout.X_AXIS));
-        pnInventory.setLayout(new GridLayout(2,4));
-        int size = 600;
-        mazeRender.setPreferredSize(new Dimension(size, size));
-        mazeRender.setMaximumSize(new Dimension(size, size));
-        mazeRender.setMinimumSize(new Dimension(size, size));
+        setAllBoxLayout(BoxLayout.Y_AXIS, pnStatus, pnRight, pnStatusTop, pnStatusMid, pnStatusBot, pnInventory);
+        pnMaze.setLayout(new GridBagLayout());
+        pnInventories.setLayout(new GridLayout(4,2));
+        pnStatus.setMaximumSize(new Dimension(200, 1000));
+        pnRight.setMaximumSize(new Dimension(200, 1000));
+        setSize(mazeRender, 700, 700, 600, 600, 800, 800);
+        setSize(pnMaze, 700, 700, 600, 600, 800, 800);
+        int size = 75;
+        setSize(pnInventory, size*2, size*4, size*2, size*4, size*2, size*4);
+        setAllFont(FONT, STYLE, TEXT_SIZE_1, lbLevelTitle, lbPause, lbLevel, lbTimerTitle, lbTimer, lbTreasuresTitle,
+                lbTreasures, lbInventoryTitle);
+        setAllOpaque(false, pnStatus, pnMaze, pnRight, pnStatusTop, pnStatusMid, pnStatusBot, pnInventory, pnInventories);
 
-        setAllFont(FONT, STYLE, TEXT_SIZE_1, lbLevelTitle, lbPause, lbLevel, lbTimerTitle, lbTimer, lbTreasuresTitle, lbTreasures, lbInventoryTitle);
-        pnStatus.setOpaque(false);
-        pnStatusTop.setOpaque(false);
-//        pnGame.setBackground(Color.PINK);
-        pnInventory.setBackground(Color.CYAN);
         List<Tile> inventory = new Game().getInventory();
         for(int i = 0; i < 8; i++) {
             int finalX = i;
-            pnInventory.add(new JLabel(){
-                @Override
+            pnInventories.add(new JLabel(){
                 public void paintComponent(Graphics g) {
                     super.paintComponent(g);
                     BufferedImage img =  Images.Empty_tile.getImg();
@@ -507,25 +425,20 @@ class PanelCreator{
             });
         }
 
-        pnStatusTop.add(lbLevelTitle);
-        pnStatusTop.add(Box.createHorizontalGlue());
-        pnStatusTop.add(lbPause);
-        pnStatus.add(pnStatusTop);
-        pnStatus.add(lbLevel);
-        pnStatus.add(Box.createVerticalGlue());
-        pnStatus.add(lbTimerTitle);
-        pnStatus.add(lbTimer);
-        pnStatus.add(Box.createVerticalGlue());
-        pnStatus.add(lbTreasuresTitle);
-        pnStatus.add(lbTreasures);
-        pnStatus.add(Box.createVerticalGlue());
-        pnStatus.add(lbInventoryTitle);
-        pnStatus.add(pnInventory);
-
-        pnGame.add(mazeRender);
-        pnGame.add(pnStatus);
+        addAll(pnStatusTop, lbLevelTitle, lbLevel);
+        addAll(pnStatusMid, lbTimerTitle, lbTimer);
+        addAll(pnStatusBot, lbTreasuresTitle, lbTreasures);
+        addAll(pnInventory, lbInventoryTitle, pnInventories);
+        addAll(pnStatus, Box.createVerticalGlue(), pnStatusTop, Box.createVerticalGlue(), pnStatusMid,
+                        Box.createVerticalGlue(), pnStatusBot, Box.createVerticalGlue());
+        pnMaze.add(mazeRender);
+        addAll(pnRight, Box.createVerticalGlue(), lbPause, Box.createVerticalGlue(), pnInventory, Box.createVerticalGlue());
+        addAll(pnGame, Box.createHorizontalGlue(), pnStatus, Box.createHorizontalGlue(), pnMaze, Box.createHorizontalGlue(),
+                        pnRight, Box.createHorizontalGlue());
         return pnGame;
     }
+
+
 
     private static JPanel configurePanelVictory(JPanel pnOuterMost, CardLayout cardLayout) {
         return new JPanel();
@@ -552,14 +465,25 @@ class PanelCreator{
         Arrays.stream(labels).forEach(label -> label.setAlignmentX(alignment));
     }
 
-    private static void setAllAlignmentX(float alignment, List<JLabel> l1, List<JLabel> l2, JLabel... labels) {
-        Arrays.stream(labels).forEach(label -> label.setAlignmentX(alignment));
-        l1.forEach(label -> label.setAlignmentX(alignment));
-        l2.forEach(label -> label.setAlignmentX(alignment));
+    private static void setAllAlignmentY(float alignment, JComponent... components) {
+        Arrays.stream(components).forEach(label -> label.setAlignmentY(alignment));
     }
 
-    private static void setAllAlignmentY(float alignment, JLabel... labels) {
-        Arrays.stream(labels).forEach(label -> label.setAlignmentY(alignment));
+    private static void setAllBoxLayout(int axis, JPanel... pns) {
+        Arrays.stream(pns).forEach(pn -> pn.setLayout(new BoxLayout(pn, axis)));
+    }
+
+    private static void setAllOpaque(boolean b, JComponent... components) {
+        Arrays.stream(components).forEach(c -> c.setOpaque(b));
+    }
+    private static void setSize(JComponent Component, int pX, int pY, int miX, int miY, int maX, int maY) {
+        Component.setPreferredSize(new Dimension(pX, pY));
+        Component.setMinimumSize(new Dimension(miX, miY));
+        Component.setMaximumSize(new Dimension(maX, maY));
+    }
+
+    private static void addAll(JComponent parent, Component... components) {
+        Arrays.stream(components).forEach(parent::add);
     }
 
     private static JLabel createBackToMenuLabel(String text, JPanel pnOuterMost, CardLayout cardLayout, Color color) {
@@ -571,4 +495,15 @@ class PanelCreator{
         });}};
     }
 
+    private static JLabel createActionLabel(String name, Runnable runnable) {
+        return new JLabel(name) {{
+            addMouseListener(new MouseAdapter() {
+                public void mouseEntered(MouseEvent e){setForeground(Color.RED);}
+                public void mouseExited(MouseEvent e) {setForeground(Color.BLACK);}
+                public void mousePressed(MouseEvent e) {
+                    runnable.run();
+                }
+            });
+        }};
+    }
 }

@@ -5,9 +5,7 @@ import Renderer.tempDomain.*;
 import Renderer.Renderer;
 import Renderer.TexturePack;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
@@ -32,7 +30,7 @@ public class App extends JFrame {
     private int indexOfKeyToSet = -1;
 
     private Game game;
-    public Renderer render;
+    private Renderer render;
     private Controller controller;
 
     static final int WIDTH = 1200;
@@ -45,6 +43,7 @@ public class App extends JFrame {
     private final CardLayout gameCardLayout = new CardLayout();
 
     Runnable closePhase = ()->{};
+    private Timer timer;
 
     /**
      * Constructor for the App class. Initializes the GUI and the main loop.
@@ -104,6 +103,13 @@ public class App extends JFrame {
     //================================================================================================================//
 
     /**
+     * exits the key setting mode so another action can be selected for setting key binding.
+     */
+    public void exitKeySettingMode(){
+        indexOfKeyToSet = -1;
+    }
+
+    /**
      * Sets the index of the action to set a different key binding.
      *
      * @param indexOfKeyToSet the index of the action to set key
@@ -113,12 +119,13 @@ public class App extends JFrame {
     }
 
     /**
-     * exits the key setting mode so another action can be selected for setting key binding.
+     * Sets the timer and its action going to be used for the game loop
+     *
+     * @param timer the timer to use for the main loop
      */
-    public void exitKeySettingMode(){
-        indexOfKeyToSet = -1;
+    public void setTimer(Timer timer) {
+        this.timer = timer;
     }
-
 
     //================================================================================================================//
     //============================================ Getter Method =====================================================//
@@ -140,6 +147,15 @@ public class App extends JFrame {
      */
     public Controller getController() {
         return controller;
+    }
+
+    /**
+     * Gets the current renderer.
+     *
+     * @return the renderer object
+     */
+    public Renderer getRender() {
+        return render;
     }
 
 
