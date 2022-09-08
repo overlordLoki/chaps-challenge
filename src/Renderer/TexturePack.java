@@ -13,6 +13,7 @@ public enum TexturePack{
     public enum Images{
         Background("background"),
         Pattern("pattern"),
+        Pattern_2("pattern2"),
         Floor("floor"),
         
         Hero("hero"),
