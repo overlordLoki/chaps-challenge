@@ -199,7 +199,7 @@ class PanelCreator{
         JLabel lbTitle = new JLabel("Settings");
         JLabel lbConfirm = createBackToMenuLabel("Confirm", pnOuterMost, cardLayout, Color.RED);
         JLabel lbTexturePack = new JLabel("Texture Pack");
-        JLabel lbCurrentTexture = new JLabel(app.getCurrentTexture()+"");
+        JLabel lbCurrentTexture = new JLabel(app.getRender().getCurrentTexturePack()+"");
         JLabel lbNextTexture = createActionLabel("  >>>", ()->{
             int newTexture = (app.getRender().getCurrentTexturePack().ordinal()+1)%TexturePack.values().length;
             TexturePack currentPack = TexturePack.values()[newTexture];

@@ -190,12 +190,4 @@ public class App extends JFrame {
     public static void main(String... args){
         SwingUtilities.invokeLater(App::new);
     }
-
-    TexturePack current = TexturePack.Cats;
-    public void setTexturePack(TexturePack pack){
-        current = pack;
-    }
-    public <E extends Enum<E>> Enum<E> getCurrentTexture() {
-        return (Enum<E>) current;
-    }
 }
