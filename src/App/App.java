@@ -3,11 +3,9 @@ package App;
 import App.tempDomain.Game;
 import Renderer.tempDomain.*;
 import Renderer.Renderer;
-import Renderer.TexturePack;
 
 import javax.swing.*;
-import java.awt.CardLayout;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -70,7 +68,14 @@ public class App extends JFrame {
         game = new Game();
         controller = new Controller(actionKeyBindings, game);
         render = new Renderer(new Maze());
-        PanelCreator.configureMenuScreen(this, menuPanel, menuCardLayout, actionKeyBindings, actionNames);
+        addKeyListener(controller);
+        render.setFocusable(true);
+        setTimer(new Timer(34, unused -> {
+            assert SwingUtilities.isEventDispatchThread();
+//            app.getGame().pingAll();
+            render.repaint();
+        }));
+        PanelCreator.configureMenuScreen(this, menuPanel, menuCardLayout);
         PanelCreator.configureGameScreen(this, gamePanel, gameCardLayout, render);
         outerPanel.add(menuPanel, MENU);
         outerPanel.add(gamePanel, GAME);
@@ -177,6 +182,23 @@ public class App extends JFrame {
         return indexOfKeyToSet != -1;
     }
 
+    /**
+     * Gets the list of action names.
+     *
+     * @return the list of action names
+     */
+    public List<String> getActionNames() {
+        return actionNames;
+    }
+
+    /**
+     * Gets the list of action key bindings.
+     *
+     * @return the list of action key bindings
+     */
+    public List<String> getActionKeyBindings() {
+        return actionKeyBindings;
+    }
 
     //================================================================================================================//
     //============================================= Main Method ======================================================//
