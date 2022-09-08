@@ -1,5 +1,6 @@
 package Renderer;
 import Renderer.tempDomain.*;
+import Renderer.tempDomain.Tiles.Floor;
 import Renderer.tempDomain.Tiles.Tile;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -27,6 +28,10 @@ public class Renderer extends JPanel{
 
     public int getPatternSize() {
         return patternSize;
+    }
+
+    public TexturePack getCurrentTexturePack(){
+        return texturePack;
     }
 
 
@@ -79,16 +84,14 @@ public class Renderer extends JPanel{
         //get the width and height of the maze
         int tileWidth = (getWidth() / gameArray.length);
         int tileHeight = (getHeight() / gameArray[1].length);
-        //loop through the maze array and paint the black tile as a background
-        for (int i = 0; i < gameArray.length; i++) {
-            for (int j = 0; j < gameArray[1].length; j++) {
-                g.drawImage(TexturePack.Images.Empty_tile.getImg(), i * tileWidth, j * tileHeight, tileWidth, tileHeight, null);
-            }
-        }
         //loop through the maze array and paint the tiles
         for (int i = 0; i < gameArray.length; i++) {
             for (int j = 0; j < gameArray[1].length; j++) {
+                //clear the floor
+                g.drawImage(TexturePack.Images.Floor.getImg(), i * tileWidth, j * tileHeight, tileWidth, tileHeight, null);
+                // if there is a item draw on top of the floor or a wall tile
                 Tile tile = gameArray[i][j];
+                if(tile instanceof Floor) continue;
                 g.drawImage(TexturePack.Images.getImage(tile), i * tileWidth, j * tileHeight, tileWidth, tileHeight, null);
             }
         }
