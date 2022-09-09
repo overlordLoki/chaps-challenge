@@ -140,19 +140,45 @@ class PanelCreator{
         System.out.print("Configuring: Load...... ");
 
         JPanel pnLoad = createRepeatableBackgroundPanel(Images.Pattern_2, app.getRender());
-        JLabel lbTitle = createLabel("Load and Resume Saved Games", app.getRender(), TITLE, true);
-        JLabel lbConfirm = createActionLabel("Confirm", app.getRender(),SUBTITLE, true, app::transitionToMenuScreen);
+        JLabel lbTitle = createLabel("Load and Resume Games", app.getRender(), TITLE, true);
+        JLabel lbConfirm = createActionLabel("Back", app.getRender(),SUBTITLE, true, app::transitionToMenuScreen);
+        JPanel pnLoad1 = createLoadGamePanel("Load 1", app, app.getRender());
+        JPanel pnLoad2 = createLoadGamePanel("Load 2", app, app.getRender());
 
         // setting layout
         pnLoad.setLayout(new BoxLayout(pnLoad, BoxLayout.Y_AXIS));
         // assemble this panel
-        pnLoad.add(lbTitle);
-        pnLoad.add(Box.createVerticalGlue());
-        // add Loading box here?
-        pnLoad.add(Box.createVerticalGlue());
-        pnLoad.add(lbConfirm);
+        addAll(pnLoad, lbTitle, Box.createVerticalGlue(), pnLoad1, Box.createVerticalGlue(),pnLoad2,Box.createVerticalGlue(), lbConfirm);
 
         System.out.println("Done!");
+        return pnLoad;
+    }
+
+    private static JPanel createLoadGamePanel(String title, App app, Renderer render) {
+        JPanel pnLoad = createRepeatableBackgroundPanel(Images.Wall, render);
+        JPanel pnInfo = createClearPanel();
+        JPanel pnStatus = createClearPanel();
+        JPanel pnInventory = createInventoryPanel();;
+        JPanel pnOptions = createClearPanel();
+
+        JLabel lbTitle = createLabel(title, render, SUBTITLE, true);
+        JLabel lbLevel = createLabel("Level: 1", render, TEXT, true);
+        JLabel lbTime = createLabel("Time Left: 02:00", render, TEXT, true);
+        JLabel lbScore = createLabel("Score: 0", render, TEXT, true);
+        JLabel lbConfirm = createActionLabel("Load!", render, SUBTITLE, true, app::transitionToGameScreen);
+        JLabel lbDelete = createActionLabel("Delete", render, SUBTITLE, true, app::transitionToMenuScreen);
+
+        pnLoad.setLayout(new BoxLayout(pnLoad, BoxLayout.Y_AXIS));
+        pnStatus.setLayout(new BoxLayout(pnStatus, BoxLayout.X_AXIS));
+        pnOptions.setLayout(new BoxLayout(pnOptions, BoxLayout.X_AXIS));
+        pnInventory.setLayout(new GridLayout(1, 9));
+        setSize(pnLoad, 800, 200, 800, 200, 800, 200);
+        setSize(pnInventory, 675,75, 675,75, 675,75);
+        setSize(pnStatus, 675, 30, 675, 30, 675, 30);
+        addAll(pnStatus, lbLevel, Box.createHorizontalGlue(), lbTime, Box.createHorizontalGlue(), lbScore);
+        addAll(pnInfo, pnStatus, pnInventory);
+        addAll(pnOptions, Box.createHorizontalGlue(), lbConfirm, Box.createHorizontalGlue(),lbDelete, Box.createHorizontalGlue());
+        addAll(pnLoad, lbTitle, pnInfo, pnOptions);
         return pnLoad;
     }
 
@@ -333,7 +359,7 @@ class PanelCreator{
         JPanel pnStatusMid = createClearPanel();
         JPanel pnStatusBot = createClearPanel();
         JPanel pnInventory = createClearPanel();
-        JPanel pnInventories = createClearPanel();
+        JPanel pnInventories = createInventoryPanel();
         // status bars
         JLabel lbLevelTitle = createLabel("Level", mazeRender, SUBTITLE, false);
         JLabel lbLevel      = createLabel(app.getGame().getCurrentLevel()+"" , mazeRender, SUBTITLE, false);
@@ -356,19 +382,6 @@ class PanelCreator{
         int size = 75;
         setSize(pnInventory, size*2, size*4, size*2, size*4, size*2, size*4);
 
-        for(int i = 0; i < 8; i++) {
-            int finalX = i;
-            pnInventories.add(new JLabel(){
-                public void paintComponent(Graphics g) {
-                    super.paintComponent(g);
-                    g.drawImage(Images.Empty_tile.getImg(), 0, 0, getWidth(),getHeight(),null);
-                    int size = Math.min(getWidth(), getHeight());
-                    List<Tile> inventory = new Game().getInventory();
-                    if (finalX >= inventory.size()) return;
-                    g.drawImage(Images.getImage(inventory.get(finalX)), (getWidth()-size)/2, (getHeight()-size)/2, size,size,null);
-                }
-            });
-        }
 
         addAll(pnStatusTop, lbLevelTitle, lbLevel);
         addAll(pnStatusMid, lbTimerTitle, lbTimer);
@@ -468,6 +481,29 @@ class PanelCreator{
     }
 
     /**
+     * Creates a panel which displays the inventory the player has
+     *
+     * @return a JPanel with the inventory
+     */
+    private static JPanel createInventoryPanel() {
+        JPanel pnInventory = createClearPanel();
+        for(int i = 0; i < 8; i++) {
+            int finalX = i;
+            pnInventory.add(new JLabel(){
+                public void paintComponent(Graphics g) {
+                    super.paintComponent(g);
+                    g.drawImage(Images.Empty_tile.getImg(), 0, 0, getWidth(),getHeight(),null);
+                    int size = Math.min(getWidth(), getHeight());
+                    List<Tile> inventory = new Game().getInventory();
+                    if (finalX >= inventory.size()) return;
+                    g.drawImage(Images.getImage(inventory.get(finalX)), (getWidth()-size)/2, (getHeight()-size)/2, size,size,null);
+                }
+            });
+        }
+        return pnInventory;
+    }
+
+    /**
      * This method is used to create a JLabel with texture-dynamic fonts.
      *
      * @param name     the name of the label
@@ -519,10 +555,11 @@ class PanelCreator{
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 TexturePack tp = render.getCurrentTexturePack();
-                int size = textSize;
-                if (size == TITLE) size = tp.getTitleSize();
-                else if (size == SUBTITLE) size = tp.getSubtitleSize();
-                else if (size == TEXT) size = tp.getTextSize();
+                int size = switch (textSize) {
+                    case TITLE -> tp.getTitleSize();
+                    case SUBTITLE -> tp.getSubtitleSize();
+                    default -> tp.getTextSize();
+                };
                 setFont(new Font(tp.getFont(), tp.getStyle(), size));
             }
         };
