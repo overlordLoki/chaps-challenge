@@ -1,6 +1,7 @@
 package Renderer;
 
 import java.awt.image.BufferedImage;
+import java.awt.*;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -8,11 +9,45 @@ import javax.imageio.ImageIO;
 import Renderer.tempDomain.Tiles.Tile;
 
 public enum TexturePack{
-    Original, Cats, Dogs, Emoji;
+    Original("Comic Sans MS",Font.BOLD, Color.BLACK, Color.ORANGE, Color.RED, 80, 40, 30),
+    Cats("Agency FB", Font.BOLD,  Color.BLACK, Color.ORANGE, Color.RED, 80, 40, 30),
+    Dogs("Agency FB", Font.BOLD,  Color.BLACK, Color.ORANGE, Color.RED, 80, 40, 30),
+    Emoji("Agency FB", Font.BOLD, Color.BLACK, Color.ORANGE, Color.RED, 80, 40, 30);
+    
+    private final String font;
+    private final int style;
+    private final Color colorDefault;
+    private final Color colorHover;
+    private final Color colorSelected;
+    private final int TitleSize;
+    private final int SubtitleSize;
+    private final int TextSize;
+
+    public String getFont() {return font;}
+    public int getStyle() {return style;}
+    public Color getColorDefault() {return colorDefault;}
+    public Color getColorHover() {return colorHover;}
+    public Color getColorSelected() {return colorSelected;}
+    public int getTitleSize() {return TitleSize;}
+    public int getSubtitleSize() {return SubtitleSize;}
+    public int getTextSize() {return TextSize;}
+
+    TexturePack(String font, int style, Color colorDefault, Color colorHover, Color colorSelected, int TitleSize, int SubtitleSize, int TextSize){
+        this.font = font;
+        this.style = style;
+        this.colorDefault = colorDefault;
+        this.colorHover = colorHover;
+        this.colorSelected = colorSelected;
+        this.TitleSize = TitleSize;
+        this.SubtitleSize = SubtitleSize;
+        this.TextSize = TextSize;
+    }
 
     public enum Images{
         Background("background"),
         Pattern("pattern"),
+        Pattern_2("pattern2"),
+        Floor("floor"),
         
         Hero("hero"),
         Enemy("enemy"),
@@ -52,6 +87,7 @@ public enum TexturePack{
     
         public static BufferedImage getImage(Tile tile){
             return switch(tile.getImg()){
+                case "floor" -> Images.Floor.getImg();
                 case "empty_tile" -> Images.Empty_tile.getImg();
                 case "hero" -> Images.Hero.getImg();
                 case "pattern" -> Images.Pattern.getImg();

@@ -4,15 +4,11 @@ import App.tempDomain.Game;
 import Renderer.tempDomain.*;
 import Renderer.Renderer;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import java.awt.CardLayout;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static App.PanelCreator.*;
@@ -23,26 +19,29 @@ import static App.PanelCreator.*;
  * @author Jeff Lin
  */
 public class App extends JFrame {
+    static final long serialVersionUID = 1L;
     private final List<String> actionNames = List.of("Move Up","Move Down","Move Left","Move Right","Pause Game",
             "Resume Game","Jump To Level 1","Jump To Level 2","Quit Game","Save And Quit Game","Reload Game");
     @SuppressWarnings("FieldMayBeFinal")
     private List<String> actionKeyBindings = new ArrayList<>(List.of("Up","Down","Left","Right","Space",
             "Escape","1","2","X","S","R"));
     private int indexOfKeyToSet = -1;
-    private Controller controller;
 
     private Game game;
+    private Renderer render;
+    private Controller controller;
 
-    Runnable closePhase = ()->{};
-
-
-    static final long serialVersionUID = 1L;
     static final int WIDTH = 1200;
     static final int HEIGHT = 800;
-    JPanel menuPanel = new JPanel();
-    JPanel gamePanel = new JPanel();
-    CardLayout menuCardLayout = new CardLayout();
-    CardLayout gameCardLayout = new CardLayout();
+    private final JPanel outerPanel = new JPanel();
+    private final JPanel menuPanel = new JPanel();
+    private final JPanel gamePanel = new JPanel();
+    private final CardLayout outerCardLayout = new CardLayout();
+    private final CardLayout menuCardLayout = new CardLayout();
+    private final CardLayout gameCardLayout = new CardLayout();
+
+    Runnable closePhase = ()->{};
+    private Timer timer;
 
     /**
      * Constructor for the App class. Initializes the GUI and the main loop.
@@ -54,69 +53,66 @@ public class App extends JFrame {
         addWindowListener(new WindowAdapter() {
             public void windowClosed(WindowEvent e) {
                 closePhase.run();
-            }
-        });
-        menuScreen();
+            }}
+        );
+        initialiseGUI();
     }
 
     /**
-     * Enters the menu screen, where the user can start a new game, load a game, quit the game, or change key bindings.
+     * Initializes the GUI and displays menu screen.
      */
-    private void menuScreen(){
-        // shell to hold all the components
-        menuPanel = new JPanel();
-        menuCardLayout = new CardLayout();
-        setContentPane(PanelCreator.configureMenuScreen(this, menuPanel, menuCardLayout, actionKeyBindings, actionNames));
-        closePhase.run();
-        closePhase = ()-> {
-            menuPanel.setVisible(false);
-            gamePanel.setVisible(true);
-        };
-        menuCardLayout.show(menuPanel, MENU);
-        setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        pack();
-    }
-
-    /**
-     * Enters the game screen, and starts the game loop.
-     * <p></p>
-     * This method is called when the user clicks the "Start Game" button.
-     * It initializes the game and controller, then starts the game loop.
-     */
-    public void gameScreen(){
-        gamePanel = new JPanel();
-        gameCardLayout = new CardLayout();
-
-        // initialise game settings
+    private void initialiseGUI(){
+        this.setMinimumSize(new Dimension(WIDTH, HEIGHT));
+        this.setContentPane(outerPanel);
+        outerPanel.setLayout(outerCardLayout);
         game = new Game();
         controller = new Controller(actionKeyBindings, game);
-        var gameRenderer = new Renderer(new Maze());
-
-        // set up the GUI
-        JPanel p = PanelCreator.configureGameScreen(gamePanel, gameCardLayout,
-                this, gameRenderer);
-        this.setContentPane(p);
-//        this.add(p);
-        gameCardLayout.show(gamePanel, MENU);
-
-        // kickstart the game panel
-        closePhase.run();
-        closePhase = ()->{
-            gamePanel.setVisible(false);
-            menuPanel.setVisible(true);
-            System.out.println("Game ended");
-            menuCardLayout.show(menuPanel, MENU);
-            System.out.println("Menu shown");
-        };
-        setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        setMinimumSize(new Dimension(900, 600));
+        render = new Renderer(new Maze());
+        addKeyListener(controller);
+        render.setFocusable(true);
+        setTimer(new Timer(34, unused -> {
+            assert SwingUtilities.isEventDispatchThread();
+//            app.getGame().pingAll();
+            render.repaint();
+        }));
+        PanelCreator.configureMenuScreen(this, menuPanel, menuCardLayout);
+        PanelCreator.configureGameScreen(this, gamePanel, gameCardLayout);
+        outerPanel.add(menuPanel, MENU);
+        outerPanel.add(gamePanel, GAME);
+        transitionToMenuScreen();
         pack();
     }
 
+    /**
+     * Transitions to the menu screen.
+     */
+    public void transitionToMenuScreen(){
+        System.out.println("Toggling to menu screen");
+        menuCardLayout.show(menuPanel, MENU);
+        outerCardLayout.show(outerPanel, MENU);
+        System.out.println("Menu shown");
+    }
+
+    /**
+     * Transitions to the game screen.
+     */
+    public void transitionToGameScreen(){
+        System.out.println("Toggling to game screen");
+        gameCardLayout.show(gamePanel, GAME);
+        outerCardLayout.show(outerPanel, GAME);
+        System.out.println("Game shown");
+    }
 
     //================================================================================================================//
     //============================================ Setter Method =====================================================//
     //================================================================================================================//
+
+    /**
+     * exits the key setting mode so another action can be selected for setting key binding.
+     */
+    public void exitKeySettingMode(){
+        indexOfKeyToSet = -1;
+    }
 
     /**
      * Sets the index of the action to set a different key binding.
@@ -128,12 +124,13 @@ public class App extends JFrame {
     }
 
     /**
-     * exits the key setting mode so another action can be selected for setting key binding.
+     * Sets the timer and its action going to be used for the game loop
+     *
+     * @param timer the timer to use for the main loop
      */
-    public void exitKeySettingMode(){
-        indexOfKeyToSet = -1;
+    public void setTimer(Timer timer) {
+        this.timer = timer;
     }
-
 
     //================================================================================================================//
     //============================================ Getter Method =====================================================//
@@ -157,6 +154,15 @@ public class App extends JFrame {
         return controller;
     }
 
+    /**
+     * Gets the current renderer.
+     *
+     * @return the renderer object
+     */
+    public Renderer getRender() {
+        return render;
+    }
+
 
     /**
      * Gets the index of the action to set a different key binding.
@@ -176,6 +182,32 @@ public class App extends JFrame {
         return indexOfKeyToSet != -1;
     }
 
+    /**
+     * Gets the list of action names.
+     *
+     * @return the list of action names
+     */
+    public List<String> getActionNames() {
+        return actionNames;
+    }
+
+    /**
+     * Gets the list of action key bindings.
+     *
+     * @return the list of action key bindings
+     */
+    public List<String> getActionKeyBindings() {
+        return actionKeyBindings;
+    }
+
+    /**
+     * Gets the time left for the current level.
+     *
+     * @return the time left for the current level
+     */
+    public int getTimeLeft() {
+        return 120;
+    }
 
     //================================================================================================================//
     //============================================= Main Method ======================================================//

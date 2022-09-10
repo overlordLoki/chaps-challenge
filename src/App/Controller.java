@@ -5,7 +5,6 @@ import App.tempDomain.Game;
 import javax.swing.SwingUtilities;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,9 +18,9 @@ import static java.awt.event.KeyEvent.VK_CONTROL;
  */
 class Controller extends KeyAdapter {
     @SuppressWarnings("FieldMayBeFinal")
-    private Map<String, Runnable> actionsPressed = new HashMap<>();
+    private Map<String, Runnable> actionsPressed;
     @SuppressWarnings("FieldMayBeFinal")
-    private Map<String, Runnable> actionsReleased = new HashMap<>();
+    private Map<String, Runnable> actionsReleased;
     private final Actions actions;
     private Boolean ctrlPressed = false;
 
@@ -36,7 +35,9 @@ class Controller extends KeyAdapter {
         setController(keyBindings);
     }
 
-    private void setController(List<String> keyBindings){
+    public void setController(List<String> keyBindings){
+        actionsPressed = new HashMap<>();
+        actionsReleased = new HashMap<>();
         setAction(keyBindings.get(0), actions::actionUp, ()->{});    // up
         setAction(keyBindings.get(1), actions::actionDown, ()->{});  // down
         setAction(keyBindings.get(2), actions::actionLeft, ()->{});  // left
