@@ -2,27 +2,35 @@ package Persistency;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
 import App.*;
 import Domain.*;
 
 public class Persistency {
     /*
-     * Serialise a domain to a string
+     * Serialise a domain to an XML document
      * 
      * @param domain The domain to serialise
      * 
-     * @return The serialised domain as an XML string
+     * @return The serialised domain as an XML document
      */
-    public static String serialize(Domain domain) {
-        return "<Domain/>";
+    public static Document serialize(Domain domain) {
+        Document document = DocumentHelper.createDocument();
+        Element root = document.addElement("Domain");
+        return document;
     }
 
     /*
      * Unserialise a domain to a file
      * 
-     * @param xml The XML string to unserialise
+     * @param xml The XML document to unserialise
      * 
      * @param domain The domain to unserialise to
      */
@@ -37,21 +45,11 @@ public class Persistency {
      * 
      * @param path The file path to save to
      */
-    public static void save(Domain domain, String path) {
-        String xml = serialize(domain);
+    public static void save(Domain domain, String path) throws IOException {
+        Document document = serialize(domain);
 
-        // save xml to file
-        File file = new File(path);
-        PrintWriter writer = null;
-        try {
-            writer = new PrintWriter(file);
-            writer.println(xml);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            if (writer != null) {
-                writer.close();
-            }
-        }
+        FileWriter out = new FileWriter(path);
+        document.write(out);
+        out.close();
     }
 }

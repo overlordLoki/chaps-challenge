@@ -15,7 +15,9 @@ import Persistency.Persistency;
 public class BaseTests {
     @Test
     public void testEmptySerialise() {
-        assertEquals(Persistency.serialize(new Domain()), "<Domain/>");
+        assertEquals(Persistency.serialize(new Domain()).asXML(), """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <Domain/>""");
     }
 
     @Test
@@ -25,12 +27,20 @@ public class BaseTests {
 
     @Test
     public void testEmptySave() {
-        Persistency.save(new Domain(), "test.xml");
+        try {
+            Persistency.save(new Domain(), "/Users/benja/Documents/uni/swen225/chaps-challenge/test.xml");
+        } catch (IOException e1) {
+            fail("IOException thrown");
+        }
 
         // Open file and check contents
         try {
-            String content = new String(Files.readAllBytes(Paths.get("test.xml"))).strip();
-            assertEquals(content, "<Domain/>");
+            String content = new String(
+                    Files.readAllBytes(Paths.get("/Users/benja/Documents/uni/swen225/chaps-challenge/test.xml")))
+                    .strip();
+            assertEquals(content, """
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <Domain/>""");
         } catch (IOException e) {
             e.printStackTrace();
             fail();
