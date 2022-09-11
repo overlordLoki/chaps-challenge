@@ -55,7 +55,19 @@ public class App extends JFrame {
                 closePhase.run();
             }}
         );
+        initialiseGame();
         initialiseGUI();
+    }
+
+    private void initialiseGame() {
+        game = new Game();
+        controller = new Controller(actionKeyBindings, game);
+        addKeyListener(controller);
+        render = new Renderer(new Maze());
+        setTimer(new Timer(34, unused -> {
+            assert SwingUtilities.isEventDispatchThread();
+//            game.pingAll();
+        }));
     }
 
     /**
@@ -65,16 +77,7 @@ public class App extends JFrame {
         this.setMinimumSize(new Dimension(WIDTH, HEIGHT));
         this.setContentPane(outerPanel);
         outerPanel.setLayout(outerCardLayout);
-        game = new Game();
-        controller = new Controller(actionKeyBindings, game);
-        render = new Renderer(new Maze());
-        addKeyListener(controller);
         render.setFocusable(true);
-        setTimer(new Timer(34, unused -> {
-            assert SwingUtilities.isEventDispatchThread();
-//            app.getGame().pingAll();
-            render.repaint();
-        }));
         PanelCreator.configureMenuScreen(this, menuPanel, menuCardLayout);
         PanelCreator.configureGameScreen(this, gamePanel, gameCardLayout);
         outerPanel.add(menuPanel, MENU);

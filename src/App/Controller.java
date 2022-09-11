@@ -17,9 +17,7 @@ import static java.awt.event.KeyEvent.VK_CONTROL;
  * @author Jeff Lin
  */
 class Controller extends KeyAdapter {
-    @SuppressWarnings("FieldMayBeFinal")
     private Map<String, Runnable> actionsPressed;
-    @SuppressWarnings("FieldMayBeFinal")
     private Map<String, Runnable> actionsReleased;
     private final Actions actions;
     private Boolean ctrlPressed = false;
