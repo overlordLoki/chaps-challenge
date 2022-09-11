@@ -26,9 +26,9 @@ public class Inventory {
     }
 
     /**
-     * @return true if a tile name found, otherwise false
+     * @return true if a tile name found in inv, otherwise false
      */
-    public boolean findItem(TileName itemName){
+    public boolean hasItem(TileName itemName){
         return Arrays.stream(items).anyMatch(t -> t.getName() == itemName);
     }
 

@@ -28,7 +28,7 @@ public enum TileName{
         public Tile getTileObject(){
             return new Tile(){
                 public TileName getName(){ return Empty;}
-                public boolean canMoveOn(Actor a, Maze m) { return true;}
+                public boolean canMoveOn(Actor a, Maze m) { return true;} //anyone can move on empty terrain
             };
         }
     },
@@ -36,7 +36,7 @@ public enum TileName{
         public Tile getTileObject(){
             return new Tile(){
                 public TileName getName(){ return Floor;}
-                public boolean canMoveOn(Actor a, Maze m) { return true;}
+                public boolean canMoveOn(Actor a, Maze m) { return true;} //anyone can move on floor
             };
         }
     },
@@ -44,7 +44,7 @@ public enum TileName{
         public Tile getTileObject(){
             return new Tile(){
                 public TileName getName(){ return Wall;}
-                public boolean canMoveOn(Actor a, Maze m) { return false;}
+                public boolean canMoveOn(Actor a, Maze m) { return false;} //no one can move on wall
             };
         }
     },
@@ -54,7 +54,15 @@ public enum TileName{
         public Tile getTileObject(){
             return new Tile(){
                 public TileName getName(){ return ExitDoor;}
-                public boolean canMoveOn(Actor a, Maze m) { }
+                public boolean canMoveOn(Actor a, Maze m) { return false;}
+            };
+        }
+    },
+    ExitDoorOpen{
+        public Tile getTileObject(){
+            return new Tile(){
+                public TileName getName(){ return ExitDoorOpen;}
+                public boolean canMoveOn(Actor a, Maze m) { return true;}
             };
         }
     },
@@ -63,6 +71,7 @@ public enum TileName{
         public Tile getTileObject(){
             return new Lock(){
                 public TileName getName(){ return BlueKey;}
+                public boolean canMoveOn(Actor a, Maze m){ return m.getInv().hasItem(BlueKey);}
             };
         }
     },
@@ -70,6 +79,7 @@ public enum TileName{
         public Tile getTileObject(){
             return new Lock(){
                 public TileName getName(){ return GreenLock;}
+                public boolean canMoveOn(Actor a, Maze m){ return m.getInv().hasItem(GreenKey);}
             };
         }
     },
@@ -77,6 +87,7 @@ public enum TileName{
         public Tile getTileObject(){
             return new Lock(){
                 public TileName getName(){ return OrangeKey;}
+                public boolean canMoveOn(Actor a, Maze m){ return m.getInv().hasItem(OrangeKey);}
             };
         }
     },
