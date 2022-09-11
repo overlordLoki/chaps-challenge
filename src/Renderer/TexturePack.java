@@ -9,7 +9,7 @@ import javax.imageio.ImageIO;
 import Renderer.tempDomain.Tiles.Tile;
 
 public enum TexturePack{
-    Original("Agency FB",Font.BOLD, Color.BLACK, Color.ORANGE, Color.RED, 80, 40, 30),
+    Original("Comic Sans MS",Font.BOLD, Color.BLACK, Color.ORANGE, Color.RED, 80, 40, 30),
     Cats("Agency FB", Font.BOLD,  Color.BLACK, Color.ORANGE, Color.RED, 80, 40, 30),
     Dogs("Agency FB", Font.BOLD,  Color.BLACK, Color.ORANGE, Color.RED, 80, 40, 30),
     Emoji("Agency FB", Font.BOLD, Color.BLACK, Color.ORANGE, Color.RED, 80, 40, 30);

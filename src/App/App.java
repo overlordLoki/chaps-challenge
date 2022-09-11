@@ -76,7 +76,7 @@ public class App extends JFrame {
             render.repaint();
         }));
         PanelCreator.configureMenuScreen(this, menuPanel, menuCardLayout);
-        PanelCreator.configureGameScreen(this, gamePanel, gameCardLayout, render);
+        PanelCreator.configureGameScreen(this, gamePanel, gameCardLayout);
         outerPanel.add(menuPanel, MENU);
         outerPanel.add(gamePanel, GAME);
         transitionToMenuScreen();
@@ -200,6 +200,15 @@ public class App extends JFrame {
         return actionKeyBindings;
     }
 
+    /**
+     * Gets the time left for the current level.
+     *
+     * @return the time left for the current level
+     */
+    public int getTimeLeft() {
+        return 120;
+    }
+
     //================================================================================================================//
     //============================================= Main Method ======================================================//
     //================================================================================================================//
@@ -211,9 +220,5 @@ public class App extends JFrame {
      */
     public static void main(String... args){
         SwingUtilities.invokeLater(App::new);
-    }
-
-    public int getTimeLeft() {
-        return 120;
     }
 }
