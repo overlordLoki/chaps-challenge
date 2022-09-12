@@ -4,11 +4,23 @@ import java.util.Arrays;
 import java.util.stream.IntStream;
 
 public class Inventory {
-    Tile[] items;
+    private Tile[] items;
+    private int coins;
 
     public Inventory(int size){
         items = new Tile[size];
+        coins = 0;
     }
+
+    /**
+     * gets number of coins
+     */
+    public int coins(){return coins;}
+
+    /*
+     * increments number of coins
+     */
+    public void addCoin(){coins += 1;}
 
     /**
      * adds a tile to first empty place in inventory
@@ -28,14 +40,14 @@ public class Inventory {
     /**
      * @return true if a tile name found in inv, otherwise false
      */
-    public boolean hasItem(TileName itemName){
+    public boolean hasItem(TileType itemName){
         return Arrays.stream(items).anyMatch(t -> t.getName() == itemName);
     }
 
     /**
      * @return true if item was found and removed, otherwise false
      */
-    public boolean removeItem(TileName itemName){
+    public boolean removeItem(TileType itemName){
         for(int i = 0; i < items.length; i ++){
             if(items[i].getName() == itemName){
                 items[i] = null;

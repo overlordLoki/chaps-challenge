@@ -7,7 +7,7 @@ public class ChapGameException extends RuntimeException{
 
 }
 
-class IllegalStateException extends RuntimeException {
+class IllegalStateException extends ChapGameException {
     public IllegalStateException(String m){
         super(m);
     }

@@ -5,10 +5,9 @@ package Domain;
 public class Loc{
     private int x;
     private int y;
-    private Maze m;
+
     
-    public Loc(int x, int y, Maze m) throws Throwable{
-        checkInBound(x, y, m);
+    public Loc(int x, int y){
         this.x = x;
         this.y = y;
     }
@@ -22,17 +21,25 @@ public class Loc{
      */
     public int y(){return y;}
 
-    public void x(int x){}
+    /*
+     * set the x co ordinate of location.
+     */
+    public void x(int x){this.x = x;}
+
+    /*
+     * set the y co ordinate of location.
+     */
+    public void y(int y){this.y = y;}
 
 
     /*
-     * checks wether a given x and y is in bounds.
-     * If not throws illegalStateException
-     */
+     * checks wether a given x and y is in bounds. (DO: use this to check more often)
+     * If not throws illegalStateException. 
+     
     public static void checkInBound(int x, int y, Maze m) throws Throwable{
         if( x < 0 || y < 0 || x > m.width() - 1 || y > m.height() - 1){
             throw new ChapGameException("Location not in bounds.");
         }
-    }
+    }*/
     
 }
