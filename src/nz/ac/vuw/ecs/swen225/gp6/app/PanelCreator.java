@@ -236,7 +236,7 @@ class PanelCreator{
                 });}
                 public void paintComponent(Graphics g) {
                     TexturePack currentTexture = app.getRender().getCurrentTexturePack();
-                    setFont(new Font(currentTexture.getFont(), currentTexture.getStyle(), currentTexture.getTextSize()));
+                    setFont(currentTexture.getTextFont());
                     super.paintComponent(g);
                 }
             });
@@ -508,23 +508,22 @@ class PanelCreator{
      *
      * @param name     the name of the label
      * @param render   the renderer object
-     * @param textSize size of the text, should use the constants TITLE, SUBTITLE, and TEXT to specify
+     * @param textType size of the text, should use the constants TITLE, SUBTITLE, and TEXT to specify
      * @param Centered true if this label should be center aligned
      * @return the JLabel
      */
-    private static JLabel createLabel(String name, Renderer render, int textSize, boolean Centered) {
+    private static JLabel createLabel(String name, Renderer render, int textType, boolean Centered) {
         return new JLabel(name) {{
             setForeground(render.getCurrentTexturePack().getColorDefault());
             if (Centered) setAlignmentX(CENTER_ALIGNMENT);}
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 TexturePack tp = render.getCurrentTexturePack();
-                int size = switch (textSize) {
-                    case TITLE -> tp.getTitleSize();
-                    case SUBTITLE -> tp.getSubtitleSize();
-                    default -> tp.getTextSize();
-                };
-                setFont(new Font(tp.getFont(), tp.getStyle(), size));
+                setFont(switch (textType) {
+                    case TITLE    -> tp.getTitleFont();
+                    case SUBTITLE -> tp.getSubtitleFont();
+                    default       -> tp.getTextFont();
+                });
                 setForeground(tp.getColorDefault());
             }
         };
@@ -535,12 +534,12 @@ class PanelCreator{
      *
      * @param name     the name of the label
      * @param render   the renderer object
-     * @param textSize size of the text, should use the constants TITLE, SUBTITLE, and TEXT to specify
+     * @param textType size of the text, should use the constants TITLE, SUBTITLE, and TEXT to specify
      * @param Centered true if this label should be center aligned
      * @param runnable the action to be executed when the label is pressed
      * @return the JLabel
      */
-    private static JLabel createActionLabel(String name, Renderer render, int textSize, boolean Centered, Runnable runnable) {
+    private static JLabel createActionLabel(String name, Renderer render, int textType, boolean Centered, Runnable runnable) {
         return new JLabel(name) {{
             if (Centered) setAlignmentX(CENTER_ALIGNMENT);
             TexturePack tp = render.getCurrentTexturePack();
@@ -548,19 +547,16 @@ class PanelCreator{
             addMouseListener(new MouseAdapter() {
                 public void mouseEntered(MouseEvent e){setForeground(tp.getColorHover());}
                 public void mouseExited(MouseEvent e) {setForeground(tp.getColorDefault());}
-                public void mousePressed(MouseEvent e) {
-                    runnable.run();
-                }
+                public void mousePressed(MouseEvent e) {runnable.run();}
             });}
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 TexturePack tp = render.getCurrentTexturePack();
-                int size = switch (textSize) {
-                    case TITLE -> tp.getTitleSize();
-                    case SUBTITLE -> tp.getSubtitleSize();
-                    default -> tp.getTextSize();
-                };
-                setFont(new Font(tp.getFont(), tp.getStyle(), size));
+                setFont(switch (textType) {
+                    case TITLE    -> tp.getTitleFont();
+                    case SUBTITLE -> tp.getSubtitleFont();
+                    default       -> tp.getTextFont();
+                });
             }
         };
     }
