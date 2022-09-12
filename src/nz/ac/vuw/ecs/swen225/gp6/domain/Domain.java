@@ -1,6 +1,6 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain;
 
-import persistency.*;
+import nz.ac.vuw.ecs.swen225.gp6.persistency.*;
 
 public class Domain {
     public Maze makeMaze(){
