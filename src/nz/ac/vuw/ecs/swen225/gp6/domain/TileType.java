@@ -100,6 +100,15 @@ public enum TileType{
             };
         }
     },
+    YellowLock{
+        public Tile getTileObject(TileInfo info){
+            return new Lock(){
+                public TileType getName(){ return YellowLock;}
+                public boolean canMoveOn(Actor a, Maze m){ return a.getName() == TileType.Hero && m.getInv().hasItem(YellowKey);}
+            };
+        }
+    },
+
 
 
     //items
@@ -121,6 +130,13 @@ public enum TileType{
         public Tile getTileObject(TileInfo info){
             return new Key(){
                 public TileType getName(){ return OrangeKey;}
+            };
+        }
+    },
+    YellowKey{
+        public Tile getTileObject(TileInfo info){
+            return new Key(){
+                public TileType getName(){ return YellowKey;}
             };
         }
     },

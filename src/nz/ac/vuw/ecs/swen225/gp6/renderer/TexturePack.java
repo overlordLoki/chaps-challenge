@@ -9,38 +9,44 @@ import javax.imageio.ImageIO;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.tempDomain.Tiles.Tile;
 
 public enum TexturePack{
-    Original("Comic Sans MS",Font.BOLD, Color.BLACK, Color.ORANGE, Color.RED, 80, 40, 30),
-    Cats("Agency FB", Font.BOLD,  Color.BLACK, Color.ORANGE, Color.RED, 80, 40, 30),
-    Dogs("Agency FB", Font.BOLD,  Color.BLACK, Color.ORANGE, Color.RED, 80, 40, 30),
-    Emoji("Agency FB", Font.BOLD, Color.BLACK, Color.ORANGE, Color.RED, 80, 40, 30);
-    
-    private final String font;
-    private final int style;
+    Original(new Font("Arial", Font.BOLD, 80),
+            new Font("Arial", Font.BOLD, 40),
+            new Font("Arial", Font.BOLD, 30),
+            Color.BLACK, Color.ORANGE, Color.RED),
+    Cats(new Font("Agency FB", Font.BOLD, 80),
+            new Font("Agency FB", Font.BOLD, 40),
+            new Font("Agency FB", Font.BOLD, 30),
+            Color.BLACK, Color.ORANGE, Color.RED),
+    Dogs(new Font("Agency FB", Font.BOLD, 80),
+            new Font("Agency FB", Font.BOLD, 40),
+            new Font("Agency FB", Font.BOLD, 30),
+            Color.BLACK, Color.ORANGE, Color.RED),
+    Emoji(new Font("Comic Sans MS", Font.BOLD, 80),
+            new Font("Comic Sans MS", Font.BOLD, 40),
+            new Font("Comic Sans MS", Font.BOLD, 30),
+            Color.BLACK, Color.ORANGE, Color.RED);
+
+    private final Font titleFont;
+    private final Font subtitleFont;
+    private final Font textFont;
     private final Color colorDefault;
     private final Color colorHover;
     private final Color colorSelected;
-    private final int TitleSize;
-    private final int SubtitleSize;
-    private final int TextSize;
 
-    public String getFont() {return font;}
-    public int getStyle() {return style;}
-    public Color getColorDefault() {return colorDefault;}
-    public Color getColorHover() {return colorHover;}
+    public Font getTitleFont()      {return titleFont;}
+    public Font getSubtitleFont()   {return subtitleFont;}
+    public Font getTextFont()       {return textFont;}
+    public Color getColorDefault()  {return colorDefault;}
+    public Color getColorHover()    {return colorHover;}
     public Color getColorSelected() {return colorSelected;}
-    public int getTitleSize() {return TitleSize;}
-    public int getSubtitleSize() {return SubtitleSize;}
-    public int getTextSize() {return TextSize;}
 
-    TexturePack(String font, int style, Color colorDefault, Color colorHover, Color colorSelected, int TitleSize, int SubtitleSize, int TextSize){
-        this.font = font;
-        this.style = style;
+    TexturePack(Font title,Font subtitle, Font text, Color colorDefault, Color colorHover, Color colorSelected){
+        this.titleFont = title;
+        this.subtitleFont = subtitle;
+        this.textFont = text;
         this.colorDefault = colorDefault;
         this.colorHover = colorHover;
         this.colorSelected = colorSelected;
-        this.TitleSize = TitleSize;
-        this.SubtitleSize = SubtitleSize;
-        this.TextSize = TextSize;
     }
 
     public enum Images{
@@ -111,7 +117,7 @@ public enum TexturePack{
             this.name = imageName;
             System.out.print("Loading " + imageName + "...    -> ");
             try {
-                BufferedImage img = ImageIO.read(getClass().getResource("/Renderer/textures/" + Renderer.currentTP + "/" + imageName + ".png"));
+                BufferedImage img = ImageIO.read(getClass().getResource("/nz/ac/vuw/ecs/swen225/gp6/renderer/textures/" + Renderer.currentTP + "/" + imageName + ".png"));
                 System.out.println("Loaded!");
                 return img;
             } catch (IOException e) {

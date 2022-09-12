@@ -8,7 +8,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import App.*;
+import nz.ac.vuw.ecs.swen225.gp6.app.*;
 
 public class Persistency {
     /*

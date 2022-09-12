@@ -1,7 +1,7 @@
 package nz.ac.vuw.ecs.swen225.gp6.recorder;
 
 import java.util.List;
-import App.*;
+import nz.ac.vuw.ecs.swen225.gp6.app.*;
 
 public class Recorder {
     private Timeline timeline;
