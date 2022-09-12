@@ -4,6 +4,7 @@ import App.*;
 import App.Actions;
 import App.tempDomain.Game;
 
+import javax.swing.text.JTextComponent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.List;
@@ -36,7 +37,7 @@ public class Fuzz {
         Actions actions = new Actions(app.getGame());
         app.transitionToGameScreen();
 
-        //KeyEvent e = new KeyEvent(app.transitionToGameScreen, 0, 0, 0, 0, 'a');
+
     }
 
 }
