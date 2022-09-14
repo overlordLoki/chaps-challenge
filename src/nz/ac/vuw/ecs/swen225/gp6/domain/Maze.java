@@ -77,7 +77,7 @@ public class Maze {
     /**
      * places a desired tile at a given location on maze.
      * 
-     * TODO make shorter ??
+     * TODO make shorter, GET RID OF IFS ??
      * 
      * @param x of tile (0 to max - 1)
      * @param y of tile (0 to max - 1)

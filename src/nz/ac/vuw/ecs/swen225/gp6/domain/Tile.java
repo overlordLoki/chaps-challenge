@@ -1,5 +1,8 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
+
 public interface Tile {
     /**
      * returns the enum name of this tile
@@ -55,11 +58,50 @@ abstract class Lock implements Tile{
 }
 
 abstract class EmptyTile implements Tile{
-    Actor actorOn = null;
-    Item itemOn = null;
+    private Actor actorOn = null;
+    private Item itemOn = null;
 
-    public void setActorOn(Actor actorOn) {this.actorOn = actorOn;}
-    public void setItemOn(Item itemOn) {this.itemOn = itemOn;}
+    //TODO CHECK IF WORKS
+    /*
+     * Takes a tile, if it is an actor, sets the actorOn this tile to that tile.
+     * 
+     * returns true if the actorOn is reset (i.e tile is instance of actor), else false
+     */
+    public boolean setOn(Tile tile) {
+        boolean[] setSuccessful = new boolean[1];
+        setSuccessful[0] = false;
+
+        Arrays
+        .stream(EmptyTile.class.getFields())
+        .map(field -> field.getType().getClass())
+        .forEach(type -> {if(type.isAssignableFrom(tile.getClass())){
+            try{
+                Field f = EmptyTile.class.getField(type.getName().toLowerCase() + "On");
+                f.setAccessible(true);
+                f.set(f.get(this), tile);
+            } catch(Exception e){
+                System.out.println("No field with this name in empty tile: " + type.getName().toLowerCase() + "On");
+            }
+    
+        }})
+        .findFirst();
+
+        
+
+    }
+
+    /*
+     * Takes a tile, if it is an item, sets the itemOn this tile to that tile.
+     * 
+     * returns true if the itemOn is reset (i.e tile is instance of item), else false
+     */
+    public boolean setItemOn(Tile itemOn) {
+        if(itemOn instanceof Item) {
+            this.itemOn = (Item)itemOn;
+            return true;
+        }
+        return false;
+    }
 
     public Actor getActorOn() {return actorOn;}
     public Item getItemOn() {return itemOn;}
