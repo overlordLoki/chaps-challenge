@@ -18,8 +18,16 @@ public interface Tile {
     /*
      * Calculates the next state of the tile in the maze/inventory.
      * Based on the tile and maze state, this method may alter the state of the tile and given maze object.
+     * Does nothing unless implemented.
      */
     public default void ping(Maze m){};
+
+    /**
+     * If this tile can hold other tiles, and if given one of the tile types it can hold, it 
+     * will store it in its relevant field and return true, otherwise false. 
+     * Does nothing and returns false unless implemented
+     */
+    public default boolean setOn(Tile t){ return false;}
 }
 
 /*
@@ -35,15 +43,18 @@ class TileInfo{
     }
 }
 
+//interface that tiles that need to be placed on other tiles must implement
+interface SecondLayerTile extends Tile{}
+
 
 //actor groups
-abstract class Actor implements Tile{
+abstract class Actor implements SecondLayerTile{
     Direction staticDirection = Direction.None;
     Direction movementDirection = Direction.None;
 }
 
 //item groups
-abstract class Item implements Tile{
+abstract class Item implements SecondLayerTile{
     public boolean inInv = false;
     public boolean canMoveOn(Actor a, Maze m) { return a.getName() == TileType.Hero;} //hero can move on any item
 }
@@ -63,44 +74,32 @@ abstract class EmptyTile implements Tile{
 
     //TODO CHECK IF WORKS
     /*
-     * Takes a tile, if it is an actor, sets the actorOn this tile to that tile.
+     * Takes a tile, if it is an instance of an actor, item, or any other tile field empty tile may hold in future,
+     *  sets that relevant tile to the given tile.
      * 
-     * returns true if the actorOn is reset (i.e tile is instance of actor), else false
+     * returns true any tile field is reset (e.g given tile is instance of actor), else false
      */
-    public boolean setOn(Tile tile) {
+    public boolean setOn(Tile t) {
         boolean[] setSuccessful = new boolean[1];
         setSuccessful[0] = false;
 
         Arrays
         .stream(EmptyTile.class.getFields())
         .map(field -> field.getType().getClass())
-        .forEach(type -> {if(type.isAssignableFrom(tile.getClass())){
+        .takeWhile(e -> setSuccessful[0] == false)
+        .forEach(type -> {if(type.isAssignableFrom(t.getClass())){
             try{
                 Field f = EmptyTile.class.getField(type.getName().toLowerCase() + "On");
                 f.setAccessible(true);
-                f.set(f.get(this), tile);
+                f.set(f.get(this), t);
+                setSuccessful[0] = true;
             } catch(Exception e){
                 System.out.println("No field with this name in empty tile: " + type.getName().toLowerCase() + "On");
             }
     
-        }})
-        .findFirst();
+        }});
 
-        
-
-    }
-
-    /*
-     * Takes a tile, if it is an item, sets the itemOn this tile to that tile.
-     * 
-     * returns true if the itemOn is reset (i.e tile is instance of item), else false
-     */
-    public boolean setItemOn(Tile itemOn) {
-        if(itemOn instanceof Item) {
-            this.itemOn = (Item)itemOn;
-            return true;
-        }
-        return false;
+        return setSuccessful[0];
     }
 
     public Actor getActorOn() {return actorOn;}

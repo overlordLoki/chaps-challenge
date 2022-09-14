@@ -1,14 +1,17 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain;
 
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 public class Inventory {
     private Tile[] items;
+    private int size;
     private int coins;
 
     public Inventory(int size){
-        items = new Tile[size];
-        coins = 0;
+        this.size = size;
+        this.items = new Tile[size];
+        this.coins = 0;
     }
 
     /**
@@ -27,13 +30,14 @@ public class Inventory {
      * @return true if item was added, false if it wasn't (since its full)
      */
     public boolean addItem(Tile tile){
-        for(int i = 0; i < items.length; i ++){
-            if(items[i] == null){
-                items[i] = tile;
-                return true;
-            }
-        }
-        return false;
+        int index = IntStream.range(0, size)
+        .filter(i -> items[i] != null)
+        .findFirst()
+        .orElse(-1);
+
+        if(index == -1) return false; //if no empty space found return false
+        items[index] = tile; 
+        return true;
     }
 
     /**
@@ -47,12 +51,13 @@ public class Inventory {
      * @return true if item was found and removed, otherwise false
      */
     public boolean removeItem(TileType itemName){
-        for(int i = 0; i < items.length; i ++){
-            if(items[i].getName() == itemName){
-                items[i] = null;
-                return true;
-            }
-        }
-        return false;
+        int index = IntStream.range(0, size)
+        .filter(i -> items[i].getName() == itemName)
+        .findFirst()
+        .orElse(-1);
+
+        if(index == -1) return false; //if tile type not found return false
+        items[index] = null;
+        return true;
     }
 }

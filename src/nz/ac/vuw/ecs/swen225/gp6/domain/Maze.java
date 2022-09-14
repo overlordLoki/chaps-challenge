@@ -62,6 +62,7 @@ public class Maze {
 
     /**
      * finds location of a given tile (exactly the same object)
+     * 
      * @param t tile object to find
      * @return loc of tile object if found, else null
      */
@@ -77,7 +78,7 @@ public class Maze {
     /**
      * places a desired tile at a given location on maze.
      * 
-     * TODO make shorter, GET RID OF IFS ??
+     * //TODO CHECK IF WORKS
      * 
      * @param x of tile (0 to max - 1)
      * @param y of tile (0 to max - 1)
@@ -91,19 +92,8 @@ public class Maze {
         Tile tile = type.getTileObject(new TileInfo(new Loc(x, y)));
 
         //if item or actor given put it on an empty tile if there is one, else return 
-        if(tile instanceof Actor){
-            if(tileArray[y][x] instanceof EmptyTile){
-                ((EmptyTile)tileArray[y][x]).setActorOn((Actor)tile);
-            }
-            return;
-        }
-
-        if(tile instanceof Item){
-            if(tileArray[y][x] instanceof EmptyTile){
-                ((EmptyTile)tileArray[y][x]).setItemOn((Item)tile);
-            }
-        }
-
+        if(tileArray[x][y].setOn(tile) == false) return;
+            
         //replace the tile at the location
         tileArray[x][y] = type.getTileObject(new TileInfo(new Loc(x, y)));
 
