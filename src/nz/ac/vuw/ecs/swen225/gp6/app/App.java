@@ -1,8 +1,11 @@
 package nz.ac.vuw.ecs.swen225.gp6.app;
 
-import nz.ac.vuw.ecs.swen225.gp6.renderer.tempDomain.*;
+import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.Renderer;
-import nz.ac.vuw.ecs.swen225.gp6.app.tempDomain.Game;
+import nz.ac.vuw.ecs.swen225.gp6.domain.*;
+import nz.ac.vuw.ecs.swen225.gp6.persistency.*;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.*;
+//import nz.ac.vuw.ecs.swen225.gp6.app.tempDomain.Game;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,7 +31,8 @@ public class App extends JFrame {
             "Escape","1","2","X","S","R"));
     private int indexOfKeyToSet = -1;
 
-    private Game game;
+//    private Game game;
+    private Maze maze;
     private Renderer render;
     private Controller controller;
 
@@ -61,10 +65,10 @@ public class App extends JFrame {
     }
 
     private void initialiseGame() {
-        game = new Game();
-        controller = new Controller(actionKeyBindings, game);
+        maze = Domain.makeMaze();
+        controller = new Controller(actionKeyBindings, maze);
         addKeyListener(controller);
-        render = new Renderer(new Maze());
+        render = new Renderer(maze);
         setTimer(new Timer(34, unused -> {
             assert SwingUtilities.isEventDispatchThread();
 //            game.pingAll();
@@ -145,8 +149,8 @@ public class App extends JFrame {
      *
      * @return the game object
      */
-    public Game getGame() {
-        return game;
+    public Maze getGame() {
+        return maze;
     }
 
     /**

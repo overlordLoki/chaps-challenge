@@ -19,6 +19,9 @@ public class Actions {
     public Actions(Game game){
         this.game = game;
     }
+    public Actions(){
+        this.game = new Game();
+    }
 
     /**
      * Moves the player up.

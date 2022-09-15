@@ -1,6 +1,7 @@
 package nz.ac.vuw.ecs.swen225.gp6.app;
 
 import nz.ac.vuw.ecs.swen225.gp6.app.tempDomain.Game;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
 
 import javax.swing.SwingUtilities;
 import java.awt.event.KeyAdapter;
@@ -28,8 +29,8 @@ class Controller extends KeyAdapter {
      * @param keyBindings List of key bindings.
      * @param game The game for the controller to be attached to.
      */
-    public Controller(List<String> keyBindings, Game game) {
-        this.actions = new Actions(game);
+    public Controller(List<String> keyBindings, Maze game) {
+        this.actions = new Actions(new Game());
         setController(keyBindings);
     }
 

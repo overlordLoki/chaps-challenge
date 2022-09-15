@@ -1,6 +1,6 @@
 package nz.ac.vuw.ecs.swen225.gp6.app.tempDomain;
 
-import nz.ac.vuw.ecs.swen225.gp6.renderer.tempDomain.Tiles.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Tile;
 
 import java.util.List;
 
@@ -29,10 +29,5 @@ public class Game {
 
     public int getTreasuresLeft() {
         return 12;
-    }
-
-    public List<Tile> getInventory() {
-        // currently just a fixed list of 4 different keys
-        return List.of(new yellowKey(), new greenKey(), new blueKey(), new orangeKey());
     }
 }
