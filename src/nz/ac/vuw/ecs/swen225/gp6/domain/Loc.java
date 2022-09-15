@@ -33,13 +33,11 @@ public class Loc{
 
 
     /*
-     * checks wether a given x and y is in bounds. (DO: use this to check more often)
-     * If not throws illegalStateException. 
-     
-    public static void checkInBound(int x, int y, Maze m) throws Throwable{
-        if( x < 0 || y < 0 || x > m.width() - 1 || y > m.height() - 1){
-            throw new ChapGameException("Location not in bounds.");
-        }
-    }*/
+     * returns true if a given location is in bounds, else false.
+     */
+    public static boolean checkInBound(Loc l, Maze m) {
+        if( l.x() < 1 || l.y() < 1 || l.x() > m.width() || l.y() > m.height())return false;
+        return true;
+    }
     
 }

@@ -3,7 +3,7 @@ package nz.ac.vuw.ecs.swen225.gp6.domain;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.*;
 
 public class Domain {
-    public Maze makeMaze(){
+    public static Maze makeMaze(){
         int width = 10;
         int height = 10;
         TileInfo info = new TileInfo(new Loc(0, 0));
@@ -40,7 +40,7 @@ public class Domain {
         gameArray[5][7] = TileType.ExitDoor.getTileObject(info);
         
         
-        Maze m = new Maze(gameArray, new Inventory(8));
+        Maze m = new Maze(gameArray, new Inventory(8), 1);
 
         return m;
     }

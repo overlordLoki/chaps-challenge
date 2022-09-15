@@ -5,8 +5,9 @@ import java.awt.*;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import nz.ac.vuw.ecs.swen225.gp6.domain.*;
 
-import nz.ac.vuw.ecs.swen225.gp6.renderer.tempDomain.Tiles.Tile;
+//import nz.ac.vuw.ecs.swen225.gp6.renderer.tempDomain.Tiles.Tile;
 
 public enum TexturePack{
     Original(new Font("Arial", Font.BOLD, 80),
@@ -92,24 +93,23 @@ public enum TexturePack{
         }
     
         public static BufferedImage getImage(Tile tile){
-            return switch(tile.getImg()){
-                case "floor" -> Images.Floor.getImg();
-                case "empty_tile" -> Images.Empty_tile.getImg();
-                case "hero" -> Images.Hero.getImg();
-                case "pattern" -> Images.Pattern.getImg();
-                case "enemy" -> Images.Enemy.getImg();
-                case "wall_tile" -> Images.Wall.getImg();
-                case "blueKey" -> Images.BlueKey.getImg();
-                case "greenKey" -> Images.GreenKey.getImg();
-                case "yellowKey" -> Images.YellowKey.getImg();
-                case "orangeKey" -> Images.OrangeKey.getImg();
-                case "blueLock" -> Images.BlueLock.getImg();
-                case "greenLock" -> Images.GreenLock.getImg();
-                case "yellowLock" -> Images.YellowLock.getImg();
-                case "orangeLock" -> Images.OrangeLock.getImg();
-                case "exitDoor" -> Images.Exit.getImg();
-                case "coin" -> Images.Coin.getImg();
-                default -> throw new IllegalArgumentException("Unexpected value: " + tile.getClass().getName() + " : " + tile.getImg());
+            return switch(tile.getType()){
+                case Floor -> getImage(Empty_tile);
+                case Empty -> Images.Empty_tile.getImg();
+                case Hero -> Images.Hero.getImg();
+                case Enemy -> Images.Enemy.getImg();
+                case Wall -> Images.Wall.getImg();
+                case BlueKey -> Images.BlueKey.getImg();
+                case GreenKey -> Images.GreenKey.getImg();
+                case YellowKey -> Images.YellowKey.getImg();
+                case OrangeKey -> Images.OrangeKey.getImg();
+                case BlueLock -> Images.BlueLock.getImg();
+                case GreenLock -> Images.GreenLock.getImg();
+                case YellowLock -> Images.YellowLock.getImg();
+                case OrangeLock -> Images.OrangeLock.getImg();
+                case ExitDoor -> Images.Exit.getImg();
+                case Coin -> Images.Coin.getImg();
+                default -> throw new IllegalArgumentException("Unexpected value: " + tile.getClass().getName() + " : " + tile.getType());
             };
         }
     
