@@ -7,7 +7,7 @@ public interface Tile {
     /**
      * returns the enum name of this tile
      */
-    public TileType getName();
+    public TileType getType();
 
     /**
      * Checks wether its possible for an actor, in a given maze, to move on a tile.
@@ -56,7 +56,7 @@ abstract class Actor implements SecondLayerTile{
 //item groups
 abstract class Item implements SecondLayerTile{
     public boolean inInv = false;
-    public boolean canMoveOn(Actor a, Maze m) { return a.getName() == TileType.Hero;} //hero can move on any item
+    public boolean canMoveOn(Actor a, Maze m) { return a.getType() == TileType.Hero;} //hero can move on any item
 }
     
 abstract class Key extends Item{

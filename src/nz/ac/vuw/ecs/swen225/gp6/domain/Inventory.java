@@ -1,6 +1,8 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.IntStream;
 
 public class Inventory {
@@ -13,6 +15,11 @@ public class Inventory {
         this.items = new Tile[size];
         this.coins = 0;
     }
+
+    /*
+     * gets the items (as an umodifiable list)
+     */
+    public List<Tile> getItems(){return Collections.unmodifiableList(List.of(items));}
 
     /**
      * gets number of coins
@@ -44,7 +51,7 @@ public class Inventory {
      * @return true if a tile name found in inv, otherwise false
      */
     public boolean hasItem(TileType itemName){
-        return Arrays.stream(items).anyMatch(t -> t.getName() == itemName);
+        return Arrays.stream(items).anyMatch(t -> t.getType() == itemName);
     }
 
     /**
@@ -52,7 +59,7 @@ public class Inventory {
      */
     public boolean removeItem(TileType itemName){
         int index = IntStream.range(0, size)
-        .filter(i -> items[i].getName() == itemName)
+        .filter(i -> items[i].getType() == itemName)
         .findFirst()
         .orElse(-1);
 

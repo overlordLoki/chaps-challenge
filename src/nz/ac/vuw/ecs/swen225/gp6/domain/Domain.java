@@ -40,7 +40,7 @@ public class Domain {
         gameArray[5][7] = TileType.ExitDoor.getTileObject(info);
         
         
-        Maze m = new Maze(gameArray, new Inventory(8));
+        Maze m = new Maze(gameArray, new Inventory(8), 1);
 
         return m;
     }
