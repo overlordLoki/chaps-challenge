@@ -16,7 +16,7 @@ public class Fuzz {
         int keyPressedTimes = times;
 
         App app = new App();
-        Actions actions = new Actions(app.getGame());
+        Actions actions = new Actions();
         app.transitionToGameScreen();
 
         List<Runnable> a = List.of(actions::actionUp, actions::actionDown, actions::actionLeft, actions::actionRight, actions::actionPause, actions::actionResume, actions::actionToLevel2, actions::actionToLevel1, actions::actionQuit, actions::actionSave, actions::actionLoad);
@@ -30,7 +30,7 @@ public class Fuzz {
 
     public static void keyTest(){
         App app = new App();
-        Actions actions = new Actions(app.getGame());
+        Actions actions = new Actions();
         app.transitionToGameScreen();
 
 
