@@ -1,13 +1,10 @@
 package nz.ac.vuw.ecs.swen225.gp6.renderer;
-import nz.ac.vuw.ecs.swen225.gp6.renderer.tempDomain.*;
-import nz.ac.vuw.ecs.swen225.gp6.renderer.tempDomain.Tiles.Floor;
-import nz.ac.vuw.ecs.swen225.gp6.renderer.tempDomain.Tiles.Tile;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import java.awt.Graphics;
-
+import nz.ac.vuw.ecs.swen225.gp6.domain.*;
 /**
  * makes a jPanel that can be added to a JFrame
  * 
@@ -80,7 +77,7 @@ public class Renderer extends JPanel{
         //call superclass to paint background
         super.paintComponent(g);
         //get the maze array
-        gameArray = maze.getGameArray();
+        gameArray = maze.getTileArray();
         //get the width and height of the maze
         int tileWidth = (getWidth() / gameArray.length);
         int tileHeight = (getHeight() / gameArray[1].length);
@@ -91,7 +88,7 @@ public class Renderer extends JPanel{
                 g.drawImage(TexturePack.Images.Floor.getImg(), i * tileWidth, j * tileHeight, tileWidth, tileHeight, null);
                 // if there is a item draw on top of the floor or a wall tile
                 Tile tile = gameArray[i][j];
-                if(tile instanceof Floor) continue;
+                if(tile.getType() == TileType.Floor) continue;
                 g.drawImage(TexturePack.Images.getImage(tile), i * tileWidth, j * tileHeight, tileWidth, tileHeight, null);
             }
         }
