@@ -1,40 +1,31 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain;
 
+import java.util.Arrays;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
+
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileGrouping.Tile;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileGrouping.TileInfo;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileGrouping.TileType;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
+
 
 public class Maze {
     private Tile[][] tileArray;
     private int height; //height of tile array, how many rows (outer array) 
     private int width;  //width of tile array, how many columns (inner arrays)
 
-    private Inventory inv;
-
-    private int lvl;
-
     private Direction heroNextStep = Direction.None;
     
 
-    public Maze(Tile[][] tileArray, Inventory inv, int lvl){
+    public Maze(Tile[][] tileArray){
         this.tileArray = tileArray;
-        this.inv = inv;
         this.height = tileArray.length;
         this.width = tileArray[0].length;
-        this.lvl = lvl;
     }
 
-    /*
-     * @return a copy of tile array 
-     */
-    public Tile[][] getTileArray() {
-        Tile[][] copy = new Tile[width][height];
-        IntStream.range(0, width)
-        .forEach( x ->
-            IntStream.range(0, height)
-            .forEach(y -> copy[x][y] = tileArray[x][y].getType().getTileObject(new TileInfo(new Loc(x, y))))
-        );
-        return copy;
-    }
-
+    //GETTERS:
     /*
      * get height of tile array
      */
@@ -46,26 +37,23 @@ public class Maze {
     public int width(){ return width;}
 
     /**
-     * @return the inventory of the player
-     */
-    public Inventory getInv(){ return inv;}
-
-    /**
-     * @return the current level 
-     */
-    public int getLvl(){return lvl;}
-
-    /**
      * @return direction of heros next step
      */
     public Direction getDirection(){return heroNextStep;}
 
-    /**
-     * @return a new maze which is the current maze after a unit of time passing.
+    //TILE GETTERS:
+    /*
+     * @return a copy of tile array 
      */
-    public Maze ping(){
-        // TODO
-        return null;
+    public Tile[][] getTileArrayCopy() {
+        Tile[][] copy = new Tile[width][height];
+        IntStream.range(0, width)
+        .forEach( x ->
+            IntStream.range(0, height)
+            .forEach(y -> copy[x][y] = tileArray[x][y].getType()
+            .makeTileObject(new TileInfo(new Loc(x, y), tileArray[x][y].getInfo().consumer()))
+        ));
+        return copy;
     }
 
     /**
@@ -74,7 +62,7 @@ public class Maze {
      * @param t tile object to find
      * @return loc of tile object if found, else null
      */
-    public Loc findTileLoc(Tile t){
+    public Loc getTileLoc(Tile t){
         for(int x = 0; x < width - 1; x++){
             for(int y = 0; y < height - 1; y++){
                 if(t == tileArray[x][y]) return new Loc(x, y);
@@ -82,11 +70,24 @@ public class Maze {
         }
         return null;
     }
+    
+    /*
+     * finds the number tiles with this tile type on this maze
+     */
+    public int getTileCount(TileType type){
+        return (int)Arrays
+        .stream(tileArray)
+        .flatMap(Arrays::stream)
+        .filter(t -> t.getType() == type)
+        .count();
+    }
 
     /*
      * gets the tile at the given x and y co ordinates in the array
+     * if location is out of bounds return null typed tile
      */
     public Tile getTileAt(int x, int y){
+        if(Loc.checkInBound(new Loc(x, y), this) == false) return TileType.Null.makeTileObject(null);
         return tileArray[x - 1][y - 1];
     }
 
@@ -94,33 +95,52 @@ public class Maze {
      * gets the tile at the given location in the array
      */
     public Tile getTileAt(Loc l){
+        if(Loc.checkInBound(l, this) == false) return TileType.Null.makeTileObject(null);
         return tileArray[l.x() - 1][l.y() - 1];
     }
 
+    //SETTERS and ACTIONS:
     /**
-     * places a desired tile at a given location on maze.
+     * @return a new maze which is the current maze after a unit of time passing.
+     */
+    public Maze pingMaze(Domain d){
+        Maze nextMaze = new Maze(this.getTileArrayCopy());
+        Arrays.stream(nextMaze.tileArray).flatMap(Arrays::stream).forEach(t -> t.ping(d));
+        return nextMaze;
+    }
+
+    /**
+     * place a new tile object of desired tile type at a given location on maze.
      * 
-     * //TODO CHECK IF WORKS
      * 
      * @param x of tile (0 to max - 1)
      * @param y of tile (0 to max - 1)
      * @param type enum for the tile type to place
      */
-    public void setTileAt(int x, int y, TileType type){
+    public void setTileAt(Loc loc, TileType type, Consumer<Domain> pingConsumer){
         //check in bound
-        if(x < 1 || y < 1 || y > height|| x > width) return;
-
-        //make tile object from type enum
-        Tile tile = type.getTileObject(new TileInfo(new Loc(x, y)));
-
-        //if item or actor given put it on an empty tile if there is one, else return 
-        if(tileArray[x][y].setOn(tile) == false) return;
+        if(Loc.checkInBound(loc, this) == false) return;
             
-        //replace the tile at the location
-        tileArray[x - 1][y - 1] = type.getTileObject(new TileInfo(new Loc(x, y)));
+        //make tile object from type enum and replace the tile at the location
+        tileArray[loc.x() - 1][loc.y() - 1] = type.makeTileObject(new TileInfo(loc, pingConsumer));
 
     }
 
+    /*
+     * set tile at a given location
+     */
+    public void setTileAt(Loc loc, Tile tile){
+        //check in bound
+        if(Loc.checkInBound(loc, this) == false) return;
+
+        //replace tile at location
+        tileArray[loc.x() - 1][loc.y() - 1] = tile;
+    }
+
+    /*
+     * sets the movement direction of hero, 
+     * which the hero will try to move towards if possible in NEXT ping.
+     */
     public void makeHeroStep(Direction d){
         this.heroNextStep = d;
     }

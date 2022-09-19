@@ -1,4 +1,4 @@
-package nz.ac.vuw.ecs.swen225.gp6.domain;
+package nz.ac.vuw.ecs.swen225.gp6.domain.Utility;
 
 public enum Direction {
     Up(1, 0),

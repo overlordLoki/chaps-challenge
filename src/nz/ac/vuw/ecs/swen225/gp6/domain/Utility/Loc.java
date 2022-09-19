@@ -1,4 +1,7 @@
-package nz.ac.vuw.ecs.swen225.gp6.domain;
+package nz.ac.vuw.ecs.swen225.gp6.domain.Utility;
+
+import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
+
 /*
  * location for maze tiles, index 0 to max - 1
  */

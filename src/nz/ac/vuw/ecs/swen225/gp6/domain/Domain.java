@@ -1,47 +1,135 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain;
 
+import java.util.List;
+
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileGrouping.Tile;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.*;
 
 public class Domain {
-    public static Maze makeMaze(){
-        int width = 10;
-        int height = 10;
-        TileInfo info = new TileInfo(new Loc(0, 0));
-        Tile [][] gameArray = new Tile[height][width];
+    private List<Maze> mazes; //each corresponds to a level (in order)
+    private Inventory inv;
+    private int currentLvl;
 
-        //initialize the maze with Empty_tile. cant have null tiles
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                gameArray[i][j] = TileType.Floor.getTileObject(info);
-            }
-        }
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                //make the walls
-                if(i == 0 || j == 0 || i == width - 1 || j == height - 1){
-                    gameArray[i][j] = TileType.Wall.getTileObject(info);
-                }
-            }
-        }
+    public Domain(List<Maze> mazes, Inventory inv, int lvl){
+        this.mazes = mazes;
+        this.inv = inv;
+        this.currentLvl = lvl;
+    }
+
+    /*
+     * returns current lvl
+     */
+    public int getLvl(){
+        return currentLvl;
+    }
+
+    /*
+     * returns current maze
+     */
+    public Maze getCurrentMaze(){
+        return mazes.get(currentLvl - 1);
+    }
+
+    /*
+     * returns the inventory of the current maze
+     */
+    public Inventory getInv(){
+        return inv;
+    }
+
+    /*
+     * pings the game one step, and replaces the current maze with a new one
+     */
+    public void pingMaze(){
+        this.mazes.set(currentLvl - 1, this.mazes.get(currentLvl - 1).pingMaze(this));
+    }
+}
+
+class DomainController {
+    private Domain domain;
+
+    public DomainController(List<Maze> mazes, Inventory inv, int lvl){
+        this.domain = new Domain(mazes, inv, lvl);
+    }
+
+    //ACTIONS ON DOMAIN:
+    /*
+     * move hero up in next ping, if possible
+     */
+    public void moveUp(){
+        System.out.println("Player moved up");
+        //domain.getMaze().makeHeroStep(Direction.Up);
+    }
+
+    /*
+     * move hero down in next ping, if possible
+     */
+    public void moveDown(){
+        System.out.println("Player moved down");
+        //domain.getMaze().makeHeroStep(Direction.Down);
+    }
+
+    /*
+     * move hero left in next ping, if possible
+     */
+    public void moveLeft(){
+        System.out.println("Player moved left");
+        //domain.getMaze().makeHeroStep(Direction.Left);
+    }
+
+    /*
+     * move hero right in next ping, if possible
+     */
+    public void moveRight(){
+        System.out.println("Player moved right");
+        //domain.getMaze().makeHeroStep(Direction.Right);
+    }
+
+    /*
+     * ping the maze
+     */
+    public void pingAll(){
+        System.out.println("PingAll");
+        //domain.getMaze().pingMaze(domain);
+    }
 
 
-        //display different tile types
-        gameArray[2][2] = TileType.Hero.getTileObject(info);
-        gameArray[4][2] = TileType.Enemy.getTileObject(info);
-        gameArray[3][6] = TileType.GreenKey.getTileObject(info);
-        gameArray[4][6] = TileType.GreenLock.getTileObject(info);
-        //gameArray[3][5] = TileType.YellowKey.getTileObject(info);
-        //gameArray[4][5] = new yellowLock();
-        gameArray[3][4] = TileType.BlueKey.getTileObject(info);
-        gameArray[4][4] = TileType.BlueLock.getTileObject(info);
-        gameArray[3][7] = TileType.OrangeKey.getTileObject(info);
-        gameArray[4][7] = TileType.OrangeLock.getTileObject(info);
-        gameArray[6][2] = TileType.Coin.getTileObject(info);
-        gameArray[5][7] = TileType.ExitDoor.getTileObject(info);
-        
-        
-        Maze m = new Maze(gameArray, new Inventory(8), 1);
+    //INFO FROM DOMAIN:
+    /*
+     * returns true when player reaches this level's final tile (player on the open exit door)
+     */
+    public boolean playerOnExitDoor(){
+        return false;
+    }
 
-        return m;
+    /*
+     * gets current level
+     */
+    public int getCurrentLevel() {
+        return 1;
+        //return domain.getLvl();
+    }
+
+    /*
+     * gets number of treasures left to collect
+     */
+    public int getTreasuresLeft() {
+        return 10;
+        //return domain.getMaze().getTileCount(TileType.Coin) - domain.getInv().coins();
+    }
+
+    /*
+     * returns the inventory, any empty slot is represented by an Null typed tile
+     */
+    public List<Tile> getInventory() {
+        return List.of();
+        //return domain.getInv().getItems();
+    }
+
+    /*
+     * returns a copy of current mazes game array
+     */
+    public Tile[][] getGameArray(){
+        return domain.getCurrentMaze().getTileArrayCopy();
     }
 }
