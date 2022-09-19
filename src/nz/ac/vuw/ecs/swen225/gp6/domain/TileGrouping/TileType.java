@@ -11,13 +11,13 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
  * 
  * TODO: THINK OF BEST STRUCTURE FOR SPECIFIC TILE IMPLEMENTATIONS
  */
-public enum TileType{
+public enum TileTypeTwo.TileType{
     //ACTORS
     Hero{
         public Tile makeTileObject(TileInfo info){
             return new Actor(){
                 @Override public TileType getType(){ return Hero;}
-                @Override public char getSymbol(){return 'A';}
+                @Override public char getSymbol(){return 'H';}
                 @Override public TileInfo getInfo(){return info;}
                 @Override public boolean canMoveOn(Actor a, Domain d) { return a.getType() == TileType.Enemy;} //enemy can move on actor
                 @Override public void setOn(Actor a, Domain d){}//TODO: LOSE 
@@ -235,7 +235,7 @@ public enum TileType{
                 @Override public TileType getType(){ return Coin;}
                 @Override public char getSymbol(){return 'C';}
                 @Override public TileInfo getInfo(){return info;}
-                @Override public boolean canMoveOn(Actor a, Domain d) { return true;}
+                @Override public boolean canMoveOn(Actor a, Domain d) { return a.getType() == TileType.Hero;}
                 @Override public void setOn(Actor a, Domain d){ 
                     d.getInv().addCoin();
                     d.getCurrentMaze().setTileAt(info.loc(), a);
@@ -263,26 +263,4 @@ public enum TileType{
     public abstract Tile makeTileObject(TileInfo info);
 }
 
-
-
-enum type{
-    etx(()->{System.out.println("floor");}){
-        public void printlosbeofib(){
-            System.out.println("oiboeib");
-        }
-    };
-
-
-
-    Runnable onPing;
-    type(Runnable onPing){
-        this.onPing = onPing;
-    }
-    public void ping(){
-        onPing.run();
-    }
-    public void printlosbeofib(){
-        System.out.println("sef");
-    }
-}
 
