@@ -1,6 +1,6 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain;
 
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileGrouping.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 
 //TODO: temp class REMOVE
@@ -14,35 +14,35 @@ public class Helper {
         //initialize the maze with Empty_tile. cant have null tiles
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                gameArray[i][j] = TileType.Floor.makeTileObject(info);
+                gameArray[i][j] = new Tile(TileType.Floor, info);
             }
         }
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 //make the walls
                 if(i == 0 || j == 0 || i == width - 1 || j == height - 1){
-                    gameArray[i][j] = TileType.Wall.makeTileObject(info);
+                    gameArray[i][j] = new Tile(TileType.Wall, info);
                 }
             }
         }
-
-
-        //display different tile types
-        gameArray[2][2] = TileType.Hero.makeTileObject(info);
-        gameArray[4][2] = TileType.Enemy.makeTileObject(info);
-        gameArray[3][6] = TileType.GreenKey.makeTileObject(info);
-        gameArray[4][6] = TileType.GreenLock.makeTileObject(info);
-        //gameArray[3][5] = TileType.YellowKey.makeTileObject(info);
-        //gameArray[4][5] = new yellowLock();
-        gameArray[3][4] = TileType.BlueKey.makeTileObject(info);
-        gameArray[4][4] = TileType.BlueLock.makeTileObject(info);
-        gameArray[3][7] = TileType.OrangeKey.makeTileObject(info);
-        gameArray[4][7] = TileType.OrangeLock.makeTileObject(info);
-        gameArray[6][2] = TileType.Coin.makeTileObject(info);
-        gameArray[5][7] = TileType.ExitDoor.makeTileObject(info);
-        
         
         Maze m = new Maze(gameArray);
+
+        //display different tile types
+        m.setTileAt(new Loc(2, 2), TileType.Hero, a ->{});
+        m.setTileAt(new Loc(4, 2), TileType.Enemy, a ->{});
+        m.setTileAt(new Loc(3, 6), TileType.GreenKey, a ->{});
+        m.setTileAt(new Loc(4, 6), TileType.GreenLock, a ->{});
+        m.setTileAt(new Loc(3, 5), TileType.YellowKey, a ->{});
+        m.setTileAt(new Loc(4, 5), TileType.YellowLock, a ->{});
+        m.setTileAt(new Loc(3, 4), TileType.BlueKey, a ->{});
+        m.setTileAt(new Loc(4, 4), TileType.BlueLock, a -> {});
+        m.setTileAt(new Loc(3, 7), TileType.OrangeKey, a ->{});
+        m.setTileAt(new Loc(4, 7), TileType.OrangeLock, a -> {});
+        m.setTileAt(new Loc(6, 2), TileType.Coin, a -> {});
+        m.setTileAt(new Loc(5, 7), TileType.ExitDoor, a -> {});
+        
+    
 
         return m;
     }
