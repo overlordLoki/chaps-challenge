@@ -1,266 +1,170 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain.TileGrouping;
 
+import java.util.function.*;
+
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
+//TODO: FINISH AND SHORTEN SOME METHODS
+//TODO: testing and ensuring some states wont be reached
 
-/**
- * Enum for tile names but also more importantly where the specific tile types are implemented with 
- * dynamic dispatching.
+/*
+ * Each tile object will hold a reference to one TileState enum, 
+ * which determines the behaviour of a number of the tiles important methods.
  * 
- * TODO: THINK OF BEST STRUCTURE FOR SPECIFIC TILE IMPLEMENTATIONS
+ * Each enum must override a number of methods e.g: getSymbol and isObstruction
+ * as well as choose to override or use the default version of some others  e.g: setOn and ping
  */
-public enum TileTypeTwo.TileType{
-    //ACTORS
-    Hero{
-        public Tile makeTileObject(TileInfo info){
-            return new Actor(){
-                @Override public TileType getType(){ return Hero;}
-                @Override public char getSymbol(){return 'H';}
-                @Override public TileInfo getInfo(){return info;}
-                @Override public boolean canMoveOn(Actor a, Domain d) { return a.getType() == TileType.Enemy;} //enemy can move on actor
-                @Override public void setOn(Actor a, Domain d){}//TODO: LOSE 
-                @Override public void ping(Domain d) {
-                    Maze m = d.getCurrentMaze();
-                    Loc newLoc = m.getDirection().transformLoc(info.loc()); //new loc to move
-                    Tile newTil = m.getTileAt(newLoc); //tile at new loc
+public enum TileType {
+    //ACTORS:
+    Hero('H'){
+        @Override public boolean isObstruction(Tile t, Domain d) { returnta.type() != TileType.Enemy;} //enemy can move on actor
+        @Override public void setOn(Tile self, Tile a, Domain d){}//TODO: LOSE 
+        @Override public void ping(Tile self, Domain d) {
+            Maze m = d.getCurrentMaze();
+            Loc newLoc = m.getDirection().transformLoc(self.info().loc()); //new loc to move
+            Tile newTil = m.getTileAt(newLoc); //tile at new loc
 
-                    if(newTil.canMoveOn(this, d)){
-                        m.setTileAt(info.loc(), Floor, a -> {}); //set previous tile to floor
-                        newTil.setOn(this, d);//if movable, move
-                    }
-                    
-                
-                    this.staticDirection = m.getDirection(); //set heros direction of facing
-                    m.makeHeroStep(Direction.None); //make hero stop moving
+            if(newTil.isObstruction(self, d) == false){
+                m.setTileAt(self.info().loc(), Floor, l -> {}); //set previous tile to floor
+                newTil.setOn(self, d);//if movable, move
+            }
+        
+            self.info().dir(m.getDirection()); //set heros direction of facing
+            m.makeHeroStep(Direction.None); //make hero stop moving
 
-                }
-            };
-        }
-    },
-    Enemy{
-        public Tile makeTileObject(TileInfo info){
-            return new Actor(){
-                @Override public TileType getType(){ return Enemy;}
-                @Override public char getSymbol(){return 'E';}
-                @Override public TileInfo getInfo(){return info;}
-                @Override public boolean canMoveOn(Actor a, Domain d) { return a.getType() == TileType.Hero;} //hero can move on enemy
-                @Override public void setOn(Actor a, Domain d){}//TODO: LOSE
-                @Override public void ping(Domain d){ info.consumer().accept(d);}
-                
-            };
         }
     },
 
-    //TERRAINS
-    Empty{
-        public Tile makeTileObject(TileInfo info){
-            return new Tile(){
-                @Override public TileType getType(){ return Empty;}
-                @Override public char getSymbol(){return ' ';}
-                @Override public TileInfo getInfo(){return info;}
-                @Override public boolean canMoveOn(Actor a, Domain d) { return true;} //anyone can move on empty terrain
-                @Override public void setOn(Actor a, Domain d){d.getCurrentMaze().setTileAt(info.loc(), a);}
-            };
-        }
-    },
-    Floor{
-        public Tile makeTileObject(TileInfo info){
-            return new Tile(){
-                @Override public TileType getType(){ return Floor;}
-                @Override public char getSymbol(){return '_';}
-                @Override public TileInfo getInfo(){return info;}
-                @Override public boolean canMoveOn(Actor a, Domain d) { return true;} //anyone can move on floor
-                @Override public void setOn(Actor a, Domain d){d.getCurrentMaze().setTileAt(info.loc(), a);}
-            };
-        }
-    },
-    Wall{
-        public Tile makeTileObject(TileInfo info){
-            return new Tile(){
-                @Override public TileType getType(){ return Wall;}
-                @Override public char getSymbol(){return '|';}
-                @Override public TileInfo getInfo(){return info;}
-                @Override public boolean canMoveOn(Actor a, Domain d) { return false;} //no one can move on wall
-            };
-        }
+    Enemy('E'){
+        @Override public void setOn(Tile self, Tile t, Domain d){}//TODO: LOSE
+        @Override public void ping(Tile self, Domain d){ self.info().consumer().accept(d);}
     },
 
-    //INTERACTIVE TERRAINS
-    ExitDoor{
-        public Tile makeTileObject(TileInfo info){
-            return new Tile(){
-                @Override public TileType getType(){ return ExitDoor;}
-                @Override public char getSymbol(){return 'X';}
-                @Override public TileInfo getInfo(){return info;}
-                @Override public boolean canMoveOn(Actor a, Domain d) { return false;}
-                @Override public void ping(Domain d) {
-                    //if all treasures collected replace exitdoor with open exit door
-                    if(d.getCurrentMaze().getTileCount(TileType.Coin) - d.getInv().coins() == 0){
-                        d.getCurrentMaze().setTileAt(info.loc(), TileType.ExitDoorOpen, a->{}); 
-                    }
-                }
-            };
-        }
-    },
-    ExitDoorOpen{
-        public Tile makeTileObject(TileInfo info){
-            return new Tile(){
-                @Override public TileType getType(){ return ExitDoorOpen;}
-                @Override public char getSymbol(){return 'Z';}
-                @Override public TileInfo getInfo(){return info;}
-                @Override public boolean canMoveOn(Actor a, Domain d) { return a.getType() == TileType.Hero;}
-                @Override public void setOn(Actor a, Domain d){}//TODO: WIN
-            };
-        }
+    //STATIC TERRAINS:
+    Empty(' '){
+        @Override public boolean isObstruction(Tile t, Domain d) { return false;} //anyone can move on empty terrain
+        @Override public void setOn(Tile self, Tile t, Domain d){d.getCurrentMaze().setTileAt(self.info().loc(), t);}
     },
 
-    BlueLock{ 
-        public Tile makeTileObject(TileInfo info){
-            return new Tile(){
-                @Override public TileType getType(){ return BlueLock;}
-                @Override public char getSymbol(){return 'B';}
-                @Override public TileInfo getInfo(){return info;}
-                @Override public boolean canMoveOn(Actor a, Domain d){ return a.getType() == TileType.Hero && d.getInv().hasItem(BlueKey);}
-                @Override public void setOn(Actor a, Domain d){ 
-                    d.getInv().removeItem(BlueKey);
-                    d.getCurrentMaze().setTileAt(info.loc(), a);
-                }
-            };
-        }
-    },
-    GreenLock{
-        public Tile makeTileObject(TileInfo info){
-            return new Tile(){
-                @Override public TileType getType(){ return GreenLock;}
-                @Override public char getSymbol(){return 'G';}
-                @Override public TileInfo getInfo(){return info;}
-                @Override public boolean canMoveOn(Actor a, Domain d){ return a.getType() == TileType.Hero && d.getInv().hasItem(GreenKey);}
-                @Override public void setOn(Actor a, Domain d){ 
-                    d.getInv().removeItem(GreenLock);
-                    d.getCurrentMaze().setTileAt(info.loc(), a);
-                }
-            };
-        }
-    },
-    OrangeLock{
-        public Tile makeTileObject(TileInfo info){
-            return new Tile(){
-                @Override public TileType getType(){ return OrangeLock;}
-                @Override public char getSymbol(){return 'O';}
-                @Override public TileInfo getInfo(){return info;}
-                @Override public boolean canMoveOn(Actor a, Domain d){ return a.getType() == TileType.Hero && d.getInv().hasItem(OrangeKey);}
-                @Override public void setOn(Actor a, Domain d){ 
-                    d.getInv().removeItem(OrangeKey);
-                    d.getCurrentMaze().setTileAt(info.loc(), a);
-                }
-            };
-        }
-    },
-    YellowLock{
-        public Tile makeTileObject(TileInfo info){
-            return new Tile(){
-                @Override public TileType getType(){ return YellowLock;}
-                @Override public char getSymbol(){return 'Y';}
-                @Override public TileInfo getInfo(){return info;}
-                @Override public boolean canMoveOn(Actor a, Domain d){ return a.getType() == TileType.Hero && d.getInv().hasItem(YellowKey);}
-                @Override public void setOn(Actor a, Domain d){ 
-                    d.getInv().removeItem(YellowKey);
-                    d.getCurrentMaze().setTileAt(info.loc(), a);
-                }
-            };
-        }
+    Floor('_'){
+        @Override public boolean isObstruction(Tile t, Domain d) { return false;} //anyone can move on floor
+        @Override public void setOn(Tile self, Tile t, Domain d){d.getCurrentMaze().setTileAt(self.info().loc(), t);}
+    }, 
+
+    Wall('|'){
+        @Override public boolean isObstruction(Tile t, Domain d) { return true;} //no one can move on wall
     },
 
 
-
-    //ITEMS
-    BlueKey{
-        public Tile makeTileObject(TileInfo info){
-            return new Item(){
-                @Override public TileType getType(){ return BlueKey;}
-                @Override public char getSymbol(){return 'b';}
-                @Override public TileInfo getInfo(){return info;}
-                @Override public void setOn(Actor a, Domain d){ 
-                    d.getInv().addItem(this);
-                    d.getCurrentMaze().setTileAt(info.loc(), a);
-                }
-            };
-        }
-    },
-    GreenKey{
-        public Tile makeTileObject(TileInfo info){
-            return new Item(){
-                @Override public TileType getType(){ return GreenKey;}
-                @Override public char getSymbol(){return 'g';}
-                @Override public TileInfo getInfo(){return info;}
-                @Override public void setOn(Actor a, Domain d){ 
-                    d.getInv().addItem(this);
-                    d.getCurrentMaze().setTileAt(info.loc(), a);
-                }
-            };
-        }
-    },
-    OrangeKey{
-        public Tile makeTileObject(TileInfo info){
-            return new Item(){
-                @Override public TileType getType(){ return OrangeKey;}
-                @Override public char getSymbol(){return 'o';}
-                @Override public TileInfo getInfo(){return info;}
-                @Override public void setOn(Actor a, Domain d){ 
-                    d.getInv().addItem(this);
-                    d.getCurrentMaze().setTileAt(info.loc(), a);
-                }
-            };
-        }
-    },
-    YellowKey{
-        public Tile makeTileObject(TileInfo info){
-            return new Item(){
-                @Override public TileType getType(){ return YellowKey;}
-                @Override public char getSymbol(){return 'y';}
-                @Override public TileInfo getInfo(){return info;}
-                @Override public void setOn(Actor a, Domain d){ 
-                    d.getInv().addItem(this);
-                    d.getCurrentMaze().setTileAt(info.loc(), a);
-                }
-            };
+    //INTERACTIVE TERRAINS:
+    ExitDoor('X'){
+        @Override public boolean isObstruction(Tile t, Domain d) { return true;}//no one can move on exit door
+        @Override public void ping(Tile self, Domain d) {
+            //if all treasures collected replace exitdoor with open exit door
+            if(d.getCurrentMaze().getTileCount(TileType.Coin) - d.getInv().coins() == 0){
+                d.getCurrentMaze().setTileAt(self.info().loc(), TileType.ExitDoorOpen, a->{}); 
+            }
         }
     },
 
-    Coin{
-        public Tile makeTileObject(TileInfo info){
-            return new Item(){
-                @Override public TileType getType(){ return Coin;}
-                @Override public char getSymbol(){return 'C';}
-                @Override public TileInfo getInfo(){return info;}
-                @Override public boolean canMoveOn(Actor a, Domain d) { return a.getType() == TileType.Hero;}
-                @Override public void setOn(Actor a, Domain d){ 
-                    d.getInv().addCoin();
-                    d.getCurrentMaze().setTileAt(info.loc(), a);
-                }
-            };
+    ExitDoorOpen('Z'){
+        @Override public void setOn(Tile self, Tile t, Domain d){}//TODO: WIN
+    },
+
+    BlueLock('B'){
+        @Override public boolean isObstruction(Tile t, Domain d){ 
+            return !(a.type() == TileType.Hero && d.getInv().hasItem(BlueKey));
+        }
+        @Override public void setOn(Tile self, Tile t, Domain d){ 
+            d.getInv().removeItem(BlueKey);
+            d.getCurrentMaze().setTileAt(self.info().loc(), t);
         }
     },
 
-    //SPECIAL TILES
-    Null{
-        public Tile makeTileObject(TileInfo info){
-            return new Tile(){
-                @Override public TileType getType(){ return Null;}
-                @Override public TileInfo getInfo(){return info;}
-                @Override public boolean canMoveOn(Actor a, Domain d) { return false;}
-                @Override public char getSymbol(){return Character.MIN_VALUE;}
-            };
+    GreenLock('G'){
+        @Override public boolean isObstruction(Tile t, Domain d){ 
+            return !(t.type() == TileType.Hero && d.getInv().hasItem(GreenKey));
         }
+        @Override public void setOn(Tile self, Tile t, Domain d){ 
+            d.getInv().removeItem(GreenKey);
+            d.getCurrentMaze().setTileAt(self.info().loc(), t);
+        }
+    },
+
+    OrangeLock('O'){
+        @Override public boolean isObstruction(Tile t, Domain d){ 
+            return !(t.type() == TileType.Hero && d.getInv().hasItem(OrangeKey));
+        }
+        @Override public void setOn(Tile self, Tile t, Domain d){ 
+            d.getInv().removeItem(OrangeKey);
+            d.getCurrentMaze().setTileAt(self.info().loc(), t);
+        }
+    },
+
+    YellowLock('Y'){
+        @Override public boolean isObstruction(Tile t, Domain d){ 
+            return !(t.type() == TileType.Hero && d.getInv().hasItem(YellowKey));
+        }
+        @Override public void setOn(Tile self, Tile t, Domain d){ 
+            d.getInv().removeItem(YellowKey);
+            d.getCurrentMaze().setTileAt(self.info().loc(), t);
+        }
+    },
+
+    //PICKABLES(ITEMS):
+    BlueKey('b'){
+        @Override public void setOn(Tile self, Tile t, Domain d){ 
+            d.getInv().addItem(self);
+            d.getCurrentMaze().setTileAt(self.info().loc(), t);
+        }
+    },
+
+    GreenKey('g'){
+        @Override public void setOn(Tile self, Tile t, Domain d){ 
+            d.getInv().addItem(self);
+            d.getCurrentMaze().setTileAt(self.info().loc(), t);
+        }
+    },
+
+    OrangeKey('o'){
+        @Override public void setOn(Tile self, Tile t, Domain d){ 
+            d.getInv().addItem(self);
+            d.getCurrentMaze().setTileAt(self.info().loc(), t);
+        }
+
+    },
+
+    YellowKey('y'){
+        @Override public void setOn(Tile self,Tile t, Domain d){ 
+            d.getInv().addItem(self);
+            d.getCurrentMaze().setTileAt(self.info().loc(), t);
+        }
+    },
+
+    Coin('C'){
+        @Override public void setOn(Tile self, Tile t, Domain d){ 
+            d.getInv().addCoin();
+            d.getCurrentMaze().setTileAt(self.info().loc(), t);
+        }
+    }, 
+
+    //SPECIAL:
+    Null(Character.MIN_VALUE){ //this state won't be in game anywhere, its here just for aid in code
+        @Override public boolean isObstruction(Tile t, Domain d) { return false;}
     };
 
-    /**
-     * @return a NEW tile object associated with the enum
-     * 
-     */
-    public abstract Tile makeTileObject(TileInfo info);
-}
+    //CONSTRUCTOR
+    TileType(char symbol){this.symbol = symbol;}
+    
+    //FIELDS:
+    private char symbol;
 
+    //METHODS:
+    public char getSymbol(){ return symbol;}
+    public boolean isObstruction(Tile t, Domain d){return t.type() != TileType.Hero;}
+    public void setOn(Tile self, Tile t, Domain d){}
+    public void ping(Tile self, Domain d){}
+}
 

@@ -50,8 +50,10 @@ public class Maze {
         IntStream.range(0, width)
         .forEach( x ->
             IntStream.range(0, height)
-            .forEach(y -> copy[x][y] = tileArray[x][y].getType()
-            .makeTileObject(new TileInfo(new Loc(x, y), tileArray[x][y].getInfo().consumer()))
+            .forEach(
+                y -> copy[x][y] = new Tile(tileArray[x][y].type(), 
+                new TileInfo(new Loc(x, y), tileArray[x][y].info().consumer())
+            )
         ));
         return copy;
     }
@@ -78,7 +80,7 @@ public class Maze {
         return (int)Arrays
         .stream(tileArray)
         .flatMap(Arrays::stream)
-        .filter(t -> t.getType() == type)
+        .filter(t -> t.type() == type)
         .count();
     }
 
@@ -87,7 +89,7 @@ public class Maze {
      * if location is out of bounds return null typed tile
      */
     public Tile getTileAt(int x, int y){
-        if(Loc.checkInBound(new Loc(x, y), this) == false) return TileType.Null.makeTileObject(null);
+        if(Loc.checkInBound(new Loc(x, y), this) == false) return new Tile(TileType.Null, null);
         return tileArray[x - 1][y - 1];
     }
 
@@ -95,7 +97,7 @@ public class Maze {
      * gets the tile at the given location in the array
      */
     public Tile getTileAt(Loc l){
-        if(Loc.checkInBound(l, this) == false) return TileType.Null.makeTileObject(null);
+        if(Loc.checkInBound(l, this) == false) return new Tile(TileType.Null, null);
         return tileArray[l.x() - 1][l.y() - 1];
     }
 
@@ -122,7 +124,7 @@ public class Maze {
         if(Loc.checkInBound(loc, this) == false) return;
             
         //make tile object from type enum and replace the tile at the location
-        tileArray[loc.x() - 1][loc.y() - 1] = type.makeTileObject(new TileInfo(loc, pingConsumer));
+        tileArray[loc.x() - 1][loc.y() - 1] = new Tile(type, new TileInfo(loc, pingConsumer));
 
     }
 

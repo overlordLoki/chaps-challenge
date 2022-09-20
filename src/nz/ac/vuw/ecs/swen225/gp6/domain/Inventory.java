@@ -54,7 +54,7 @@ public class Inventory {
      * @return true if a tile name found in inv, otherwise false
      */
     public boolean hasItem(TileType itemName){
-        return Arrays.stream(items).anyMatch(t -> t.getType() == itemName);
+        return Arrays.stream(items).anyMatch(t -> t.type() == itemName);
     }
 
     /**
@@ -62,7 +62,7 @@ public class Inventory {
      */
     public boolean removeItem(TileType itemName){
         int index = IntStream.range(0, size)
-        .filter(i -> items[i].getType() == itemName)
+        .filter(i -> items[i].type() == itemName)
         .findFirst()
         .orElse(-1);
 
