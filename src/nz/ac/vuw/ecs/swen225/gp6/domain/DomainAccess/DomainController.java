@@ -1,8 +1,12 @@
-package nz.ac.vuw.ecs.swen225.gp6.domain;
+package nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Helper;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Inventory;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
 
 /*

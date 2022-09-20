@@ -1,10 +1,10 @@
-package nz.ac.vuw.ecs.swen225.gp6.domain;
+package nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess;
 
 import java.util.List;
 import java.util.function.Consumer;
 
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileType;
+import nz.ac.vuw.ecs.swen225.gp6.domain.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 
 /*
