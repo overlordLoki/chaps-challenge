@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileGrouping.Tile;
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileGrouping.TileInfo;
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileGrouping.TileType;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileInfo;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileType;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 

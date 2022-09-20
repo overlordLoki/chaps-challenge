@@ -1,4 +1,4 @@
-package nz.ac.vuw.ecs.swen225.gp6.domain.TileGrouping;
+package nz.ac.vuw.ecs.swen225.gp6.domain.Tiles;
 
 import java.util.function.*;
 
@@ -19,7 +19,7 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 public enum TileType {
     //ACTORS:
     Hero('H'){
-        @Override public boolean isObstruction(Tile t, Domain d) { returnta.type() != TileType.Enemy;} //enemy can move on actor
+        @Override public boolean isObstruction(Tile t, Domain d) { return t.type() != TileType.Enemy;} //enemy can move on actor
         @Override public void setOn(Tile self, Tile a, Domain d){}//TODO: LOSE 
         @Override public void ping(Tile self, Domain d) {
             Maze m = d.getCurrentMaze();
@@ -75,7 +75,7 @@ public enum TileType {
 
     BlueLock('B'){
         @Override public boolean isObstruction(Tile t, Domain d){ 
-            return !(a.type() == TileType.Hero && d.getInv().hasItem(BlueKey));
+            return !(t.type() == TileType.Hero && d.getInv().hasItem(BlueKey));
         }
         @Override public void setOn(Tile self, Tile t, Domain d){ 
             d.getInv().removeItem(BlueKey);

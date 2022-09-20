@@ -1,4 +1,4 @@
-package nz.ac.vuw.ecs.swen225.gp6.domain.TileGrouping;
+package nz.ac.vuw.ecs.swen225.gp6.domain.Tiles;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
@@ -9,11 +9,11 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
  */
 public class Tile {
     
-    private TileType state;
+    private TileType type;
     private TileInfo info;
 
     public Tile(TileType state, TileInfo info){
-        this.state = state;
+        this.type = state;
         this.info = info;
     }
 
@@ -24,7 +24,7 @@ public class Tile {
      * 
      * this returns the enum.
      */
-    public TileType type(){return state;}
+    public TileType type(){return type;}
     /*
      * Each tile  will hold an info object, which stores all "field-like" info that the tile may have.
      * Eg location of tile, consumer that may overwrite ping method, etc.
@@ -37,26 +37,23 @@ public class Tile {
     /**
      * Each tile type should have a symbol, this is for testing purposes
      */
-    public char getSymbol(){return state.getSymbol();}
+    public char getSymbol(){return type.getSymbol();}
     /**
-     * Checks wether this tile is an obstruction for an actor, in a given maze,
+     * Checks wether this tile is an obstruction for another given tile t, in a given maze.
      * NOTE: does not alter the tile, maze or actor in anyway.
      */
-    public boolean isObstruction(Actor a, Domain d){return state.isObstruction(a, d);}
+    public boolean isObstruction(Tile t, Domain d){return type.isObstruction(t, d);}
     /**
-     * Sets this tile on maze to the given actor, 
-     * NOTE: does not check wether it's possible for the actor to move on it!
+     * Sets the given tile t instead this tile on maze, changing the maze to do so.
+     * NOTE: does not check wether it's possible for tile t to move on this tile!
      */
-    public void setOn(Actor a, Domain d){ state.setOn(this, a, d);}
+    public void setOn(Tile t, Domain d){ type.setOn(this, t, d);}
     /**
      * Calculates the next state of the tile in the maze/inventory.
      * Based on the tile and maze state, this method may alter the state of the tile and given maze object.
      */
-    public void ping(Domain d){state.ping(this, d);}
+    public void ping(Domain d){type.ping(this, d);}
 }
 
 //TILE GROUPS:(classes that extend tile to help with grouping of tiles)
-class Actor extends Tile{
-    protected Direction staticDirection = Direction.None;
-    public Actor(TileType state, TileInfo info) {super(state, info);}
-}
+//non currently

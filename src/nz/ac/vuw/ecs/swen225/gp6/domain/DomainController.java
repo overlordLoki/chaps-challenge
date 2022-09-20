@@ -3,19 +3,24 @@ package nz.ac.vuw.ecs.swen225.gp6.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileGrouping.Tile;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
 
-class DomainController {
+/*
+ * This class is for app to wrap on a domain object to use its functionalities,
+ * without accessing any other methods inside the domain package.
+ */
+public class DomainController {
     private Domain domain;
 
+    //TODO delete later
     public DomainController(){
         List<Maze> mazes = new ArrayList<>();
         mazes.add(Helper.makeMaze());
         this.domain = new Domain(mazes, new Inventory(8), 1);
     }
 
-    public DomainController(List<Maze> mazes, Inventory inv, int lvl){
-        this.domain = new Domain(mazes, inv, lvl);
+    public DomainController(Domain domain){
+        this.domain = domain;
     }
 
     //ACTIONS ON DOMAIN:

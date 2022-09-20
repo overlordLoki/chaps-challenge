@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileGrouping.Tile;
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileGrouping.TileType;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileType;
 
 public class Inventory {
     private Tile[] items;
