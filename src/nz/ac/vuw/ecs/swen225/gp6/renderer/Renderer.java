@@ -79,12 +79,17 @@ public class Renderer extends JPanel{
 
     //play the music
     public void playMusic() {
+        //start music from the start
+        clip.setFramePosition(0);
+        //play the music
         clip.start();
+        //loop the music
         clip.loop(Clip.LOOP_CONTINUOUSLY);
         System.out.println("playing music");
     }
     //stop playing the music
     public void stopMusic() {
+        //stop the music
         clip.stop();
         System.out.println("stop playing music");
     }
