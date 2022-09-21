@@ -1,6 +1,7 @@
 package nz.ac.vuw.ecs.swen225.gp6.app;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
+import nz.ac.vuw.ecs.swen225.gp6.renderer.InventoryPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.Renderer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack.Images;
@@ -14,6 +15,8 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 
 /**
@@ -109,7 +112,7 @@ public class PanelCreator{
         System.out.print("Configuring: Menu...... ");
 
         Renderer r = app.getRender();
-        JPanel pnMenu = createBackgroundPanel(Images.Background);
+        JPanel pnMenu = createBackgroundPanel(Images.Background, BoxLayout.Y_AXIS);
 
         List<JLabel> labels = List.of(
                 createActionLabel(NEW_GAME, r, SUBTITLE, true, ()->cardLayout.show(backPanel, NEW_GAME)),
@@ -119,8 +122,7 @@ public class PanelCreator{
                 createActionLabel(CREDITS, r, SUBTITLE, true, ()->cardLayout.show(backPanel, CREDITS)),
                 createActionLabel(EXIT, r, SUBTITLE, true, ()->cardLayout.show(backPanel, EXIT))
         );
-        // setting layout
-        pnMenu.setLayout(new BoxLayout(pnMenu, BoxLayout.Y_AXIS));
+        // assemble the panel
         pnMenu.add(Box.createVerticalGlue());
         labels.forEach(pnMenu::add);
 
@@ -131,12 +133,10 @@ public class PanelCreator{
     private static JPanel configurePanelNewGame(App app) {
         System.out.print("Configuring: NewGame...... ");
 
-        JPanel pnStartNew = createRepeatableBackgroundPanel(Images.Pattern_2, app.getRender());
+        JPanel pnStartNew = createRepeatableBackgroundPanel(Images.Pattern_2, app.getRender(), BoxLayout.Y_AXIS);
         JLabel lbTitle = createLabel("Starting new game...", app.getRender(), TITLE, true);
         JLabel lbConfirm = createActionLabel("Confirm", app.getRender(), SUBTITLE, true, app::transitionToGameScreen);
 
-        // setting layout
-        pnStartNew.setLayout(new BoxLayout(pnStartNew, BoxLayout.Y_AXIS));
         // assemble this panel
         addAll(pnStartNew, lbTitle, Box.createVerticalGlue(), Box.createVerticalGlue(), lbConfirm);
 
@@ -147,14 +147,12 @@ public class PanelCreator{
     private static JPanel configurePanelLoad(App app) {
         System.out.print("Configuring: Load...... ");
 
-        JPanel pnLoad = createRepeatableBackgroundPanel(Images.Pattern_2, app.getRender());
+        JPanel pnLoad = createRepeatableBackgroundPanel(Images.Pattern_2, app.getRender(), BoxLayout.Y_AXIS);
         JLabel lbTitle = createLabel("Load and Resume Games", app.getRender(), TITLE, true);
         JLabel lbConfirm = createActionLabel("Back", app.getRender(),SUBTITLE, true, app::transitionToMenuScreen);
         JPanel pnLoad1 = createLoadGamePanel("Load 1", app, app.getRender());
         JPanel pnLoad2 = createLoadGamePanel("Load 2", app, app.getRender());
 
-        // setting layout
-        pnLoad.setLayout(new BoxLayout(pnLoad, BoxLayout.Y_AXIS));
         // assemble this panel
         addAll(pnLoad, lbTitle, Box.createVerticalGlue(), pnLoad1, Box.createVerticalGlue(),pnLoad2,Box.createVerticalGlue(), lbConfirm);
 
@@ -163,11 +161,11 @@ public class PanelCreator{
     }
 
     private static JPanel createLoadGamePanel(String title, App app, Renderer render) {
-        JPanel pnLoad = createRepeatableBackgroundPanel(Images.Wall, render);
-        JPanel pnInfo = createClearPanel();
-        JPanel pnStatus = createClearPanel();
-        JPanel pnInventory = createInventoryPanel();
-        JPanel pnOptions = createClearPanel();
+        JPanel pnLoad = createRepeatableBackgroundPanel(Images.Wall, render, BoxLayout.X_AXIS);
+        JPanel pnInfo = createClearPanel(BoxLayout.Y_AXIS);
+        JPanel pnStatus = createClearPanel(BoxLayout.X_AXIS);
+        JPanel pnInventory = new InventoryPanel(app.getGame(), false);
+        JPanel pnOptions = createClearPanel(BoxLayout.X_AXIS);
 
         JLabel lbTitle = createLabel(title, render, SUBTITLE, true);
         JLabel lbLevel = createLabel("Level: 1", render, TEXT, true);
@@ -176,13 +174,11 @@ public class PanelCreator{
         JLabel lbConfirm = createActionLabel("Load!", render, SUBTITLE, true, app::transitionToGameScreen);
         JLabel lbDelete = createActionLabel("Delete", render, SUBTITLE, true, app::transitionToMenuScreen);
 
-        pnLoad.setLayout(new BoxLayout(pnLoad, BoxLayout.Y_AXIS));
-        pnStatus.setLayout(new BoxLayout(pnStatus, BoxLayout.X_AXIS));
-        pnOptions.setLayout(new BoxLayout(pnOptions, BoxLayout.X_AXIS));
-        pnInventory.setLayout(new GridLayout(1, 9));
+        // assemble this panel
         setSize(pnLoad, 800, 200, 800, 200, 800, 200);
         setSize(pnInventory, 675,75, 675,75, 675,75);
         setSize(pnStatus, 675, 30, 675, 30, 675, 30);
+        // assemble this panel
         addAll(pnStatus, lbLevel, Box.createHorizontalGlue(), lbTime, Box.createHorizontalGlue(), lbScore);
         addAll(pnInfo, pnStatus, pnInventory);
         addAll(pnOptions, Box.createHorizontalGlue(), lbConfirm, Box.createHorizontalGlue(),lbDelete, Box.createHorizontalGlue());
@@ -194,11 +190,11 @@ public class PanelCreator{
         System.out.print("Configuring: Settings...... ");
 
         Renderer r = app.getRender();
-        JPanel pnSettings = createRepeatableBackgroundPanel(Images.Pattern_2, app.getRender());
-        JPanel pnMiddle = createClearPanel();
-        JPanel pnBindingL = createClearPanel();
-        JPanel pnBindingR = createClearPanel();
-        JPanel pnTexturePack = createClearPanel();
+        JPanel pnSettings = createRepeatableBackgroundPanel(Images.Pattern_2, app.getRender(), BoxLayout.Y_AXIS);
+        JPanel pnMiddle = createClearPanel(BoxLayout.X_AXIS);
+        JPanel pnBindingL = createClearPanel(BoxLayout.Y_AXIS);
+        JPanel pnBindingR = createClearPanel(BoxLayout.Y_AXIS);
+        JPanel pnTexturePack = createClearPanel(BoxLayout.X_AXIS);
 
         JLabel lbTitle = createLabel("Settings", r, TITLE, true);
         JLabel lbConfirm = createActionLabel("Confirm", r, SUBTITLE, true, app::transitionToMenuScreen);
@@ -263,13 +259,11 @@ public class PanelCreator{
                 label.setText((app.indexOfKeyToSet() < 6 ? "": "Ctrl + " ) + KeyEvent.getKeyText(e.getKeyCode()));
                 label.setForeground(Color.BLACK);
                 app.exitKeySettingMode();
-                app.getController().setController(actionKeyBindings);
+                app.getController().resetController();
             }
         });
 
         // setting layout
-        setAllBoxLayout(BoxLayout.Y_AXIS, pnSettings, pnBindingL, pnBindingR);
-        setAllBoxLayout(BoxLayout.X_AXIS, pnMiddle, pnTexturePack);
         pnBindingL.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
         pnBindingR.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
         // assemble this panel
@@ -288,12 +282,10 @@ public class PanelCreator{
     private static JPanel configurePanelHowToPlay(App app) {
         System.out.print("Configuring: HowToPlay...... ");
 
-        JPanel pnHowToPlay = createRepeatableBackgroundPanel(Images.Pattern_2, app.getRender());
+        JPanel pnHowToPlay = createRepeatableBackgroundPanel(Images.Pattern_2, app.getRender(), BoxLayout.Y_AXIS);
         JLabel lbTitle = createLabel("How To Play", app.getRender(), TITLE, true);
         JLabel lbBack = createActionLabel("Back", app.getRender(), SUBTITLE, true, app::transitionToMenuScreen);
 
-        // setting layout
-        pnHowToPlay.setLayout(new BoxLayout(pnHowToPlay, BoxLayout.Y_AXIS));
         // assemble this panel
         addAll(pnHowToPlay, lbTitle, Box.createVerticalGlue(), Box.createVerticalGlue(), lbBack);
 
@@ -304,7 +296,7 @@ public class PanelCreator{
     private static JPanel configurePanelCredits(App app) {
         System.out.print("Configuring: Credits...... ");
 
-        JPanel pnCredits = createRepeatableBackgroundPanel(Images.Pattern_2, app.getRender());
+        JPanel pnCredits = createRepeatableBackgroundPanel(Images.Pattern_2, app.getRender(), BoxLayout.Y_AXIS);
         JLabel lbTitle = createLabel("Credits", app.getRender(), TITLE, true);
         JLabel lbBack = createActionLabel("Back", app.getRender(),SUBTITLE, true, app::transitionToMenuScreen);
         JLabel[] credits = new JLabel[]{
@@ -316,8 +308,6 @@ public class PanelCreator{
                 createLabel("Renderer: Loki", app.getRender(), TEXT, true),
         };
 
-        // setting layout
-        pnCredits.setLayout(new BoxLayout(pnCredits, BoxLayout.Y_AXIS));
         // assemble this panel
         addAll(pnCredits, lbTitle, Box.createVerticalGlue());
         addAll(pnCredits, credits);
@@ -330,16 +320,13 @@ public class PanelCreator{
     private static JPanel configurePanelExit(App app) {
         System.out.print("Configuring: Exit...... ");
 
-        JPanel pnExit   = createRepeatableBackgroundPanel(Images.Pattern_2, app.getRender());
-        JPanel pnOption = createClearPanel();
+        JPanel pnExit   = createRepeatableBackgroundPanel(Images.Pattern_2, app.getRender(), BoxLayout.Y_AXIS);
+        JPanel pnOption = createClearPanel(BoxLayout.X_AXIS);
         JLabel lbTitle  = createLabel("Chaps Challenge!", app.getRender(), TITLE, true);
         JLabel lbMessage = createLabel("Are you sure you want to exit?", app.getRender(), SUBTITLE, true);
         JLabel lbYes    = createActionLabel("Yes", app.getRender(),SUBTITLE, true, ()->System.exit(0));
         JLabel lbNo     = createActionLabel("No", app.getRender(),SUBTITLE, true, app::transitionToMenuScreen);
 
-        // setting layout
-        pnExit.setLayout(new BoxLayout(pnExit, BoxLayout.Y_AXIS));
-        pnOption.setLayout(new BoxLayout(pnOption, BoxLayout.X_AXIS));
         // combine all components
         addAll(pnOption, Box.createHorizontalGlue(), lbNo, Box.createHorizontalGlue(), lbYes, Box.createHorizontalGlue());
         addAll(pnExit, lbTitle, Box.createVerticalGlue(), lbMessage, Box.createVerticalGlue(), pnOption, Box.createVerticalGlue());
@@ -357,38 +344,34 @@ public class PanelCreator{
         System.out.print("Configuring: Game...... ");
 
         // outermost panel
-        JPanel pnGame = createRepeatableBackgroundPanel(Images.Pattern, mazeRender);
+        JPanel pnGame = createRepeatableBackgroundPanel(Images.Pattern, mazeRender, BoxLayout.X_AXIS);
         // 3 panels on top of outermost panel: left/mid/right
-        JPanel pnStatus = createClearPanel();
-        JPanel pnMaze   = createClearPanel();
-        JPanel pnRight  = createClearPanel();
+        JPanel pnStatus = createClearPanel(BoxLayout.Y_AXIS);
+        JPanel pnMaze   = createClearPanel(new GridBagLayout());
+        JPanel pnRight  = createClearPanel(BoxLayout.Y_AXIS);
         // inner panels for panels: left/mid/right
-        JPanel pnStatusTop = createClearPanel();
-        JPanel pnStatusMid = createClearPanel();
-        JPanel pnStatusBot = createClearPanel();
-        JPanel pnInventory = createClearPanel();
-        JPanel pnInventories = createInventoryPanel();
+        JPanel pnStatusTop = createClearPanel(BoxLayout.Y_AXIS);
+        JPanel pnStatusMid = createClearPanel(BoxLayout.Y_AXIS);
+        JPanel pnStatusBot = createClearPanel(BoxLayout.Y_AXIS);
+        JPanel pnInventory = createClearPanel(BoxLayout.Y_AXIS);
+        JPanel pnInventories = new InventoryPanel(game, true);
         // status bars
         JLabel lbLevelTitle = createLabel("Level", mazeRender, SUBTITLE, false);
-        JLabel lbLevel      = createLabel(game.getCurrentLevel()+"" , mazeRender, SUBTITLE, false);
-        JLabel lbTimerTitle = createLabel("Time Left", mazeRender, SUBTITLE, false);
-        JLabel lbTimer      = createLabel(app.getTimeLeft()+"" , mazeRender, SUBTITLE, false);
+        JLabel lbLevel      = createInfoLabel(()->app.getGame().getCurrentLevel()+"", mazeRender, SUBTITLE, false);
+        JLabel lbTimerTitle = createLabel("Time", mazeRender, SUBTITLE, false);
+        JLabel lbTimer      = createInfoLabel(app::getTime, mazeRender, SUBTITLE, false);
         JLabel lbTreasuresTitle = createLabel("Treasures", mazeRender, SUBTITLE, false);
-        JLabel lbTreasures  = createLabel(game.getTreasuresLeft()+"", mazeRender, SUBTITLE, false);
+        JLabel lbTreasures  = createInfoLabel(()->app.getGame().getTreasuresLeft()+"", mazeRender, SUBTITLE, false);
         JLabel lbPause      = createActionLabel("Menu", app.getRender(),SUBTITLE, false, app::transitionToMenuScreen);
         JLabel lbInventoryTitle = createLabel("Inventory", mazeRender, SUBTITLE, false);
 
-        // setting layout
-        pnGame.setLayout(new BoxLayout(pnGame, BoxLayout.X_AXIS));
-        setAllBoxLayout(BoxLayout.Y_AXIS, pnStatus, pnRight, pnStatusTop, pnStatusMid, pnStatusBot, pnInventory);
-        pnMaze.setLayout(new GridBagLayout());
-        pnInventories.setLayout(new GridLayout(4,2));
+        // setting size
+        int width = 75*2, height = 75*4;
         pnStatus.setMaximumSize(new Dimension(200, 1000));
         pnRight.setMaximumSize(new Dimension(200, 1000));
         setSize(mazeRender, 700, 700, 600, 600, 800, 800);
         setSize(pnMaze, 700, 700, 600, 600, 800, 800);
-        int size = 75;
-        setSize(pnInventory, size*2, size*4, size*2, size*4, size*2, size*4);
+        setSize(pnInventory, width, height, width, height, width, height);
 
 
         addAll(pnStatusTop, lbLevelTitle, lbLevel);
@@ -411,29 +394,20 @@ public class PanelCreator{
         System.out.print("Configuring: Victory...... ");
 
         System.out.println("Done!");
-        return createClearPanel();
+        return createClearPanel(BoxLayout.Y_AXIS);
     }
 
     private static JPanel configurePanelDeath() {
         System.out.print("Configuring: Death...... ");
 
         System.out.println("Done!");
-        return createClearPanel();
+        return createClearPanel(BoxLayout.Y_AXIS);
     }
 
 
     //================================================================================================================//
     //=========================================== Helper Method ======================================================//
     //================================================================================================================//
-
-    /**
-     * Sets layouts of all component to be a type of BoxLayout
-     * @param axis the alignment axis of the BoxLayout
-     * @param pns the panels to be set
-     */
-    public static void setAllBoxLayout(int axis, JPanel... pns) {
-        Arrays.stream(pns).forEach(pn -> pn.setLayout(new BoxLayout(pn, axis)));
-    }
 
     /**
      * Sets the size of a component
@@ -469,20 +443,43 @@ public class PanelCreator{
     /**
      * Creates a panel with a clear see-through panel that can be used to group other components
      *
+     * @param mgr the layout manager of the panel
      * @return a clear JPanel
      */
-    public static JPanel createClearPanel() {
-        return new JPanel() {{setOpaque(false);}};
+    public static JPanel createClearPanel(LayoutManager mgr) {
+        return new JPanel() {{
+            setLayout(mgr);
+            setOpaque(false);
+        }};
+    }
+
+    /**
+     * Creates a BoxLayout panel with a clear see-through panel that can be used to group other components
+     *
+     * @param axis the axis to lay out components along. Can be one of:
+     *             {@code BoxLayout.X_AXIS, BoxLayout.Y_AXIS,
+     *             BoxLayout.LINE_AXIS} or {@code BoxLayout.PAGE_AXIS}
+     * @return a clear JPanel
+     */
+    public static JPanel createClearPanel(int axis) {
+        return new JPanel() {{
+            setLayout(new BoxLayout(this, axis));
+            setOpaque(false);
+        }};
     }
 
     /**
      * Creates a panel with a background image that fits the size of the frame
      *
-     * @param img the background image
+     * @param img  the background image
+     * @param axis the axis to lay out components along. Can be one of:
+     *             {@code BoxLayout.X_AXIS, BoxLayout.Y_AXIS,
+     *             BoxLayout.LINE_AXIS} or {@code BoxLayout.PAGE_AXIS}
      * @return a JPanel with a background image
      */
-    public static JPanel createBackgroundPanel(Images img) {
-        return new JPanel() {
+    public static JPanel createBackgroundPanel(Images img, int axis) {
+        return new JPanel() {{
+            setLayout(new BoxLayout(this, axis));}
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 g.drawImage(img.getImg(), 0, 0, this.getWidth(), this.getHeight(), null);
@@ -493,12 +490,16 @@ public class PanelCreator{
     /**
      * Creates a panel with a repeating image that fits the size of the frame
      *
-     * @param img the image pattern to fill the background
+     * @param img    the image pattern to fill the background
      * @param render the render to be used to get the size of the frame
+     * @param axis the axis to lay out components along. Can be one of:
+     *            {@code BoxLayout.X_AXIS, BoxLayout.Y_AXIS,
+     *             BoxLayout.LINE_AXIS} or {@code BoxLayout.PAGE_AXIS}
      * @return a JPanel with a repeating pattern background image
      */
-    public static JPanel createRepeatableBackgroundPanel(Images img, Renderer render) {
-        return new JPanel(){
+    public static JPanel createRepeatableBackgroundPanel(Images img, Renderer render, int axis) {
+        return new JPanel(){{
+            setLayout(new BoxLayout(this, axis));}
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 int size = render.getPatternSize();
@@ -509,29 +510,6 @@ public class PanelCreator{
                 }
             }
         };
-    }
-
-    /**
-     * Creates a panel which displays the inventory the player has
-     *
-     * @return a JPanel with the inventory
-     */
-    public static JPanel createInventoryPanel() {
-        JPanel pnInventory = createClearPanel();
-        for(int i = 0; i < 8; i++) {
-            int finalX = i;
-            pnInventory.add(new JLabel(){
-                public void paintComponent(Graphics g) {
-                    super.paintComponent(g);
-                    g.drawImage(Images.Empty_tile.getImg(), 0, 0, getWidth(),getHeight(),null);
-                    int size = Math.min(getWidth(), getHeight());
-//                    List<Tile> inventory = List.of();
-//                    if (finalX >= inventory.size()) return;
-//                    g.drawImage(Images.getImage(inventory.get(finalX)), (getWidth()-size)/2, (getHeight()-size)/2, size,size,null);
-                }
-            });
-        }
-        return pnInventory;
     }
 
     /**
@@ -549,6 +527,33 @@ public class PanelCreator{
             if (Centered) setAlignmentX(CENTER_ALIGNMENT);}
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
+                TexturePack tp = render.getCurrentTexturePack();
+                setFont(switch (textType) {
+                    case TITLE    -> tp.getTitleFont();
+                    case SUBTITLE -> tp.getSubtitleFont();
+                    default       -> tp.getTextFont();
+                });
+                setForeground(tp.getColorDefault());
+            }
+        };
+    }
+
+    /**
+     * This method is used to create a JLabel with texture-dynamic fonts.
+     *
+     * @param display  method to invoke the information to be displayed
+     * @param render   the renderer object
+     * @param textType size of the text, should use the constants TITLE, SUBTITLE, and TEXT to specify
+     * @param Centered true if this label should be center aligned
+     * @return the JLabel
+     */
+    public static JLabel createInfoLabel(Supplier<String> display, Renderer render, int textType, boolean Centered) {
+        return new JLabel(display.get()) {{
+            setForeground(render.getCurrentTexturePack().getColorDefault());
+            if (Centered) setAlignmentX(CENTER_ALIGNMENT);}
+            public void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                setText(display.get());
                 TexturePack tp = render.getCurrentTexturePack();
                 setFont(switch (textType) {
                     case TITLE    -> tp.getTitleFont();
