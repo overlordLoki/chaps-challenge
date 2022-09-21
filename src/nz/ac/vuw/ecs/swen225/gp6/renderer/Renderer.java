@@ -24,6 +24,7 @@ public class Renderer extends JPanel{
     private DomainController maze;
 
     public BufferedImage background;
+    
 
     private int patternSize = 100;
 
@@ -34,6 +35,7 @@ public class Renderer extends JPanel{
     public TexturePack getCurrentTexturePack(){
         return texturePack;
     }
+    
 
 
     static TexturePack currentTP = TexturePack.Cats;
