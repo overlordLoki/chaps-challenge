@@ -5,10 +5,8 @@ import java.awt.*;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import nz.ac.vuw.ecs.swen225.gp6.domain.*;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
 
-import static nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileType.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
 
 //import nz.ac.vuw.ecs.swen225.gp6.renderer.tempDomain.Tiles.Tile;
 
@@ -213,7 +211,7 @@ public enum TexturePack{
             this.name = imageName;
             System.out.print("Loading " + imageName + "...    -> ");
             try {
-                BufferedImage img = ImageIO.read(getClass().getResource("/nz/ac/vuw/ecs/swen225/gp6/renderer/textures/" + Renderer.currentTP + "/" + imageName + ".png"));
+                BufferedImage img = ImageIO.read(getClass().getResource("/nz/ac/vuw/ecs/swen225/gp6/renderer/textures/" + MazeRenderer.currentTP + "/" + imageName + ".png"));
                 System.out.println("Loaded!");
                 return img;
             } catch (IOException e) {
