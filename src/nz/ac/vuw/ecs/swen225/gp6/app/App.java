@@ -100,8 +100,7 @@ public class App extends JFrame {
         System.out.println("Toggling to menu screen");
         menuCardLayout.show(menuPanel, MENU);
         outerCardLayout.show(outerPanel, MENU);
-        timeStart=System.nanoTime();
-        timer.start();
+        actions.actionPause();
         System.out.println("Menu shown");
     }
 
@@ -112,6 +111,7 @@ public class App extends JFrame {
         System.out.println("Toggling to game screen");
         gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
+        actions.actionResume();
         System.out.println("Game shown");
     }
 
