@@ -4,7 +4,8 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import java.awt.Graphics;
-import nz.ac.vuw.ecs.swen225.gp6.domain.*;
+import java.net.URL;
+import javax.sound.sampled.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileType;
@@ -16,30 +17,15 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileType;
  */
 public class Renderer extends JPanel{
     static final long serialVersionUID = 1L;
-    //default texturePack
     private TexturePack texturePack = TexturePack.Cats;
-    //maze array
     private Tile[][] gameArray;
-    //the maze
     private DomainController maze;
-
     public BufferedImage background;
-    
-
     private int patternSize = 100;
-
-    public int getPatternSize() {
-        return patternSize;
-    }
-
-    public TexturePack getCurrentTexturePack(){
-        return texturePack;
-    }
-    
-
-
     static TexturePack currentTP = TexturePack.Cats;
-
+    private Clip clip;
+    public int getPatternSize() {return patternSize;}
+    public TexturePack getCurrentTexturePack(){return texturePack;}
     /**
      * Constructor. Takes a maze as parameters.
      * 
@@ -47,8 +33,8 @@ public class Renderer extends JPanel{
      */
     public Renderer(DomainController maze) {
         this.maze = maze;
+        PlaySound();
     }
-
     /**
      * set the current texturePack and returns the new background image
      * 
@@ -73,10 +59,31 @@ public class Renderer extends JPanel{
         } catch (IOException e) {throw new RuntimeException(e);}
     }
 
-    public BufferedImage getImage(TexturePack.Images imgName) {
-        return imgName.getImg();
+    public BufferedImage getImage(TexturePack.Images imgName) {return imgName.getImg();}
+
+    //intalize the music
+    public void PlaySound() {
+        try {
+           // Open an audio input stream.
+           URL url = this.getClass().getClassLoader().getResource("/Renderer/music/gameMusic.wav");
+           AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
+           // Get a sound clip resource.
+           clip = AudioSystem.getClip();
+           // Open audio clip and load samples from the audio input stream.
+           clip.open(audioIn);
+        } catch (Exception e) {e.printStackTrace();}
     }
 
+    //play the music
+    public void playMusic() {
+        clip.start();
+        clip.loop(Clip.LOOP_CONTINUOUSLY);
+    }
+    //stop playing the music
+    public void stopMusic() {
+        clip.stop();
+    }
+    
    
     @Override
     public void paintComponent(Graphics g) {
@@ -94,7 +101,7 @@ public class Renderer extends JPanel{
                 g.drawImage(TexturePack.Images.Floor.getImg(), i * tileWidth, j * tileHeight, tileWidth, tileHeight, null);
                 // if there is a item draw on top of the floor or a wall tile
                 Tile tile = gameArray[i][j];
-                if(tile.type() == TileType.Floor) continue;
+                if(tile.type() == TileType.Floor) {continue;}
                 g.drawImage(TexturePack.Images.getImage(tile), i * tileWidth, j * tileHeight, tileWidth, tileHeight, null);
             }
         }
