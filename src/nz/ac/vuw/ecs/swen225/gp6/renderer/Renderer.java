@@ -24,6 +24,8 @@ public class Renderer extends JPanel{
     private DomainController maze;
 
     public BufferedImage background;
+    
+    private InventoryPanel inventory;
 
     private int patternSize = 100;
 
@@ -33,6 +35,14 @@ public class Renderer extends JPanel{
 
     public TexturePack getCurrentTexturePack(){
         return texturePack;
+    }
+    
+    /**
+     * get inventory panel
+     * @return InventoryPanel
+     */
+    public InventoryPanel getInventory() {
+        return inventory;
     }
 
 
@@ -45,6 +55,7 @@ public class Renderer extends JPanel{
      */
     public Renderer(DomainController maze) {
         this.maze = maze;
+        this.inventory = new InventoryPanel(maze);
     }
 
     /**
