@@ -8,6 +8,7 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Helper;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Inventory;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileType;
 
 /*
  * This class is for app to wrap on a domain object to use its functionalities,
@@ -97,7 +98,7 @@ public class DomainController {
      * returns the inventory, any empty slot is represented by an Null typed tile
      */
     public List<Tile> getInventory() {
-        return List.of();
+        return List.of(new Tile(TileType.BlueKey, null),new Tile(TileType.GreenKey, null), new Tile(TileType.OrangeKey, null));
         //return domain.getInv().getItems();
     }
 

@@ -17,13 +17,16 @@ public class Inventory {
         this.size = size;
         this.items = new Tile[size];
         this.coins = 0;
+
+        //fill inventory with null typed tiles
+        Arrays.stream(this.items).forEach(item -> item = new Tile(TileType.Null, null)); 
     }
 
     /*
      * gets the items (as an umodifiable list)
      */
-    public List<Tile> getItems(){return Collections.unmodifiableList(List.of(items));}
-
+    public List<Tile> getItems(){return Arrays.stream(items).filter(t -> t.type() == TileType.Null).toList();}
+    
     /**
      * gets number of coins
      */
@@ -41,7 +44,7 @@ public class Inventory {
      */
     public boolean addItem(Tile tile){
         int index = IntStream.range(0, size)
-        .filter(i -> items[i] != null)
+        .filter(i -> items[i].type() == TileType.Null)
         .findFirst()
         .orElse(-1);
 
@@ -67,7 +70,7 @@ public class Inventory {
         .orElse(-1);
 
         if(index == -1) return false; //if tile type not found return false
-        items[index] = null;
+        items[index] = new Tile(TileType.Null, null); //set to null tile type
         return true;
     }
 }
