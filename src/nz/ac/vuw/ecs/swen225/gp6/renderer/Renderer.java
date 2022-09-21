@@ -1,10 +1,10 @@
 package nz.ac.vuw.ecs.swen225.gp6.renderer;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import java.awt.Graphics;
-import java.net.URL;
 import javax.sound.sampled.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
@@ -61,27 +61,32 @@ public class Renderer extends JPanel{
 
     public BufferedImage getImage(TexturePack.Images imgName) {return imgName.getImg();}
 
-    //intalize the music
+    //initialize the music
     public void PlaySound() {
         try {
            // Open an audio input stream.
-           URL url = this.getClass().getClassLoader().getResource("/Renderer/music/gameMusic.wav");
-           AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
+           String path = "src/nz/ac/vuw/ecs/swen225/gp6/renderer/music/gameMusic.wav";
+           //C:\Users\tymon\Desktop\UNI\swen 225\chaps-challenge\src\nz\ac\vuw\ecs\swen225\gp6\renderer\music\gameMusic.wav
+           File file = new File(path);
+           AudioInputStream audioIn = AudioSystem.getAudioInputStream(file);
            // Get a sound clip resource.
            clip = AudioSystem.getClip();
            // Open audio clip and load samples from the audio input stream.
            clip.open(audioIn);
         } catch (Exception e) {e.printStackTrace();}
+        System.out.println("initialize the music");
     }
 
     //play the music
     public void playMusic() {
         clip.start();
         clip.loop(Clip.LOOP_CONTINUOUSLY);
+        System.out.println("playing music");
     }
     //stop playing the music
     public void stopMusic() {
         clip.stop();
+        System.out.println("stop playing music");
     }
     
    
