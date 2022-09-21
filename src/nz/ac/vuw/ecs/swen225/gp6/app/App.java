@@ -70,7 +70,7 @@ public class App extends JFrame {
         addKeyListener(controller);
         setTimer(new Timer(34, unused -> {
             assert SwingUtilities.isEventDispatchThread();
-            game.pingAll();
+//            game.pingAll();
             playedTime = System.nanoTime() - timeStart + time;
             repaint();
         }));
