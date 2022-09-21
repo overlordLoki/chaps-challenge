@@ -1,5 +1,6 @@
 package nz.ac.vuw.ecs.swen225.gp6.app;
 
+import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.Renderer;
 import nz.ac.vuw.ecs.swen225.gp6.domain.*;
@@ -32,7 +33,7 @@ public class App extends JFrame {
     private int indexOfKeyToSet = -1;
 
 //    private Game game;
-    private Maze maze;
+    private DomainController maze;
     private Renderer render;
     private Controller controller;
 
@@ -65,7 +66,7 @@ public class App extends JFrame {
     }
 
     private void initialiseGame() {
-        maze = Domain.makeMaze();
+        maze = new DomainController();
         controller = new Controller(actionKeyBindings, maze);
         addKeyListener(controller);
         render = new Renderer(maze);
@@ -149,7 +150,7 @@ public class App extends JFrame {
      *
      * @return the game object
      */
-    public Maze getGame() {
+    public DomainController getGame() {
         return maze;
     }
 

@@ -1,11 +1,10 @@
 package nz.ac.vuw.ecs.swen225.gp6.app;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tile;
+import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.Renderer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack.Images;
-import nz.ac.vuw.ecs.swen225.gp6.app.tempDomain.Game;
 
 import javax.swing.*;
 import java.awt.*;
@@ -82,7 +81,7 @@ class PanelCreator{
      */
     public static void configureGameScreen(App app, JPanel backPanel, CardLayout cardLayout){
         // components to be added to the shell
-        JPanel pnGameWindow  = configurePanelGame(app, app.getRender());
+        JPanel pnGameWindow  = configurePanelGame(app, app.getGame(), app.getRender());
         JPanel pnGameDeath   = configurePanelDeath();
         JPanel pnGameVictory = configurePanelVictory();
 
@@ -346,7 +345,7 @@ class PanelCreator{
     //============================================= Game Panels ======================================================//
     //================================================================================================================//
 
-    private static JPanel configurePanelGame(App app, Renderer mazeRender) {
+    private static JPanel configurePanelGame(App app, DomainController game, Renderer mazeRender) {
         System.out.print("Configuring: Game...... ");
 
         // outermost panel
@@ -363,11 +362,11 @@ class PanelCreator{
         JPanel pnInventories = createInventoryPanel();
         // status bars
         JLabel lbLevelTitle = createLabel("Level", mazeRender, SUBTITLE, false);
-        JLabel lbLevel      = createLabel(new Game().getCurrentLevel()+"" , mazeRender, SUBTITLE, false);
+        JLabel lbLevel      = createLabel(game.getCurrentLevel()+"" , mazeRender, SUBTITLE, false);
         JLabel lbTimerTitle = createLabel("Time Left", mazeRender, SUBTITLE, false);
         JLabel lbTimer      = createLabel(app.getTimeLeft()+"" , mazeRender, SUBTITLE, false);
         JLabel lbTreasuresTitle = createLabel("Treasures", mazeRender, SUBTITLE, false);
-        JLabel lbTreasures  = createLabel(new Game().getTreasuresLeft()+"", mazeRender, SUBTITLE, false);
+        JLabel lbTreasures  = createLabel(game.getTreasuresLeft()+"", mazeRender, SUBTITLE, false);
         JLabel lbPause      = createActionLabel("Menu", app.getRender(),SUBTITLE, false, app::transitionToMenuScreen);
         JLabel lbInventoryTitle = createLabel("Inventory", mazeRender, SUBTITLE, false);
 
@@ -495,9 +494,9 @@ class PanelCreator{
                     super.paintComponent(g);
                     g.drawImage(Images.Empty_tile.getImg(), 0, 0, getWidth(),getHeight(),null);
                     int size = Math.min(getWidth(), getHeight());
-                    List<Tile> inventory = List.of();
-                    if (finalX >= inventory.size()) return;
-                    g.drawImage(Images.getImage(inventory.get(finalX)), (getWidth()-size)/2, (getHeight()-size)/2, size,size,null);
+//                    List<Tile> inventory = List.of();
+//                    if (finalX >= inventory.size()) return;
+//                    g.drawImage(Images.getImage(inventory.get(finalX)), (getWidth()-size)/2, (getHeight()-size)/2, size,size,null);
                 }
             });
         }
