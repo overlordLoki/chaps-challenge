@@ -6,6 +6,9 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import nz.ac.vuw.ecs.swen225.gp6.domain.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
+
+import static nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileType.*;
 
 //import nz.ac.vuw.ecs.swen225.gp6.renderer.tempDomain.Tiles.Tile;
 
@@ -181,7 +184,7 @@ public enum TexturePack{
          * @return BufferedImage
          */
         public static BufferedImage getImage(Tile tile){
-            return switch(tile.getType()){
+            return switch(tile.type()){
                 case Floor -> getImage(Empty_tile);
                 case Empty -> Images.Empty_tile.getImg();
                 case Hero -> Images.Hero.getImg();
@@ -197,7 +200,7 @@ public enum TexturePack{
                 case OrangeLock -> Images.OrangeLock.getImg();
                 case ExitDoor -> Images.Exit.getImg();
                 case Coin -> Images.Coin.getImg();
-                default -> throw new IllegalArgumentException("Unexpected value: " + tile.getClass().getName() + " : " + tile.getType());
+                default -> throw new IllegalArgumentException("Unexpected value: " + tile.getClass().getName() + " : " + tile.type());
             };
         }
         

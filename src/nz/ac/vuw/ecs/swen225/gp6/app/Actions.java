@@ -1,6 +1,6 @@
 package nz.ac.vuw.ecs.swen225.gp6.app;
 
-import nz.ac.vuw.ecs.swen225.gp6.app.tempDomain.Game;
+import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
 
 /**
  *  This class is used to define the actions that can be performed by the user.
@@ -9,18 +9,22 @@ import nz.ac.vuw.ecs.swen225.gp6.app.tempDomain.Game;
  */
 public class Actions {
 
-    private final Game game;
+    private final DomainController game;
 
     /**
      * Constructor for the Actions class.
      *
      * @param game The game object that the actions will be performed on.
      */
-    public Actions(Game game){
+    public Actions(DomainController game){
         this.game = game;
     }
+
+    /**
+     * Constructor for the Actions class.
+     */
     public Actions(){
-        this.game = new Game();
+        this.game = new DomainController();
     }
 
     /**

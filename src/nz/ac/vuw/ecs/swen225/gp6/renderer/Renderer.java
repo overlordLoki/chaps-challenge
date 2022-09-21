@@ -5,6 +5,10 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import java.awt.Graphics;
 import nz.ac.vuw.ecs.swen225.gp6.domain.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileType;
+
 /**
  * makes a jPanel that can be added to a JFrame
  * 
@@ -17,7 +21,7 @@ public class Renderer extends JPanel{
     //maze array
     private Tile[][] gameArray;
     //the maze
-    private Maze maze;
+    private DomainController maze;
 
     public BufferedImage background;
 
@@ -39,7 +43,7 @@ public class Renderer extends JPanel{
      * 
      * @param maze Maze to be rendered.
      */
-    public Renderer(Maze maze) {
+    public Renderer(DomainController maze) {
         this.maze = maze;
     }
 
@@ -77,7 +81,7 @@ public class Renderer extends JPanel{
         //call superclass to paint background
         super.paintComponent(g);
         //get the maze array
-        gameArray = maze.getTileArray();
+        gameArray = maze.getGameArray();
         //get the width and height of the maze
         int tileWidth = (getWidth() / gameArray.length);
         int tileHeight = (getHeight() / gameArray[1].length);
@@ -88,7 +92,7 @@ public class Renderer extends JPanel{
                 g.drawImage(TexturePack.Images.Floor.getImg(), i * tileWidth, j * tileHeight, tileWidth, tileHeight, null);
                 // if there is a item draw on top of the floor or a wall tile
                 Tile tile = gameArray[i][j];
-                if(tile.getType() == TileType.Floor) continue;
+                if(tile.type() == TileType.Floor) continue;
                 g.drawImage(TexturePack.Images.getImage(tile), i * tileWidth, j * tileHeight, tileWidth, tileHeight, null);
             }
         }
