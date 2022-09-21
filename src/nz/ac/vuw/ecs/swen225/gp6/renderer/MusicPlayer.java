@@ -10,20 +10,20 @@ public final class MusicPlayer {
     private MusicPlayer() {}
 
     //initialize the music
-    private static Clip initializeGameMusic() {
+    public static Clip initializeGameMusic() {
         try {
             // Open an audio input stream.
-            String path = "src/nz/ac/vuw/ecs/swen225/gp6/renderer/music/gameMusic.wav";
-            //C:\Users\tymon\Desktop\UNI\swen 225\chaps-challenge\src\nz\ac\vuw\ecs\swen225\gp6\renderer\music\gameMusic.wav
+            String path = "/Users/tymon/Documents/GitHub/chaps-challenge/src/nz/ac/vuw/ecs/swen225/gp6/renderer/music/gameMusic.wav";
             File file = new File(path);
             AudioInputStream audioIn = AudioSystem.getAudioInputStream(file);
             // Get a sound clip resource.
             Clip gameMusic = AudioSystem.getClip();
             // Open audio clip and load samples from the audio input stream.
             gameMusic.open(audioIn);
+            System.out.println("initialized the music");
             return gameMusic;
         } catch (Exception e) {e.printStackTrace();}
-        System.out.println("initialize the music");
+        System.out.println("failed to initialize the music");
         return null;
     }
 

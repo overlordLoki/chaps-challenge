@@ -1,7 +1,7 @@
 package nz.ac.vuw.ecs.swen225.gp6.app;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
-import nz.ac.vuw.ecs.swen225.gp6.renderer.Renderer;
+import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,7 +28,7 @@ public class App extends JFrame {
     private int indexOfKeyToSet = -1;
 
     private DomainController game;
-    private Renderer render;
+    private MazeRenderer render;
     private Controller controller;
     private Actions actions;
 
@@ -64,7 +64,7 @@ public class App extends JFrame {
 
     private void initialiseGame() {
         game = new DomainController();
-        render = new Renderer(game);
+        render = new MazeRenderer(game);
         actions = new Actions(this);
         controller = new Controller(this);
         addKeyListener(controller);
@@ -197,7 +197,7 @@ public class App extends JFrame {
      *
      * @return the renderer object
      */
-    public Renderer getRender() {
+    public MazeRenderer getRender() {
         return render;
     }
 

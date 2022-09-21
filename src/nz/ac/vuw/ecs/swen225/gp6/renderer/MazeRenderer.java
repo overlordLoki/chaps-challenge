@@ -15,7 +15,7 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileType;
  * 
  * @author Loki
  */
-public class Renderer extends JPanel{
+public class MazeRenderer extends JPanel{
     static final long serialVersionUID = 1L;
     private TexturePack texturePack = TexturePack.Cats;
     private Tile[][] gameArray;
@@ -31,7 +31,7 @@ public class Renderer extends JPanel{
      * 
      * @param maze Maze to be rendered.
      */
-    public Renderer(DomainController maze) {
+    public MazeRenderer(DomainController maze) {
         this.maze = maze;
         PlaySound();
     }

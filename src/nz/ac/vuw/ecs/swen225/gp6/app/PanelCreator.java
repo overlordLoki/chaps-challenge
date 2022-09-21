@@ -2,7 +2,7 @@ package nz.ac.vuw.ecs.swen225.gp6.app;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.InventoryPanel;
-import nz.ac.vuw.ecs.swen225.gp6.renderer.Renderer;
+import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack.Images;
 
@@ -110,7 +110,7 @@ public class PanelCreator{
     private static JPanel configurePanelMenu(JPanel backPanel, CardLayout cardLayout, App app) {
         System.out.print("Configuring: Menu...... ");
 
-        Renderer r = app.getRender();
+        MazeRenderer r = app.getRender();
         JPanel pnMenu = createBackgroundPanel(Images.Background, BoxLayout.Y_AXIS);
 
         List<JLabel> labels = List.of(
@@ -159,7 +159,7 @@ public class PanelCreator{
         return pnLoad;
     }
 
-    private static JPanel createLoadGamePanel(String title, App app, Renderer render) {
+    private static JPanel createLoadGamePanel(String title, App app, MazeRenderer render) {
         JPanel pnLoad = createRepeatableBackgroundPanel(Images.Wall, render, BoxLayout.X_AXIS);
         JPanel pnInfo = createClearPanel(BoxLayout.Y_AXIS);
         JPanel pnStatus = createClearPanel(BoxLayout.X_AXIS);
@@ -188,7 +188,7 @@ public class PanelCreator{
     private static JPanel configurePanelSettings(App app, List<String> actionNames, List<String> actionKeyBindings) {
         System.out.print("Configuring: Settings...... ");
 
-        Renderer r = app.getRender();
+        MazeRenderer r = app.getRender();
         JPanel pnSettings = createRepeatableBackgroundPanel(Images.Pattern_2, app.getRender(), BoxLayout.Y_AXIS);
         JPanel pnMiddle = createClearPanel(BoxLayout.X_AXIS);
         JPanel pnBindingL = createClearPanel(BoxLayout.Y_AXIS);
@@ -339,7 +339,7 @@ public class PanelCreator{
     //============================================= Game Panels ======================================================//
     //================================================================================================================//
 
-    private static JPanel configurePanelGame(App app, DomainController game, Renderer mazeRender) {
+    private static JPanel configurePanelGame(App app, DomainController game, MazeRenderer mazeRender) {
         System.out.print("Configuring: Game...... ");
 
         // outermost panel
@@ -496,7 +496,7 @@ public class PanelCreator{
      *             BoxLayout.LINE_AXIS} or {@code BoxLayout.PAGE_AXIS}
      * @return a JPanel with a repeating pattern background image
      */
-    public static JPanel createRepeatableBackgroundPanel(Images img, Renderer render, int axis) {
+    public static JPanel createRepeatableBackgroundPanel(Images img, MazeRenderer render, int axis) {
         return new JPanel(){{
             setLayout(new BoxLayout(this, axis));}
             public void paintComponent(Graphics g) {
@@ -520,7 +520,7 @@ public class PanelCreator{
      * @param Centered true if this label should be center aligned
      * @return the JLabel
      */
-    public static JLabel createLabel(String name, Renderer render, int textType, boolean Centered) {
+    public static JLabel createLabel(String name, MazeRenderer render, int textType, boolean Centered) {
         return new JLabel(name) {{
             setForeground(render.getCurrentTexturePack().getColorDefault());
             if (Centered) setAlignmentX(CENTER_ALIGNMENT);}
@@ -546,7 +546,7 @@ public class PanelCreator{
      * @param Centered true if this label should be center aligned
      * @return the JLabel
      */
-    public static JLabel createInfoLabel(Supplier<String> display, Renderer render, int textType, boolean Centered) {
+    public static JLabel createInfoLabel(Supplier<String> display, MazeRenderer render, int textType, boolean Centered) {
         return new JLabel(display.get()) {{
             setForeground(render.getCurrentTexturePack().getColorDefault());
             if (Centered) setAlignmentX(CENTER_ALIGNMENT);}
@@ -574,7 +574,7 @@ public class PanelCreator{
      * @param runnable the action to be executed when the label is pressed
      * @return the JLabel
      */
-    public static JLabel createActionLabel(String name, Renderer render, int textType, boolean Centered, Runnable runnable) {
+    public static JLabel createActionLabel(String name, MazeRenderer render, int textType, boolean Centered, Runnable runnable) {
         return new JLabel(name) {{
             if (Centered) setAlignmentX(CENTER_ALIGNMENT);
             TexturePack tp = render.getCurrentTexturePack();
