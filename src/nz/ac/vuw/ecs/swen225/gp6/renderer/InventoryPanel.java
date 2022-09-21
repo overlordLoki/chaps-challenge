@@ -19,10 +19,10 @@ public class InventoryPanel extends JPanel{
      * Constructor. Takes a maze as parameters.
      * @param maze
      */
-    public InventoryPanel(DomainController maze) {
+    public InventoryPanel(DomainController maze, boolean isGamePanel) {
         this.maze = maze;
-        //use grid layout 4,2
-        this.setLayout(new GridLayout(4,2));
+        //use grid layout
+        this.setLayout(isGamePanel ? new GridLayout(4,2): new GridLayout(1,9));
         for(int i = 0; i < 8; i++) {
             int slotNum = i;
             this.add(new JPanel(){
