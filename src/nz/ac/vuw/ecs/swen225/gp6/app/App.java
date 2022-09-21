@@ -53,6 +53,11 @@ public class App extends JFrame {
         assert SwingUtilities.isEventDispatchThread();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setVisible(true);
+        addWindowListener(new WindowAdapter() {
+            public void windowClosed(WindowEvent e) {
+                System.exit(0);
+            }}
+        );
         initialiseGame();
         initialiseGUI();
     }
@@ -92,9 +97,9 @@ public class App extends JFrame {
      */
     public void transitionToMenuScreen(){
         System.out.println("Toggling to menu screen");
+        actions.actionPause();
         menuCardLayout.show(menuPanel, MENU);
         outerCardLayout.show(outerPanel, MENU);
-        actions.actionPause();
         System.out.println("Menu shown");
     }
 
@@ -154,6 +159,15 @@ public class App extends JFrame {
      */
     public void setTime(long time) {
         this.time = time;
+    }
+
+    /**
+     * Resets the time left for the current level.
+     */
+    public void resetTime(){
+        time = 0;
+        timeStart = System.nanoTime();
+        playedTime = 0;
     }
 
     //================================================================================================================//

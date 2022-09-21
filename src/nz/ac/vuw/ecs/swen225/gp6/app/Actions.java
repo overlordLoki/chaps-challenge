@@ -1,5 +1,7 @@
 package nz.ac.vuw.ecs.swen225.gp6.app;
 
+import nz.ac.vuw.ecs.swen225.gp6.renderer.MusicPlayer;
+
 /**
  *  This class is used to define the actions that can be performed by the user.
  *
@@ -58,10 +60,9 @@ public class Actions {
      */
     public void actionStartNew(){
         System.out.println("Game paused");
-        app.setTime(0);
-        app.setStartingTime(System.nanoTime());
+        app.resetTime();
         app.getTimer().restart();
-        app.getRender().playMusic();
+        MusicPlayer.playGameMusic();
         System.out.println("Starting new game: ");
     }
 
@@ -71,8 +72,8 @@ public class Actions {
     public void actionPause(){
         System.out.println("Game paused");
         app.getTimer().stop();
-        app.getRender().stopMusic();
         app.setTime(System.nanoTime() - app.getTimeStart() + app.getTime());
+        MusicPlayer.stopGameMusic();
         System.out.println("Time: " + app.getTimeInMinutes());
     }
 
@@ -83,7 +84,7 @@ public class Actions {
         System.out.println("Game resumed");
         app.getTimer().start();
         app.setStartingTime(System.nanoTime());
-        app.getRender().playMusic();
+        MusicPlayer.playGameMusic();
     }
 
     /**
