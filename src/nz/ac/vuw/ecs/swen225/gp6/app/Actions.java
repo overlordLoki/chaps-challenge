@@ -54,12 +54,25 @@ public class Actions {
     }
 
     /**
+     * Starts a new game
+     */
+    public void actionStartNew(){
+        System.out.println("Game paused");
+        app.setTime(0);
+        app.setStartingTime(System.nanoTime());
+        app.getTimer().restart();
+        app.getRender().playMusic();
+        System.out.println("Starting new game: ");
+    }
+
+    /**
      * Pause the game.
      */
     public void actionPause(){
         System.out.println("Game paused");
         app.getTimer().stop();
         app.getRender().stopMusic();
+        app.setTime(System.nanoTime() - app.getTimeStart() + app.getTime());
         System.out.println("Time: " + app.getTimeInMinutes());
     }
 

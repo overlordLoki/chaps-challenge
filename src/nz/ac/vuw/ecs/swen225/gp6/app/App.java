@@ -41,10 +41,10 @@ public class App extends JFrame {
     private final CardLayout menuCardLayout = new CardLayout();
     private final CardLayout gameCardLayout = new CardLayout();
 
-    Runnable closePhase = ()->{};
     private Timer timer;
-    private long time = 0;
-    private long timeStart = 0;
+    private long time = 0;          // used to store accumulated time from the previous pause
+    private long timeStart = 0;     // starting time of current pause
+    private long playedTime = 0;    // total time played in a level
 
     /**
      * Constructor for the App class. Initializes the GUI and the main loop.
@@ -53,11 +53,6 @@ public class App extends JFrame {
         assert SwingUtilities.isEventDispatchThread();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setVisible(true);
-        addWindowListener(new WindowAdapter() {
-            public void windowClosed(WindowEvent e) {
-                closePhase.run();
-            }}
-        );
         initialiseGame();
         initialiseGUI();
     }
@@ -71,7 +66,7 @@ public class App extends JFrame {
         setTimer(new Timer(34, unused -> {
             assert SwingUtilities.isEventDispatchThread();
             game.pingAll();
-            time = System.nanoTime() - timeStart;
+            playedTime = System.nanoTime() - timeStart + time;
             repaint();
         }));
     }
@@ -110,7 +105,7 @@ public class App extends JFrame {
         System.out.println("Toggling to game screen");
         gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
-        actions.actionResume();
+        actions.actionStartNew();
         System.out.println("Game shown");
     }
 
@@ -158,7 +153,7 @@ public class App extends JFrame {
      * @param time the time left for the current level
      */
     public void setTime(long time) {
-        this.time += time;
+        this.time = time;
     }
 
     //================================================================================================================//
@@ -234,7 +229,7 @@ public class App extends JFrame {
      * @return the time elapsed since the start of the game
      */
     public String getTimeInMinutes() {
-        long time = this.time;
+        long time = this.playedTime;
         long seconds = time / 1000000000;
         long minutes = seconds / 60;
         seconds = seconds % 60;
