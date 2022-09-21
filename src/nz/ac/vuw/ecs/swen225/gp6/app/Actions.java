@@ -1,7 +1,5 @@
 package nz.ac.vuw.ecs.swen225.gp6.app;
 
-import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
-
 /**
  *  This class is used to define the actions that can be performed by the user.
  *
@@ -9,50 +7,50 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
  */
 public class Actions {
 
-    private final DomainController game;
+    private final App app;
 
     /**
      * Constructor for the Actions class.
      *
-     * @param game The game object that the actions will be performed on.
+     * @param app The game object that the actions will be performed on.
      */
-    public Actions(DomainController game){
-        this.game = game;
+    public Actions(App app){
+        this.app = app;
     }
 
     /**
      * Constructor for the Actions class.
      */
     public Actions(){
-        this.game = new DomainController();
+        this.app = new App();
     }
 
     /**
      * Moves the player up.
      */
     public void actionUp() {
-        game.moveUp();
+        app.getGame().moveUp();
     }
 
     /**
      * Moves the player down.
      */
     public void actionDown(){
-        game.moveDown();
+        app.getGame().moveDown();
     }
 
     /**
      * Moves the player left.
      */
     public void actionLeft(){
-        game.moveLeft();
+        app.getGame().moveLeft();
     }
 
     /**
      * Moves the player right.
      */
     public void actionRight(){
-        game.moveRight();
+        app.getGame().moveRight();
     }
 
     /**
@@ -60,6 +58,9 @@ public class Actions {
      */
     public void actionPause(){
         System.out.println("Game paused");
+        app.getTimer().stop();
+        app.getRender().stopMusic();
+        System.out.println("Time: " + app.getTime());
     }
 
     /**
@@ -67,6 +68,9 @@ public class Actions {
      */
     public void actionResume(){
         System.out.println("Game resumed");
+        app.getTimer().start();
+        app.setStartingTime(System.nanoTime());
+        app.getRender().playMusic();
     }
 
     /**
@@ -102,29 +106,6 @@ public class Actions {
      */
     public void actionToLevel2(){
         System.out.println("Jump to Level 2");
-    }
-
-    /**
-     * Enters replay mode from a played game.
-     */
-    public void actionReplayMode(){
-        System.out.println("Replay mode started");
-    }
-
-    /**
-     * Auto reply through the game.
-     */
-    public void actionReplayAuto(){
-        for (int i = 0; i < 10; i++) {
-            System.out.println("Replay auto step " + i);
-        }
-    }
-
-    /**
-     * Replays the game step by step, with the user pressing a button to move to the next step.
-     */
-    public void actionReplayStep(){
-        System.out.println("Replay step");
     }
 }
 

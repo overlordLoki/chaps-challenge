@@ -1,7 +1,5 @@
 package nz.ac.vuw.ecs.swen225.gp6.app;
 
-import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
-
 import javax.swing.SwingUtilities;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -17,23 +15,24 @@ import static java.awt.event.KeyEvent.VK_CONTROL;
  * @author Jeff Lin
  */
 class Controller extends KeyAdapter {
+    private final App app;
     private Map<String, Runnable> actionsPressed;
     private Map<String, Runnable> actionsReleased;
-    private final Actions actions;
     private Boolean ctrlPressed = false;
 
     /**
      * Constructor for the Controller class. Initializes the actions and key bindings.
      *
-     * @param keyBindings List of key bindings.
-     * @param game The game for the controller to be attached to.
+     * @param app The App object that the controller will be controlling.
      */
-    public Controller(List<String> keyBindings, DomainController game) {
-        this.actions = new Actions(game);
-        setController(keyBindings);
+    public Controller(App app) {
+        this.app = app;
+        resetController();
     }
 
-    public void setController(List<String> keyBindings){
+    public void resetController(){
+        List<String> keyBindings = app.getActionKeyBindings();
+        Actions actions = app.getActions();
         actionsPressed = new HashMap<>();
         actionsReleased = new HashMap<>();
         setAction(keyBindings.get(0), actions::actionUp, ()->{});    // up

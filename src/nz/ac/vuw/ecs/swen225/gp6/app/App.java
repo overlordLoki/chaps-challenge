@@ -1,12 +1,7 @@
 package nz.ac.vuw.ecs.swen225.gp6.app;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
-import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.Renderer;
-import nz.ac.vuw.ecs.swen225.gp6.domain.*;
-import nz.ac.vuw.ecs.swen225.gp6.persistency.*;
-import nz.ac.vuw.ecs.swen225.gp6.recorder.*;
-//import nz.ac.vuw.ecs.swen225.gp6.app.tempDomain.Game;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,10 +27,10 @@ public class App extends JFrame {
             "Escape","1","2","X","S","R"));
     private int indexOfKeyToSet = -1;
 
-//    private Game game;
-    private DomainController maze;
+    private DomainController game;
     private Renderer render;
     private Controller controller;
+    private Actions actions;
 
     static final int WIDTH = 1200;
     static final int HEIGHT = 800;
@@ -48,6 +43,8 @@ public class App extends JFrame {
 
     Runnable closePhase = ()->{};
     private Timer timer;
+    private long time = 0;
+    private long timeStart = 0;
 
     /**
      * Constructor for the App class. Initializes the GUI and the main loop.
@@ -66,13 +63,17 @@ public class App extends JFrame {
     }
 
     private void initialiseGame() {
-        maze = new DomainController();
-        controller = new Controller(actionKeyBindings, maze);
+        game = new DomainController();
+        render = new Renderer(game);
+        actions = new Actions(this);
+        controller = new Controller(this);
         addKeyListener(controller);
-        render = new Renderer(maze);
         setTimer(new Timer(34, unused -> {
             assert SwingUtilities.isEventDispatchThread();
-//            game.pingAll();
+            game.pingAll();
+            render.repaint();
+            time = System.nanoTime() - timeStart;
+            this.repaint();
         }));
     }
 
@@ -99,6 +100,7 @@ public class App extends JFrame {
         System.out.println("Toggling to menu screen");
         menuCardLayout.show(menuPanel, MENU);
         outerCardLayout.show(outerPanel, MENU);
+        actions.actionPause();
         System.out.println("Menu shown");
     }
 
@@ -109,6 +111,7 @@ public class App extends JFrame {
         System.out.println("Toggling to game screen");
         gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
+        actions.actionResume();
         System.out.println("Game shown");
     }
 
@@ -151,7 +154,7 @@ public class App extends JFrame {
      * @return the game object
      */
     public DomainController getGame() {
-        return maze;
+        return game;
     }
 
     /**
@@ -172,6 +175,23 @@ public class App extends JFrame {
         return render;
     }
 
+    /**
+     * Gets the controllable actions.
+     *
+     * @return the actions object
+     */
+    public Actions getActions() {
+        return actions;
+    }
+
+    /**
+     * Gets the timer for the game loop.
+     *
+     * @return the timer for the game loop
+     */
+    public Timer getTimer() {
+        return timer;
+    }
 
     /**
      * Gets the index of the action to set a different key binding.
@@ -229,5 +249,25 @@ public class App extends JFrame {
      */
     public static void main(String... args){
         SwingUtilities.invokeLater(App::new);
+    }
+
+    public void setStartingTime(long nanoTime) {
+        timeStart = nanoTime;
+    }
+
+    public long getTimeStart() {
+        return timeStart;
+    }
+
+    public void addTime(long time) {
+        this.time += time;
+    }
+
+    public String getTime() {
+        long time = this.time;
+        long seconds = time / 1000000000;
+        long minutes = seconds / 60;
+        seconds = seconds % 60;
+        return String.format("%02d:%02d", minutes, seconds);
     }
 }
