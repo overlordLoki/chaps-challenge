@@ -23,17 +23,20 @@ public enum TileType {
         @Override public void setOn(Tile self, Tile a, Domain d){}//TODO: LOSE 
         @Override public void ping(Tile self, Domain d) {
             Maze m = d.getCurrentMaze();
-            Loc newLoc = m.getDirection().transformLoc(self.info().loc()); //new loc to move
-            Tile newTil = m.getTileAt(newLoc); //tile at new loc
+            Loc l = self.info().loc();
+            //find new location of hero if it moves
+            Direction d1 = self.info().dir();
+            Loc l1 = d1.transformLoc(l);
 
-            if(newTil.isObstruction(self, d) == false){
-                m.setTileAt(self.info().loc(), Floor, l -> {}); //set previous tile to floor
-                newTil.setOn(self, d);//if movable, move
-            }
-        
+            //if tile at new location is obstruction return
+            if(m.getTileAt(l1).type().isObstruction(self, d)) return;
+            
+            //otherwise move self to new location and set previous location to empty
+            m.getTileAt(l1).setOn(self, d);
+            m.getTileAt(l).setOn(new Tile(TileType.Empty, new TileInfo(l, a->{})), d);
+
             self.info().dir(m.getDirection()); //set heros direction of facing
             m.makeHeroStep(Direction.None); //make hero stop moving
-
         }
     },
 
@@ -63,7 +66,7 @@ public enum TileType {
         @Override public boolean isObstruction(Tile t, Domain d) { return true;}//no one can move on exit door
         @Override public void ping(Tile self, Domain d) {
             //if all treasures collected replace exitdoor with open exit door
-            if(d.getCurrentMaze().getTileCount(TileType.Coin) - d.getInv().coins() == 0){
+            if(d.getTreasuresLeft() == 0){
                 d.getCurrentMaze().setTileAt(self.info().loc(), TileType.ExitDoorOpen, a->{}); 
             }
         }
@@ -162,9 +165,25 @@ public enum TileType {
     private char symbol;
 
     //METHODS:
+    /**
+     * returns character symbol of tiletype associated with enum.
+     */
     public char getSymbol(){ return symbol;}
+    /**
+     * Checks wether the associated tile to this type is an obstruction for another given tile t, 
+     * in a given domain.
+     * NOTE: does not alter the tile, maze or actor in anyway.
+     */
     public boolean isObstruction(Tile t, Domain d){return t.type() != TileType.Hero;}
+    /**
+     * Sets the given tile t instead of the associated tile to this type on maze, changing the domain to do so.
+     * NOTE: should not check wether it's possible for tile t to move on this tile!
+     */
     public void setOn(Tile self, Tile t, Domain d){}
+    /**
+     * Calculates the next state of the tile in the domain(maze/inventory).
+     * Based on the tile and domain state, this method may alter the state of the tile and given domain object.
+     */
     public void ping(Tile self, Domain d){}
 }
 

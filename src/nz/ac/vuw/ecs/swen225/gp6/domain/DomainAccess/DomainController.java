@@ -90,7 +90,7 @@ public class DomainController {
      */
     public int getTreasuresLeft() {
         return 10;
-        //return domain.getMaze().getTileCount(TileType.Coin) - domain.getInv().coins();
+        //return domain.getTreasuresLeft();
     }
 
     /*

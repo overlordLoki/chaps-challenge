@@ -2,7 +2,7 @@ package nz.ac.vuw.ecs.swen225.gp6.domain;
 
 import java.util.List;
 
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.*;
 
 public class Domain {
@@ -16,6 +16,7 @@ public class Domain {
         this.currentLvl = lvl;
     }
 
+    //GETTERS:
     /*
      * returns current lvl
      */
@@ -37,6 +38,14 @@ public class Domain {
         return inv;
     }
 
+    /*
+     * returns number of treasures left on current maze
+     */
+    public int getTreasuresLeft(){
+        return this.getCurrentMaze().getTileCount(TileType.Coin) - inv.coins();
+    }
+
+    //PING:
     /*
      * pings the game one step, and replaces the current maze with a new one
      */
