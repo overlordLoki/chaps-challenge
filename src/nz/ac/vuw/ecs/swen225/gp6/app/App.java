@@ -71,9 +71,8 @@ public class App extends JFrame {
         setTimer(new Timer(34, unused -> {
             assert SwingUtilities.isEventDispatchThread();
             game.pingAll();
-            render.repaint();
             time = System.nanoTime() - timeStart;
-            this.repaint();
+            repaint();
         }));
     }
 
@@ -144,6 +143,24 @@ public class App extends JFrame {
         this.timer = timer;
     }
 
+    /**
+     * Sets the starting time for the game loop.
+     *
+     * @param nanoTime the starting time for the game loop
+     */
+    public void setStartingTime(long nanoTime) {
+        timeStart = nanoTime;
+    }
+
+    /**
+     * Sets the time left for the current level.
+     *
+     * @param time the time left for the current level
+     */
+    public void setTime(long time) {
+        this.time += time;
+    }
+
     //================================================================================================================//
     //============================================ Getter Method =====================================================//
     //================================================================================================================//
@@ -194,6 +211,37 @@ public class App extends JFrame {
     }
 
     /**
+     * Gets the time when the timer starts
+     *
+     * @return the starting time of the timer
+     */
+    public long getTimeStart() {
+        return timeStart;
+    }
+
+    /**
+     * Gets the time elapsed since the start of the game.
+     *
+     * @return the time elapsed since the start of the game
+     */
+    public long getTime() {
+        return time;
+    }
+
+    /**
+     * Gets the time elapsed since the start of the game in Minutes and Seconds.
+     *
+     * @return the time elapsed since the start of the game
+     */
+    public String getTimeInMinutes() {
+        long time = this.time;
+        long seconds = time / 1000000000;
+        long minutes = seconds / 60;
+        seconds = seconds % 60;
+        return String.format("%02d:%02d", minutes, seconds);
+    }
+
+    /**
      * Gets the index of the action to set a different key binding.
      *
      * @return the setting key
@@ -229,15 +277,6 @@ public class App extends JFrame {
         return actionKeyBindings;
     }
 
-    /**
-     * Gets the time left for the current level.
-     *
-     * @return the time left for the current level
-     */
-    public int getTimeLeft() {
-        return 120;
-    }
-
     //================================================================================================================//
     //============================================= Main Method ======================================================//
     //================================================================================================================//
@@ -249,25 +288,5 @@ public class App extends JFrame {
      */
     public static void main(String... args){
         SwingUtilities.invokeLater(App::new);
-    }
-
-    public void setStartingTime(long nanoTime) {
-        timeStart = nanoTime;
-    }
-
-    public long getTimeStart() {
-        return timeStart;
-    }
-
-    public void addTime(long time) {
-        this.time += time;
-    }
-
-    public String getTime() {
-        long time = this.time;
-        long seconds = time / 1000000000;
-        long minutes = seconds / 60;
-        seconds = seconds % 60;
-        return String.format("%02d:%02d", minutes, seconds);
     }
 }

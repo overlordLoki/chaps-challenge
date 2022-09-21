@@ -15,7 +15,6 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 
@@ -359,7 +358,7 @@ public class PanelCreator{
         JLabel lbLevelTitle = createLabel("Level", mazeRender, SUBTITLE, false);
         JLabel lbLevel      = createInfoLabel(()->app.getGame().getCurrentLevel()+"", mazeRender, SUBTITLE, false);
         JLabel lbTimerTitle = createLabel("Time", mazeRender, SUBTITLE, false);
-        JLabel lbTimer      = createInfoLabel(app::getTime, mazeRender, SUBTITLE, false);
+        JLabel lbTimer      = createInfoLabel(app::getTimeInMinutes, mazeRender, SUBTITLE, false);
         JLabel lbTreasuresTitle = createLabel("Treasures", mazeRender, SUBTITLE, false);
         JLabel lbTreasures  = createInfoLabel(()->app.getGame().getTreasuresLeft()+"", mazeRender, SUBTITLE, false);
         JLabel lbPause      = createActionLabel("Menu", app.getRender(),SUBTITLE, false, app::transitionToMenuScreen);

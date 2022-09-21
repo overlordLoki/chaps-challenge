@@ -60,7 +60,7 @@ public class Actions {
         System.out.println("Game paused");
         app.getTimer().stop();
         app.getRender().stopMusic();
-        System.out.println("Time: " + app.getTime());
+        System.out.println("Time: " + app.getTimeInMinutes());
     }
 
     /**
