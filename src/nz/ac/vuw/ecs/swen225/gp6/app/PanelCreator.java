@@ -1,6 +1,5 @@
 package nz.ac.vuw.ecs.swen225.gp6.app;
 
-import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.Renderer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
@@ -22,22 +21,31 @@ import java.util.List;
  *
  * @author Jeff Lin
  */
-class PanelCreator{
-    private static final int TITLE = 1;
-    private static final int SUBTITLE = 2;
-    private static final int TEXT = 3;
+public class PanelCreator{
+    /**
+     * The title sized text font.
+     */
+    public static final int TITLE = 1;
+    /**
+     * The subtitle sized text font.
+     */
+    public static final int SUBTITLE = 2;
+    /**
+     * The normal-sized text font.
+     */
+    public static final int TEXT = 3;
 
-    public static final String MENU        = "Menu";
-    public static final String NEW_GAME    = "Start New Game!";
-    public static final String LOAD_GAME   = "Load Game";
-    public static final String SETTINGS    = "Settings";
-    public static final String HOW_TO_PLAY = "How to play";
-    public static final String CREDITS     = "Credits";
-    public static final String EXIT        = "Exit";
+    static final String MENU        = "Menu";
+    static final String NEW_GAME    = "Start New Game!";
+    static final String LOAD_GAME   = "Load Game";
+    static final String SETTINGS    = "Settings";
+    static final String HOW_TO_PLAY = "How to play";
+    static final String CREDITS     = "Credits";
+    static final String EXIT        = "Exit";
 
-    public static final String GAME     = "Game";
-    public static final String LOOSE    = "Loose";
-    public static final String VICTORY  = "Victory";
+    static final String GAME     = "Game";
+    static final String LOOSE    = "Loose";
+    static final String VICTORY  = "Victory";
 
     /**
      * Should never be called.
@@ -51,7 +59,7 @@ class PanelCreator{
      * @param backPanel The outermost panel for everything to assemble to.
      * @param cardLayout The card layout for toggling between scenes.
      */
-    public static void configureMenuScreen(App app, JPanel backPanel, CardLayout cardLayout){
+    static void configureMenuScreen(App app, JPanel backPanel, CardLayout cardLayout){
         // components to be added to the shell
         JPanel pnMenu      = configurePanelMenu(backPanel, cardLayout, app);
         JPanel pnNewGame   = configurePanelNewGame(app);
@@ -79,7 +87,7 @@ class PanelCreator{
      * @param backPanel  The outermost panel for everything to assemble to.
      * @param cardLayout The card layout for toggling between scenes.
      */
-    public static void configureGameScreen(App app, JPanel backPanel, CardLayout cardLayout){
+    static void configureGameScreen(App app, JPanel backPanel, CardLayout cardLayout){
         // components to be added to the shell
         JPanel pnGameWindow  = configurePanelGame(app, app.getGame(), app.getRender());
         JPanel pnGameDeath   = configurePanelDeath();
@@ -97,7 +105,7 @@ class PanelCreator{
     //============================================= Menu Panels ======================================================//
     //================================================================================================================//
 
-    public static JPanel configurePanelMenu(JPanel backPanel, CardLayout cardLayout, App app) {
+    private static JPanel configurePanelMenu(JPanel backPanel, CardLayout cardLayout, App app) {
         System.out.print("Configuring: Menu...... ");
 
         Renderer r = app.getRender();
@@ -158,7 +166,7 @@ class PanelCreator{
         JPanel pnLoad = createRepeatableBackgroundPanel(Images.Wall, render);
         JPanel pnInfo = createClearPanel();
         JPanel pnStatus = createClearPanel();
-        JPanel pnInventory = createInventoryPanel();;
+        JPanel pnInventory = createInventoryPanel();
         JPanel pnOptions = createClearPanel();
 
         JLabel lbTitle = createLabel(title, render, SUBTITLE, true);
@@ -319,7 +327,7 @@ class PanelCreator{
         return pnCredits;
     }
 
-    public static JPanel configurePanelExit(App app) {
+    private static JPanel configurePanelExit(App app) {
         System.out.print("Configuring: Exit...... ");
 
         JPanel pnExit   = createRepeatableBackgroundPanel(Images.Pattern_2, app.getRender());
@@ -418,17 +426,39 @@ class PanelCreator{
     //=========================================== Helper Method ======================================================//
     //================================================================================================================//
 
-    private static void setAllBoxLayout(int axis, JPanel... pns) {
+    /**
+     * Sets layouts of all component to be a type of BoxLayout
+     * @param axis the alignment axis of the BoxLayout
+     * @param pns the panels to be set
+     */
+    public static void setAllBoxLayout(int axis, JPanel... pns) {
         Arrays.stream(pns).forEach(pn -> pn.setLayout(new BoxLayout(pn, axis)));
     }
 
-    private static void setSize(JComponent Component, int pX, int pY, int miX, int miY, int maX, int maY) {
+    /**
+     * Sets the size of a component
+     *
+     * @param Component the component to be set
+     * @param pX the preferred width of the component
+     * @param pY the preferred height of the component
+     * @param miX the minimum width of the component
+     * @param miY the minimum height of the component
+     * @param maX the maximum width of the component
+     * @param maY the maximum height of the component
+     */
+    public static void setSize(JComponent Component, int pX, int pY, int miX, int miY, int maX, int maY) {
         Component.setPreferredSize(new Dimension(pX, pY));
         Component.setMinimumSize(new Dimension(miX, miY));
         Component.setMaximumSize(new Dimension(maX, maY));
     }
 
-    private static void addAll(JComponent parent, Component... components) {
+    /**
+     * Adds all components to a panel
+     *
+     * @param parent the panel to be added to
+     * @param components the components to be added
+     */
+    public static void addAll(JComponent parent, Component... components) {
         Arrays.stream(components).forEach(parent::add);
     }
 
@@ -441,7 +471,7 @@ class PanelCreator{
      *
      * @return a clear JPanel
      */
-    private static JPanel createClearPanel() {
+    public static JPanel createClearPanel() {
         return new JPanel() {{setOpaque(false);}};
     }
 
@@ -451,7 +481,7 @@ class PanelCreator{
      * @param img the background image
      * @return a JPanel with a background image
      */
-    private static JPanel createBackgroundPanel(Images img) {
+    public static JPanel createBackgroundPanel(Images img) {
         return new JPanel() {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -464,9 +494,10 @@ class PanelCreator{
      * Creates a panel with a repeating image that fits the size of the frame
      *
      * @param img the image pattern to fill the background
+     * @param render the render to be used to get the size of the frame
      * @return a JPanel with a repeating pattern background image
      */
-    private static JPanel createRepeatableBackgroundPanel(Images img, Renderer render) {
+    public static JPanel createRepeatableBackgroundPanel(Images img, Renderer render) {
         return new JPanel(){
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -485,7 +516,7 @@ class PanelCreator{
      *
      * @return a JPanel with the inventory
      */
-    private static JPanel createInventoryPanel() {
+    public static JPanel createInventoryPanel() {
         JPanel pnInventory = createClearPanel();
         for(int i = 0; i < 8; i++) {
             int finalX = i;
@@ -512,7 +543,7 @@ class PanelCreator{
      * @param Centered true if this label should be center aligned
      * @return the JLabel
      */
-    private static JLabel createLabel(String name, Renderer render, int textType, boolean Centered) {
+    public static JLabel createLabel(String name, Renderer render, int textType, boolean Centered) {
         return new JLabel(name) {{
             setForeground(render.getCurrentTexturePack().getColorDefault());
             if (Centered) setAlignmentX(CENTER_ALIGNMENT);}
@@ -539,7 +570,7 @@ class PanelCreator{
      * @param runnable the action to be executed when the label is pressed
      * @return the JLabel
      */
-    private static JLabel createActionLabel(String name, Renderer render, int textType, boolean Centered, Runnable runnable) {
+    public static JLabel createActionLabel(String name, Renderer render, int textType, boolean Centered, Runnable runnable) {
         return new JLabel(name) {{
             if (Centered) setAlignmentX(CENTER_ALIGNMENT);
             TexturePack tp = render.getCurrentTexturePack();
