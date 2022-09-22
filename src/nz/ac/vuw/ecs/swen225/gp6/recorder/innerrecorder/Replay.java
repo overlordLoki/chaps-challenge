@@ -41,17 +41,18 @@ public class Replay {
      */
     public void autoPlay(Long time){
         System.out.println("Auto Replay started");
+        FakeApp.time = 0L;
         if(!timeline.hasNext()) {
             System.out.println("Please reload a game.");
             return;
         }
         Pair<Long,List<String>> actions = timeline.next();
         while(timeline.hasNext()){;
-            if(time.equals(actions.getKey())){
+            if(FakeApp.time.equals(actions.getKey())){
                 FakeApp.performActions(actions);
                 actions = timeline.next();
             }
-            time++;    // simulate how time is suppose to work with autoplay
+            FakeApp.time++;    // simulate how time is suppose to work with autoplay
         }
         // FakeApp.queueActions(actions);  // takes care of last case of timeline
         System.out.println(FakeApp.time);
