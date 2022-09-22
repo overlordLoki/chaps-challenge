@@ -211,11 +211,12 @@ public enum TexturePack{
          */
         public BufferedImage loadImg(String imageName){
             this.name = imageName;
-            System.out.print("Loading " + imageName + "...    -> ");
+            
+            //System.out.print("Loading " + imageName + "...    -> ");
             try {
                 File file = new File("res/textures/" + MazeRenderer.currentTP + "/" + imageName + ".png");
                 BufferedImage img = ImageIO.read(file);
-                System.out.println("Loaded!");
+                //System.out.println("Loaded!");
                 return img;
             } catch (IOException e) {
                 throw new RuntimeException(e);}

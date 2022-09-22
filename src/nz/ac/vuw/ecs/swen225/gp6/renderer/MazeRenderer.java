@@ -26,9 +26,7 @@ public class MazeRenderer extends JPanel{
      * 
      * @param maze Maze to be rendered.
      */
-    public MazeRenderer(DomainController maze) {
-        this.maze = maze;
-    }
+    public MazeRenderer(DomainController maze) {this.maze = maze;}
     /**
      * set the current texturePack and returns the new background image
      * 

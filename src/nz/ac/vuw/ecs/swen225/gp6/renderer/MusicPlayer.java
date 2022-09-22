@@ -20,10 +20,10 @@ public final class MusicPlayer {
             Clip gameMusic = AudioSystem.getClip();
             // Open audio clip and load samples from the audio input stream.
             gameMusic.open(audioIn);
-            System.out.println("initialized the music");
+            //System.out.println("initialized the music");
             return gameMusic;
         } catch (Exception e) {e.printStackTrace();}
-        System.out.println("failed to initialize the music");
+        //System.out.println("failed to initialize the music");
         return null;
     }
 
@@ -35,13 +35,13 @@ public final class MusicPlayer {
         gameMusic.start();
         //loop the music
         gameMusic.loop(Clip.LOOP_CONTINUOUSLY);
-        System.out.println("playing music");
+        //System.out.println("playing music");
     }
     //stop playing the music
     public static void stopGameMusic() {
         //stop the music
         gameMusic.stop();
-        System.out.println("stop playing music");
+        //System.out.println("stop playing music");
     }
 
 
