@@ -4,7 +4,7 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.Recorder;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
-import nz.ac.vuw.ecs.swen225.gp6.renderer.logPanel;
+import nz.ac.vuw.ecs.swen225.gp6.renderer.LogPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,7 +40,7 @@ public class App extends JFrame {
     private MazeRenderer render;
     private Controller controller;
     private Actions actions;
-    private logPanel logPanel = new logPanel();
+    private LogPanel logPanel = new LogPanel();
 
     static final int WIDTH = 1200;
     static final int HEIGHT = 800;

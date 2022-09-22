@@ -5,12 +5,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import java.awt.*;
 
-public class logPanel extends JPanel{
+public class LogPanel extends JPanel{
     
     //textArea
     private JTextArea textArea;
 
-    public logPanel() {
+    public LogPanel() {
 
         this.setLayout(new GridLayout(1,1)); //so it fills the whole panel
         // make the text Area panel and set property's
