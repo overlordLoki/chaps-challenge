@@ -10,7 +10,9 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Helper;
@@ -25,7 +27,7 @@ import org.dom4j.Element;
 import nz.ac.vuw.ecs.swen225.gp6.app.*;
 
 public class Persistency {
-    record Log(LocalDateTime date, String message) {
+    public record Log(LocalDateTime date, String message) {
     }
 
     /**
@@ -33,18 +35,14 @@ public class Persistency {
      * 
      * @param string The string to log
      */
-    public static void log(String message) {
+    public static void log(String message) throws IOException {
         // get time and date string
         String time = LocalDateTime.now().toString();
         // write to file
         FileWriter out = null;
-        try {
-            out = new FileWriter("res/log.txt", true);
-            out.write(time + ": " + message + "\n");
-            out.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        out = new FileWriter("res/log.txt", true);
+        out.write(time + ": " + message + "\n");
+        out.close();
     }
 
     /**
@@ -56,10 +54,14 @@ public class Persistency {
         List<String> lines = Files.readAllLines(Paths.get("res/log.txt"));
 
         return lines.stream().map(line -> {
-            String[] split = line.split(": ");
-            // join the message back together
-            return new Log(LocalDateTime.parse(split[0]), String.join(": ", split[1]));
-        }).toList();
+            if (!line.contains(": ")) {
+                return null;
+            }
+            String dateString = line.substring(0, line.indexOf(": "));
+            LocalDateTime date = LocalDateTime.parse(dateString);
+            String message = line.substring(line.indexOf(": ") + 1).strip();
+            return new Log(date, message);
+        }).filter(Objects::nonNull).toList();
     }
 
     /*
