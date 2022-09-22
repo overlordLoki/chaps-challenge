@@ -3,6 +3,8 @@ package test.nz.ac.vuw.ecs.swen225.gp6.persistency;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -11,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
+import nz.ac.vuw.ecs.swen225.gp6.renderer.MusicPlayer;
 
 public class BaseTests {
     // @Test
@@ -48,4 +51,9 @@ public class BaseTests {
     // fail();
     // }
     // }
+
+    @Test
+    public void testLogLine() throws IOException {
+        Persistency.log("test");
+    }
 }

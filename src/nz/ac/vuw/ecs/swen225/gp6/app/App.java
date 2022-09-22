@@ -1,20 +1,25 @@
 package nz.ac.vuw.ecs.swen225.gp6.app;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
-import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
-import nz.ac.vuw.ecs.swen225.gp6.renderer.Renderer;
-import nz.ac.vuw.ecs.swen225.gp6.domain.*;
-import nz.ac.vuw.ecs.swen225.gp6.persistency.*;
-import nz.ac.vuw.ecs.swen225.gp6.recorder.*;
-//import nz.ac.vuw.ecs.swen225.gp6.app.tempDomain.Game;
+import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.RecorderCommunicator;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.Recorder;
+import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
+import nz.ac.vuw.ecs.swen225.gp6.renderer.LogPanel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
+import static java.awt.event.KeyEvent.*;
 import static nz.ac.vuw.ecs.swen225.gp6.app.PanelCreator.*;
 
 
@@ -28,14 +33,15 @@ public class App extends JFrame {
     private final List<String> actionNames = List.of("Move Up","Move Down","Move Left","Move Right","Pause Game",
             "Resume Game","Jump To Level 1","Jump To Level 2","Quit Game","Save And Quit Game","Reload Game");
     @SuppressWarnings("FieldMayBeFinal")
-    private List<String> actionKeyBindings = new ArrayList<>(List.of("Up","Down","Left","Right","Space",
-            "Escape","1","2","X","S","R"));
+    private List<Integer> actionKeyBindings = new ArrayList<>(List.of(VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT,
+                                                                VK_SPACE, VK_ESCAPE, VK_1, VK_2, VK_X, VK_S, VK_R));
     private int indexOfKeyToSet = -1;
 
-//    private Game game;
-    private DomainController maze;
-    private Renderer render;
+    private DomainController game;
+    private MazeRenderer render;
     private Controller controller;
+    private Actions actions;
+    private LogPanel logPanel = new LogPanel();
 
     static final int WIDTH = 1200;
     static final int HEIGHT = 800;
@@ -46,40 +52,57 @@ public class App extends JFrame {
     private final CardLayout menuCardLayout = new CardLayout();
     private final CardLayout gameCardLayout = new CardLayout();
 
-    Runnable closePhase = ()->{};
     private Timer timer;
+    private long time = 0;          // used to store accumulated time from the previous pause
+    private long timeStart = 0;     // starting time of current pause
+    private long playedTime = 0;    // total time played in a level
+
+    private boolean inReplay = false;
+    private Runnable ob = ()->{}; // observer for the replay mode
+    private Recorder recorder = new Recorder();
 
     /**
      * Constructor for the App class. Initializes the GUI and the main loop.
      */
     public App(){
-        assert SwingUtilities.isEventDispatchThread();
+        System.setOut(new Interceptor(System.out)); // intercepts the output of System.out.print/println
+        System.out.print( "Application boot... ");
+        assert SwingUtilities.isEventDispatchThread(): "boot failed: Not in EDT";
+        System.out.println("GUI thread started");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setVisible(true);
         addWindowListener(new WindowAdapter() {
             public void windowClosed(WindowEvent e) {
-                closePhase.run();
+                System.out.println("Application closed with exit code 0");
+                System.exit(0);
             }}
         );
         initialiseGame();
         initialiseGUI();
     }
 
-    private void initialiseGame() {
-        maze = new DomainController();
-        controller = new Controller(actionKeyBindings, maze);
+    /**
+     * Initializes the game.
+     */
+    public void initialiseGame() {
+        game = new DomainController(Persistency.getInitialDomain());
+        render = new MazeRenderer(game);
+        actions = new Actions(this);
+        controller = new Controller(this);
         addKeyListener(controller);
-        render = new Renderer(maze);
         setTimer(new Timer(34, unused -> {
             assert SwingUtilities.isEventDispatchThread();
-//            game.pingAll();
+            game.pingAll();
+            playedTime = System.nanoTime() - timeStart + time;
+            if (inReplay) ob.run();
+            repaint();
         }));
     }
 
     /**
      * Initializes the GUI and displays menu screen.
      */
-    private void initialiseGUI(){
+    public void initialiseGUI(){
         this.setMinimumSize(new Dimension(WIDTH, HEIGHT));
         this.setContentPane(outerPanel);
         outerPanel.setLayout(outerCardLayout);
@@ -96,25 +119,47 @@ public class App extends JFrame {
      * Transitions to the menu screen.
      */
     public void transitionToMenuScreen(){
-        System.out.println("Toggling to menu screen");
+        System.out.print("Transitioning to menu screen... ");
+        actions.actionPause();
         menuCardLayout.show(menuPanel, MENU);
         outerCardLayout.show(outerPanel, MENU);
-        System.out.println("Menu shown");
+        System.out.println("Complete");
     }
 
     /**
      * Transitions to the game screen.
      */
     public void transitionToGameScreen(){
-        System.out.println("Toggling to game screen");
+        System.out.print("Transitioning to game screen... ");
         gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
-        System.out.println("Game shown");
+        actions.actionStartNew();
+        System.out.print("Complete");
     }
 
     //================================================================================================================//
     //============================================ Setter Method =====================================================//
     //================================================================================================================//
+
+    /**
+     * Sets the observer to fire.
+     *
+     * @param ob the observer to fire
+     */
+    public void setObserver(Runnable ob){
+        this.ob = ob;
+    }
+
+    /**
+     * Sets the game to a new game.
+     *
+     * @param save the save file to load
+     * @return The app object
+     */
+    public App setGame(DomainController save) {
+        this.game = save;
+        return this;
+    }
 
     /**
      * exits the key setting mode so another action can be selected for setting key binding.
@@ -141,6 +186,33 @@ public class App extends JFrame {
         this.timer = timer;
     }
 
+    /**
+     * Sets the starting time for the game loop.
+     *
+     * @param nanoTime the starting time for the game loop
+     */
+    public void setStartingTime(long nanoTime) {
+        timeStart = nanoTime;
+    }
+
+    /**
+     * Sets the time left for the current level.
+     *
+     * @param time the time left for the current level
+     */
+    public void setTime(long time) {
+        this.time = time;
+    }
+
+    /**
+     * Resets the time left for the current level.
+     */
+    public void resetTime(){
+        time = 0;
+        timeStart = System.nanoTime();
+        playedTime = 0;
+    }
+
     //================================================================================================================//
     //============================================ Getter Method =====================================================//
     //================================================================================================================//
@@ -151,7 +223,7 @@ public class App extends JFrame {
      * @return the game object
      */
     public DomainController getGame() {
-        return maze;
+        return game;
     }
 
     /**
@@ -168,10 +240,58 @@ public class App extends JFrame {
      *
      * @return the renderer object
      */
-    public Renderer getRender() {
+    public MazeRenderer getRender() {
         return render;
     }
 
+    /**
+     * Gets the controllable actions.
+     *
+     * @return the actions object
+     */
+    public Actions getActions() {
+        return actions;
+    }
+
+    /**
+     * Gets the timer for the game loop.
+     *
+     * @return the timer for the game loop
+     */
+    public Timer getTimer() {
+        return timer;
+    }
+
+    /**
+     * Gets the time when the timer starts
+     *
+     * @return the starting time of the timer
+     */
+    public long getTimeStart() {
+        return timeStart;
+    }
+
+    /**
+     * Gets the time elapsed since the start of the game.
+     *
+     * @return the time elapsed since the start of the game
+     */
+    public long getTime() {
+        return time;
+    }
+
+    /**
+     * Gets the time elapsed since the start of the game in Minutes and Seconds.
+     *
+     * @return the time elapsed since the start of the game
+     */
+    public String getTimeInMinutes() {
+        long time = this.playedTime;
+        long seconds = time / 1000000000;
+        long minutes = seconds / 60;
+        seconds = seconds % 60;
+        return String.format("%02d:%02d", minutes, seconds);
+    }
 
     /**
      * Gets the index of the action to set a different key binding.
@@ -205,17 +325,56 @@ public class App extends JFrame {
      *
      * @return the list of action key bindings
      */
-    public List<String> getActionKeyBindings() {
+    public List<Integer> getActionKeyBindings() {
         return actionKeyBindings;
     }
 
     /**
-     * Gets the time left for the current level.
-     *
-     * @return the time left for the current level
+     * Gets the log panel
+     * @return the log panel
      */
-    public int getTimeLeft() {
-        return 120;
+    public JPanel getLogPanel() {
+        return logPanel;
+    }
+
+    //================================================================================================================//
+    //============================================ Logger Method =====================================================//
+    //================================================================================================================//
+
+    private static class NonBlockingLog extends Thread{
+        public BlockingQueue<String> queue = new LinkedBlockingQueue<>();
+        public void run(){
+            try {
+                while(true){
+                    String msg;
+                    while ((msg = queue.poll()) != null) {
+                        Persistency.log(msg);
+                    }
+                }
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, "Error writing to log file");
+            }
+        }
+    }
+
+    private class Interceptor extends PrintStream{
+        NonBlockingLog logger;
+        public Interceptor(OutputStream out){
+            super(out, true);
+            logger = new NonBlockingLog();
+            logger.start();
+        }
+        @Override
+        public void print(String s){
+//            super.print(s);      // this line enables output to stdout
+            logger.queue.add(s); // this line enables output to log file
+            logPanel.print(s);   // this line enables output to log panel
+        }
+        @Override
+        public void println(String s){
+            print(s + "\n");
+        }
+
     }
 
     //================================================================================================================//

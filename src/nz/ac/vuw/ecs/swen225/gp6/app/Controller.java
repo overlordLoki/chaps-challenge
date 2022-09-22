@@ -1,7 +1,5 @@
 package nz.ac.vuw.ecs.swen225.gp6.app;
 
-import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
-
 import javax.swing.SwingUtilities;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -17,23 +15,24 @@ import static java.awt.event.KeyEvent.VK_CONTROL;
  * @author Jeff Lin
  */
 class Controller extends KeyAdapter {
-    private Map<String, Runnable> actionsPressed;
-    private Map<String, Runnable> actionsReleased;
-    private final Actions actions;
+    private final App app;
+    private Map<Integer, Runnable> actionsPressed;
+    private Map<Integer, Runnable> actionsReleased;
     private Boolean ctrlPressed = false;
 
     /**
      * Constructor for the Controller class. Initializes the actions and key bindings.
      *
-     * @param keyBindings List of key bindings.
-     * @param game The game for the controller to be attached to.
+     * @param app The App object that the controller will be controlling.
      */
-    public Controller(List<String> keyBindings, DomainController game) {
-        this.actions = new Actions(game);
-        setController(keyBindings);
+    public Controller(App app) {
+        this.app = app;
+        resetController();
     }
 
-    public void setController(List<String> keyBindings){
+    public void resetController(){
+        List<Integer> keyBindings = app.getActionKeyBindings();
+        Actions actions = app.getActions();
         actionsPressed = new HashMap<>();
         actionsReleased = new HashMap<>();
         setAction(keyBindings.get(0), actions::actionUp, ()->{});    // up
@@ -49,23 +48,23 @@ class Controller extends KeyAdapter {
         setAction(keyBindings.get(10), runIfCtrlPressed(actions::actionLoad), ()->{}); // Reload game
     }
 
-    private void setAction(String keyName, Runnable onPressed, Runnable onReleased) {
+    private void setAction(int keyName, Runnable onPressed, Runnable onReleased) {
         actionsPressed.put(keyName, onPressed);
         actionsReleased.put(keyName, onReleased);
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        assert SwingUtilities.isEventDispatchThread();
+        assert SwingUtilities.isEventDispatchThread(): "Controller: keyPressed: Not in EDT";
         if (e.getKeyCode() == VK_CONTROL) ctrlPressed = true;
-        actionsPressed.getOrDefault(KeyEvent.getKeyText(e.getKeyCode()), ()->{}).run();
+        actionsPressed.getOrDefault(e.getKeyCode(), ()->{}).run();
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        assert SwingUtilities.isEventDispatchThread();
+        assert SwingUtilities.isEventDispatchThread(): "Controller: keyReleased: Not in EDT";
         if (e.getKeyCode() == VK_CONTROL) ctrlPressed = false;
-        actionsReleased.getOrDefault(KeyEvent.getKeyText(e.getKeyCode()), ()->{}).run();
+        actionsReleased.getOrDefault(e.getKeyCode(), ()->{}).run();
     }
 
 
