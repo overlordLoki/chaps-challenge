@@ -12,27 +12,38 @@ public class logPanel extends JPanel{
 
     public logPanel() {
 
+        this.setLayout(new GridLayout(1,1)); //so it fills the whole panel
         // make the text Area panel and set property's
-		textArea = new JTextArea();
-		textArea.setLineWrap(true);
+		textArea = new JTextArea(); 
+		textArea.setLineWrap(true); 
 		textArea.setWrapStyleWord(true); // pretty line wrap.
 		textArea.setBackground(Color.black);
 		Font font = new Font("Verdana", Font.BOLD, 12);
-		textArea.setFont(font);
-		textArea.setForeground(Color.green);
-
+		textArea.setFont(font); // set font
+		textArea.setForeground(Color.green); // set color
+        textArea.setEditable(false); // set editable to false
         JScrollPane scrollPane = new JScrollPane(textArea);
         this.add(scrollPane);
     }
 
-    /*
+    public String writeLog(String s) {
+        printLine(s);
+        return s;
+    }
+
+    /**
 	 * appends String to textArea and adds \n to the string
+     * @param text
 	 */
 	public String printLine(String s) {
 		textArea.append(s+"\n");
         return s;
 	}
     
+    /**
+    * appends String to textArea
+    * @param text
+    */
 	public String printLine(int i) {
 		String s = Integer.toString(i);
 		textArea.append(s+"\n");
