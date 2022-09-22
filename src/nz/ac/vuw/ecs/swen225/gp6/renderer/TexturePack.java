@@ -2,6 +2,7 @@ package nz.ac.vuw.ecs.swen225.gp6.renderer;
 
 import java.awt.image.BufferedImage;
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -11,6 +12,7 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
 //import nz.ac.vuw.ecs.swen225.gp6.renderer.tempDomain.Tiles.Tile;
 
 public enum TexturePack{
+    
     /**
      * The Original texture pack.
      */
@@ -211,7 +213,8 @@ public enum TexturePack{
             this.name = imageName;
             System.out.print("Loading " + imageName + "...    -> ");
             try {
-                BufferedImage img = ImageIO.read(getClass().getResource("/nz/ac/vuw/ecs/swen225/gp6/renderer/textures/" + MazeRenderer.currentTP + "/" + imageName + ".png"));
+                File file = new File("res/textures/" + MazeRenderer.currentTP + "/" + imageName + ".png");
+                BufferedImage img = ImageIO.read(file);
                 System.out.println("Loaded!");
                 return img;
             } catch (IOException e) {

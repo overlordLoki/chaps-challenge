@@ -1,8 +1,5 @@
 package nz.ac.vuw.ecs.swen225.gp6.renderer;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import java.awt.Graphics;
 import javax.sound.sampled.*;
@@ -33,7 +30,6 @@ public class MazeRenderer extends JPanel{
      */
     public MazeRenderer(DomainController maze) {
         this.maze = maze;
-        PlaySound();
     }
     /**
      * set the current texturePack and returns the new background image
@@ -48,52 +44,7 @@ public class MazeRenderer extends JPanel{
         patternSize = 100;
     }
 
-    /**
-     * get this Renderer
-     * 
-     * @return this Renderer
-     */
-    public BufferedImage getImage(String image){
-        try {
-            return ImageIO.read(getClass().getResource("/Renderer/textures/" + texturePack + "/" + image + ".png"));
-        } catch (IOException e) {throw new RuntimeException(e);}
-    }
-
     public BufferedImage getImage(TexturePack.Images imgName) {return imgName.getImg();}
-
-    //initialize the music
-    public void PlaySound() {
-        try {
-           // Open an audio input stream.
-           String path = "src/nz/ac/vuw/ecs/swen225/gp6/renderer/music/gameMusic.wav";
-           //C:\Users\tymon\Desktop\UNI\swen 225\chaps-challenge\src\nz\ac\vuw\ecs\swen225\gp6\renderer\music\gameMusic.wav
-           File file = new File(path);
-           AudioInputStream audioIn = AudioSystem.getAudioInputStream(file);
-           // Get a sound clip resource.
-           clip = AudioSystem.getClip();
-           // Open audio clip and load samples from the audio input stream.
-           clip.open(audioIn);
-        } catch (Exception e) {e.printStackTrace();}
-        System.out.println("initialize the music");
-    }
-
-    //play the music
-    public void playMusic() {
-        //start music from the start
-        clip.setFramePosition(0);
-        //play the music
-        clip.start();
-        //loop the music
-        clip.loop(Clip.LOOP_CONTINUOUSLY);
-        System.out.println("playing music");
-    }
-    //stop playing the music
-    public void stopMusic() {
-        //stop the music
-        clip.stop();
-        System.out.println("stop playing music");
-    }
-    
    
     @Override
     public void paintComponent(Graphics g) {

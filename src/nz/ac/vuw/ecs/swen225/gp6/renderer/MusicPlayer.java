@@ -13,7 +13,7 @@ public final class MusicPlayer {
     public static Clip initializeGameMusic() {
         try {
             // Open an audio input stream.
-            String path = "./src/nz/ac/vuw/ecs/swen225/gp6/renderer/music/gameMusic.wav";
+            String path = "./res/music/gameMusic.wav";
             File file = new File(path);
             AudioInputStream audioIn = AudioSystem.getAudioInputStream(file);
             // Get a sound clip resource.
