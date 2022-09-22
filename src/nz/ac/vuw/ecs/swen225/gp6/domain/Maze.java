@@ -41,6 +41,21 @@ public class Maze {
      */
     public Direction getDirection(){return heroNextStep;}
 
+    public String toString(){
+        Tile[][] tileArray = this.getTileArrayCopy();
+        String r = "";
+
+        for(int y = 0; y < height; y++){
+            r += y + "|";
+            for(int x = 0; x < width; x++){
+                r += tileArray[x][y].getSymbol() + "|";
+            }
+            r += "\n";
+        }
+
+        return IntStream.range(0, this.width()).mapToObj(i -> " " + i).reduce( r + " ", (a, b) -> a + b);
+    }
+
     //TILE GETTERS:
     /*
      * @return a copy of tile array 

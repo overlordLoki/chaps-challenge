@@ -21,9 +21,23 @@ public class TileInfo{
         this.consumer = consumer;
     }
 
-    public Consumer<Domain> consumer(){return consumer;}
+    //GETTERS:
+    /*
+     * returns consumer given for some tiles, if null returns a -> {}
+     */
+    public Consumer<Domain> consumer(){return consumer == null? a ->{}: consumer;}
+    /*
+     * returns location of the associated tile
+     */
     public Loc loc(){return loc;}
+    /*
+     * returns static direction of the associated tile (mainly applicable to hero/enemies)
+     */
     public Direction dir(){return staticDirection;}
 
+    //SETTERS
+    /*
+     * sets the static direction of the associated tile (mainly applicable to hero/enemies)
+     */
     public void dir(Direction d){this.staticDirection = d;}
 }

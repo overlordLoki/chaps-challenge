@@ -12,6 +12,14 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
  * without accessing any other methods inside the domain package.
  */
 public class DomainFactory {
+    /*
+     * returns a tile object with the given type and info
+     * (wouldnt need to use this if adding tiles directly to the maze,
+     * as there is another provided method)
+     */
+    public static Tile makeTile(TileType type, int x, int y, Consumer<Domain> consumer){
+        return new Tile(type, new TileInfo(new Loc(x, y), consumer));
+    }
 
     /*
      * returns a new maze with an empty game array.

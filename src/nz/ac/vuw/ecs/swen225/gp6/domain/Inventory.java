@@ -19,7 +19,7 @@ public class Inventory {
         this.coins = 0;
 
         //fill inventory with null typed tiles
-        Arrays.stream(this.items).forEach(item -> item = new Tile(TileType.Null, null)); 
+        IntStream.range(0, size).forEach(i -> items[i] = new Tile(TileType.Null, null));
     }
 
     /*
@@ -73,4 +73,13 @@ public class Inventory {
         items[index] = new Tile(TileType.Null, null); //set to null tile type
         return true;
     }
+
+    public String toString(){
+        String r = "Inv(" + size + "): ";
+        for(Tile item : items){
+            if(item.type() != TileType.Null) r += item.getSymbol()+ ", ";
+        }
+        return r.substring(0, r.length() - 2);
+    }
+
 }
