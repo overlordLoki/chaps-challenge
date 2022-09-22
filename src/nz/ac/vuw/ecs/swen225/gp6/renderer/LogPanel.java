@@ -31,7 +31,6 @@ public class LogPanel extends JPanel{
         textArea.setEditable(false); // set editable to false
         JScrollPane scrollPane = new JScrollPane(textArea);
         this.add(scrollPane);
-        readLogs();
     }
 
     private void readLogs(){
