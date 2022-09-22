@@ -3,6 +3,7 @@ package nz.ac.vuw.ecs.swen225.gp6.app;
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
+import nz.ac.vuw.ecs.swen225.gp6.renderer.logPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,6 +34,7 @@ public class App extends JFrame {
     private MazeRenderer render;
     private Controller controller;
     private Actions actions;
+    private logPanel logPanel = new logPanel();
 
     static final int WIDTH = 1200;
     static final int HEIGHT = 800;
@@ -52,7 +54,9 @@ public class App extends JFrame {
      * Constructor for the App class. Initializes the GUI and the main loop.
      */
     public App(){
+        logPanel.writeLog("Application boot...");
         assert SwingUtilities.isEventDispatchThread();
+        logPanel.writeLog("GUI thread started...");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setVisible(true);
         addWindowListener(new WindowAdapter() {
@@ -298,6 +302,14 @@ public class App extends JFrame {
      */
     public List<Integer> getActionKeyBindings() {
         return actionKeyBindings;
+    }
+
+    /**
+     * Gets the log panel
+     * @return the log panel
+     */
+    public JPanel getLogPanel() {
+        return logPanel;
     }
 
     //================================================================================================================//

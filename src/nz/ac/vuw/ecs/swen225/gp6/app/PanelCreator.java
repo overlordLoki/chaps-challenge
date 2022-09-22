@@ -118,7 +118,14 @@ public class PanelCreator{
                 createActionLabel(NEW_GAME, r, SUBTITLE, true, app::transitionToGameScreen),
                 createActionLabel(LOAD_GAME, r, SUBTITLE, true, ()->cardLayout.show(backPanel, LOAD_GAME)),
                 createActionLabel(SETTINGS, r, SUBTITLE, true, ()->cardLayout.show(backPanel, SETTINGS)),
-                createActionLabel(LOGS, r, SUBTITLE, true, ()->cardLayout.show(backPanel, LOGS)),
+                createActionLabel(LOGS, r, SUBTITLE, true, ()-> {
+                    JFrame frame = new JFrame("Logs");
+
+                    PanelCreator.setSize(frame, 500,500,500,500,500,500);
+                    frame.add(app.getLogPanel());
+                    frame.setVisible(true);
+
+                }),
                 createActionLabel(CREDITS, r, SUBTITLE, true, ()->cardLayout.show(backPanel, CREDITS)),
                 createActionLabel(EXIT, r, SUBTITLE, true, ()->cardLayout.show(backPanel, EXIT))
         );
@@ -439,7 +446,7 @@ public class PanelCreator{
      * @param maX the maximum width of the component
      * @param maY the maximum height of the component
      */
-    public static void setSize(JComponent Component, int pX, int pY, int miX, int miY, int maX, int maY) {
+    public static void setSize(Component Component, int pX, int pY, int miX, int miY, int maX, int maY) {
         Component.setPreferredSize(new Dimension(pX, pY));
         Component.setMinimumSize(new Dimension(miX, miY));
         Component.setMaximumSize(new Dimension(maX, maY));
