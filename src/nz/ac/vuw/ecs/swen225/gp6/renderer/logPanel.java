@@ -4,11 +4,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import java.awt.*;
-import java.awt.Graphics;
 
 public class logPanel extends JPanel{
     
-    private String LogText = "";
     //textArea
     private JTextArea textArea;
 
@@ -27,22 +25,7 @@ public class logPanel extends JPanel{
         this.add(scrollPane);
     }
 
-    //write the log to the panel
-    public void writeLog(String log) {
-        LogText += log;
-        this.repaint();
-    }
-    //clear the log
-    public void clearLog() {
-        LogText = "";
-        this.repaint();
-    }
-    //get the log
-    public String getLog() {
-        return LogText;
-    }
-
-    	/*
+    /*
 	 * appends String to textArea and adds \n to the string
 	 */
 	public void printLine(String s) {
@@ -57,6 +40,11 @@ public class logPanel extends JPanel{
 		String s = Double.toString(d);
 		textArea.append(s+"\n");
 	}
+
+    
+    public void writeLog(String s) {
+        printLine(s);
+    }
 	
 	/*
 	 * Clears all text
@@ -64,11 +52,5 @@ public class logPanel extends JPanel{
 	public void clearText() {
 		textArea.setText("");
 	}
-    
-    @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        g.drawString(LogText, 0, 0);
-    }
 
 }
