@@ -2,8 +2,6 @@ package nz.ac.vuw.ecs.swen225.gp6.app;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
-import nz.ac.vuw.ecs.swen225.gp6.recorder.RecorderCommunicator;
-import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.Recorder;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.LogPanel;
 
@@ -59,7 +57,7 @@ public class App extends JFrame {
 
     private boolean inReplay = false;
     private Runnable ob = ()->{}; // observer for the replay mode
-    private Recorder recorder = new Recorder();
+//    private Recorder recorder = new Recorder();
 
     /**
      * Constructor for the App class. Initializes the GUI and the main loop.
