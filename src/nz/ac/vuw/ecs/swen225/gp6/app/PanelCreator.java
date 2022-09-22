@@ -205,7 +205,7 @@ public class PanelCreator{
         return pnLoad;
     }
 
-    private static JPanel configurePanelSettings(App app, List<String> actionNames, List<String> actionKeyBindings) {
+    private static JPanel configurePanelSettings(App app, List<String> actionNames, List<Integer> actionKeyBindings) {
         System.out.print("Configuring: Settings...... ");
 
         MazeRenderer r = app.getRender();
@@ -239,7 +239,7 @@ public class PanelCreator{
         for (int i = 0; i < actionKeyBindings.size(); i++) {
             lbsActionNames.add(createLabel(actionNames.get(i), r, TEXT, false));
             int finalI = i;
-            lbsActionKeys.add(new JLabel((finalI < 6 ? "": "Ctrl + ") + actionKeyBindings.get(finalI)){{
+            lbsActionKeys.add(new JLabel((finalI < 6 ? "": "Ctrl + ") + KeyEvent.getKeyText(actionKeyBindings.get(finalI))){{
                 TexturePack currentTexture = app.getRender().getCurrentTexturePack();
                 setForeground(currentTexture.getColorDefault());
                 addMouseListener(new MouseAdapter() {
@@ -269,12 +269,12 @@ public class PanelCreator{
             public void keyPressed(KeyEvent e) {
                 if (! app.inSettingKeyMode()) return;
                 var label = lbsActionKeys.get(app.indexOfKeyToSet());
-                if (actionKeyBindings.contains(KeyEvent.getKeyText(e.getKeyCode()))){
+                if (actionKeyBindings.contains(e.getKeyCode())){
                     app.exitKeySettingMode();
                     label.setForeground(Color.BLACK);
                     return;
                 }
-                actionKeyBindings.set(app.indexOfKeyToSet(), KeyEvent.getKeyText(e.getKeyCode()));
+                actionKeyBindings.set(app.indexOfKeyToSet(), e.getKeyCode());
                 label.setText((app.indexOfKeyToSet() < 6 ? "": "Ctrl + " ) + KeyEvent.getKeyText(e.getKeyCode()));
                 label.setForeground(Color.BLACK);
                 app.exitKeySettingMode();

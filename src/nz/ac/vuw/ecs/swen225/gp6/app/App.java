@@ -11,6 +11,7 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.awt.event.KeyEvent.*;
 import static nz.ac.vuw.ecs.swen225.gp6.app.PanelCreator.*;
 
 
@@ -24,8 +25,8 @@ public class App extends JFrame {
     private final List<String> actionNames = List.of("Move Up","Move Down","Move Left","Move Right","Pause Game",
             "Resume Game","Jump To Level 1","Jump To Level 2","Quit Game","Save And Quit Game","Reload Game");
     @SuppressWarnings("FieldMayBeFinal")
-    private List<String> actionKeyBindings = new ArrayList<>(List.of("Up","Down","Left","Right","Space",
-            "Escape","1","2","X","S","R"));
+    private List<Integer> actionKeyBindings = new ArrayList<>(List.of(VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT,
+                                                                VK_SPACE, VK_ESCAPE, VK_1, VK_2, VK_X, VK_S, VK_R));
     private int indexOfKeyToSet = -1;
 
     private DomainController game;
@@ -118,6 +119,18 @@ public class App extends JFrame {
     //================================================================================================================//
     //============================================ Setter Method =====================================================//
     //================================================================================================================//
+
+
+    /**
+     * Sets the game to a new game.
+     *
+     * @param save the save file to load
+     * @return The app object
+     */
+    public App setGame(DomainController save) {
+        this.game = save;
+        return this;
+    }
 
     /**
      * exits the key setting mode so another action can be selected for setting key binding.
@@ -283,7 +296,7 @@ public class App extends JFrame {
      *
      * @return the list of action key bindings
      */
-    public List<String> getActionKeyBindings() {
+    public List<Integer> getActionKeyBindings() {
         return actionKeyBindings;
     }
 
@@ -298,10 +311,5 @@ public class App extends JFrame {
      */
     public static void main(String... args){
         SwingUtilities.invokeLater(App::new);
-    }
-
-    public App setGame(DomainController save) {
-        this.game = save;
-        return this;
     }
 }

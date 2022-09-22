@@ -16,8 +16,8 @@ import static java.awt.event.KeyEvent.VK_CONTROL;
  */
 class Controller extends KeyAdapter {
     private final App app;
-    private Map<String, Runnable> actionsPressed;
-    private Map<String, Runnable> actionsReleased;
+    private Map<Integer, Runnable> actionsPressed;
+    private Map<Integer, Runnable> actionsReleased;
     private Boolean ctrlPressed = false;
 
     /**
@@ -31,7 +31,7 @@ class Controller extends KeyAdapter {
     }
 
     public void resetController(){
-        List<String> keyBindings = app.getActionKeyBindings();
+        List<Integer> keyBindings = app.getActionKeyBindings();
         Actions actions = app.getActions();
         actionsPressed = new HashMap<>();
         actionsReleased = new HashMap<>();
@@ -48,7 +48,7 @@ class Controller extends KeyAdapter {
         setAction(keyBindings.get(10), runIfCtrlPressed(actions::actionLoad), ()->{}); // Reload game
     }
 
-    private void setAction(String keyName, Runnable onPressed, Runnable onReleased) {
+    private void setAction(int keyName, Runnable onPressed, Runnable onReleased) {
         actionsPressed.put(keyName, onPressed);
         actionsReleased.put(keyName, onReleased);
     }
@@ -57,14 +57,14 @@ class Controller extends KeyAdapter {
     public void keyPressed(KeyEvent e) {
         assert SwingUtilities.isEventDispatchThread();
         if (e.getKeyCode() == VK_CONTROL) ctrlPressed = true;
-        actionsPressed.getOrDefault(KeyEvent.getKeyText(e.getKeyCode()), ()->{}).run();
+        actionsPressed.getOrDefault(e.getKeyCode(), ()->{}).run();
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
         assert SwingUtilities.isEventDispatchThread();
         if (e.getKeyCode() == VK_CONTROL) ctrlPressed = false;
-        actionsReleased.getOrDefault(KeyEvent.getKeyText(e.getKeyCode()), ()->{}).run();
+        actionsReleased.getOrDefault(e.getKeyCode(), ()->{}).run();
     }
 
 
