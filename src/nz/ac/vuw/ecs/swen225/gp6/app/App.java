@@ -2,6 +2,7 @@ package nz.ac.vuw.ecs.swen225.gp6.app;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.Recorder;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.logPanel;
 
@@ -9,10 +10,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.sql.Timestamp;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import static java.awt.event.KeyEvent.*;
 import static nz.ac.vuw.ecs.swen225.gp6.app.PanelCreator.*;
@@ -52,17 +56,22 @@ public class App extends JFrame {
     private long timeStart = 0;     // starting time of current pause
     private long playedTime = 0;    // total time played in a level
 
+    private boolean inReplay = false;
+    private Runnable ob = ()->{}; // observer for the replay mode
+    private Recorder recorder = new Recorder();
+
     /**
      * Constructor for the App class. Initializes the GUI and the main loop.
      */
     public App(){
-        log( " Application boot... ", true, false);
-        assert SwingUtilities.isEventDispatchThread(): log("boot failed: Not in EDT", false, true);
-        log("GUI thread started", false, true);
+        System.out.print( "Application boot... ");
+        assert SwingUtilities.isEventDispatchThread(): "boot failed: Not in EDT";
+        System.out.println("GUI thread started");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setVisible(true);
         addWindowListener(new WindowAdapter() {
             public void windowClosed(WindowEvent e) {
+                System.out.println("Application closed with exit code 0");
                 System.exit(0);
             }}
         );
@@ -70,7 +79,10 @@ public class App extends JFrame {
         initialiseGUI();
     }
 
-    private void initialiseGame() {
+    /**
+     * Initializes the game.
+     */
+    public void initialiseGame() {
         game = new DomainController(Persistency.getInitialDomain());
         render = new MazeRenderer(game);
         actions = new Actions(this);
@@ -78,8 +90,9 @@ public class App extends JFrame {
         addKeyListener(controller);
         setTimer(new Timer(34, unused -> {
             assert SwingUtilities.isEventDispatchThread();
-//            game.pingAll();
+            game.pingAll();
             playedTime = System.nanoTime() - timeStart + time;
+            if (inReplay) ob.run();
             repaint();
         }));
     }
@@ -87,7 +100,7 @@ public class App extends JFrame {
     /**
      * Initializes the GUI and displays menu screen.
      */
-    private void initialiseGUI(){
+    public void initialiseGUI(){
         this.setMinimumSize(new Dimension(WIDTH, HEIGHT));
         this.setContentPane(outerPanel);
         outerPanel.setLayout(outerCardLayout);
@@ -104,28 +117,36 @@ public class App extends JFrame {
      * Transitions to the menu screen.
      */
     public void transitionToMenuScreen(){
-        log("Transitioning to menu screen... ", true, false);
+        System.out.print("Transitioning to menu screen... ");
         actions.actionPause();
         menuCardLayout.show(menuPanel, MENU);
         outerCardLayout.show(outerPanel, MENU);
-        log("Complete", false, true);
+        System.out.println("Complete");
     }
 
     /**
      * Transitions to the game screen.
      */
     public void transitionToGameScreen(){
-        log("Transitioning to game screen... ", true, false);
+        System.out.print("Transitioning to game screen... ");
         gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
         actions.actionStartNew();
-        log("Complete", false, true);
+        System.out.print("Complete");
     }
 
     //================================================================================================================//
     //============================================ Setter Method =====================================================//
     //================================================================================================================//
 
+    /**
+     * Sets the observer to fire.
+     *
+     * @param ob the observer to fire
+     */
+    public void setObserver(Runnable ob){
+        this.ob = ob;
+    }
 
     /**
      * Sets the game to a new game.
@@ -314,16 +335,43 @@ public class App extends JFrame {
         return logPanel;
     }
 
-    /**
-     * Logs a message to the log panel.
-     *
-     * @param s the message to log
-     * @param timeStamp whether to add a timestamp to the message
-     * @param endLine whether this message is the end of a line
-     * @return the message to log
-     */
-    public String log(String s, boolean timeStamp, boolean endLine){
-        return (timeStamp? logPanel.print(new Timestamp(new Date().getTime()) + "  ") :"" )+(endLine? logPanel.printLine(s): logPanel.print(s));
+    //================================================================================================================//
+    //============================================ Logger Method =====================================================//
+    //================================================================================================================//
+
+    private static class NonBlockingLog extends Thread{
+        public BlockingQueue<String> queue = new LinkedBlockingQueue<>();
+        public void run(){
+            try {
+                while(true){
+                    String msg;
+                    while ((msg = queue.poll()) != null) {
+                        Persistency.log(msg);
+                    }
+                }
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, "Error writing to log file");
+            }
+        }
+    }
+
+    private static class Interceptor extends PrintStream{
+        NonBlockingLog logger;
+        public Interceptor(OutputStream out){
+            super(out, true);
+            logger = new NonBlockingLog();
+            logger.start();
+        }
+        @Override
+        public void print(String s){
+//            super.print(s);      // this line enables output to stdout
+            logger.queue.add(s); // this line enables output to log file
+        }
+        @Override
+        public void println(String s){
+            print(s + "\n");
+        }
+
     }
 
     //================================================================================================================//
@@ -336,6 +384,8 @@ public class App extends JFrame {
      * @param args No arguments required for this application
      */
     public static void main(String... args){
+        System.setOut(new Interceptor(System.out));// just add the interceptor
+        System.out.println("Starting application");
         SwingUtilities.invokeLater(App::new);
     }
 }

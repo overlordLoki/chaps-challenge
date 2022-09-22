@@ -8,6 +8,7 @@ import nz.ac.vuw.ecs.swen225.gp6.renderer.MusicPlayer;
  *  @author Jeff Lin
  */
 public class Actions {
+    enum Action {MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT;}
 
     private final App app;
 
@@ -32,6 +33,7 @@ public class Actions {
      */
     public void actionUp() {
         app.getGame().moveUp();
+//        app.recorder.record(app.getTime(),Action.MOVE_UP);
     }
 
     /**
