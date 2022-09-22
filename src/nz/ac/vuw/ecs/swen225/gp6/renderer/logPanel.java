@@ -43,12 +43,6 @@ public class logPanel extends JPanel{
 		textArea.append(s+"\n");
         return s;
 	}
-
-    
-    public String writeLog(String s) {
-        printLine(s);
-        return s;
-    }
 	
     //get the last line of the textArea
     public String getLastLine() {
@@ -56,10 +50,17 @@ public class logPanel extends JPanel{
         return lines[lines.length-1];
     }
 
+    //print into the current line
+    public String print(String s) {
+        textArea.append(s);
+        return s;
+    }
+
     //get all the text in the textArea
     public String getText() {
         return textArea.getText();
     }
+
 
 	/*
 	 * Clears all text
