@@ -2,10 +2,9 @@ package nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder;
 
 import java.util.List;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.FakeApp;
-import nz.ac.vuw.ecs.swen225.gp6.recorder.FakeObserver;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.datastructures.Timeline;
 
-public class Recorder<E> implements FakeObserver {
+public class Recorder<E> {
     private Timeline<E> timeline;
 
     public void startRecording(){

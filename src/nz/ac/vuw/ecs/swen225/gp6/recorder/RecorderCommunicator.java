@@ -12,9 +12,9 @@ import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.Model;
  * The purpose of this controller is to provide a GUI for the user 
  * to interact with the record and replay functionality.
  */
-public class ReplayController {
+public class RecorderCommunicator<E> {
 
-    private Model model;
+    private Model<E> model;
 
     public JPanel makeReplayPanel(){
         PanelCreator.createClearPanel(BoxLayout.X_AXIS);
