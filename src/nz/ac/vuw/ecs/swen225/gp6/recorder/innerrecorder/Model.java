@@ -9,28 +9,30 @@ import java.util.List;
  * It's primary role is to provide functions for the controller to use.
  * The Model enables recording and playback of the game.
  */
-public class Model {
-    private Recorder recorder;
+public class Model<E> {
+    private Recorder<E> recorder;
     private Replay replay;
 
     // Methods used to record a game
     public void startRecording(){
-        recorder = new Recorder();
+        recorder = new Recorder<E>();
         recorder.startRecording();
     }
     public void stopRecording(){recorder.stopRecording();}
-    public void addToRecording(List<String> actions){recorder.addActions(actions);}
+    public void addToRecording(List<E> actions){recorder.addActions(actions);}
 
     // Methods used to replay a game
     public void startReplay(String game){
         replay = new Replay();
         replay.load(game); // persistency.load(game);}
     }
-    public void autoPlay(){replay.autoPlay();}
+    public void autoPlay(){replay.autoPlay(0L);}
     public void setReplaySpeed(float speed){replay.setSpeed(speed);}
     public void stepForwardReplay(){replay.step();}
     public void stopReplay(){replay.stopReplay();}
-
+    public void checkActions(){replay.checkActions();}
     // testing methods only
     public void addReplayActions(){replay.addActions();}
+
+    public void logAction(E keyPressed){System.out.println(keyPressed);}
 }
