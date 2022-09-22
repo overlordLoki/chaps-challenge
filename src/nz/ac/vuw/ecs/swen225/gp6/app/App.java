@@ -1,6 +1,7 @@
 package nz.ac.vuw.ecs.swen225.gp6.app;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
+import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
 
 import javax.swing.*;
@@ -63,7 +64,7 @@ public class App extends JFrame {
     }
 
     private void initialiseGame() {
-        game = new DomainController();
+        game = new DomainController(Persistency.getInitialDomain());
         render = new MazeRenderer(game);
         actions = new Actions(this);
         controller = new Controller(this);
@@ -297,5 +298,10 @@ public class App extends JFrame {
      */
     public static void main(String... args){
         SwingUtilities.invokeLater(App::new);
+    }
+
+    public App setGame(DomainController save) {
+        this.game = save;
+        return this;
     }
 }

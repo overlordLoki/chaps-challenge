@@ -1,6 +1,8 @@
 package nz.ac.vuw.ecs.swen225.gp6.app;
 
+import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
+import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.InventoryPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
@@ -41,11 +43,12 @@ public class PanelCreator{
     static final String NEW_GAME    = "Start New Game!";
     static final String LOAD_GAME   = "Load Game";
     static final String SETTINGS    = "Settings";
-    static final String HOW_TO_PLAY = "How to play";
+    static final String LOGS        = "Logs";
     static final String CREDITS     = "Credits";
     static final String EXIT        = "Exit";
 
     static final String GAME     = "Game";
+    static final String REPLAY   = "Replay";
     static final String LOOSE    = "Loose";
     static final String VICTORY  = "Victory";
 
@@ -63,21 +66,19 @@ public class PanelCreator{
      */
     static void configureMenuScreen(App app, JPanel backPanel, CardLayout cardLayout){
         // components to be added to the shell
-        JPanel pnMenu      = configurePanelMenu(backPanel, cardLayout, app);
-        JPanel pnNewGame   = configurePanelNewGame(app);
-        JPanel pnLoad      = configurePanelLoad(app);
-        JPanel pnSettings  = configurePanelSettings(app, app.getActionNames(), app.getActionKeyBindings());
-        JPanel pnHowToPlay = configurePanelHowToPlay(app);
-        JPanel pnCredits   = configurePanelCredits(app);
-        JPanel pnExit      = configurePanelExit(app);
+        JPanel pnMenu     = configurePanelMenu(backPanel, cardLayout, app);
+        JPanel pnLoad     = configurePanelLoad(app);
+        JPanel pnSettings = configurePanelSettings(app, app.getActionNames(), app.getActionKeyBindings());
+        JPanel pnLogs     = configurePanelHowToPlay(app);
+        JPanel pnCredits  = configurePanelCredits(app);
+        JPanel pnExit     = configurePanelExit(app);
 
         // add components to the shell
         backPanel.setLayout(cardLayout);
         backPanel.add(pnMenu, MENU);
-        backPanel.add(pnNewGame, NEW_GAME);
         backPanel.add(pnLoad, LOAD_GAME);
         backPanel.add(pnSettings, SETTINGS);
-        backPanel.add(pnHowToPlay, HOW_TO_PLAY);
+        backPanel.add(pnLogs, LOGS);
         backPanel.add(pnCredits, CREDITS);
         backPanel.add(pnExit, EXIT);
     }
@@ -114,10 +115,10 @@ public class PanelCreator{
         JPanel pnMenu = createBackgroundPanel(Images.Background, BoxLayout.Y_AXIS);
 
         List<JLabel> labels = List.of(
-                createActionLabel(NEW_GAME, r, SUBTITLE, true, ()->cardLayout.show(backPanel, NEW_GAME)),
+                createActionLabel(NEW_GAME, r, SUBTITLE, true, app::transitionToGameScreen),
                 createActionLabel(LOAD_GAME, r, SUBTITLE, true, ()->cardLayout.show(backPanel, LOAD_GAME)),
                 createActionLabel(SETTINGS, r, SUBTITLE, true, ()->cardLayout.show(backPanel, SETTINGS)),
-                createActionLabel(HOW_TO_PLAY, r, SUBTITLE, true, ()->cardLayout.show(backPanel, HOW_TO_PLAY)),
+                createActionLabel(LOGS, r, SUBTITLE, true, ()->cardLayout.show(backPanel, LOGS)),
                 createActionLabel(CREDITS, r, SUBTITLE, true, ()->cardLayout.show(backPanel, CREDITS)),
                 createActionLabel(EXIT, r, SUBTITLE, true, ()->cardLayout.show(backPanel, EXIT))
         );
@@ -147,40 +148,59 @@ public class PanelCreator{
         System.out.print("Configuring: Load...... ");
 
         JPanel pnLoad = createRepeatableBackgroundPanel(Images.Pattern_2, app.getRender(), BoxLayout.Y_AXIS);
+        JPanel pnMid = createClearPanel(BoxLayout.X_AXIS);
         JLabel lbTitle = createLabel("Load and Resume Games", app.getRender(), TITLE, true);
         JLabel lbConfirm = createActionLabel("Back", app.getRender(),SUBTITLE, true, app::transitionToMenuScreen);
-        JPanel pnLoad1 = createLoadGamePanel("Load 1", app, app.getRender());
-        JPanel pnLoad2 = createLoadGamePanel("Load 2", app, app.getRender());
+
+        List<Domain> saves;
+        try {
+            saves = Persistency.loadSaves();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error loading saved games, resetting save files.");
+            saves = List.of(Persistency.getInitialDomain(),Persistency.getInitialDomain(),Persistency.getInitialDomain());
+        }
+        JPanel pnLoad1 = createLoadGamePanel(1, app, app.getRender(), new DomainController(saves.get(0)));
+        JPanel pnLoad2 = createLoadGamePanel(2, app, app.getRender(), new DomainController(saves.get(1)));
+        JPanel pnLoad3 = createLoadGamePanel(3, app, app.getRender(), new DomainController(saves.get(2)));
 
         // assemble this panel
-        addAll(pnLoad, lbTitle, Box.createVerticalGlue(), pnLoad1, Box.createVerticalGlue(),pnLoad2,Box.createVerticalGlue(), lbConfirm);
+        addAll(pnMid, Box.createHorizontalGlue(), pnLoad1, Box.createHorizontalGlue(), pnLoad2, Box.createHorizontalGlue(), pnLoad3, Box.createHorizontalGlue());
+        addAll(pnLoad, lbTitle, Box.createVerticalGlue(), pnMid, Box.createVerticalGlue(), lbConfirm);
 
         System.out.println("Done!");
         return pnLoad;
     }
 
-    private static JPanel createLoadGamePanel(String title, App app, MazeRenderer render) {
-        JPanel pnLoad = createRepeatableBackgroundPanel(Images.Wall, render, BoxLayout.X_AXIS);
+    private static JPanel createLoadGamePanel(int index, App app, MazeRenderer render, DomainController save) {
+        JPanel pnLoad = createRepeatableBackgroundPanel(Images.Wall, render, BoxLayout.Y_AXIS);
         JPanel pnInfo = createClearPanel(BoxLayout.Y_AXIS);
-        JPanel pnStatus = createClearPanel(BoxLayout.X_AXIS);
-        JPanel pnInventory = new InventoryPanel(app.getGame(), false);
+        JPanel pnStatus = createClearPanel(BoxLayout.Y_AXIS);
+        JPanel pnInventory = new InventoryPanel(app.getGame(), true);
         JPanel pnOptions = createClearPanel(BoxLayout.X_AXIS);
 
-        JLabel lbTitle = createLabel(title, render, SUBTITLE, true);
-        JLabel lbLevel = createLabel("Level: 1", render, TEXT, true);
-        JLabel lbTime = createLabel("Time Left: 02:00", render, TEXT, true);
-        JLabel lbScore = createLabel("Score: 0", render, TEXT, true);
-        JLabel lbConfirm = createActionLabel("Load!", render, SUBTITLE, true, app::transitionToGameScreen);
-        JLabel lbDelete = createActionLabel("Delete", render, SUBTITLE, true, app::transitionToMenuScreen);
+        JLabel lbTitle = createLabel("Load "+index, render, SUBTITLE, true);
+        JLabel lbLevel = createLabel("Level: " + save.getCurrentLevel(), render, TEXT, true);
+        JLabel lbTime = createLabel("Time Left: " + app.getTimeInMinutes(), render, TEXT, true);
+        JLabel lbScore = createLabel("Score: " + save.getTreasuresLeft(), render, TEXT, true);
+        JLabel lbConfirm = createActionLabel("Load!", render, SUBTITLE, true, app.setGame(save)::transitionToGameScreen);
+        JLabel lbReplay = createActionLabel("Replay", render, SUBTITLE, true, app::transitionToGameScreen);
+        JLabel lbDelete = createActionLabel("Delete", render, SUBTITLE, true, ()->{
+            try {
+                Persistency.saveDomain(Persistency.getInitialDomain(), index);
+                app.repaint();
+            }catch (Exception e){
+                JOptionPane.showMessageDialog(null, "There is an error in saving the game slot: " + index);
+            }
+        });
 
         // assemble this panel
-        setSize(pnLoad, 800, 200, 800, 200, 800, 200);
-        setSize(pnInventory, 675,75, 675,75, 675,75);
-        setSize(pnStatus, 675, 30, 675, 30, 675, 30);
+//        setSize(pnLoad, 800, 200, 800, 200, 800, 200);
+        setSize(pnInventory, 150,300, 150,300, 150,300);
+//        setSize(pnStatus, 675, 30, 675, 30, 675, 30);
         // assemble this panel
-        addAll(pnStatus, lbLevel, Box.createHorizontalGlue(), lbTime, Box.createHorizontalGlue(), lbScore);
+        addAll(pnStatus, lbLevel, lbTime, lbScore);
         addAll(pnInfo, pnStatus, pnInventory);
-        addAll(pnOptions, Box.createHorizontalGlue(), lbConfirm, Box.createHorizontalGlue(),lbDelete, Box.createHorizontalGlue());
+        addAll(pnOptions, Box.createHorizontalGlue(), lbConfirm, Box.createHorizontalGlue(),lbReplay,Box.createHorizontalGlue(),lbDelete, Box.createHorizontalGlue());
         addAll(pnLoad, lbTitle, pnInfo, pnOptions);
         return pnLoad;
     }
@@ -299,12 +319,12 @@ public class PanelCreator{
         JLabel lbTitle = createLabel("Credits", app.getRender(), TITLE, true);
         JLabel lbBack = createActionLabel("Back", app.getRender(),SUBTITLE, true, app::transitionToMenuScreen);
         JLabel[] credits = new JLabel[]{
-                createLabel("App: Jeff", app.getRender(), TEXT, true),
-                createLabel("Domain: Matty", app.getRender(), TEXT, true),
-                createLabel("Fuzz: Ray", app.getRender(), TEXT, true),
-                createLabel("Persistency: Ben", app.getRender(), TEXT, true),
-                createLabel("Recorder: Jayden", app.getRender(), TEXT, true),
-                createLabel("Renderer: Loki", app.getRender(), TEXT, true),
+                createLabel("App: Jeff", app.getRender(), SUBTITLE, true),
+                createLabel("Domain: Matty", app.getRender(), SUBTITLE, true),
+                createLabel("Fuzz: Ray", app.getRender(), SUBTITLE, true),
+                createLabel("Persistency: Ben", app.getRender(), SUBTITLE, true),
+                createLabel("Recorder: Jayden", app.getRender(), SUBTITLE, true),
+                createLabel("Renderer: Loki", app.getRender(), SUBTITLE, true),
         };
 
         // assemble this panel
@@ -516,7 +536,8 @@ public class PanelCreator{
      *
      * @param name     the name of the label
      * @param render   the renderer object
-     * @param textType size of the text, should use the constants TITLE, SUBTITLE, and TEXT to specify
+     * @param textType size of the text, should use the constants {@code PanelCreator.TITLE},
+     *                 {@code PanelCreator.SUBTITLE}, or {@code PanelCreator.TEXT} to specify
      * @param Centered true if this label should be center aligned
      * @return the JLabel
      */
@@ -538,11 +559,12 @@ public class PanelCreator{
     }
 
     /**
-     * This method is used to create a JLabel with texture-dynamic fonts.
+     * This method is used to create a JLabel with texture-dynamic fonts that automatically updates the text.
      *
      * @param display  method to invoke the information to be displayed
      * @param render   the renderer object
-     * @param textType size of the text, should use the constants TITLE, SUBTITLE, and TEXT to specify
+     * @param textType size of the text, should use the constants {@code PanelCreator.TITLE},
+     *                 {@code PanelCreator.SUBTITLE}, or {@code PanelCreator.TEXT} to specify
      * @param Centered true if this label should be center aligned
      * @return the JLabel
      */
@@ -569,7 +591,8 @@ public class PanelCreator{
      *
      * @param name     the name of the label
      * @param render   the renderer object
-     * @param textType size of the text, should use the constants TITLE, SUBTITLE, and TEXT to specify
+     * @param textType size of the text, should use the constants {@code PanelCreator.TITLE},
+     *                 {@code PanelCreator.SUBTITLE}, or {@code PanelCreator.TEXT} to specify
      * @param Centered true if this label should be center aligned
      * @param runnable the action to be executed when the label is pressed
      * @return the JLabel

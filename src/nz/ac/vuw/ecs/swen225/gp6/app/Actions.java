@@ -59,11 +59,10 @@ public class Actions {
      * Starts a new game
      */
     public void actionStartNew(){
-        System.out.println("Game paused");
+        System.out.println("Starting new game");
         app.resetTime();
         app.getTimer().restart();
         MusicPlayer.playGameMusic();
-        System.out.println("Starting new game: ");
     }
 
     /**
