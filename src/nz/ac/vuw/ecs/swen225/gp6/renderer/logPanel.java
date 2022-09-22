@@ -28,24 +28,39 @@ public class logPanel extends JPanel{
     /*
 	 * appends String to textArea and adds \n to the string
 	 */
-	public void printLine(String s) {
+	public String printLine(String s) {
 		textArea.append(s+"\n");
+        return s;
 	}
     
-	public void printLine(int i) {
+	public String printLine(int i) {
 		String s = Integer.toString(i);
 		textArea.append(s+"\n");
+        return s;
 	}
-	public void printLine(double d) {
+	public String printLine(double d) {
 		String s = Double.toString(d);
 		textArea.append(s+"\n");
+        return s;
 	}
 
     
-    public void writeLog(String s) {
+    public String writeLog(String s) {
         printLine(s);
+        return s;
     }
 	
+    //get the last line of the textArea
+    public String getLastLine() {
+        String[] lines = textArea.getText().split("\n");
+        return lines[lines.length-1];
+    }
+
+    //get all the text in the textArea
+    public String getText() {
+        return textArea.getText();
+    }
+
 	/*
 	 * Clears all text
 	 */
