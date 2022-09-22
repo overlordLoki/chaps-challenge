@@ -26,11 +26,6 @@ public class logPanel extends JPanel{
         this.add(scrollPane);
     }
 
-    public String writeLog(String s) {
-        printLine(s);
-        return s;
-    }
-
     /**
 	 * appends String to textArea and adds \n to the string
      * @param text
