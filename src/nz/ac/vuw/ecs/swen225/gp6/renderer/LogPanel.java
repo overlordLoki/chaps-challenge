@@ -3,7 +3,14 @@ package nz.ac.vuw.ecs.swen225.gp6.renderer;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+
+import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
+
+import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency.Log;
+
 import java.awt.*;
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class LogPanel extends JPanel{
     
@@ -24,6 +31,17 @@ public class LogPanel extends JPanel{
         textArea.setEditable(false); // set editable to false
         JScrollPane scrollPane = new JScrollPane(textArea);
         this.add(scrollPane);
+        readLogs();
+    }
+
+    private void readLogs(){
+        try {
+            Persistency.getLogs().forEach(log -> {
+                textArea.append(log.toString());
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -59,6 +77,7 @@ public class LogPanel extends JPanel{
     //print into the current line
     public String print(String s) {
         textArea.append(s);
+        this.repaint();
         return s;
     }
 
@@ -74,5 +93,4 @@ public class LogPanel extends JPanel{
 	public void clearText() {
 		textArea.setText("");
 	}
-
 }
