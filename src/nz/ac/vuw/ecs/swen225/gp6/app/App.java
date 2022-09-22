@@ -2,7 +2,8 @@ package nz.ac.vuw.ecs.swen225.gp6.app;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
-import nz.ac.vuw.ecs.swen225.gp6.recorder.Recorder;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.RecorderCommunicator;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.Recorder;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.LogPanel;
 
@@ -64,6 +65,7 @@ public class App extends JFrame {
      * Constructor for the App class. Initializes the GUI and the main loop.
      */
     public App(){
+        System.setOut(new Interceptor(System.out)); // intercepts the output of System.out.print/println
         System.out.print( "Application boot... ");
         assert SwingUtilities.isEventDispatchThread(): "boot failed: Not in EDT";
         System.out.println("GUI thread started");
@@ -355,7 +357,7 @@ public class App extends JFrame {
         }
     }
 
-    private static class Interceptor extends PrintStream{
+    private class Interceptor extends PrintStream{
         NonBlockingLog logger;
         public Interceptor(OutputStream out){
             super(out, true);
@@ -366,6 +368,7 @@ public class App extends JFrame {
         public void print(String s){
 //            super.print(s);      // this line enables output to stdout
             logger.queue.add(s); // this line enables output to log file
+            logPanel.print(s);   // this line enables output to log panel
         }
         @Override
         public void println(String s){
@@ -384,8 +387,6 @@ public class App extends JFrame {
      * @param args No arguments required for this application
      */
     public static void main(String... args){
-        System.setOut(new Interceptor(System.out));// just add the interceptor
-        System.out.println("Starting application");
         SwingUtilities.invokeLater(App::new);
     }
 }
