@@ -2,7 +2,6 @@ package nz.ac.vuw.ecs.swen225.gp6.renderer;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 import java.awt.Graphics;
-import javax.sound.sampled.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileType;
@@ -20,7 +19,6 @@ public class MazeRenderer extends JPanel{
     public BufferedImage background;
     private int patternSize = 100;
     static TexturePack currentTP = TexturePack.Cats;
-    private Clip clip;
     public int getPatternSize() {return patternSize;}
     public TexturePack getCurrentTexturePack(){return texturePack;}
     /**
@@ -39,7 +37,7 @@ public class MazeRenderer extends JPanel{
      */
     public void setTexturePack(TexturePack texturePack) {
         this.texturePack = texturePack;
-        this.currentTP = texturePack;
+        MazeRenderer.currentTP = texturePack;
         TexturePack.Images.reloadAllTexturepack();
         patternSize = 100;
     }
