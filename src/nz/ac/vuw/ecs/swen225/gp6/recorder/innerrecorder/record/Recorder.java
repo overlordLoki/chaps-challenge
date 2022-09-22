@@ -1,7 +1,9 @@
-package nz.ac.vuw.ecs.swen225.gp6.recorder;
+package nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.record;
 
 import java.util.List;
-import nz.ac.vuw.ecs.swen225.gp6.app.*;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.FakeApp;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.helpers.Pair;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.helpers.Timeline;
 
 public class Recorder {
     private Timeline timeline;
@@ -22,17 +24,4 @@ public class Recorder {
     }
 }
 
-record RecordStartCommand(Recorder recorder) implements Command {
-    @Override
-    public void execute() {
-        recorder.startRecording();
-    }
-}
-
-record RecordStopCommand(Recorder recorder) implements Command {
-    @Override
-    public void execute() {
-        recorder.stopRecording();
-    }
-}
 

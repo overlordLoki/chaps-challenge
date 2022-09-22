@@ -2,6 +2,10 @@ package nz.ac.vuw.ecs.swen225.gp6.recorder;
 
 import java.util.List;
 
+import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.Model;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.helpers.Pair;
+
+
 public class FakeApp {
     public static int time = 0;
 
@@ -42,7 +46,6 @@ public class FakeApp {
         // model.autoPlay();
         // model.stopReplay();
         // model.addReplayActions();
-        // model.stepReplay(Direction.BACKWARD);
         // model.autoPlay();
         // model.startReplay("lol");
         // model.addReplayActions();

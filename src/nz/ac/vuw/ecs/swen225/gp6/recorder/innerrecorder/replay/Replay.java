@@ -1,6 +1,10 @@
-package nz.ac.vuw.ecs.swen225.gp6.recorder;
+package nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.replay;
 
 import java.util.List;
+
+import nz.ac.vuw.ecs.swen225.gp6.recorder.FakeApp;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.helpers.Pair;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.helpers.*;
 
 public class Replay {
     private Timeline timeline;
@@ -73,15 +77,3 @@ public class Replay {
         timeline.add(new Pair(10000, List.of("action10")));
     }
 }
-
-
-record ReplayStartCommand(Replay replay) implements Command {
-    @Override
-    public void execute() { replay.autoPlay(); }
-}
-
-record ReplayStopCommand(Replay replay) implements Command {
-    @Override
-    public void execute() {replay.stopReplay();}
-}
-

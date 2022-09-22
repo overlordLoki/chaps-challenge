@@ -1,4 +1,4 @@
-package nz.ac.vuw.ecs.swen225.gp6.recorder;
+package nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.helpers;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
