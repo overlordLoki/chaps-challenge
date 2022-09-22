@@ -9,7 +9,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static java.awt.event.KeyEvent.*;
@@ -54,9 +56,9 @@ public class App extends JFrame {
      * Constructor for the App class. Initializes the GUI and the main loop.
      */
     public App(){
-        logPanel.writeLog("Application boot...");
-        assert SwingUtilities.isEventDispatchThread();
-        logPanel.writeLog("GUI thread started...");
+        log( " Application boot... ", true, false);
+        assert SwingUtilities.isEventDispatchThread(): log("boot failed: Not in EDT", false, true);
+        log("GUI thread started", false, true);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setVisible(true);
         addWindowListener(new WindowAdapter() {
@@ -102,22 +104,22 @@ public class App extends JFrame {
      * Transitions to the menu screen.
      */
     public void transitionToMenuScreen(){
-        System.out.println("Toggling to menu screen");
+        log("Transitioning to menu screen... ", true, false);
         actions.actionPause();
         menuCardLayout.show(menuPanel, MENU);
         outerCardLayout.show(outerPanel, MENU);
-        System.out.println("Menu shown");
+        log("Complete", false, true);
     }
 
     /**
      * Transitions to the game screen.
      */
     public void transitionToGameScreen(){
-        System.out.println("Toggling to game screen");
+        log("Transitioning to game screen... ", true, false);
         gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
         actions.actionStartNew();
-        System.out.println("Game shown");
+        log("Complete", false, true);
     }
 
     //================================================================================================================//
@@ -310,6 +312,18 @@ public class App extends JFrame {
      */
     public JPanel getLogPanel() {
         return logPanel;
+    }
+
+    /**
+     * Logs a message to the log panel.
+     *
+     * @param s the message to log
+     * @param timeStamp whether to add a timestamp to the message
+     * @param endLine whether this message is the end of a line
+     * @return the message to log
+     */
+    public String log(String s, boolean timeStamp, boolean endLine){
+        return (timeStamp? logPanel.print(new Timestamp(new Date().getTime()) + "  ") :"" )+(endLine? logPanel.printLine(s): logPanel.print(s));
     }
 
     //================================================================================================================//

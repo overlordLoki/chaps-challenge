@@ -69,7 +69,6 @@ public class PanelCreator{
         JPanel pnMenu     = configurePanelMenu(backPanel, cardLayout, app);
         JPanel pnLoad     = configurePanelLoad(app);
         JPanel pnSettings = configurePanelSettings(app, app.getActionNames(), app.getActionKeyBindings());
-        JPanel pnLogs     = configurePanelHowToPlay(app);
         JPanel pnCredits  = configurePanelCredits(app);
         JPanel pnExit     = configurePanelExit(app);
 
@@ -78,7 +77,6 @@ public class PanelCreator{
         backPanel.add(pnMenu, MENU);
         backPanel.add(pnLoad, LOAD_GAME);
         backPanel.add(pnSettings, SETTINGS);
-        backPanel.add(pnLogs, LOGS);
         backPanel.add(pnCredits, CREDITS);
         backPanel.add(pnExit, EXIT);
     }
@@ -93,8 +91,8 @@ public class PanelCreator{
     static void configureGameScreen(App app, JPanel backPanel, CardLayout cardLayout){
         // components to be added to the shell
         JPanel pnGameWindow  = configurePanelGame(app, app.getGame(), app.getRender());
-        JPanel pnGameDeath   = configurePanelDeath();
-        JPanel pnGameVictory = configurePanelVictory();
+        JPanel pnGameDeath   = configurePanelLost(app);
+        JPanel pnGameVictory = configurePanelVictory(app);
 
         // add components to the shell
         backPanel.setLayout(cardLayout);
@@ -109,7 +107,7 @@ public class PanelCreator{
     //================================================================================================================//
 
     private static JPanel configurePanelMenu(JPanel backPanel, CardLayout cardLayout, App app) {
-        System.out.print("Configuring: Menu...... ");
+        app.log("Configuring Menu Panel... ", true, false);
 
         MazeRenderer r = app.getRender();
         JPanel pnMenu = createBackgroundPanel(Images.Background, BoxLayout.Y_AXIS);
@@ -120,11 +118,9 @@ public class PanelCreator{
                 createActionLabel(SETTINGS, r, SUBTITLE, true, ()->cardLayout.show(backPanel, SETTINGS)),
                 createActionLabel(LOGS, r, SUBTITLE, true, ()-> {
                     JFrame frame = new JFrame("Logs");
-
-                    PanelCreator.setSize(frame, 500,500,500,500,500,500);
+                    setSize(frame, 500,500,500,500,500,500);
                     frame.add(app.getLogPanel());
                     frame.setVisible(true);
-
                 }),
                 createActionLabel(CREDITS, r, SUBTITLE, true, ()->cardLayout.show(backPanel, CREDITS)),
                 createActionLabel(EXIT, r, SUBTITLE, true, ()->cardLayout.show(backPanel, EXIT))
@@ -133,26 +129,12 @@ public class PanelCreator{
         pnMenu.add(Box.createVerticalGlue());
         labels.forEach(pnMenu::add);
 
-        System.out.println("Done!");
+        app.log("Done!", false, true);
         return pnMenu;
     }
 
-    private static JPanel configurePanelNewGame(App app) {
-        System.out.print("Configuring: NewGame...... ");
-
-        JPanel pnStartNew = createRepeatableBackgroundPanel(Images.Pattern_2, app.getRender(), BoxLayout.Y_AXIS);
-        JLabel lbTitle = createLabel("Starting new game...", app.getRender(), TITLE, true);
-        JLabel lbConfirm = createActionLabel("Confirm", app.getRender(), SUBTITLE, true, app::transitionToGameScreen);
-
-        // assemble this panel
-        addAll(pnStartNew, lbTitle, Box.createVerticalGlue(), Box.createVerticalGlue(), lbConfirm);
-
-        System.out.println("Done!");
-        return pnStartNew;
-    }
-
     private static JPanel configurePanelLoad(App app) {
-        System.out.print("Configuring: Load...... ");
+        app.log("Configuring Load Panel... ", true, false);
 
         JPanel pnLoad = createRepeatableBackgroundPanel(Images.Pattern_2, app.getRender(), BoxLayout.Y_AXIS);
         JPanel pnMid = createClearPanel(BoxLayout.X_AXIS);
@@ -163,6 +145,7 @@ public class PanelCreator{
         try {
             saves = Persistency.loadSaves();
         } catch (Exception e) {
+            app.log("Failed to load saves, resetting save files.", false, true);
             JOptionPane.showMessageDialog(null, "Error loading saved games, resetting save files.");
             saves = List.of(Persistency.getInitialDomain(),Persistency.getInitialDomain(),Persistency.getInitialDomain());
         }
@@ -174,7 +157,7 @@ public class PanelCreator{
         addAll(pnMid, Box.createHorizontalGlue(), pnLoad1, Box.createHorizontalGlue(), pnLoad2, Box.createHorizontalGlue(), pnLoad3, Box.createHorizontalGlue());
         addAll(pnLoad, lbTitle, Box.createVerticalGlue(), pnMid, Box.createVerticalGlue(), lbConfirm);
 
-        System.out.println("Done!");
+        app.log("Done!", false, true);
         return pnLoad;
     }
 
@@ -196,6 +179,7 @@ public class PanelCreator{
                 Persistency.saveDomain(Persistency.getInitialDomain(), index);
                 app.repaint();
             }catch (Exception e){
+                app.log("Failed to delete save file.", false, true);
                 JOptionPane.showMessageDialog(null, "There is an error in saving the game slot: " + index);
             }
         });
@@ -213,7 +197,7 @@ public class PanelCreator{
     }
 
     private static JPanel configurePanelSettings(App app, List<String> actionNames, List<Integer> actionKeyBindings) {
-        System.out.print("Configuring: Settings...... ");
+        app.log("Configuring Settings Panel... ", true, false);
 
         MazeRenderer r = app.getRender();
         JPanel pnSettings = createRepeatableBackgroundPanel(Images.Pattern_2, app.getRender(), BoxLayout.Y_AXIS);
@@ -301,26 +285,12 @@ public class PanelCreator{
         addAll(pnMiddle, Box.createHorizontalGlue(), pnBindingL, pnBindingR, Box.createHorizontalGlue());
         addAll(pnSettings, lbTitle, Box.createVerticalGlue(), pnMiddle, Box.createVerticalGlue(), lbConfirm);
 
-        System.out.println("Done!");
+        app.log("Done!", false, true);
         return pnSettings;
     }
 
-    private static JPanel configurePanelHowToPlay(App app) {
-        System.out.print("Configuring: HowToPlay...... ");
-
-        JPanel pnHowToPlay = createRepeatableBackgroundPanel(Images.Pattern_2, app.getRender(), BoxLayout.Y_AXIS);
-        JLabel lbTitle = createLabel("How To Play", app.getRender(), TITLE, true);
-        JLabel lbBack = createActionLabel("Back", app.getRender(), SUBTITLE, true, app::transitionToMenuScreen);
-
-        // assemble this panel
-        addAll(pnHowToPlay, lbTitle, Box.createVerticalGlue(), Box.createVerticalGlue(), lbBack);
-
-        System.out.println("Done!");
-        return pnHowToPlay;
-    }
-
     private static JPanel configurePanelCredits(App app) {
-        System.out.print("Configuring: Credits...... ");
+        app.log("Configuring Credits Panel... ", true, false);
 
         JPanel pnCredits = createRepeatableBackgroundPanel(Images.Pattern_2, app.getRender(), BoxLayout.Y_AXIS);
         JLabel lbTitle = createLabel("Credits", app.getRender(), TITLE, true);
@@ -339,12 +309,12 @@ public class PanelCreator{
         addAll(pnCredits, credits);
         addAll(pnCredits, Box.createVerticalGlue(), lbBack);
 
-        System.out.println("Done!");
+        app.log("Done!", false, true);
         return pnCredits;
     }
 
     private static JPanel configurePanelExit(App app) {
-        System.out.print("Configuring: Exit...... ");
+        app.log("Configuring Exit Panel... ", true, false);
 
         JPanel pnExit   = createRepeatableBackgroundPanel(Images.Pattern_2, app.getRender(), BoxLayout.Y_AXIS);
         JPanel pnOption = createClearPanel(BoxLayout.X_AXIS);
@@ -357,7 +327,7 @@ public class PanelCreator{
         addAll(pnOption, Box.createHorizontalGlue(), lbNo, Box.createHorizontalGlue(), lbYes, Box.createHorizontalGlue());
         addAll(pnExit, lbTitle, Box.createVerticalGlue(), lbMessage, Box.createVerticalGlue(), pnOption, Box.createVerticalGlue());
 
-        System.out.println("Done!");
+        app.log("Done!", false, true);
         return pnExit;
     }
 
@@ -367,7 +337,7 @@ public class PanelCreator{
     //================================================================================================================//
 
     private static JPanel configurePanelGame(App app, DomainController game, MazeRenderer mazeRender) {
-        System.out.print("Configuring: Game...... ");
+        app.log("Configuring Game Panel... ", true, false);
 
         // outermost panel
         JPanel pnGame = createRepeatableBackgroundPanel(Images.Pattern, mazeRender, BoxLayout.X_AXIS);
@@ -411,22 +381,22 @@ public class PanelCreator{
         addAll(pnGame, Box.createHorizontalGlue(), pnStatus, Box.createHorizontalGlue(), pnMaze, Box.createHorizontalGlue(),
                         pnRight, Box.createHorizontalGlue());
 
-        System.out.println("Done!");
+        app.log("Done!", false, true);
         return pnGame;
     }
 
 
-    private static JPanel configurePanelVictory() {
-        System.out.print("Configuring: Victory...... ");
+    private static JPanel configurePanelVictory(App app) {
+        app.log("Configuring Victory Panel... ", true, false);
 
-        System.out.println("Done!");
+        app.log("Done!", false, true);
         return createClearPanel(BoxLayout.Y_AXIS);
     }
 
-    private static JPanel configurePanelDeath() {
-        System.out.print("Configuring: Death...... ");
+    private static JPanel configurePanelLost(App app) {
+        app.log("Configuring Lost Panel... ", true, false);
 
-        System.out.println("Done!");
+        app.log("Done!", false, true);
         return createClearPanel(BoxLayout.Y_AXIS);
     }
 

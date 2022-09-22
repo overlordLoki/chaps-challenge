@@ -59,7 +59,6 @@ public class Actions {
      * Starts a new game
      */
     public void actionStartNew(){
-        System.out.println("Starting new game");
         app.resetTime();
         app.getTimer().restart();
         MusicPlayer.playGameMusic();
@@ -69,18 +68,15 @@ public class Actions {
      * Pause the game.
      */
     public void actionPause(){
-        System.out.println("Game paused");
         app.getTimer().stop();
         app.setTime(System.nanoTime() - app.getTimeStart() + app.getTime());
         MusicPlayer.stopGameMusic();
-        System.out.println("Time: " + app.getTimeInMinutes());
     }
 
     /**
      * Resume the game.
      */
     public void actionResume(){
-        System.out.println("Game resumed");
         app.getTimer().start();
         app.setStartingTime(System.nanoTime());
         MusicPlayer.playGameMusic();
@@ -104,7 +100,7 @@ public class Actions {
      * Quit the game without saving.
      */
     public void actionQuit(){
-        System.out.println("Game quit");
+        System.exit(0);
     }
 
     /**
