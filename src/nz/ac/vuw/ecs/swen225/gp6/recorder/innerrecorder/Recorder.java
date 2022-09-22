@@ -1,19 +1,18 @@
-package nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.record;
+package nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder;
 
 import java.util.List;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.FakeApp;
-import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.helpers.Pair;
-import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.helpers.Timeline;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.datastructures.Timeline;
 
 public class Recorder {
-    private Timeline timeline;
+    private Timeline<String> timeline;
 
     public void startRecording(){
         System.out.println("Recording started");
-        this.timeline = new Timeline();
+        this.timeline = new Timeline<String>();
     }
     public void addActions(List<String> actions) {
-        this.timeline.add(new Pair(FakeApp.time, actions));
+        this.timeline.add(FakeApp.time, actions);
         System.out.println("Adding Action: " + actions.toString()); 
     }
     public void stopRecording(){
