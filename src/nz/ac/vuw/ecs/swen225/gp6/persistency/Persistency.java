@@ -1,7 +1,14 @@
 package nz.ac.vuw.ecs.swen225.gp6.persistency;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +25,43 @@ import org.dom4j.Element;
 import nz.ac.vuw.ecs.swen225.gp6.app.*;
 
 public class Persistency {
+    record Log(LocalDateTime date, String message) {
+    }
+
+    /**
+     * Log the string to the log file
+     * 
+     * @param string The string to log
+     */
+    public static void log(String message) {
+        // get time and date string
+        String time = LocalDateTime.now().toString();
+        // write to file
+        FileWriter out = null;
+        try {
+            out = new FileWriter("res/log.txt", true);
+            out.write(time + ": " + message + "\n");
+            out.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Get the log file
+     * 
+     * @return List of log entries
+     */
+    public static List<Log> getLogs() throws IOException {
+        List<String> lines = Files.readAllLines(Paths.get("res/log.txt"));
+
+        return lines.stream().map(line -> {
+            String[] split = line.split(": ");
+            // join the message back together
+            return new Log(LocalDateTime.parse(split[0]), String.join(": ", split[1]));
+        }).toList();
+    }
+
     /*
      * Serialise a domain to an XML document
      *
@@ -52,7 +96,7 @@ public class Persistency {
     public static void saveDomain(Domain domain, int slot) throws IOException {
         Document document = serializeDomain(domain);
 
-        FileWriter out = new FileWriter("res/save" + slot + ".xml");
+        FileWriter out = new FileWriter("res/save/" + slot + ".xml");
         document.write(out);
         out.close();
     }
