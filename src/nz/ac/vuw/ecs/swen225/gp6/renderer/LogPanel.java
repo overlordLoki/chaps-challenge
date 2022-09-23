@@ -5,12 +5,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
-
-import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency.Log;
-
 import java.awt.*;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class LogPanel extends JPanel{
     
@@ -33,7 +29,7 @@ public class LogPanel extends JPanel{
         this.add(scrollPane);
     }
 
-    private void readLogs(){
+    public void readLogs(){
         try {
             Persistency.getLogs().forEach(log -> {
                 textArea.append(log.toString());

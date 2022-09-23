@@ -19,7 +19,7 @@ public enum TexturePack{
     Original(new Font("Arial", Font.BOLD, 80),
             new Font("Arial", Font.BOLD, 40),
             new Font("Arial", Font.BOLD, 30),
-            Color.BLACK, Color.ORANGE, Color.RED),
+            Color.white, Color.ORANGE, Color.RED),
     /**
      * The Cats texture pack.
      */
@@ -48,6 +48,7 @@ public enum TexturePack{
     private final Color colorDefault;
     private final Color colorHover;
     private final Color colorSelected;
+    private  Color dynamicColor;
 
     public Font getTitleFont()      {return titleFont;}
     public Font getSubtitleFont()   {return subtitleFont;}
@@ -55,6 +56,8 @@ public enum TexturePack{
     public Color getColorDefault()  {return colorDefault;}
     public Color getColorHover()    {return colorHover;}
     public Color getColorSelected() {return colorSelected;}
+    public Color getDynamicColor() {return dynamicColor;}
+    public void setDynamicColor(Color color) {dynamicColor = color;}
 
     /**
      * Constructor for texture packs
@@ -72,6 +75,7 @@ public enum TexturePack{
         this.colorDefault = colorDefault;
         this.colorHover = colorHover;
         this.colorSelected = colorSelected;
+        this.dynamicColor = colorDefault;
     }
 
     public enum Images{
