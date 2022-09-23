@@ -1,9 +1,9 @@
 package nz.ac.vuw.ecs.swen225.gp6.recorder;
 
 
-import java.util.List;
 // import nz.ac.vuw.ecs.swen225.gp6.app.*;
 
+import nz.ac.vuw.ecs.swen225.gp6.app.App;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.Recorder;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.Replay;
 
@@ -12,18 +12,29 @@ import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.Replay;
  * It's primary role is to provide functions for the controller to use.
  * The Model enables recording and playback of the game.
  */
-public class Model<E> implements Runnable {
-    private Recorder<E> recorder;
+public class Model implements Runnable {
+    private Recorder recorder;
     private Replay replay;
+    private App app;
+    private long time;
+
+    public Model(App app){
+        
+    }
 
     // Methods used to record a game
     @Override
     public void run() {
-        recorder = new Recorder<E>();
+        time = app.getTime();
+    }
+    public void startRecording() {
+        recorder = new Recorder();
         recorder.startRecording();
     }
     public void stopRecording(){recorder.stopRecording();}
-    public void addToRecording(List<E> actions){recorder.addActions(actions);}
+    public void addToRecording(Runnable actions){
+        recorder.addActions(time, actions);
+    }
 
     // Methods used to replay a game
     public void startReplay(String game){
@@ -34,9 +45,7 @@ public class Model<E> implements Runnable {
     public void setReplaySpeed(float speed){replay.setSpeed(speed);}
     public void stepForwardReplay(){replay.step();}
     public void stopReplay(){replay.stopReplay();}
-    public void checkActions(){replay.checkActions();}
-    // testing methods only
-    public void addReplayActions(){replay.addActions();}
 
-    public void logAction(E keyPressed){System.out.println(keyPressed);}
+    // testing methods only
+    public void logAction(Runnable keyPressed){System.out.println(keyPressed);}
 }

@@ -1,11 +1,10 @@
 package nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.datastructures;
 
 import java.util.ArrayDeque;
-import java.util.List;
 import java.util.Queue;
 
-public class Timeline<E> {
-    private Queue<Pair<Long, List<E>>> timeline;
+public class Timeline {
+    private Queue<Pair<Long, Runnable>> timeline;
 
     /**
      * Creates a new Timeline
@@ -18,15 +17,15 @@ public class Timeline<E> {
      * Creates a new Timeline from a saved timeline.
      * @param timeQueue
      */
-    public Timeline(Queue<Pair<Long, List<E>>> timeline) {
+    public Timeline(Queue<Pair<Long, Runnable>> timeline) {
         this.timeline = timeline;
     }
 
     /**
      * Add actions to the timeline
      */
-    public void add(Long time, List<E> actions) {
-        this.timeline.add(new Pair<Long, List<E>>(time, actions));
+    public void add(Long time, Runnable actions) {
+        this.timeline.add(new Pair<Long, Runnable>(time, actions));
     }
 
     /**
@@ -34,7 +33,7 @@ public class Timeline<E> {
      * in the timeline.
      * @return returns the list of actions to be executed
      */
-    public Pair<Long, List<E>> next(){
+    public Pair<Long, Runnable> next(){
         return timeline.poll();
     }
 
@@ -50,5 +49,4 @@ public class Timeline<E> {
     public String toString() {
         return "Timeline: " + this.timeline.toString();
     }
-
 }
