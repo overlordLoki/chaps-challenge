@@ -1,20 +1,24 @@
-package nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder;
+package nz.ac.vuw.ecs.swen225.gp6.recorder;
 
 
 import java.util.List;
 // import nz.ac.vuw.ecs.swen225.gp6.app.*;
+
+import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.Recorder;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.Replay;
 
 /** 
  * The Model class is responsible for grouping functionality into a single, simple, coherent class.
  * It's primary role is to provide functions for the controller to use.
  * The Model enables recording and playback of the game.
  */
-public class Model<E> {
+public class Model<E> implements Runnable {
     private Recorder<E> recorder;
     private Replay replay;
 
     // Methods used to record a game
-    public void startRecording(){
+    @Override
+    public void run() {
         recorder = new Recorder<E>();
         recorder.startRecording();
     }

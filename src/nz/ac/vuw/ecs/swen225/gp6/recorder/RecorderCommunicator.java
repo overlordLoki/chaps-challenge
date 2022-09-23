@@ -1,5 +1,6 @@
 package nz.ac.vuw.ecs.swen225.gp6.recorder;
 
+import nz.ac.vuw.ecs.swen225.gp6.app.App;
 
 /*
  * This controller is a panel that can be added to the App.
@@ -7,8 +8,16 @@ package nz.ac.vuw.ecs.swen225.gp6.recorder;
  * The purpose of this controller is to provide a GUI for the user 
  * to interact with the record and replay functionality.
  */
-public class RecorderCommunicator<E> {
+public class RecorderCommunicator<E> implements Runnable {
 
+    public RecorderCommunicator(App app){
+
+    };
+
+    @Override
+    public void run() {
+        
+    }
     
 
     
