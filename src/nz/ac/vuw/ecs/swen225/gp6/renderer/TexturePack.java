@@ -19,7 +19,7 @@ public enum TexturePack{
     Original(new Font("Arial", Font.BOLD, 80),
             new Font("Arial", Font.BOLD, 40),
             new Font("Arial", Font.BOLD, 30),
-            Color.BLACK, Color.ORANGE, Color.RED),
+            Color.white, Color.ORANGE, Color.RED),
     /**
      * The Cats texture pack.
      */
