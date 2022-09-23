@@ -4,12 +4,8 @@ import java.awt.image.BufferedImage;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-
 import javax.imageio.ImageIO;
-
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
-
-//import nz.ac.vuw.ecs.swen225.gp6.renderer.tempDomain.Tiles.Tile;
 
 public enum TexturePack{
     
