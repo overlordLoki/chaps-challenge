@@ -85,7 +85,7 @@ public class Persistency {
      * @param domain The domain to unserialise to
      */
     public static Domain unserialize(String xml) {
-        return new Domain(new ArrayList<Maze>(), new Inventory(1), 1);
+        return new Domain(List.of(Helper.makeMaze()), new Inventory(1), 1);
     }
 
     /*
@@ -110,9 +110,9 @@ public class Persistency {
      */
     public static List<Domain> loadSaves() {
         List<Domain> saves = new ArrayList<Domain>();
-        saves.add(new Domain(new ArrayList<Maze>(), new Inventory(1), 1));
-        saves.add(new Domain(new ArrayList<Maze>(), new Inventory(1), 1));
-        saves.add(new Domain(new ArrayList<Maze>(), new Inventory(1), 1));
+        saves.add(new Domain(List.of(Helper.makeMaze()), new Inventory(1), 1));
+        saves.add(new Domain(List.of(Helper.makeMaze()), new Inventory(1), 1));
+        saves.add(new Domain(List.of(Helper.makeMaze()), new Inventory(1), 1));
         return saves;
     }
 
