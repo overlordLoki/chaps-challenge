@@ -186,6 +186,7 @@ public class PanelCreator{
                 app.repaint();
             }catch (Exception e){
                 System.out.println("Failed to delete save file.");
+                System.err.println(e);
                 JOptionPane.showMessageDialog(null, "There is an error in saving the game slot: " + index);
             }
         });
