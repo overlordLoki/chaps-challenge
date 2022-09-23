@@ -1,10 +1,5 @@
 package nz.ac.vuw.ecs.swen225.gp6.recorder;
 
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
-
-import nz.ac.vuw.ecs.swen225.gp6.app.PanelCreator;
-import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.Model;
 
 /*
  * This controller is a panel that can be added to the App.
@@ -14,18 +9,7 @@ import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.Model;
  */
 public class RecorderCommunicator<E> {
 
-    private Model<E> model;
-
-    public JPanel makeReplayPanel(){
-        PanelCreator.createClearPanel(BoxLayout.X_AXIS);
-
-        return new JPanel();
-    }
-
-    public void startReplay(){
-        model.startReplay("myGame");
-        model.autoPlay();
-    }
+    
 
     
 }

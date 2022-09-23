@@ -2,7 +2,10 @@ package nz.ac.vuw.ecs.swen225.gp6.recorder;
 
 import java.util.List;
 
+import javax.swing.JFrame;
+
 import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.Model;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.ReplayPanel;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.datastructures.Pair;
 
 
@@ -27,25 +30,32 @@ public class FakeApp<E> {
     }
     
     public static void main(String[] args){
-        FakeApp<String> app = new FakeApp<String>();
-        app.model.startRecording();
+        JFrame frame = new JFrame();
+        ReplayPanel panel = new ReplayPanel();
+        panel.setBounds(40,80,200,200);
+        frame.add(panel);
+        frame.setContentPane(panel);
+        frame.setSize(500,500);
+        frame.setVisible(true);
 
-        List<String> actions = List.of("character spawned", "bug moved");
-        app.model.addToRecording(actions);
-        time++;
-        actions = List.of("up", "down");
-        app.model.addToRecording(actions);
-        time++;
-        actions = List.of("left", "right");
-        app.model.addToRecording(actions);
-        time++;
-        app.model.stopRecording();
+        // app.model.startRecording();
+
+        // List<String> actions = List.of("character spawned", "bug moved");
+        // app.model.addToRecording(actions);
+        // time++;
+        // actions = List.of("up", "down");
+        // app.model.addToRecording(actions);
+        // time++;
+        // actions = List.of("left", "right");
+        // app.model.addToRecording(actions);
+        // time++;
+        // app.model.stopRecording();
         
-        app.model.startReplay("myGame");
-        app.model.addReplayActions();
-        app.model.checkActions();
-        app.model.autoPlay();    // exhaust actions
-        app.model.stopReplay(); 
+        // app.model.startReplay("myGame");
+        // app.model.addReplayActions();
+        // app.model.checkActions();
+        // app.model.autoPlay();    // exhaust actions
+        // app.model.stopReplay(); 
         // model.stepForwardReplay();
         // model.setReplaySpeed(2);
         // model.autoPlay();
