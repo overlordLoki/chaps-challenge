@@ -3,6 +3,7 @@ package nz.ac.vuw.ecs.swen225.gp6.app;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.ReplayPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.InventoryPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
@@ -91,12 +92,14 @@ public class PanelCreator{
     static void configureGameScreen(App app, JPanel backPanel, CardLayout cardLayout){
         // components to be added to the shell
         JPanel pnGameWindow  = configurePanelGame(app, app.getGame(), app.getRender());
+        JPanel pnGameReplay  = configurePanelReplay(app, app.getGame(), app.getRender());
         JPanel pnGameDeath   = configurePanelLost(app);
         JPanel pnGameVictory = configurePanelVictory(app);
 
         // add components to the shell
         backPanel.setLayout(cardLayout);
         backPanel.add(pnGameWindow, GAME);
+        backPanel.add(pnGameReplay, REPLAY);
         backPanel.add(pnGameDeath, LOOSE);
         backPanel.add(pnGameVictory, VICTORY);
     }
@@ -172,8 +175,11 @@ public class PanelCreator{
         JLabel lbLevel = createLabel("Level: " + save.getCurrentLevel(), render, TEXT, true);
         JLabel lbTime = createLabel("Time Left: " + app.getTimeInMinutes(), render, TEXT, true);
         JLabel lbScore = createLabel("Score: " + save.getTreasuresLeft(), render, TEXT, true);
-        JLabel lbConfirm = createActionLabel("Load!", render, SUBTITLE, true, app.setGame(save)::transitionToGameScreen);
-        JLabel lbReplay = createActionLabel("Replay", render, SUBTITLE, true, app::transitionToGameScreen);
+        JLabel lbLoad = createActionLabel("Load!", render, SUBTITLE, true, ()->{
+//            app.setGame(app.getGame());
+            app.transitionToGameScreen();
+        });
+        JLabel lbReplay = createActionLabel("Replay", render, SUBTITLE, true, app::transitionToReplayScreen);
         JLabel lbDelete = createActionLabel("Delete", render, SUBTITLE, true, ()->{
             try {
                 Persistency.saveDomain(Persistency.getInitialDomain(), index);
@@ -191,7 +197,7 @@ public class PanelCreator{
         // assemble this panel
         addAll(pnStatus, lbLevel, lbTime, lbScore);
         addAll(pnInfo, pnStatus, pnInventory);
-        addAll(pnOptions, Box.createHorizontalGlue(), lbConfirm, Box.createHorizontalGlue(),lbReplay,Box.createHorizontalGlue(),lbDelete, Box.createHorizontalGlue());
+        addAll(pnOptions, Box.createHorizontalGlue(), lbLoad, Box.createHorizontalGlue(),lbReplay,Box.createHorizontalGlue(),lbDelete, Box.createHorizontalGlue());
         addAll(pnLoad, lbTitle, pnInfo, pnOptions);
         return pnLoad;
     }
@@ -387,6 +393,54 @@ public class PanelCreator{
         return pnGame;
     }
 
+    private static JPanel configurePanelReplay(App app, DomainController game, MazeRenderer mazeRender) {
+        System.out.print("Configuring Game Panel... ");
+
+        // outermost panel
+        JPanel pnGame = createRepeatableBackgroundPanel(Images.Pattern, mazeRender, BoxLayout.X_AXIS);
+        JPanel replay = new ReplayPanel();
+        // 3 panels on top of outermost panel: left/mid/right
+        JPanel pnStatus = createClearPanel(BoxLayout.Y_AXIS);
+        JPanel pnMaze   = createClearPanel(new GridBagLayout());
+        JPanel pnRight  = createClearPanel(BoxLayout.Y_AXIS);
+        // inner panels for panels: left/mid/right
+        JPanel pnStatusTop = createClearPanel(BoxLayout.Y_AXIS);
+        JPanel pnStatusMid = createClearPanel(BoxLayout.Y_AXIS);
+        JPanel pnStatusBot = createClearPanel(BoxLayout.Y_AXIS);
+        JPanel pnInventory = createClearPanel(BoxLayout.Y_AXIS);
+        JPanel pnInventories = new InventoryPanel(game, true);
+        // status bars
+        JLabel lbLevelTitle = createLabel("Level", mazeRender, SUBTITLE, false);
+        JLabel lbLevel      = createInfoLabel(()->app.getGame().getCurrentLevel()+"", mazeRender, SUBTITLE, false);
+        JLabel lbTimerTitle = createLabel("Time", mazeRender, SUBTITLE, false);
+        JLabel lbTimer      = createInfoLabel(app::getTimeInMinutes, mazeRender, SUBTITLE, false);
+        JLabel lbTreasuresTitle = createLabel("Treasures", mazeRender, SUBTITLE, false);
+        JLabel lbTreasures  = createInfoLabel(()->app.getGame().getTreasuresLeft()+"", mazeRender, SUBTITLE, false);
+        JLabel lbPause      = createActionLabel("Menu", app.getRender(),SUBTITLE, false, app::transitionToMenuScreen);
+        JLabel lbInventoryTitle = createLabel("Inventory", mazeRender, SUBTITLE, false);
+
+        // setting size
+        int width = 75*2, height = 75*4;
+        pnStatus.setMaximumSize(new Dimension(200, 1000));
+        pnRight.setMaximumSize(new Dimension(200, 1000));
+        setSize(mazeRender, 700, 700, 600, 600, 800, 800);
+        setSize(pnMaze, 700, 700, 600, 600, 800, 800);
+        setSize(pnInventory, width, height, width, height, width, height);
+
+        addAll(pnStatusTop, lbLevelTitle, lbLevel);
+        addAll(pnStatusMid, lbTimerTitle, lbTimer);
+        addAll(pnStatusBot, lbTreasuresTitle, lbTreasures);
+        addAll(pnInventory, lbInventoryTitle, pnInventories);
+        addAll(pnStatus, Box.createVerticalGlue(), pnStatusTop, Box.createVerticalGlue(), pnStatusMid,
+                Box.createVerticalGlue(), pnStatusBot, Box.createVerticalGlue());
+        pnMaze.add(mazeRender);
+        addAll(pnRight, Box.createVerticalGlue(), replay, lbPause, Box.createVerticalGlue(), pnInventory, Box.createVerticalGlue());
+        addAll(pnGame, Box.createHorizontalGlue(), pnStatus, Box.createHorizontalGlue(), pnMaze, Box.createHorizontalGlue(),
+                pnRight, Box.createHorizontalGlue());
+
+        System.out.println("Done!");
+        return pnGame;
+    }
 
     private static JPanel configurePanelVictory(App app) {
         System.out.print("Configuring Victory Panel... ");

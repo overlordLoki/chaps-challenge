@@ -15,7 +15,7 @@ public class MazeRenderer extends JPanel{
     static final long serialVersionUID = 1L;
     private TexturePack texturePack = TexturePack.Cats;
     private Tile[][] gameArray;
-    private DomainController maze;
+    public DomainController maze;
     public BufferedImage background;
     private int patternSize = 100;
     static TexturePack currentTP = TexturePack.Cats;

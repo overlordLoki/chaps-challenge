@@ -3,7 +3,7 @@ package test.nz.ac.vuw.ecs.swen225.gp6.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 import org.junit.jupiter.api.Test;
@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 public class DomainTests {
 
     //INITIAL TESTS:
-	@Test 
+	@Test
     public void testMazeToString() {
         Maze maze = new Maze(new Tile[][] {
             {new Tile(TileType.Wall, new TileInfo(null, null)), new Tile(TileType.Wall, new TileInfo(null, null)), new Tile(TileType.Wall, new TileInfo(null, null))},

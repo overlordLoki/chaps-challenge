@@ -78,7 +78,6 @@ public class App extends JFrame {
         );
         initialiseGame();
         initialiseGUI();
-        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     /**
@@ -131,9 +130,24 @@ public class App extends JFrame {
      */
     public void transitionToGameScreen(){
         System.out.print("Transitioning to game screen... ");
+        System.out.print("pre" + game);
         gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
         actions.actionStartNew();
+        System.out.println("post" +render.maze);
+        System.out.print("Complete");
+    }
+
+    /**
+     * Transitions to the game screen.
+     */
+    public void transitionToReplayScreen(){
+        System.out.print("Transitioning to replay screen... ");
+        System.out.print("pre" + game);
+        gameCardLayout.show(gamePanel, REPLAY);
+        outerCardLayout.show(outerPanel, GAME);
+        actions.actionStartNew();
+        System.out.println("post" +render.maze);
         System.out.print("Complete");
     }
 
@@ -157,7 +171,12 @@ public class App extends JFrame {
      * @return The app object
      */
     public App setGame(DomainController save) {
+        System.out.print("Setting game... ");
+        System.out.println(game);
         this.game = save;
+        this.render.setMaze(save);
+        System.out.println(game);
+        System.out.println("Complete");
         return this;
     }
 
