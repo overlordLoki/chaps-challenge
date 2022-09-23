@@ -215,14 +215,14 @@ public class PanelCreator{
             TexturePack currentPack = TexturePack.values()[newTexture];
             app.getRender().setTexturePack(currentPack);
             lbCurrentTexture.setText(currentPack+"");
-            pnSettings.repaint();
+            app.repaint();
         });
         JLabel lbPrevTexture = createActionLabel("<<<  ", app.getRender(),SUBTITLE, false, ()->{
             int newTexture = (app.getRender().getCurrentTexturePack().ordinal()-1+TexturePack.values().length)%TexturePack.values().length;
             TexturePack currentPack = TexturePack.values()[newTexture];
             app.getRender().setTexturePack(currentPack);
             lbCurrentTexture.setText(currentPack+"");
-            pnSettings.repaint();
+            app.repaint();
         });
 
         List<JLabel> lbsActionNames = new ArrayList<>();
@@ -549,8 +549,8 @@ public class PanelCreator{
      */
     public static JLabel createInfoLabel(Supplier<String> display, MazeRenderer render, int textType, boolean Centered) {
         return new JLabel(display.get()) {{
-            setForeground(render.getCurrentTexturePack().getColorDefault());
-            if (Centered) setAlignmentX(CENTER_ALIGNMENT);}
+            if (Centered) setAlignmentX(CENTER_ALIGNMENT);
+            setForeground(render.getCurrentTexturePack().getColorDefault());}
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 setText(display.get());
@@ -579,11 +579,10 @@ public class PanelCreator{
     public static JLabel createActionLabel(String name, MazeRenderer render, int textType, boolean Centered, Runnable runnable) {
         return new JLabel(name) {{
             if (Centered) setAlignmentX(CENTER_ALIGNMENT);
-            TexturePack tp = render.getCurrentTexturePack();
-            setForeground(tp.getColorDefault());
+            setForeground(render.getCurrentTexturePack().getColorDefault());
             addMouseListener(new MouseAdapter() {
-                public void mouseEntered(MouseEvent e){setForeground(tp.getColorHover());}
-                public void mouseExited(MouseEvent e) {setForeground(tp.getColorDefault());}
+                public void mouseEntered(MouseEvent e){setForeground(render.getCurrentTexturePack().getColorHover());}
+                public void mouseExited(MouseEvent e) {setForeground(render.getCurrentTexturePack().getColorDefault());}
                 public void mousePressed(MouseEvent e) {runnable.run();}
             });}
             public void paintComponent(Graphics g) {

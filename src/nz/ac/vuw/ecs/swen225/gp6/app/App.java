@@ -64,6 +64,7 @@ public class App extends JFrame {
      */
     public App(){
         System.setOut(new Interceptor(System.out)); // intercepts the output of System.out.print/println
+        System.setErr(new Interceptor(System.err)); // intercepts the output of System.err.print/println
         System.out.print( "Application boot... ");
         assert SwingUtilities.isEventDispatchThread(): "boot failed: Not in EDT";
         System.out.println("GUI thread started");
@@ -77,6 +78,7 @@ public class App extends JFrame {
         );
         initialiseGame();
         initialiseGUI();
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     /**
