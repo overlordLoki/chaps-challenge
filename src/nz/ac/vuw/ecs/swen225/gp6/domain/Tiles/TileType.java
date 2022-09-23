@@ -23,17 +23,19 @@ public enum TileType {
         @Override public void setOn(Tile self, Tile a, Domain d){}//TODO: LOSE 
         @Override public void ping(Tile self, Domain d) {
             Maze m = d.getCurrentMaze();
-            Loc l = self.info().loc();
+            Loc l1 = self.info().loc();
             //find new location of hero if it moves
-            Direction d1 = self.info().dir();
-            Loc l1 = d1.transformLoc(l);
+            Direction dir = self.info().dir();
+            Loc l2 = dir.transformLoc(l1);
+
+            if(dir == Direction.None) return; //if hero is not moving, do nothing
 
             //if tile at new location is obstruction return
-            if(m.getTileAt(l1).type().isObstruction(self, d)) return;
+            if(m.getTileAt(l2).type().isObstruction(self, d)) return;
             
             //otherwise move self to new location and set previous location to empty
-            m.getTileAt(l1).setOn(self, d);
-            m.getTileAt(l).setOn(new Tile(TileType.Empty, new TileInfo(l, a->{})), d);
+            m.getTileAt(l2).setOn(self, d);
+            m.getTileAt(l1).setOn(new Tile(TileType.Empty, new TileInfo(l1, a->{})), d);
 
             self.info().dir(m.getDirection()); //set heros direction of facing
             m.makeHeroStep(Direction.None); //make hero stop moving
