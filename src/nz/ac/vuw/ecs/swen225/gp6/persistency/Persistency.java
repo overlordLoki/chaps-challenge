@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,6 +22,7 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
@@ -64,6 +66,48 @@ public class Persistency {
         }).filter(Objects::nonNull).toList();
     }
 
+    enum Keys {
+        UP, DOWN, LEFT, RIGHT, PAUSE, RESUME, JUMP1, JUMP2, QUIT, SAVE, RELOAD
+    }
+
+    record Settings(String texturePack, EnumMap<Keys, String> keyBindings, Boolean musicEnabled) {
+    }
+
+    /*
+     * Get the settings from res/settings.xml
+     * 
+     * @return Settings object
+     */
+    public static Settings getSettings() throws IOException {
+        // read file
+        String content = new String(Files.readAllBytes(Paths.get("res/settings.xml"))).strip();
+
+        // parse xml
+        try {
+            Document doc = DocumentHelper.parseText(content);
+            Element root = doc.getRootElement();
+
+            // get texture pack
+            String texturePack = root.element("texturePack").getText();
+
+            // get key bindings
+            EnumMap<Keys, String> keyBindings = new EnumMap<>(Keys.class);
+            for (Keys key : Keys.values()) {
+                keyBindings.put(key, root.element("keyBindings").element(key.name()).getText());
+            }
+
+            // get music enabled
+            Boolean musicEnabled = Boolean.parseBoolean(root.element("musicEnabled").getText());
+
+            return new Settings(texturePack, keyBindings, musicEnabled);
+        } catch (DocumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     /*
      * Serialise a domain to an XML document
      *
@@ -85,7 +129,7 @@ public class Persistency {
      * @param domain The domain to unserialise to
      */
     public static Domain unserialize(String xml) {
-        return new Domain(new ArrayList<Maze>(), new Inventory(1), 1);
+        return new Domain(List.of(Helper.makeMaze()), new Inventory(1), 1);
     }
 
     /*
@@ -110,9 +154,9 @@ public class Persistency {
      */
     public static List<Domain> loadSaves() {
         List<Domain> saves = new ArrayList<Domain>();
-        saves.add(new Domain(new ArrayList<Maze>(), new Inventory(1), 1));
-        saves.add(new Domain(new ArrayList<Maze>(), new Inventory(1), 1));
-        saves.add(new Domain(new ArrayList<Maze>(), new Inventory(1), 1));
+        saves.add(new Domain(List.of(Helper.makeMaze()), new Inventory(1), 1));
+        saves.add(new Domain(List.of(Helper.makeMaze()), new Inventory(1), 1));
+        saves.add(new Domain(List.of(Helper.makeMaze()), new Inventory(1), 1));
         return saves;
     }
 
