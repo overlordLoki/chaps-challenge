@@ -1,50 +1,52 @@
 package test.nz.ac.vuw.ecs.swen225.gp6.Domain;
 
+import nz.ac.vuw.ecs.swen225.gp6.domain.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
 
-import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
+import static org.junit.Assert.assertEquals;
 
-import java.util.stream.IntStream;
 
-import junit.*;
+import org.junit.Test;
+
 
 public class DomainTests {
 
-	// public String toString() {
-	// 	String r = "";
-	// 	for(int row=8;row!=0;row--) {
-	// 		r += row + "|";
-	// 		for(int col=1;col<=8;col++) {
-	// 			Piece p = pieces[row][col];
-	// 			if(p != null) {
-	// 				r += p + "|";
-	// 			} else {
-	// 				r += "_|";
-	// 			}
-	// 		}
-	// 		r += "\n";
-	// 	}
-	// 	return r + "  a b c d e f g h";
-	// }
+    //INITIAL TESTS:
+	@Test 
+    public void testMazeToString() {
+        Maze maze = new Maze(new Tile[][] {
+            {new Tile(TileType.Wall, new TileInfo(null, null)), new Tile(TileType.Wall, new TileInfo(null, null)), new Tile(TileType.Wall, new TileInfo(null, null))},
+            {new Tile(TileType.Wall, new TileInfo(null, null)), new Tile(TileType.Floor, new TileInfo(null, null)), new Tile(TileType.Wall, new TileInfo(null, null))},
+            {new Tile(TileType.Wall, new TileInfo(null, null)), new Tile(TileType.Wall, new TileInfo(null, null)), new Tile(TileType.Wall, new TileInfo(null, null))}
+        });
+        assertEquals(
+            "0|||||||\n" + 
+            "1|||_|||\n" +
+            "2|||||||\n" +
+            "  0 1 2" + 
+            "",
+            maze.toString()
+        );
+    }
 
-    // public String toString(Maze m){
-    //     Tile[][] tileArray = m.getTileArrayCopy();
-    //     String r = "";
-    //     IntStream.range(0, m.width()).forEach(
-    //         x -> {
-    //             IntStream.range(0, m.height()).forEach(
-    //                 y -> {
-    //                     Tile t = tileArray[x][y];
-    //                     if(t != null){
-    //                         r += t.type() + "|";
-    //                     } else {
-    //                         r += "_|";
-    //                     }
-    //                 }
-    //             );
-    //             r += "\n";
-    //         }
-    //     );
-    //     );
-    // }
+    @Test
+    public void testInventoryToString(){
+        Inventory inv = new Inventory(8);
+        inv.addItem(tile(TileType.OrangeKey));
+        inv.addItem(tile(TileType.BlueKey)); 
+        inv.addItem(tile(TileType.GreenKey));
+        assertEquals("Inv(8): o, b, g", 
+        inv.toString());
+    }
+
+
+
+    //HELPER METHODS:
+    /*
+     * returns a tile with no consumer and location
+     */
+    public Tile tile(TileType type){
+        return new Tile(type, new TileInfo(null, null));
+    }
 
 }
