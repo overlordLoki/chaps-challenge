@@ -28,6 +28,7 @@ import static nz.ac.vuw.ecs.swen225.gp6.app.PanelCreator.*;
  */
 public class App extends JFrame {
     static final long serialVersionUID = 1L;
+
     private final List<String> actionNames = List.of("Move Up","Move Down","Move Left","Move Right","Pause Game",
             "Resume Game","Jump To Level 1","Jump To Level 2","Quit Game","Save And Quit Game","Reload Game");
     @SuppressWarnings("FieldMayBeFinal")

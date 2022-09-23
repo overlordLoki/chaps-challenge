@@ -92,14 +92,14 @@ public class PanelCreator{
     static void configureGameScreen(App app, JPanel backPanel, CardLayout cardLayout){
         // components to be added to the shell
         JPanel pnGameWindow  = configurePanelGame(app, app.getGame(), app.getRender());
-        JPanel pnGameReplay  = configurePanelReplay(app, app.getGame(), app.getRender());
+//        JPanel pnGameReplay  = configurePanelReplay(app, app.getGame(), app.getRender());
         JPanel pnGameDeath   = configurePanelLost(app);
         JPanel pnGameVictory = configurePanelVictory(app);
 
         // add components to the shell
         backPanel.setLayout(cardLayout);
         backPanel.add(pnGameWindow, GAME);
-        backPanel.add(pnGameReplay, REPLAY);
+//        backPanel.add(pnGameReplay, REPLAY);
         backPanel.add(pnGameDeath, LOOSE);
         backPanel.add(pnGameVictory, VICTORY);
     }
@@ -399,7 +399,7 @@ public class PanelCreator{
 
         // outermost panel
         JPanel pnGame = createRepeatableBackgroundPanel(Images.Pattern, mazeRender, BoxLayout.X_AXIS);
-        JPanel replay = new ReplayPanel();
+//        JPanel replay = new ReplayPanel();
         // 3 panels on top of outermost panel: left/mid/right
         JPanel pnStatus = createClearPanel(BoxLayout.Y_AXIS);
         JPanel pnMaze   = createClearPanel(new GridBagLayout());
@@ -435,7 +435,7 @@ public class PanelCreator{
         addAll(pnStatus, Box.createVerticalGlue(), pnStatusTop, Box.createVerticalGlue(), pnStatusMid,
                 Box.createVerticalGlue(), pnStatusBot, Box.createVerticalGlue());
         pnMaze.add(mazeRender);
-        addAll(pnRight, Box.createVerticalGlue(), replay, lbPause, Box.createVerticalGlue(), pnInventory, Box.createVerticalGlue());
+        addAll(pnRight, Box.createVerticalGlue(), lbPause, Box.createVerticalGlue(), pnInventory, Box.createVerticalGlue());
         addAll(pnGame, Box.createHorizontalGlue(), pnStatus, Box.createHorizontalGlue(), pnMaze, Box.createHorizontalGlue(),
                 pnRight, Box.createHorizontalGlue());
 
