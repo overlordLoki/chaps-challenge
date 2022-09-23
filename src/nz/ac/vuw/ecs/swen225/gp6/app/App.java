@@ -28,6 +28,7 @@ import static nz.ac.vuw.ecs.swen225.gp6.app.PanelCreator.*;
  */
 public class App extends JFrame {
     static final long serialVersionUID = 1L;
+
     private final List<String> actionNames = List.of("Move Up","Move Down","Move Left","Move Right","Pause Game",
             "Resume Game","Jump To Level 1","Jump To Level 2","Quit Game","Save And Quit Game","Reload Game");
     @SuppressWarnings("FieldMayBeFinal")
@@ -64,6 +65,7 @@ public class App extends JFrame {
      */
     public App(){
         System.setOut(new Interceptor(System.out)); // intercepts the output of System.out.print/println
+        System.setErr(new Interceptor(System.err)); // intercepts the output of System.err.print/println
         System.out.print( "Application boot... ");
         assert SwingUtilities.isEventDispatchThread(): "boot failed: Not in EDT";
         System.out.println("GUI thread started");
@@ -129,9 +131,24 @@ public class App extends JFrame {
      */
     public void transitionToGameScreen(){
         System.out.print("Transitioning to game screen... ");
+        System.out.print("pre" + game);
         gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
         actions.actionStartNew();
+        System.out.println("post" +render.maze);
+        System.out.print("Complete");
+    }
+
+    /**
+     * Transitions to the game screen.
+     */
+    public void transitionToReplayScreen(){
+        System.out.print("Transitioning to replay screen... ");
+        System.out.print("pre" + game);
+        gameCardLayout.show(gamePanel, REPLAY);
+        outerCardLayout.show(outerPanel, GAME);
+        actions.actionStartNew();
+        System.out.println("post" +render.maze);
         System.out.print("Complete");
     }
 
@@ -155,7 +172,12 @@ public class App extends JFrame {
      * @return The app object
      */
     public App setGame(DomainController save) {
+        System.out.print("Setting game... ");
+        System.out.println(game);
         this.game = save;
+        this.render.setMaze(save);
+        System.out.println(game);
+        System.out.println("Complete");
         return this;
     }
 
