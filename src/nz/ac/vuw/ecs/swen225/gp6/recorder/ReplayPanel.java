@@ -1,4 +1,4 @@
-package nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder;
+package nz.ac.vuw.ecs.swen225.gp6.recorder;
 
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageOutputStream;
