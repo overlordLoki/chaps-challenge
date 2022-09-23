@@ -6,7 +6,7 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
 import static org.junit.Assert.assertEquals;
 
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 
 public class DomainTests {

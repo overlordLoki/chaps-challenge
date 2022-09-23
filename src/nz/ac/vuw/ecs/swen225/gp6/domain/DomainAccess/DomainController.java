@@ -24,35 +24,35 @@ public class DomainController {
      * move hero up in next ping, if possible
      */
     public void moveUp(){
-        //domain.getCurrentMaze().makeHeroStep(Direction.Up);
+        domain.getCurrentMaze().makeHeroStep(Direction.Up);
     }
 
     /*
      * move hero down in next ping, if possible
      */
     public void moveDown(){
-        //domain.getCurrentMaze().makeHeroStep(Direction.Down);
+        domain.getCurrentMaze().makeHeroStep(Direction.Down);
     }
 
     /*
      * move hero left in next ping, if possible
      */
     public void moveLeft(){
-        //domain.getCurrentMaze().makeHeroStep(Direction.Left);
+        domain.getCurrentMaze().makeHeroStep(Direction.Left);
     }
 
     /*
      * move hero right in next ping, if possible
      */
     public void moveRight(){
-        //domain.getCurrentMaze().makeHeroStep(Direction.Right);
+        domain.getCurrentMaze().makeHeroStep(Direction.Right);
     }
 
     /*
      * ping the maze
      */
     public void pingAll(){
-        //domain.getCurrentMaze().pingMaze(domain);
+        domain.getCurrentMaze().pingMaze(domain);
     }
 
 
