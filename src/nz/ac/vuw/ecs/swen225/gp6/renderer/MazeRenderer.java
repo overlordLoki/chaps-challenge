@@ -40,6 +40,12 @@ public class MazeRenderer extends JPanel{
         patternSize = 100;
     }
 
+    /**
+     * set the maze to be rendered
+     * @param maze
+     */
+    public void setMaze(DomainController maze) {this.maze = maze;}
+
     public BufferedImage getImage(TexturePack.Images imgName) {return imgName.getImg();}
    
     @Override
