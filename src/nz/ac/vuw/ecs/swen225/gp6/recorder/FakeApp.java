@@ -2,7 +2,9 @@ package nz.ac.vuw.ecs.swen225.gp6.recorder;
 
 import java.util.List;
 
+import nz.ac.vuw.ecs.swen225.gp6.app.App;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.Model;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.ReplayPanel;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.datastructures.Pair;
 
 
