@@ -8,7 +8,7 @@ import nz.ac.vuw.ecs.swen225.gp6.persistency.*;
 public class Domain {
     private List<Maze> mazes; //each corresponds to a level (in order)
     private Inventory inv;
-    private int currentLvl;
+    private int currentLvl; //Note: first level should be 1
 
     public Domain(List<Maze> mazes, Inventory inv, int lvl){
         this.mazes = mazes;
