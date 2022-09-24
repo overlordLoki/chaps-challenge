@@ -40,7 +40,7 @@ public enum TileType {
 
             //TODO remove
             //System.out.println( "Location x: " + self.info().loc().x() + " y: " + self.info().loc().y());
-            //System.out.println( d.getCurrentMaze().toString());
+            System.out.println( d.getCurrentMaze().toString());
             
             self.info().dir(m.getDirection()); //set heros direction of facing
             m.makeHeroStep(Direction.None); //make hero stop moving
