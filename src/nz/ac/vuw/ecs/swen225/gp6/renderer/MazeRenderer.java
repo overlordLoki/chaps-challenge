@@ -12,14 +12,22 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileType;
  * @author Loki
  */
 public class MazeRenderer extends JPanel{
-    static final long serialVersionUID = 1L;
-    private TexturePack texturePack = TexturePack.Cats;
-    private Tile[][] gameArray;
-    private DomainController maze;
-    public BufferedImage background;
-    private int patternSize = 100;
-    static TexturePack currentTP = TexturePack.Cats;
+    static final long serialVersionUID = 1L; //serialVersionUID
+    private TexturePack texturePack = TexturePack.Cats; //default texture pack
+    private Tile[][] gameArray; //the array of tiles
+    public DomainController maze; //the domain controller
+    public BufferedImage background; //the background image
+    private int patternSize = 100; //the size of the pattern
+    static TexturePack currentTP = TexturePack.Cats; //the current texture pack
+    /**
+     * getter for patternSize
+     * @return patternSize
+     */
     public int getPatternSize() {return patternSize;}
+    /**
+     * get current texture pack
+     * @return texturePack
+     */
     public TexturePack getCurrentTexturePack(){return texturePack;}
     /**
      * Constructor. Takes a maze as parameters.
@@ -31,7 +39,6 @@ public class MazeRenderer extends JPanel{
      * set the current texturePack and returns the new background image
      * 
      * @param texturePack
-     * @return BufferedImage
      */
     public void setTexturePack(TexturePack texturePack) {
         this.texturePack = texturePack;
@@ -40,6 +47,17 @@ public class MazeRenderer extends JPanel{
         patternSize = 100;
     }
 
+    /**
+     * set the maze to be rendered
+     * @param maze
+     */
+    public void setMaze(DomainController maze) {this.maze = maze;}
+
+    /**
+     * get a image from the image provided
+     * @param TexturePack.Images
+     * @return BufferedImage
+     */
     public BufferedImage getImage(TexturePack.Images imgName) {return imgName.getImg();}
    
     @Override

@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
-import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.Model;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.datastructures.Pair;
 
 
