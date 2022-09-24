@@ -1,6 +1,8 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
@@ -16,13 +18,19 @@ public class Maze {
     private int height; //height of tile array, how many rows (outer array) 
     private int width;  //width of tile array, how many columns (inner arrays)
 
-    private Direction heroNextStep = Direction.None;
+    private Direction heroNextStep;
     
 
-    public Maze(Tile[][] tileArray){
+    public Maze(Tile[][] tileArray, Direction heroNextStep){
         this.tileArray = tileArray;
         this.height = tileArray.length;
         this.width = tileArray[0].length;
+
+        this.heroNextStep = heroNextStep;
+    }
+
+    public Maze(Tile[][] tileArray){
+        this(tileArray, Direction.None);
     }
 
     //GETTERS:
@@ -118,12 +126,10 @@ public class Maze {
 
     //SETTERS and ACTIONS:
     /**
-     * @return a new maze which is the current maze after a unit of time passing.
+     * pings all tiles in the maze
      */
-    public Maze pingMaze(Domain d){
-        Maze nextMaze = new Maze(this.getTileArrayCopy());
-        Arrays.stream(nextMaze.tileArray).flatMap(Arrays::stream).forEach(t -> t.ping(d));
-        return nextMaze;
+    public void pingMaze(Domain d){
+        Arrays.stream(d.getCurrentMaze().tileArray).flatMap(Arrays::stream).forEach(t -> t.ping(d));
     }
 
     /**
@@ -152,6 +158,9 @@ public class Maze {
 
         //replace tile at location
         tileArray[loc.x() - 1][loc.y() - 1] = tile;
+
+        //update tile info
+        tile.info().loc(loc);
     }
 
     /*
