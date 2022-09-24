@@ -13,11 +13,14 @@ import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack.Images;
  *  @author Loki
  */
 public class InventoryPanel extends JPanel{
+    //maze
+    private DomainController maze;
     /**
      * Constructor. Takes a maze as parameters.
      * @param maze
      */
-    public InventoryPanel(DomainController maze, boolean isGamePanel) {
+    public InventoryPanel(DomainController Maze, boolean isGamePanel) {
+        this.maze = Maze;
         //use grid layout based on boolean. gamePanel is 4,2 and inventoryPanel is 1x9
         this.setLayout(isGamePanel ? new GridLayout(4,2): new GridLayout(1,9));
         for(int i = 0; i < 8; i++) {
@@ -35,4 +38,9 @@ public class InventoryPanel extends JPanel{
             });
         }
     }
+    /**
+     * set the maze to be rendered
+     * @param maze
+     */
+    public void setMaze(DomainController maze) {this.maze = maze;}
 }
