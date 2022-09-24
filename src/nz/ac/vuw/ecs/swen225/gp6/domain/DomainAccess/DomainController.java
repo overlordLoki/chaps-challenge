@@ -59,6 +59,7 @@ public class DomainController {
     //INFO FROM DOMAIN:
     /*
      * returns true when player reaches this level's final tile (player on the open exit door)
+     * TODO: finish
      */
     public boolean playerOnExitDoor(){
         return false;
@@ -68,24 +69,21 @@ public class DomainController {
      * gets current level
      */
     public int getCurrentLevel() {
-        return 1;
-        //return domain.getLvl();
+        return domain.getLvl();
     }
 
     /*
      * gets number of treasures left to collect
      */
     public int getTreasuresLeft() {
-        return 10;
-        //return domain.getTreasuresLeft();
+        return domain.getTreasuresLeft();
     }
 
     /*
      * returns the inventory, any empty slot is represented by an Null typed tile
      */
     public List<Tile> getInventory() {
-        return List.of(new Tile(TileType.BlueKey, null),new Tile(TileType.GreenKey, null), new Tile(TileType.OrangeKey, null));
-        //return domain.getInv().getItems();
+        return domain.getInv().getItems();
     }
 
     /*

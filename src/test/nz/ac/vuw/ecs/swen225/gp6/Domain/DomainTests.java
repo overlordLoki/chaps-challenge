@@ -3,10 +3,10 @@ package test.nz.ac.vuw.ecs.swen225.gp6.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
 
+import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
-import org.junit.jupiter.api.Test;
 
 
 public class DomainTests {

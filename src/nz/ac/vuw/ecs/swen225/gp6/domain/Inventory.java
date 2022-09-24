@@ -37,7 +37,7 @@ public class Inventory {
     /*
      * gets the items (as an umodifiable list)
      */
-    public List<Tile> getItems(){return Arrays.stream(items).filter(t -> t.type() == TileType.Null).toList();}
+    public List<Tile> getItems(){return Arrays.stream(items).filter(t -> t.type() != TileType.Null).toList();}
     
     /*
      * gets the size of the inventory

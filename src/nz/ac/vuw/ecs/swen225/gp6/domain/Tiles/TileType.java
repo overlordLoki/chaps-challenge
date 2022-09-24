@@ -35,11 +35,12 @@ public enum TileType {
             if(dir == Direction.None || m.getTileAt(l2).type().isObstruction(self, d)) return;
             
             //otherwise set previous location to empty and move self to new location (order matters here) 
-            m.getTileAt(l1).setOn(new Tile(TileType.Empty, new TileInfo(l1, a->{})), d);
+            m.getTileAt(l1).setOn(new Tile(TileType.Floor, new TileInfo(l1, a->{})), d);
             m.getTileAt(l2).setOn(self, d);
 
-            System.out.println( "Location x: " + self.info().loc().x() + " y: " + self.info().loc().y());
-            System.out.println( d.getCurrentMaze().toString());
+            //TODO remove
+            //System.out.println( "Location x: " + self.info().loc().x() + " y: " + self.info().loc().y());
+            //System.out.println( d.getCurrentMaze().toString());
             
             self.info().dir(m.getDirection()); //set heros direction of facing
             m.makeHeroStep(Direction.None); //make hero stop moving
@@ -54,7 +55,7 @@ public enum TileType {
     },
 
     //STATIC TERRAINS:
-    Empty(' '){
+    Empty(' '){ //TODO sink in with loki and change name to EmptyInventory or smth
         @Override public boolean isObstruction(Tile t, Domain d) { return false;} //anyone can move on empty terrain
         @Override public void setOn(Tile self, Tile t, Domain d){
             d.getCurrentMaze().setTileAt(self.info().loc(), t);}
@@ -65,7 +66,7 @@ public enum TileType {
         @Override public void setOn(Tile self, Tile t, Domain d){d.getCurrentMaze().setTileAt(self.info().loc(), t);}
     }, 
 
-    Wall('|'){
+    Wall('/'){
         @Override public boolean isObstruction(Tile t, Domain d) { return true;} //no one can move on wall
     },
 
@@ -90,8 +91,6 @@ public enum TileType {
             return !(t.type() == TileType.Hero && d.getInv().hasItem(BlueKey));
         }
         @Override public void setOn(Tile self, Tile t, Domain d){ 
-            if(d.getInv().hasItem(this) == false) return; //if key not in inventory return
-
             d.getInv().removeItem(this);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
         }
@@ -102,8 +101,6 @@ public enum TileType {
             return !(t.type() == TileType.Hero && d.getInv().hasItem(GreenKey));
         }
         @Override public void setOn(Tile self, Tile t, Domain d){ 
-            if(d.getInv().hasItem(this) == false) return; //if key not in inventory return
-            
             d.getInv().removeItem(this);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
         }
@@ -114,8 +111,6 @@ public enum TileType {
             return !(t.type() == TileType.Hero && d.getInv().hasItem(OrangeKey));
         }
         @Override public void setOn(Tile self, Tile t, Domain d){ 
-            if(d.getInv().hasItem(this) == false) return; //if key not in inventory return
-            
             d.getInv().removeItem(this);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
         }
@@ -126,8 +121,6 @@ public enum TileType {
             return !(t.type() == TileType.Hero && d.getInv().hasItem(YellowKey));
         }
         @Override public void setOn(Tile self, Tile t, Domain d){ 
-            if(d.getInv().hasItem(this) == false) return; //if key not in inventory return
-            
             d.getInv().removeItem(this);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
         }
@@ -138,6 +131,7 @@ public enum TileType {
         @Override public void setOn(Tile self, Tile t, Domain d){ 
             d.getInv().addItem(self);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
+            //System.out.println( d.getInv().toString());//TODO remove
         }
     },
 
@@ -145,6 +139,7 @@ public enum TileType {
         @Override public void setOn(Tile self, Tile t, Domain d){ 
             d.getInv().addItem(self);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
+            //System.out.println( d.getInv().toString());//TODO remove
         }
     },
 
@@ -152,6 +147,7 @@ public enum TileType {
         @Override public void setOn(Tile self, Tile t, Domain d){ 
             d.getInv().addItem(self);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
+            //System.out.println( d.getInv().toString());//TODO remove
         }
 
     },
@@ -160,6 +156,7 @@ public enum TileType {
         @Override public void setOn(Tile self,Tile t, Domain d){ 
             d.getInv().addItem(self);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
+            //System.out.println( d.getInv().toString());
         }
     },
 
