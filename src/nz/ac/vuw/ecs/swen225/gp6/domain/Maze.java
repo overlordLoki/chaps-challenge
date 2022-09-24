@@ -53,7 +53,7 @@ public class Maze {
         Tile[][] tileArray = this.getTileArrayCopy();
         String r = "";
 
-        for(int y = 0; y < height; y++){
+        for(int y = height - 1; y >= 0; y--){
             r += y + "|";
             for(int x = 0; x < width; x++){
                 r += tileArray[x][y].getSymbol() + "|";
