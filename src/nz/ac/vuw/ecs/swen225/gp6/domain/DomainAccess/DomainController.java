@@ -52,7 +52,7 @@ public class DomainController {
      * ping the maze
      */
     public void pingAll(){
-        domain.getCurrentMaze().pingMaze(domain);
+        domain.pingDomain();
     }
 
 

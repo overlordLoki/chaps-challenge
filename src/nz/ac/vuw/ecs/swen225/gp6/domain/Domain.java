@@ -1,8 +1,10 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain;
 
+import java.util.Arrays;
 import java.util.List;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.*;
 
 public class Domain {
@@ -49,8 +51,21 @@ public class Domain {
     /*
      * pings the game one step, and replaces the current maze with a new one
      */
-    public void pingMaze(){
-        this.mazes.set(currentLvl - 1, this.mazes.get(currentLvl - 1).pingMaze(this));
+    public void pingDomain(){
+        //copy current maze TODO: see if this is necessary, or what it is useful for
+        Maze currentMaze = getCurrentMaze();
+        Direction none = Direction.None;
+        Maze nextMaze = new Maze(currentMaze.getTileArrayCopy(), currentMaze.getDirection());
+        currentMaze = nextMaze;
+        
+        //copy current inventory
+        Inventory nextInv = new Inventory(inv.size(), inv.coins(), inv.getItems());
+        inv = nextInv;
+
+        //ping the maze
+        nextMaze.pingMaze(this);
+
+        Direction none2 = Direction.None;
     }
 }
 

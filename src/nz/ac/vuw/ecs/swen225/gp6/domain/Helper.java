@@ -9,20 +9,19 @@ public class Helper {
     public static Maze makeMaze(){
         int width = 10;
         int height = 10;
-        TileInfo info = new TileInfo(new Loc(0, 0), a ->{});
         Tile [][] gameArray = new Tile[height][width];
 
         //initialize the maze with Empty_tile. cant have null tiles
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                gameArray[i][j] = new Tile(TileType.Floor, info);
+                gameArray[i][j] = new Tile(TileType.Floor, new TileInfo(new Loc(i + 1, j + 1), a ->{}));
             }
         }
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 //make the walls
                 if(i == 0 || j == 0 || i == width - 1 || j == height - 1){
-                    gameArray[i][j] = new Tile(TileType.Wall, info);
+                    gameArray[i][j] = new Tile(TileType.Wall, new TileInfo(new Loc(i + 1, j + 1), a ->{}));
                 }
             }
         }
@@ -30,7 +29,7 @@ public class Helper {
         Maze m = new Maze(gameArray, Direction.None);
 
         //display different tile types
-        m.setTileAt(new Loc(2, 2), TileType.Hero, a ->{});
+        m.setTileAt(new Loc(3, 2), TileType.Hero, a ->{});
         m.setTileAt(new Loc(4, 2), TileType.Enemy, a ->{});
         m.setTileAt(new Loc(3, 6), TileType.GreenKey, a ->{});
         m.setTileAt(new Loc(4, 6), TileType.GreenLock, a ->{});

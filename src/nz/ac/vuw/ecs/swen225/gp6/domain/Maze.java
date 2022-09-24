@@ -1,6 +1,8 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
@@ -124,15 +126,10 @@ public class Maze {
 
     //SETTERS and ACTIONS:
     /**
-     * @return a new maze which is the current maze after a unit of time passing.
+     * pings all tiles in the maze
      */
-    public Maze pingMaze(Domain d){
-        Maze nextMaze = new Maze(this.getTileArrayCopy(), this.getDirection());
-        if(this.getDirection() != Direction.None) {
-            System.out.println("Hero is moving " + this.getDirection());
-        }
-        Arrays.stream(nextMaze.tileArray).flatMap(Arrays::stream).forEach(t -> t.ping(d));
-        return nextMaze;
+    public void pingMaze(Domain d){
+        Arrays.stream(d.getCurrentMaze().tileArray).flatMap(Arrays::stream).forEach(t -> t.ping(d));
     }
 
     /**
@@ -161,6 +158,9 @@ public class Maze {
 
         //replace tile at location
         tileArray[loc.x() - 1][loc.y() - 1] = tile;
+
+        //update tile info
+        tile.info().loc(loc);
     }
 
     /*
