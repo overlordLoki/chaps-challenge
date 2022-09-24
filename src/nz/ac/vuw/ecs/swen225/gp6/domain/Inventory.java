@@ -22,10 +22,27 @@ public class Inventory {
         IntStream.range(0, size).forEach(i -> items[i] = new Tile(TileType.Null, null));
     }
 
+    public Inventory(int size, int coins, List<Tile> items){
+        this.size = size;
+        this.coins = coins;
+        this.items = new Tile[size];
+        
+        //fill inventory with null typed tiles
+        IntStream.range(0, size).forEach(i -> this.items[i] = new Tile(TileType.Null, null));
+
+        //add items to inventory
+        items.forEach(this::addItem);
+    }
+
     /*
      * gets the items (as an umodifiable list)
      */
-    public List<Tile> getItems(){return Arrays.stream(items).filter(t -> t.type() == TileType.Null).toList();}
+    public List<Tile> getItems(){return Arrays.stream(items).filter(t -> t.type() != TileType.Null).toList();}
+    
+    /*
+     * gets the size of the inventory
+     */
+    public int size()  {return size;}
     
     /**
      * gets number of coins

@@ -28,7 +28,7 @@ public class InventoryPanel extends JPanel{
                     super.paintComponent(g);
                     g.drawImage(Images.Empty_tile.getImg(), 0, 0, getWidth(),getHeight(),null);
                     int size = Math.min(getWidth(), getHeight());
-                    List<Tile> inventory = List.of();
+                    List<Tile> inventory = maze.getInventory();
                     if (slotNum >= inventory.size()) return;
                    g.drawImage(Images.getImage(inventory.get(slotNum)), (getWidth()-size)/2, (getHeight()-size)/2, size,size,null);
                 }

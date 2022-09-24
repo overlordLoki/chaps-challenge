@@ -20,37 +20,45 @@ public enum TileType {
     //ACTORS:
     Hero('H'){
         @Override public boolean isObstruction(Tile t, Domain d) { return t.type() != TileType.Enemy;} //enemy can move on actor
-        @Override public void setOn(Tile self, Tile a, Domain d){}//TODO: LOSE 
+        @Override public void setOn(Tile self, Tile t, Domain d){
+            d.getCurrentMaze().setTileAt(self.info().loc(), t);
+        }//TODO: LOSE if tile is a enemy
         @Override public void ping(Tile self, Domain d) {
             Maze m = d.getCurrentMaze();
             Loc l1 = self.info().loc();
             //find new location of hero if it moves
-            Direction dir = self.info().dir();
+            Direction none = Direction.None;
+            Direction dir = d.getCurrentMaze().getDirection();
             Loc l2 = dir.transformLoc(l1);
 
-            if(dir == Direction.None) return; //if hero is not moving, do nothing
-
-            //if tile at new location is obstruction return
-            if(m.getTileAt(l2).type().isObstruction(self, d)) return;
+            //if hero hasnt moved or tile at new location is obstruction return
+            if(dir == Direction.None || m.getTileAt(l2).type().isObstruction(self, d)) return;
             
-            //otherwise move self to new location and set previous location to empty
+            //otherwise set previous location to empty and move self to new location (order matters here) 
+            m.getTileAt(l1).setOn(new Tile(TileType.Floor, new TileInfo(l1, a->{})), d);
             m.getTileAt(l2).setOn(self, d);
-            m.getTileAt(l1).setOn(new Tile(TileType.Empty, new TileInfo(l1, a->{})), d);
 
+            //TODO remove
+            //System.out.println( "Location x: " + self.info().loc().x() + " y: " + self.info().loc().y());
+            //System.out.println( d.getCurrentMaze().toString());
+            
             self.info().dir(m.getDirection()); //set heros direction of facing
             m.makeHeroStep(Direction.None); //make hero stop moving
         }
     },
 
     Enemy('E'){
-        @Override public void setOn(Tile self, Tile t, Domain d){}//TODO: LOSE
+        @Override public void setOn(Tile self, Tile t, Domain d){
+            d.getCurrentMaze().setTileAt(self.info().loc(), t);
+        }//TODO: LOSE if tile is a hero
         @Override public void ping(Tile self, Domain d){ self.info().consumer().accept(d);}
     },
 
     //STATIC TERRAINS:
-    Empty(' '){
+    Empty(' '){ //TODO sink in with loki and change name to EmptyInventory or smth
         @Override public boolean isObstruction(Tile t, Domain d) { return false;} //anyone can move on empty terrain
-        @Override public void setOn(Tile self, Tile t, Domain d){d.getCurrentMaze().setTileAt(self.info().loc(), t);}
+        @Override public void setOn(Tile self, Tile t, Domain d){
+            d.getCurrentMaze().setTileAt(self.info().loc(), t);}
     },
 
     Floor('_'){
@@ -58,7 +66,7 @@ public enum TileType {
         @Override public void setOn(Tile self, Tile t, Domain d){d.getCurrentMaze().setTileAt(self.info().loc(), t);}
     }, 
 
-    Wall('|'){
+    Wall('/'){
         @Override public boolean isObstruction(Tile t, Domain d) { return true;} //no one can move on wall
     },
 
@@ -83,7 +91,7 @@ public enum TileType {
             return !(t.type() == TileType.Hero && d.getInv().hasItem(BlueKey));
         }
         @Override public void setOn(Tile self, Tile t, Domain d){ 
-            d.getInv().removeItem(BlueKey);
+            d.getInv().removeItem(this);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
         }
     },
@@ -93,7 +101,7 @@ public enum TileType {
             return !(t.type() == TileType.Hero && d.getInv().hasItem(GreenKey));
         }
         @Override public void setOn(Tile self, Tile t, Domain d){ 
-            d.getInv().removeItem(GreenKey);
+            d.getInv().removeItem(this);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
         }
     },
@@ -103,7 +111,7 @@ public enum TileType {
             return !(t.type() == TileType.Hero && d.getInv().hasItem(OrangeKey));
         }
         @Override public void setOn(Tile self, Tile t, Domain d){ 
-            d.getInv().removeItem(OrangeKey);
+            d.getInv().removeItem(this);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
         }
     },
@@ -113,7 +121,7 @@ public enum TileType {
             return !(t.type() == TileType.Hero && d.getInv().hasItem(YellowKey));
         }
         @Override public void setOn(Tile self, Tile t, Domain d){ 
-            d.getInv().removeItem(YellowKey);
+            d.getInv().removeItem(this);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
         }
     },
@@ -123,6 +131,7 @@ public enum TileType {
         @Override public void setOn(Tile self, Tile t, Domain d){ 
             d.getInv().addItem(self);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
+            //System.out.println( d.getInv().toString());//TODO remove
         }
     },
 
@@ -130,6 +139,7 @@ public enum TileType {
         @Override public void setOn(Tile self, Tile t, Domain d){ 
             d.getInv().addItem(self);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
+            //System.out.println( d.getInv().toString());//TODO remove
         }
     },
 
@@ -137,6 +147,7 @@ public enum TileType {
         @Override public void setOn(Tile self, Tile t, Domain d){ 
             d.getInv().addItem(self);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
+            //System.out.println( d.getInv().toString());//TODO remove
         }
 
     },
@@ -145,6 +156,7 @@ public enum TileType {
         @Override public void setOn(Tile self,Tile t, Domain d){ 
             d.getInv().addItem(self);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
+            //System.out.println( d.getInv().toString());
         }
     },
 

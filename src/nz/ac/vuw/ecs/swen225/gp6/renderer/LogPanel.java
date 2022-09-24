@@ -13,6 +13,9 @@ public class LogPanel extends JPanel{
     //textArea
     private JTextArea textArea;
 
+    /**
+     * Constructor for logPanel
+     */
     public LogPanel() {
 
         this.setLayout(new GridLayout(1,1)); //so it fills the whole panel
@@ -29,6 +32,9 @@ public class LogPanel extends JPanel{
         this.add(scrollPane);
     }
 
+    /**
+     * read the log file and display it in the text area
+     */
     public void readLogs(){
         try {
             Persistency.getLogs().forEach(log -> {
@@ -38,7 +44,6 @@ public class LogPanel extends JPanel{
             e.printStackTrace();
         }
     }
-
     /**
 	 * appends String to textArea and adds \n to the string
      * @param text
@@ -47,42 +52,18 @@ public class LogPanel extends JPanel{
 		textArea.append(s+"\n");
         return s;
 	}
-    
-    /**
-    * appends String to textArea
-    * @param text
-    */
-	public String printLine(int i) {
-		String s = Integer.toString(i);
-		textArea.append(s+"\n");
-        return s;
-	}
-	public String printLine(double d) {
-		String s = Double.toString(d);
-		textArea.append(s+"\n");
-        return s;
-	}
-	
-    //get the last line of the textArea
-    public String getLastLine() {
-        String[] lines = textArea.getText().split("\n");
-        return lines[lines.length-1];
-    }
 
-    //print into the current line
+    /**
+     * appends String to textArea
+     * @param s
+     * @return
+     */
     public String print(String s) {
         textArea.append(s);
         this.repaint();
         return s;
     }
-
-    //get all the text in the textArea
-    public String getText() {
-        return textArea.getText();
-    }
-
-
-	/*
+	/**
 	 * Clears all text
 	 */
 	public void clearText() {
