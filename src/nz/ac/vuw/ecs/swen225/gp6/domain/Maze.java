@@ -16,13 +16,19 @@ public class Maze {
     private int height; //height of tile array, how many rows (outer array) 
     private int width;  //width of tile array, how many columns (inner arrays)
 
-    private Direction heroNextStep = Direction.None;
+    private Direction heroNextStep;
     
 
-    public Maze(Tile[][] tileArray){
+    public Maze(Tile[][] tileArray, Direction heroNextStep){
         this.tileArray = tileArray;
         this.height = tileArray.length;
         this.width = tileArray[0].length;
+
+        this.heroNextStep = heroNextStep;
+    }
+
+    public Maze(Tile[][] tileArray){
+        this(tileArray, Direction.None);
     }
 
     //GETTERS:
@@ -121,7 +127,10 @@ public class Maze {
      * @return a new maze which is the current maze after a unit of time passing.
      */
     public Maze pingMaze(Domain d){
-        Maze nextMaze = new Maze(this.getTileArrayCopy());
+        Maze nextMaze = new Maze(this.getTileArrayCopy(), this.getDirection());
+        if(this.getDirection() != Direction.None) {
+            System.out.println("Hero is moving " + this.getDirection());
+        }
         Arrays.stream(nextMaze.tileArray).flatMap(Arrays::stream).forEach(t -> t.ping(d));
         return nextMaze;
     }

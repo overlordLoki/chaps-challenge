@@ -1,6 +1,7 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 
 //TODO: temp class REMOVE
@@ -26,7 +27,7 @@ public class Helper {
             }
         }
         
-        Maze m = new Maze(gameArray);
+        Maze m = new Maze(gameArray, Direction.None);
 
         //display different tile types
         m.setTileAt(new Loc(2, 2), TileType.Hero, a ->{});
