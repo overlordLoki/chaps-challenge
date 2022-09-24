@@ -101,13 +101,7 @@ public class App extends JFrame {
         actions = new Actions(this);
         controller = new Controller(this);
         addKeyListener(controller);
-        setTimer(new Timer(34, unused -> {
-            assert SwingUtilities.isEventDispatchThread();
-            game.pingAll();
-            playedTime = System.nanoTime() - timeStart + time;
-            if (inReplay) ob.run();
-            repaint();
-        }));
+        setTimer(gameTimer);
     }
 
     /**
@@ -150,7 +144,7 @@ public class App extends JFrame {
         gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
         actions.actionStartNew();
-        System.out.print("Complete");
+        System.out.println("Complete");
     }
 
     /**
@@ -162,7 +156,7 @@ public class App extends JFrame {
         gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
         actions.actionStartNew();
-        System.out.print("Complete");
+        System.out.println("Complete");
     }
 
     //================================================================================================================//
