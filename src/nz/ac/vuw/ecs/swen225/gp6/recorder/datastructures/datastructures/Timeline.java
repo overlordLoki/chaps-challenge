@@ -1,4 +1,4 @@
-package nz.ac.vuw.ecs.swen225.gp6.recorder.innerrecorder.datastructures;
+package nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.datastructures;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
