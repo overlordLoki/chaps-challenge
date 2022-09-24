@@ -6,13 +6,14 @@ import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.LogPanel;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -47,17 +48,27 @@ public class App extends JFrame {
     private final JPanel outerPanel = new JPanel();
     private final JPanel menuPanel = new JPanel();
     private final JPanel gamePanel = new JPanel();
+    private final JPanel functionPanel = PanelCreator.createClearPanel(BoxLayout.Y_AXIS);
     private final CardLayout outerCardLayout = new CardLayout();
     private final CardLayout menuCardLayout = new CardLayout();
     private final CardLayout gameCardLayout = new CardLayout();
+    private final CardLayout functionCardLayout = new CardLayout();
 
-    private Timer timer;
-    private long time = 0;          // used to store accumulated time from the previous pause
-    private long timeStart = 0;     // starting time of current pause
-    private long playedTime = 0;    // total time played in a level
 
     private boolean inReplay = false;
     private Runnable ob = ()->{}; // observer for the replay mode
+    private long time = 0;          // used to store accumulated time from the previous pause
+    private long timeStart = 0;     // starting time of current pause
+    private long playedTime = 0;    // total time played in a level
+    private Timer timer;
+    private Timer gameTimer = new Timer(34, unused -> {
+        assert SwingUtilities.isEventDispatchThread();
+        game.pingAll();
+        playedTime = System.nanoTime() - timeStart + time;
+        if (inReplay) ob.run();
+        repaint();
+    });
+
 //    private Recorder recorder = new Recorder();
 
     /**
@@ -103,12 +114,15 @@ public class App extends JFrame {
      * Initializes the GUI and displays menu screen.
      */
     public void initialiseGUI(){
-        this.setMinimumSize(new Dimension(WIDTH, HEIGHT));
-        this.setContentPane(outerPanel);
+        setMinimumSize(new Dimension(WIDTH, HEIGHT));
+        setContentPane(outerPanel);
         outerPanel.setLayout(outerCardLayout);
+        menuPanel.setLayout(menuCardLayout);
+        gamePanel.setLayout(gameCardLayout);
+        functionPanel.setLayout(functionCardLayout);
         render.setFocusable(true);
         PanelCreator.configureMenuScreen(this, menuPanel, menuCardLayout);
-        PanelCreator.configureGameScreen(this, gamePanel, gameCardLayout);
+        PanelCreator.configureGameScreen(this, gamePanel, gameCardLayout, functionPanel);
         outerPanel.add(menuPanel, MENU);
         outerPanel.add(gamePanel, GAME);
         transitionToMenuScreen();
@@ -121,6 +135,7 @@ public class App extends JFrame {
     public void transitionToMenuScreen(){
         System.out.print("Transitioning to menu screen... ");
         actions.actionPause();
+        functionCardLayout.show(functionPanel, MODE_NORMAL);
         menuCardLayout.show(menuPanel, MENU);
         outerCardLayout.show(outerPanel, MENU);
         System.out.println("Complete");
@@ -131,11 +146,10 @@ public class App extends JFrame {
      */
     public void transitionToGameScreen(){
         System.out.print("Transitioning to game screen... ");
-        System.out.print("pre" + game);
+        functionCardLayout.show(functionPanel, MODE_NORMAL);
         gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
         actions.actionStartNew();
-        System.out.println("post" +render.maze);
         System.out.print("Complete");
     }
 
@@ -144,11 +158,10 @@ public class App extends JFrame {
      */
     public void transitionToReplayScreen(){
         System.out.print("Transitioning to replay screen... ");
-        System.out.print("pre" + game);
-        gameCardLayout.show(gamePanel, REPLAY);
+        functionCardLayout.show(functionPanel, MODE_REPLAY);
+        gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
         actions.actionStartNew();
-        System.out.println("post" +render.maze);
         System.out.print("Complete");
     }
 
@@ -172,11 +185,11 @@ public class App extends JFrame {
      * @return The app object
      */
     public App setGame(DomainController save) {
-        System.out.print("Setting game... ");
-        System.out.println(game);
+        System.out.println("Setting game... ");
+        System.out.println("before set: "+game);
         this.game = save;
         this.render.setMaze(save);
-        System.out.println(game);
+        System.out.println("after set: "+game);
         System.out.println("Complete");
         return this;
     }
