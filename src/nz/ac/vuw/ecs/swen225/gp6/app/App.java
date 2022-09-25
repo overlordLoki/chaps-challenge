@@ -99,6 +99,31 @@ public class App extends JFrame {
     }
 
     /**
+     * Constructor used for testing purposes by Fuzz, it will load into the game directly.
+     *
+     * @param i which level to load
+     */
+    public App(int i){
+        System.setOut(new Interceptor(System.out)); // intercepts the output of System.out.print/println
+        System.setErr(new Interceptor(System.err)); // intercepts the output of System.err.print/println
+        System.out.print( "Application boot... ");
+        assert SwingUtilities.isEventDispatchThread(): "boot failed: Not in EDT";
+        System.out.println("GUI thread started");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setIconImage(TexturePack.Images.Hero.getImg());
+        setVisible(true);
+        addWindowListener(new WindowAdapter() {
+            public void windowClosed(WindowEvent e) {
+                System.out.println("Application closed with exit code 0");
+                System.exit(0);
+            }}
+        );
+        initialiseGame();
+        initialiseGUI();
+        transitionToGameScreen();
+    }
+
+    /**
      * Initializes the game.
      */
     public void initialiseGame() {
