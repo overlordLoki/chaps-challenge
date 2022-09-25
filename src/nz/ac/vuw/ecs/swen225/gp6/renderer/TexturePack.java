@@ -224,6 +224,7 @@ public enum TexturePack{
                 case YellowLock -> Images.YellowLock.getImg();
                 case OrangeLock -> Images.OrangeLock.getImg();
                 case ExitDoor -> Images.Exit.getImg();
+                case ExitDoorOpen -> Images.Exit.getImg();
                 case Coin -> Images.Coin.getImg();
                 default -> throw new IllegalArgumentException("Unexpected value: " + tile.getClass().getName() + " : " + tile.type());
             };
