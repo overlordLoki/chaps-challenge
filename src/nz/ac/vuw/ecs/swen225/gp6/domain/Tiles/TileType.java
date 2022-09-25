@@ -32,7 +32,7 @@ public enum TileType {
             if(dir == Direction.None || m.getTileAt(l2).type().isObstruction(self, d)) return;
             
             //otherwise set previous location to empty and move self to new location (order matters here) 
-            m.getTileAt(l1).setOn(new Tile(TileType.Floor, new TileInfo(l1, a->{})), d);
+            m.getTileAt(l1).setOn(new Tile(TileType.Floor, new TileInfo(l1, (a,b)->{})), d);
             m.getTileAt(l2).setOn(self, d);
 
             //TODO remove
@@ -48,7 +48,7 @@ public enum TileType {
         @Override public void setOn(Tile self, Tile t, Domain d){
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
         }//TODO: LOSE if tile is a hero
-        @Override public void ping(Tile self, Domain d){ self.info().consumer().accept(d);}
+        @Override public void ping(Tile self, Domain d){ self.info().consumer().accept(self, d);}
     },
 
     //STATIC TERRAINS:
@@ -67,12 +67,19 @@ public enum TileType {
 
 
     //INTERACTIVE TERRAINS:
+    Info('i'){ //future idea: not disappear after once usage
+        @Override public void setOn(Tile self, Tile t, Domain d){
+            d.getCurrentMaze().setTileAt(self.info().loc(), t);
+        } 
+        @Override public void ping(Tile self, Domain d){}
+    },
+
     ExitDoor('X'){
         @Override public boolean isObstruction(Tile t, Domain d) { return true;}//no one can move on exit door
         @Override public void ping(Tile self, Domain d) {
             //if all treasures collected replace exitdoor with open exit door
             if(d.getTreasuresLeft() == 0){
-                d.getCurrentMaze().setTileAt(self.info().loc(), TileType.ExitDoorOpen, a->{}); 
+                d.getCurrentMaze().setTileAt(self.info().loc(), TileType.ExitDoorOpen, (a,b)->{}); 
             }
         }
     },
@@ -126,7 +133,6 @@ public enum TileType {
         @Override public void setOn(Tile self, Tile t, Domain d){ 
             d.getInv().addItem(self);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
-            //System.out.println( d.getInv().toString());//TODO remove
         }
     },
 
@@ -134,7 +140,6 @@ public enum TileType {
         @Override public void setOn(Tile self, Tile t, Domain d){ 
             d.getInv().addItem(self);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
-            //System.out.println( d.getInv().toString());//TODO remove
         }
     },
 
@@ -142,7 +147,6 @@ public enum TileType {
         @Override public void setOn(Tile self, Tile t, Domain d){ 
             d.getInv().addItem(self);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
-            //System.out.println( d.getInv().toString());//TODO remove
         }
 
     },
@@ -151,7 +155,6 @@ public enum TileType {
         @Override public void setOn(Tile self,Tile t, Domain d){ 
             d.getInv().addItem(self);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
-            //System.out.println( d.getInv().toString());
         }
     },
 

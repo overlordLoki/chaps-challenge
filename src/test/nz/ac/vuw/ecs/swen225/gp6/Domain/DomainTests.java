@@ -39,9 +39,9 @@ public class DomainTests {
     @Test
     public void testInventoryToString(){
         Inventory inv = new Inventory(8);
-        inv.addItem(new Tile(TileType.OrangeKey, new TileInfo(null, a->{})));
-        inv.addItem(new Tile(TileType.BlueKey, new TileInfo(null, a->{}))); 
-        inv.addItem(new Tile(TileType.GreenKey, new TileInfo(null, a->{})));
+        inv.addItem(new Tile(TileType.OrangeKey, new TileInfo(null, (a,b)->{})));
+        inv.addItem(new Tile(TileType.BlueKey, new TileInfo(null,  (a,b)->{}))); 
+        inv.addItem(new Tile(TileType.GreenKey, new TileInfo(null,  (a,b)->{})));
         assertEquals("Inv(8): o, b, g", 
         inv.toString());
     }
@@ -108,7 +108,7 @@ public class DomainTests {
      */
     public Tile makeTile(char c, int x, int y){
         TileType  type = Arrays.stream(TileType.values()).filter(t -> t.getSymbol() == c).findFirst().get();
-        TileInfo info = new TileInfo(new Loc(x,y), (a)->{});
+        TileInfo info = new TileInfo(new Loc(x,y),  (a,b)->{});
         return new Tile(type, info);
     }
 

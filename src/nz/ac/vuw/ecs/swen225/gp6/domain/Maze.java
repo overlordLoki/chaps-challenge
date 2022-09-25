@@ -1,14 +1,14 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain;
 
-import java.util.Arrays;
-import java.util.function.Consumer;
-import java.util.stream.IntStream;
-
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileInfo;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileType;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
+
+import java.util.Arrays;
+import java.util.function.BiConsumer;
+import java.util.stream.IntStream;
 
 
 public class Maze {
@@ -141,7 +141,7 @@ public class Maze {
      * @param y of tile (0 to max - 1)
      * @param type enum for the tile type to place
      */
-    public void setTileAt(Loc loc, TileType type, Consumer<Domain> pingConsumer){
+    public void setTileAt(Loc loc, TileType type, BiConsumer<Tile, Domain> pingConsumer){
         //check in bound
         if(Loc.checkInBound(loc, this) == false) return;
             
