@@ -114,7 +114,7 @@ public class Maze {
      */
     public Tile getTileAt(int x, int y){
         if(Loc.checkInBound(new Loc(x, y), this) == false) return new Tile(TileType.Null, null);
-        return tileArray[x - 1][y - 1];
+        return tileArray[x][y];
     }
 
     /*
@@ -122,7 +122,7 @@ public class Maze {
      */
     public Tile getTileAt(Loc l){
         if(Loc.checkInBound(l, this) == false) return new Tile(TileType.Null, null);
-        return tileArray[l.x() - 1][l.y() - 1];
+        return tileArray[l.x()][l.y()];
     }
 
     //SETTERS and ACTIONS:
@@ -146,7 +146,7 @@ public class Maze {
         if(Loc.checkInBound(loc, this) == false) return;
             
         //make tile object from type enum and replace the tile at the location
-        tileArray[loc.x() - 1][loc.y() - 1] = new Tile(type, new TileInfo(loc, pingConsumer));
+        tileArray[loc.x()][loc.y()] = new Tile(type, new TileInfo(loc, pingConsumer));
 
     }
 
@@ -158,7 +158,7 @@ public class Maze {
         if(Loc.checkInBound(loc, this) == false) return;
 
         //replace tile at location
-        tileArray[loc.x() - 1][loc.y() - 1] = tile;
+        tileArray[loc.x()][loc.y()] = tile;
 
         //update tile info
         tile.info().loc(loc);

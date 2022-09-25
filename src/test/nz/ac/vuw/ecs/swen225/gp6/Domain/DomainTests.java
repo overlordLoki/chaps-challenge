@@ -47,7 +47,7 @@ public class DomainTests {
     }
 
     @Test
-    public void testMaze(){
+    public void testMazeCreation(){
         // no Moves to check maze initialisation
         String input = """
                 0|/|/|/|/|/|/|/|/|/|/|
@@ -62,7 +62,7 @@ public class DomainTests {
                 9|/|/|/|/|/|/|/|/|/|/|
                   0 1 2 3 4 5 6 7 8 9
                   """;
-        String moves = "U";
+        String moves = "";
         String output = """
                 0|/|/|/|/|/|/|/|/|/|/|
                 1|/|_|_|_|_|_|_|_|_|/|
@@ -131,6 +131,7 @@ public class DomainTests {
                 default -> throw new IllegalArgumentException("Invalid move: " + c);
             }
             domain.pingDomain();
+            System.out.println(domain.getCurrentMaze().toString());
         }
     }
 
@@ -148,10 +149,11 @@ public class DomainTests {
         //make tiles from tokens
         Tile[][] tiles = new Tile[StringTiles.length][StringTiles[0].length-1];
         for(int y = 0; y < StringTiles.length; y++){
-            for(int x = 0; x < StringTiles[0].length-1; x++){
+            for(int x = 0; x < StringTiles[0].length-1; x++){               
                 tiles[x][y] = makeTile(StringTiles[y][x+1].charAt(0), x, y);
             }
         }
+
         return new Maze(tiles);
     }
 }
