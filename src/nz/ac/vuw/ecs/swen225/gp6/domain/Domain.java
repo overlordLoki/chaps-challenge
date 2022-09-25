@@ -22,31 +22,29 @@ public class Domain {
     /*
      * returns current lvl
      */
-    public int getLvl(){
-        return currentLvl;
-    }
+    public int getLvl(){return currentLvl;}
 
     /*
      * returns current maze
      */
-    public Maze getCurrentMaze(){
-        return mazes.get(currentLvl - 1);
-    }
+    public Maze getCurrentMaze(){ return mazes.get(currentLvl - 1);}
 
+    /*
+     * returns list of mazes
+     */
+    public List<Maze> getMazes(){ return mazes;}
+    
     /*
      * returns the inventory of the current maze
      */
-    public Inventory getInv(){
-        return inv;
-    }
+    public Inventory getInv(){return inv;}
 
     /*
      * returns number of treasures left on current maze
      */
-    public int getTreasuresLeft(){
-        return this.getCurrentMaze().getTileCount(TileType.Coin) - inv.coins();
-    }
+    public int getTreasuresLeft(){return this.getCurrentMaze().getTileCount(TileType.Coin);}
 
+   
     //PING:
     /*
      * pings the game one step, and replaces the current maze with a new one
@@ -54,7 +52,6 @@ public class Domain {
     public void pingDomain(){
         //copy current maze TODO: see if this is necessary, or what it is useful for
         Maze currentMaze = getCurrentMaze();
-        Direction none = Direction.None;
         Maze nextMaze = new Maze(currentMaze.getTileArrayCopy(), currentMaze.getDirection());
         currentMaze = nextMaze;
         
@@ -64,8 +61,6 @@ public class Domain {
 
         //ping the maze
         nextMaze.pingMaze(this);
-
-        Direction none2 = Direction.None;
     }
 }
 

@@ -1,8 +1,6 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
@@ -49,6 +47,9 @@ public class Maze {
      */
     public Direction getDirection(){return heroNextStep;}
 
+    /*
+     * toString method which creates the board with each tile's given symbol
+     */
     public String toString(){
         Tile[][] tileArray = this.getTileArrayCopy();
         String r = "";
@@ -170,4 +171,6 @@ public class Maze {
     public void makeHeroStep(Direction d){
         this.heroNextStep = d;
     }
+
+
 }

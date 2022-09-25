@@ -1,7 +1,5 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain.Tiles;
 
-import java.util.function.*;
-
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
@@ -27,7 +25,6 @@ public enum TileType {
             Maze m = d.getCurrentMaze();
             Loc l1 = self.info().loc();
             //find new location of hero if it moves
-            Direction none = Direction.None;
             Direction dir = d.getCurrentMaze().getDirection();
             Loc l2 = dir.transformLoc(l1);
 
@@ -91,7 +88,7 @@ public enum TileType {
             return !(t.type() == TileType.Hero && d.getInv().hasItem(BlueKey));
         }
         @Override public void setOn(Tile self, Tile t, Domain d){ 
-            d.getInv().removeItem(this);
+            d.getInv().removeItem(BlueKey);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
         }
     },
@@ -101,7 +98,7 @@ public enum TileType {
             return !(t.type() == TileType.Hero && d.getInv().hasItem(GreenKey));
         }
         @Override public void setOn(Tile self, Tile t, Domain d){ 
-            d.getInv().removeItem(this);
+            d.getInv().removeItem(GreenKey);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
         }
     },
@@ -111,7 +108,7 @@ public enum TileType {
             return !(t.type() == TileType.Hero && d.getInv().hasItem(OrangeKey));
         }
         @Override public void setOn(Tile self, Tile t, Domain d){ 
-            d.getInv().removeItem(this);
+            d.getInv().removeItem(OrangeKey);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
         }
     },
@@ -121,7 +118,7 @@ public enum TileType {
             return !(t.type() == TileType.Hero && d.getInv().hasItem(YellowKey));
         }
         @Override public void setOn(Tile self, Tile t, Domain d){ 
-            d.getInv().removeItem(this);
+            d.getInv().removeItem(YellowKey);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
         }
     },
