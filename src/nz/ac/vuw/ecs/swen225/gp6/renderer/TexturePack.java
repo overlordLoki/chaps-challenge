@@ -167,7 +167,15 @@ public enum TexturePack{
         /**
          * The image for the speedUp button
          */
-        SpeedUp("speedUp");
+        SpeedUp("speedUp"),
+        /**
+         * The image for the win screen
+         */
+        WinScreen("winScreen"),
+        /**
+         * The image for the lose screen
+         */
+        LoseScreen("loseScreen");
         
         //name of the image
         private String name;
@@ -228,7 +236,6 @@ public enum TexturePack{
          */
         public BufferedImage loadImg(String imageName){
             this.name = imageName;
-            
             //System.out.print("Loading " + imageName + "...    -> ");
             try {
                 File file = new File("res/textures/" + MazeRenderer.currentTP + "/" + imageName + ".png");
