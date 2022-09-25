@@ -1,9 +1,12 @@
 package nz.ac.vuw.ecs.swen225.gp6.app;
 
+import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
+import nz.ac.vuw.ecs.swen225.gp6.renderer.InventoryPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.LogPanel;
+import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
 
 import javax.swing.*;
 import javax.swing.Timer;
@@ -49,6 +52,8 @@ public class App extends JFrame {
     private final JPanel menuPanel = new JPanel();
     private final JPanel gamePanel = new JPanel();
     private final JPanel functionPanel = PanelCreator.createClearPanel(BoxLayout.Y_AXIS);
+    private final JPanel loadGamePanel  = createClearPanel(BoxLayout.X_AXIS);
+    private InventoryPanel pnInventory;
     private final CardLayout outerCardLayout = new CardLayout();
     private final CardLayout menuCardLayout = new CardLayout();
     private final CardLayout gameCardLayout = new CardLayout();
@@ -56,7 +61,7 @@ public class App extends JFrame {
 
 
     private boolean inReplay = false;
-    private Runnable ob = ()->{}; // observer for the replay mode
+    private Runnable ob = ()->{};   // observer for the replay mode
     private long time = 0;          // used to store accumulated time from the previous pause
     private long timeStart = 0;     // starting time of current pause
     private long playedTime = 0;    // total time played in a level
@@ -81,6 +86,7 @@ public class App extends JFrame {
         assert SwingUtilities.isEventDispatchThread(): "boot failed: Not in EDT";
         System.out.println("GUI thread started");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setIconImage(TexturePack.Images.Hero.getImg());
         setVisible(true);
         addWindowListener(new WindowAdapter() {
             public void windowClosed(WindowEvent e) {
@@ -97,6 +103,7 @@ public class App extends JFrame {
      */
     public void initialiseGame() {
         game = new DomainController(Persistency.getInitialDomain());
+        pnInventory = new InventoryPanel(game, true);
         render = new MazeRenderer(game);
         actions = new Actions(this);
         controller = new Controller(this);
@@ -115,8 +122,8 @@ public class App extends JFrame {
         gamePanel.setLayout(gameCardLayout);
         functionPanel.setLayout(functionCardLayout);
         render.setFocusable(true);
-        PanelCreator.configureMenuScreen(this, menuPanel, menuCardLayout);
-        PanelCreator.configureGameScreen(this, gamePanel, gameCardLayout, functionPanel);
+        PanelCreator.configureMenuScreen(this, menuPanel, menuCardLayout, loadGamePanel);
+        PanelCreator.configureGameScreen(this, gamePanel, gameCardLayout, functionPanel, pnInventory);
         outerPanel.add(menuPanel, MENU);
         outerPanel.add(gamePanel, GAME);
         transitionToMenuScreen();
@@ -140,6 +147,7 @@ public class App extends JFrame {
      */
     public void transitionToGameScreen(){
         System.out.print("Transitioning to game screen... ");
+        inReplay = false;
         functionCardLayout.show(functionPanel, MODE_NORMAL);
         gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
@@ -152,11 +160,51 @@ public class App extends JFrame {
      */
     public void transitionToReplayScreen(){
         System.out.print("Transitioning to replay screen... ");
+        inReplay = true;
         functionCardLayout.show(functionPanel, MODE_REPLAY);
         gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
         actions.actionStartNew();
         System.out.println("Complete");
+    }
+
+    public void transitionToWinScreen(){
+        System.out.print("Transitioning to win screen... ");
+        gameCardLayout.show(gamePanel, VICTORY);
+        outerCardLayout.show(outerPanel, GAME);
+        System.out.println("Complete");
+    }
+
+    public void transitionToLostScreen(){
+        System.out.print("Transitioning to win screen... ");
+        gameCardLayout.show(gamePanel, LOOSE);
+        outerCardLayout.show(outerPanel, GAME);
+        System.out.println("Complete");
+    }
+
+    /**
+     *
+     */
+    public void refreshLoadGames(){
+        loadGamePanel.removeAll();
+        List<Domain> saves;
+        try {
+            saves = Persistency.loadSaves();
+        } catch (Exception e) {
+            System.out.print("Failed to load saves, resetting save files.");
+            JOptionPane.showMessageDialog(null, "Error loading saved games, resetting save files.");
+            saves = List.of(Persistency.getInitialDomain(),Persistency.getInitialDomain(),Persistency.getInitialDomain());
+        }
+        addAll(loadGamePanel,
+                Box.createHorizontalGlue(),
+                createLoadGamePanel(1, this, getRender(), new DomainController(saves.get(0))),
+                Box.createHorizontalGlue(),
+                createLoadGamePanel(2, this, getRender(), new DomainController(saves.get(1))),
+                Box.createHorizontalGlue(),
+                createLoadGamePanel(3, this, getRender(), new DomainController(saves.get(2))),
+                Box.createHorizontalGlue());
+        loadGamePanel.revalidate();
+        loadGamePanel.repaint();
     }
 
     //================================================================================================================//
@@ -178,11 +226,12 @@ public class App extends JFrame {
      * @param save the save file to load
      * @return The app object
      */
-    public App setGame(DomainController save) {
+    public App loadSavedGame(DomainController save) {
         System.out.println("Setting game... ");
         System.out.println("before set: "+game);
         this.game = save;
         this.render.setMaze(save);
+        this.pnInventory.setMaze(save);
         System.out.println("after set: "+game);
         System.out.println("Complete");
         return this;
