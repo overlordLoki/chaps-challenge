@@ -3,11 +3,10 @@ package nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess;
 import java.util.ArrayList;
 import java.util.List;
 
-import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Helper;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Inventory;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
+
+import nz.ac.vuw.ecs.swen225.gp6.domain.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 
 /*
  * This class is for app to wrap on a domain object to use its functionalities,
@@ -15,13 +14,6 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
  */
 public class DomainController {
     private Domain domain;
-
-    //TODO delete later
-    public DomainController(){
-        List<Maze> mazes = new ArrayList<>();
-        mazes.add(Helper.makeMaze());
-        this.domain = new Domain(mazes, new Inventory(8), 1);
-    }
 
     public DomainController(Domain domain){
         this.domain = domain;
@@ -32,46 +24,42 @@ public class DomainController {
      * move hero up in next ping, if possible
      */
     public void moveUp(){
-        System.out.println("Player moved up");
-        //domain.getMaze().makeHeroStep(Direction.Up);
+        domain.getCurrentMaze().makeHeroStep(Direction.Up);
     }
 
     /*
      * move hero down in next ping, if possible
      */
     public void moveDown(){
-        System.out.println("Player moved down");
-        //domain.getMaze().makeHeroStep(Direction.Down);
+        domain.getCurrentMaze().makeHeroStep(Direction.Down);
     }
 
     /*
      * move hero left in next ping, if possible
      */
     public void moveLeft(){
-        System.out.println("Player moved left");
-        //domain.getMaze().makeHeroStep(Direction.Left);
+        domain.getCurrentMaze().makeHeroStep(Direction.Left);
     }
 
     /*
      * move hero right in next ping, if possible
      */
     public void moveRight(){
-        System.out.println("Player moved right");
-        //domain.getMaze().makeHeroStep(Direction.Right);
+        domain.getCurrentMaze().makeHeroStep(Direction.Right);
     }
 
     /*
      * ping the maze
      */
     public void pingAll(){
-        System.out.println("PingAll");
-        //domain.getMaze().pingMaze(domain);
+        domain.pingDomain();
     }
 
 
     //INFO FROM DOMAIN:
     /*
      * returns true when player reaches this level's final tile (player on the open exit door)
+     * TODO: finish
      */
     public boolean playerOnExitDoor(){
         return false;
@@ -81,24 +69,21 @@ public class DomainController {
      * gets current level
      */
     public int getCurrentLevel() {
-        return 1;
-        //return domain.getLvl();
+        return domain.getLvl();
     }
 
     /*
      * gets number of treasures left to collect
      */
     public int getTreasuresLeft() {
-        return 10;
-        //return domain.getMaze().getTileCount(TileType.Coin) - domain.getInv().coins();
+        return domain.getTreasuresLeft();
     }
 
     /*
      * returns the inventory, any empty slot is represented by an Null typed tile
      */
     public List<Tile> getInventory() {
-        return List.of();
-        //return domain.getInv().getItems();
+        return domain.getInv().getItems();
     }
 
     /*

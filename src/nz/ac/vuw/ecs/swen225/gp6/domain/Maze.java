@@ -16,13 +16,19 @@ public class Maze {
     private int height; //height of tile array, how many rows (outer array) 
     private int width;  //width of tile array, how many columns (inner arrays)
 
-    private Direction heroNextStep = Direction.None;
+    private Direction heroNextStep;
     
 
-    public Maze(Tile[][] tileArray){
+    public Maze(Tile[][] tileArray, Direction heroNextStep){
         this.tileArray = tileArray;
         this.height = tileArray.length;
         this.width = tileArray[0].length;
+
+        this.heroNextStep = heroNextStep;
+    }
+
+    public Maze(Tile[][] tileArray){
+        this(tileArray, Direction.None);
     }
 
     //GETTERS:
@@ -40,6 +46,24 @@ public class Maze {
      * @return direction of heros next step
      */
     public Direction getDirection(){return heroNextStep;}
+
+    /*
+     * toString method which creates the board with each tile's given symbol
+     */
+    public String toString(){
+        Tile[][] tileArray = this.getTileArrayCopy();
+        String r = "";
+
+        for(int y = 0; y < height; y++){
+            r += y + "|";
+            for(int x = 0; x < width; x++){
+                r += tileArray[x][y].getSymbol() + "|";
+            }
+            r += "\n";
+        }
+
+        return IntStream.range(0, this.width()).mapToObj(i -> " " + i).reduce( r + " ", (a, b) -> a + b);
+    }
 
     //TILE GETTERS:
     /*
@@ -90,7 +114,7 @@ public class Maze {
      */
     public Tile getTileAt(int x, int y){
         if(Loc.checkInBound(new Loc(x, y), this) == false) return new Tile(TileType.Null, null);
-        return tileArray[x - 1][y - 1];
+        return tileArray[x][y];
     }
 
     /*
@@ -98,17 +122,15 @@ public class Maze {
      */
     public Tile getTileAt(Loc l){
         if(Loc.checkInBound(l, this) == false) return new Tile(TileType.Null, null);
-        return tileArray[l.x() - 1][l.y() - 1];
+        return tileArray[l.x()][l.y()];
     }
 
     //SETTERS and ACTIONS:
     /**
-     * @return a new maze which is the current maze after a unit of time passing.
+     * pings all tiles in the maze
      */
-    public Maze pingMaze(Domain d){
-        Maze nextMaze = new Maze(this.getTileArrayCopy());
-        Arrays.stream(nextMaze.tileArray).flatMap(Arrays::stream).forEach(t -> t.ping(d));
-        return nextMaze;
+    public void pingMaze(Domain d){
+        Arrays.stream(d.getCurrentMaze().tileArray).flatMap(Arrays::stream).forEach(t -> t.ping(d));
     }
 
     /**
@@ -124,7 +146,7 @@ public class Maze {
         if(Loc.checkInBound(loc, this) == false) return;
             
         //make tile object from type enum and replace the tile at the location
-        tileArray[loc.x() - 1][loc.y() - 1] = new Tile(type, new TileInfo(loc, pingConsumer));
+        tileArray[loc.x()][loc.y()] = new Tile(type, new TileInfo(loc, pingConsumer));
 
     }
 
@@ -136,7 +158,10 @@ public class Maze {
         if(Loc.checkInBound(loc, this) == false) return;
 
         //replace tile at location
-        tileArray[loc.x() - 1][loc.y() - 1] = tile;
+        tileArray[loc.x()][loc.y()] = tile;
+
+        //update tile info
+        tile.info().loc(loc);
     }
 
     /*
@@ -146,4 +171,6 @@ public class Maze {
     public void makeHeroStep(Direction d){
         this.heroNextStep = d;
     }
+
+
 }

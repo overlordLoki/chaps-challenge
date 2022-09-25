@@ -3,6 +3,8 @@ package test.nz.ac.vuw.ecs.swen225.gp6.persistency;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -50,4 +52,8 @@ public class BaseTests {
     // }
     // }
 
+    @Test
+    public void testLogLine() throws IOException {
+        Persistency.log("test");
+    }
 }

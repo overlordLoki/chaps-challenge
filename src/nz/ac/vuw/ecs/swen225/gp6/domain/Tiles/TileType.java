@@ -1,7 +1,5 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain.Tiles;
 
-import java.util.function.*;
-
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
@@ -20,32 +18,42 @@ public enum TileType {
     //ACTORS:
     Hero('H'){
         @Override public boolean isObstruction(Tile t, Domain d) { return t.type() != TileType.Enemy;} //enemy can move on actor
-        @Override public void setOn(Tile self, Tile a, Domain d){}//TODO: LOSE 
+        @Override public void setOn(Tile self, Tile t, Domain d){
+            d.getCurrentMaze().setTileAt(self.info().loc(), t);
+        }//TODO: LOSE if tile is a enemy
         @Override public void ping(Tile self, Domain d) {
             Maze m = d.getCurrentMaze();
-            Loc newLoc = m.getDirection().transformLoc(self.info().loc()); //new loc to move
-            Tile newTil = m.getTileAt(newLoc); //tile at new loc
+            Loc l1 = self.info().loc();
+            //find new location of hero if it moves
+            Direction dir = d.getCurrentMaze().getDirection();
+            Loc l2 = dir.transformLoc(l1);
 
-            if(newTil.isObstruction(self, d) == false){
-                m.setTileAt(self.info().loc(), Floor, l -> {}); //set previous tile to floor
-                newTil.setOn(self, d);//if movable, move
-            }
-        
+            //if hero hasnt moved or tile at new location is obstruction return
+            if(dir == Direction.None || m.getTileAt(l2).type().isObstruction(self, d)) return;
+            
+            //otherwise set previous location to empty and move self to new location (order matters here) 
+            m.getTileAt(l1).setOn(new Tile(TileType.Floor, new TileInfo(l1, a->{})), d);
+            m.getTileAt(l2).setOn(self, d);
+
+            //TODO remove
+            //System.out.println( "Location x: " + self.info().loc().x() + " y: " + self.info().loc().y());
+            //System.out.println( d.getCurrentMaze().toString());
+            
             self.info().dir(m.getDirection()); //set heros direction of facing
             m.makeHeroStep(Direction.None); //make hero stop moving
-
         }
     },
 
     Enemy('E'){
-        @Override public void setOn(Tile self, Tile t, Domain d){}//TODO: LOSE
+        @Override public void setOn(Tile self, Tile t, Domain d){
+            d.getCurrentMaze().setTileAt(self.info().loc(), t);
+        }//TODO: LOSE if tile is a hero
         @Override public void ping(Tile self, Domain d){ self.info().consumer().accept(d);}
     },
 
     //STATIC TERRAINS:
-    Empty(' '){
+    Empty(' '){ //this is just used for the empty inventory tile
         @Override public boolean isObstruction(Tile t, Domain d) { return false;} //anyone can move on empty terrain
-        @Override public void setOn(Tile self, Tile t, Domain d){d.getCurrentMaze().setTileAt(self.info().loc(), t);}
     },
 
     Floor('_'){
@@ -53,7 +61,7 @@ public enum TileType {
         @Override public void setOn(Tile self, Tile t, Domain d){d.getCurrentMaze().setTileAt(self.info().loc(), t);}
     }, 
 
-    Wall('|'){
+    Wall('/'){
         @Override public boolean isObstruction(Tile t, Domain d) { return true;} //no one can move on wall
     },
 
@@ -63,7 +71,7 @@ public enum TileType {
         @Override public boolean isObstruction(Tile t, Domain d) { return true;}//no one can move on exit door
         @Override public void ping(Tile self, Domain d) {
             //if all treasures collected replace exitdoor with open exit door
-            if(d.getCurrentMaze().getTileCount(TileType.Coin) - d.getInv().coins() == 0){
+            if(d.getTreasuresLeft() == 0){
                 d.getCurrentMaze().setTileAt(self.info().loc(), TileType.ExitDoorOpen, a->{}); 
             }
         }
@@ -118,6 +126,7 @@ public enum TileType {
         @Override public void setOn(Tile self, Tile t, Domain d){ 
             d.getInv().addItem(self);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
+            //System.out.println( d.getInv().toString());//TODO remove
         }
     },
 
@@ -125,6 +134,7 @@ public enum TileType {
         @Override public void setOn(Tile self, Tile t, Domain d){ 
             d.getInv().addItem(self);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
+            //System.out.println( d.getInv().toString());//TODO remove
         }
     },
 
@@ -132,6 +142,7 @@ public enum TileType {
         @Override public void setOn(Tile self, Tile t, Domain d){ 
             d.getInv().addItem(self);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
+            //System.out.println( d.getInv().toString());//TODO remove
         }
 
     },
@@ -140,6 +151,7 @@ public enum TileType {
         @Override public void setOn(Tile self,Tile t, Domain d){ 
             d.getInv().addItem(self);
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
+            //System.out.println( d.getInv().toString());
         }
     },
 
@@ -162,9 +174,25 @@ public enum TileType {
     private char symbol;
 
     //METHODS:
+    /**
+     * returns character symbol of tiletype associated with enum.
+     */
     public char getSymbol(){ return symbol;}
+    /**
+     * Checks wether the associated tile to this type is an obstruction for another given tile t, 
+     * in a given domain.
+     * NOTE: does not alter the tile, maze or actor in anyway.
+     */
     public boolean isObstruction(Tile t, Domain d){return t.type() != TileType.Hero;}
+    /**
+     * Sets the given tile t instead of the associated tile to this type on maze, changing the domain to do so.
+     * NOTE: should not check wether it's possible for tile t to move on this tile!
+     */
     public void setOn(Tile self, Tile t, Domain d){}
+    /**
+     * Calculates the next state of the tile in the domain(maze/inventory).
+     * Based on the tile and domain state, this method may alter the state of the tile and given domain object.
+     */
     public void ping(Tile self, Domain d){}
 }
 

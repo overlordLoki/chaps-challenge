@@ -1,10 +1,10 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain.Utility;
 
 public enum Direction {
-    Up(1, 0),
-    Down(-1, 0),
-    Right(0,1),
-    Left(0, -1),
+    Up(0, -1),
+    Down(0, 1),
+    Right(1, 0),
+    Left(-1, 0),
     None(0,0);
 
     public final int x;

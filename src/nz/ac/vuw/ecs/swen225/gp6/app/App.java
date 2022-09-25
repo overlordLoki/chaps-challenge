@@ -3,13 +3,20 @@ package nz.ac.vuw.ecs.swen225.gp6.app;
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
+import nz.ac.vuw.ecs.swen225.gp6.renderer.LogPanel;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.util.*;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import static java.awt.event.KeyEvent.*;
 import static nz.ac.vuw.ecs.swen225.gp6.app.PanelCreator.*;
@@ -22,6 +29,7 @@ import static nz.ac.vuw.ecs.swen225.gp6.app.PanelCreator.*;
  */
 public class App extends JFrame {
     static final long serialVersionUID = 1L;
+
     private final List<String> actionNames = List.of("Move Up","Move Down","Move Left","Move Right","Pause Game",
             "Resume Game","Jump To Level 1","Jump To Level 2","Quit Game","Save And Quit Game","Reload Game");
     @SuppressWarnings("FieldMayBeFinal")
@@ -33,30 +41,50 @@ public class App extends JFrame {
     private MazeRenderer render;
     private Controller controller;
     private Actions actions;
+    private LogPanel logPanel = new LogPanel();
 
     static final int WIDTH = 1200;
     static final int HEIGHT = 800;
     private final JPanel outerPanel = new JPanel();
     private final JPanel menuPanel = new JPanel();
     private final JPanel gamePanel = new JPanel();
+    private final JPanel functionPanel = PanelCreator.createClearPanel(BoxLayout.Y_AXIS);
     private final CardLayout outerCardLayout = new CardLayout();
     private final CardLayout menuCardLayout = new CardLayout();
     private final CardLayout gameCardLayout = new CardLayout();
+    private final CardLayout functionCardLayout = new CardLayout();
 
-    private Timer timer;
+
+    private boolean inReplay = false;
+    private Runnable ob = ()->{}; // observer for the replay mode
     private long time = 0;          // used to store accumulated time from the previous pause
     private long timeStart = 0;     // starting time of current pause
     private long playedTime = 0;    // total time played in a level
+    private Timer timer;
+    private Timer gameTimer = new Timer(34, unused -> {
+        assert SwingUtilities.isEventDispatchThread();
+        game.pingAll();
+        playedTime = System.nanoTime() - timeStart + time;
+        if (inReplay) ob.run();
+        repaint();
+    });
+
+//    private Recorder recorder = new Recorder();
 
     /**
      * Constructor for the App class. Initializes the GUI and the main loop.
      */
     public App(){
-        assert SwingUtilities.isEventDispatchThread();
+        System.setOut(new Interceptor(System.out)); // intercepts the output of System.out.print/println
+        System.setErr(new Interceptor(System.err)); // intercepts the output of System.err.print/println
+        System.out.print( "Application boot... ");
+        assert SwingUtilities.isEventDispatchThread(): "boot failed: Not in EDT";
+        System.out.println("GUI thread started");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setVisible(true);
         addWindowListener(new WindowAdapter() {
             public void windowClosed(WindowEvent e) {
+                System.out.println("Application closed with exit code 0");
                 System.exit(0);
             }}
         );
@@ -64,30 +92,31 @@ public class App extends JFrame {
         initialiseGUI();
     }
 
-    private void initialiseGame() {
+    /**
+     * Initializes the game.
+     */
+    public void initialiseGame() {
         game = new DomainController(Persistency.getInitialDomain());
         render = new MazeRenderer(game);
         actions = new Actions(this);
         controller = new Controller(this);
         addKeyListener(controller);
-        setTimer(new Timer(34, unused -> {
-            assert SwingUtilities.isEventDispatchThread();
-//            game.pingAll();
-            playedTime = System.nanoTime() - timeStart + time;
-            repaint();
-        }));
+        setTimer(gameTimer);
     }
 
     /**
      * Initializes the GUI and displays menu screen.
      */
-    private void initialiseGUI(){
-        this.setMinimumSize(new Dimension(WIDTH, HEIGHT));
-        this.setContentPane(outerPanel);
+    public void initialiseGUI(){
+        setMinimumSize(new Dimension(WIDTH, HEIGHT));
+        setContentPane(outerPanel);
         outerPanel.setLayout(outerCardLayout);
+        menuPanel.setLayout(menuCardLayout);
+        gamePanel.setLayout(gameCardLayout);
+        functionPanel.setLayout(functionCardLayout);
         render.setFocusable(true);
         PanelCreator.configureMenuScreen(this, menuPanel, menuCardLayout);
-        PanelCreator.configureGameScreen(this, gamePanel, gameCardLayout);
+        PanelCreator.configureGameScreen(this, gamePanel, gameCardLayout, functionPanel);
         outerPanel.add(menuPanel, MENU);
         outerPanel.add(gamePanel, GAME);
         transitionToMenuScreen();
@@ -98,28 +127,50 @@ public class App extends JFrame {
      * Transitions to the menu screen.
      */
     public void transitionToMenuScreen(){
-        System.out.println("Toggling to menu screen");
+        System.out.print("Transitioning to menu screen... ");
         actions.actionPause();
+        functionCardLayout.show(functionPanel, MODE_NORMAL);
         menuCardLayout.show(menuPanel, MENU);
         outerCardLayout.show(outerPanel, MENU);
-        System.out.println("Menu shown");
+        System.out.println("Complete");
     }
 
     /**
      * Transitions to the game screen.
      */
     public void transitionToGameScreen(){
-        System.out.println("Toggling to game screen");
+        System.out.print("Transitioning to game screen... ");
+        functionCardLayout.show(functionPanel, MODE_NORMAL);
         gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
         actions.actionStartNew();
-        System.out.println("Game shown");
+        System.out.println("Complete");
+    }
+
+    /**
+     * Transitions to the game screen.
+     */
+    public void transitionToReplayScreen(){
+        System.out.print("Transitioning to replay screen... ");
+        functionCardLayout.show(functionPanel, MODE_REPLAY);
+        gameCardLayout.show(gamePanel, GAME);
+        outerCardLayout.show(outerPanel, GAME);
+        actions.actionStartNew();
+        System.out.println("Complete");
     }
 
     //================================================================================================================//
     //============================================ Setter Method =====================================================//
     //================================================================================================================//
 
+    /**
+     * Sets the observer to fire.
+     *
+     * @param ob the observer to fire
+     */
+    public void setObserver(Runnable ob){
+        this.ob = ob;
+    }
 
     /**
      * Sets the game to a new game.
@@ -128,7 +179,12 @@ public class App extends JFrame {
      * @return The app object
      */
     public App setGame(DomainController save) {
+        System.out.println("Setting game... ");
+        System.out.println("before set: "+game);
         this.game = save;
+        this.render.setMaze(save);
+        System.out.println("after set: "+game);
+        System.out.println("Complete");
         return this;
     }
 
@@ -298,6 +354,54 @@ public class App extends JFrame {
      */
     public List<Integer> getActionKeyBindings() {
         return actionKeyBindings;
+    }
+
+    /**
+     * Gets the log panel
+     * @return the log panel
+     */
+    public JPanel getLogPanel() {
+        return logPanel;
+    }
+
+    //================================================================================================================//
+    //============================================ Logger Method =====================================================//
+    //================================================================================================================//
+
+    private static class NonBlockingLog extends Thread{
+        public BlockingQueue<String> queue = new LinkedBlockingQueue<>();
+        public void run(){
+            try {
+                while(true){
+                    String msg;
+                    while ((msg = queue.poll()) != null) {
+                        Persistency.log(msg);
+                    }
+                }
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, "Error writing to log file");
+            }
+        }
+    }
+
+    private class Interceptor extends PrintStream{
+        NonBlockingLog logger;
+        public Interceptor(OutputStream out){
+            super(out, true);
+            logger = new NonBlockingLog();
+            logger.start();
+        }
+        @Override
+        public void print(String s){
+//            super.print(s);      // this line enables output to stdout
+            logger.queue.add(s); // this line enables output to log file
+            logPanel.print(s);   // this line enables output to log panel
+        }
+        @Override
+        public void println(String s){
+            print(s + "\n");
+        }
+
     }
 
     //================================================================================================================//

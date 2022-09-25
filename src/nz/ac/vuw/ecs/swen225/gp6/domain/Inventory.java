@@ -17,13 +17,33 @@ public class Inventory {
         this.size = size;
         this.items = new Tile[size];
         this.coins = 0;
+
+        //fill inventory with null typed tiles
+        IntStream.range(0, size).forEach(i -> items[i] = new Tile(TileType.Null, null));
+    }
+
+    public Inventory(int size, int coins, List<Tile> items){
+        this.size = size;
+        this.coins = coins;
+        this.items = new Tile[size];
+        
+        //fill inventory with null typed tiles
+        IntStream.range(0, size).forEach(i -> this.items[i] = new Tile(TileType.Null, null));
+
+        //add items to inventory
+        items.forEach(this::addItem);
     }
 
     /*
      * gets the items (as an umodifiable list)
      */
-    public List<Tile> getItems(){return Collections.unmodifiableList(List.of(items));}
-
+    public List<Tile> getItems(){return Arrays.stream(items).filter(t -> t.type() != TileType.Null).toList();}
+    
+    /*
+     * gets the size of the inventory
+     */
+    public int size()  {return size;}
+    
     /**
      * gets number of coins
      */
@@ -32,7 +52,7 @@ public class Inventory {
     /*
      * increments number of coins
      */
-    public void addCoin(){coins += 1;}
+    public void addCoin(){coins ++;}
 
     /**
      * adds a tile to first empty place in inventory
@@ -41,7 +61,7 @@ public class Inventory {
      */
     public boolean addItem(Tile tile){
         int index = IntStream.range(0, size)
-        .filter(i -> items[i] != null)
+        .filter(i -> items[i].type() == TileType.Null)
         .findFirst()
         .orElse(-1);
 
@@ -67,7 +87,16 @@ public class Inventory {
         .orElse(-1);
 
         if(index == -1) return false; //if tile type not found return false
-        items[index] = null;
+        items[index] = new Tile(TileType.Null, null); //set to null tile type
         return true;
     }
+
+    public String toString(){
+        String r = "Inv(" + size + "): ";
+        for(Tile item : items){
+            if(item.type() != TileType.Null) r += item.getSymbol()+ ", ";
+        }
+        return r.substring(0, r.length() - 2);
+    }
+
 }

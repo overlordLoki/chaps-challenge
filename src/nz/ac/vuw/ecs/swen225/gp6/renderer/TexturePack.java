@@ -4,12 +4,8 @@ import java.awt.image.BufferedImage;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-
 import javax.imageio.ImageIO;
-
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
-
-//import nz.ac.vuw.ecs.swen225.gp6.renderer.tempDomain.Tiles.Tile;
 
 public enum TexturePack{
     
@@ -19,7 +15,7 @@ public enum TexturePack{
     Original(new Font("Arial", Font.BOLD, 80),
             new Font("Arial", Font.BOLD, 40),
             new Font("Arial", Font.BOLD, 30),
-            Color.BLACK, Color.ORANGE, Color.RED),
+            Color.white, Color.ORANGE, Color.RED),
     /**
      * The Cats texture pack.
      */
@@ -48,6 +44,7 @@ public enum TexturePack{
     private final Color colorDefault;
     private final Color colorHover;
     private final Color colorSelected;
+    private  Color dynamicColor;
 
     public Font getTitleFont()      {return titleFont;}
     public Font getSubtitleFont()   {return subtitleFont;}
@@ -55,6 +52,8 @@ public enum TexturePack{
     public Color getColorDefault()  {return colorDefault;}
     public Color getColorHover()    {return colorHover;}
     public Color getColorSelected() {return colorSelected;}
+    public Color getDynamicColor() {return dynamicColor;}
+    public void setDynamicColor(Color color) {dynamicColor = color;}
 
     /**
      * Constructor for texture packs
@@ -72,6 +71,7 @@ public enum TexturePack{
         this.colorDefault = colorDefault;
         this.colorHover = colorHover;
         this.colorSelected = colorSelected;
+        this.dynamicColor = colorDefault;
     }
 
     public enum Images{
@@ -150,7 +150,32 @@ public enum TexturePack{
         /**
          * The image for the exit
          */
-        Exit("exitDoor");
+        Exit("exitDoor"),
+        //pause , play , speedDown , speedUp
+        /**
+         * The image for the pause button
+         */
+        Pause("pause"),
+        /**
+         * The image for the play button
+         */
+        Play("play"),
+        /**
+         * The image for the speedDown button
+         */
+        SpeedDown("speedDown"),
+        /**
+         * The image for the speedUp button
+         */
+        SpeedUp("speedUp"),
+        /**
+         * The image for the win screen
+         */
+        WinScreen("winScreen"),
+        /**
+         * The image for the lose screen
+         */
+        LoseScreen("loseScreen");
         
         //name of the image
         private String name;
@@ -199,6 +224,7 @@ public enum TexturePack{
                 case YellowLock -> Images.YellowLock.getImg();
                 case OrangeLock -> Images.OrangeLock.getImg();
                 case ExitDoor -> Images.Exit.getImg();
+                case ExitDoorOpen -> Images.Exit.getImg();
                 case Coin -> Images.Coin.getImg();
                 default -> throw new IllegalArgumentException("Unexpected value: " + tile.getClass().getName() + " : " + tile.type());
             };
@@ -211,11 +237,11 @@ public enum TexturePack{
          */
         public BufferedImage loadImg(String imageName){
             this.name = imageName;
-            System.out.print("Loading " + imageName + "...    -> ");
+            //System.out.print("Loading " + imageName + "...    -> ");
             try {
                 File file = new File("res/textures/" + MazeRenderer.currentTP + "/" + imageName + ".png");
                 BufferedImage img = ImageIO.read(file);
-                System.out.println("Loaded!");
+                //System.out.println("Loaded!");
                 return img;
             } catch (IOException e) {
                 throw new RuntimeException(e);}

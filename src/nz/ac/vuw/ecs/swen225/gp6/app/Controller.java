@@ -55,14 +55,14 @@ class Controller extends KeyAdapter {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        assert SwingUtilities.isEventDispatchThread();
+        assert SwingUtilities.isEventDispatchThread(): "Controller: keyPressed: Not in EDT";
         if (e.getKeyCode() == VK_CONTROL) ctrlPressed = true;
         actionsPressed.getOrDefault(e.getKeyCode(), ()->{}).run();
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        assert SwingUtilities.isEventDispatchThread();
+        assert SwingUtilities.isEventDispatchThread(): "Controller: keyReleased: Not in EDT";
         if (e.getKeyCode() == VK_CONTROL) ctrlPressed = false;
         actionsReleased.getOrDefault(e.getKeyCode(), ()->{}).run();
     }
