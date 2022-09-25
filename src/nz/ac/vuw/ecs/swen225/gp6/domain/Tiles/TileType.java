@@ -20,7 +20,8 @@ public enum TileType {
         @Override public boolean isObstruction(Tile t, Domain d) { return t.type() != TileType.Enemy;} //enemy can move on actor
         @Override public void setOn(Tile self, Tile t, Domain d){
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
-        }//TODO: LOSE if tile is a enemy
+            d.getEventListener(Domain.DomainEvent.onLose).forEach(r -> r.run()); //LOSE (since only enemy can move on actor)
+        }
         @Override public void ping(Tile self, Domain d) {
             Maze m = d.getCurrentMaze();
             Loc l1 = self.info().loc();
@@ -47,7 +48,8 @@ public enum TileType {
     Enemy('E'){
         @Override public void setOn(Tile self, Tile t, Domain d){
             d.getCurrentMaze().setTileAt(self.info().loc(), t);
-        }//TODO: LOSE if tile is a hero
+            d.getEventListener(Domain.DomainEvent.onLose).forEach(r -> r.run()); //LOSE (since only hero can move on enemy)
+        }
         @Override public void ping(Tile self, Domain d){ self.info().consumer().accept(self, d);}
     },
 
@@ -68,10 +70,8 @@ public enum TileType {
 
     //INTERACTIVE TERRAINS:
     Info('i'){ //future idea: not disappear after once usage
-        @Override public void setOn(Tile self, Tile t, Domain d){
-            d.getCurrentMaze().setTileAt(self.info().loc(), t);
-        } 
-        @Override public void ping(Tile self, Domain d){}
+        @Override public void setOn(Tile self, Tile t, Domain d){d.getCurrentMaze().setTileAt(self.info().loc(), t);} 
+        @Override public void ping(Tile self, Domain d){}//TODO: display info
     },
 
     ExitDoor('X'){
@@ -85,7 +85,7 @@ public enum TileType {
     },
 
     ExitDoorOpen('Z'){
-        @Override public void setOn(Tile self, Tile t, Domain d){}//TODO: WIN
+        @Override public void setOn(Tile self, Tile t, Domain d){ d.getEventListener(Domain.DomainEvent.onWin).forEach(r -> r.run());} //WIN
     },
 
     BlueLock('B'){

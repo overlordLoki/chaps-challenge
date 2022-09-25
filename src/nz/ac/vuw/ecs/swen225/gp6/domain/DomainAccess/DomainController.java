@@ -92,4 +92,21 @@ public class DomainController {
     public Tile[][] getGameArray(){
         return domain.getCurrentMaze().getTileArrayCopy();
     }
+
+    //SETTERS:
+    /*
+     * add an event listener to the domain
+     */
+    public void addEventListener(Domain.DomainEvent event, Runnable toRun) {
+        domain.addEventListener(event, toRun);
+    }
+
+    /*
+     * sets current level to specified level index
+     * TODO: take care of inventory
+     */
+    public void setCurrentLevel(int lvl) {domain.setCurrentLvl(lvl);}
+    
 }
+
+
