@@ -52,7 +52,7 @@ public class Inventory {
     /*
      * increments number of coins
      */
-    public void addCoin(){coins += 1;}
+    public void addCoin(){coins ++;}
 
     /**
      * adds a tile to first empty place in inventory
