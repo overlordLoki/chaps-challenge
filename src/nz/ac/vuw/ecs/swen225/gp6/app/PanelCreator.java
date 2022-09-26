@@ -1,5 +1,6 @@
 package nz.ac.vuw.ecs.swen225.gp6.app;
 
+import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.InventoryPanel;
@@ -67,9 +68,9 @@ public class PanelCreator{
      */
     static void configureMenuScreen(App app, JPanel backPanel, CardLayout cardLayout, JPanel loadGamePanel){
         // components to be added to the shell
-        JPanel pnMenu     = configurePanelMenu(backPanel, cardLayout, app);
+        JPanel pnMenu     = configurePanelMenu(backPanel, cardLayout, loadGamePanel, app);
         JPanel pnLoad     = configurePanelLoad(app, loadGamePanel);
-        JPanel pnSettings = configurePanelSettings(app, app.getActionNames(), app.getActionKeyBindings());
+        JPanel pnSettings = configurePanelSettings(app, app.getActionNames(), app.getUserKeyBindings());
         JPanel pnCredits  = configurePanelCredits(app);
         JPanel pnExit     = configurePanelExit(app);
 
@@ -107,16 +108,16 @@ public class PanelCreator{
     //============================================= Menu Panels ======================================================//
     //================================================================================================================//
 
-    private static JPanel configurePanelMenu(JPanel backPanel, CardLayout cardLayout, App app) {
+    private static JPanel configurePanelMenu(JPanel backPanel, CardLayout cardLayout, JPanel loadGamePanel, App app) {
         System.out.print("Configuring Menu Panel... ");
 
         MazeRenderer r = app.getRender();
         JPanel pnMenu = createBackgroundPanel(Images.Background, BoxLayout.Y_AXIS);
 
         List<JLabel> labels = List.of(
-                createActionLabel(NEW_GAME, r, SUBTITLE, true, app::transitionToGameScreen),
+                createActionLabel(NEW_GAME, r, SUBTITLE, true, app::startNewGame),
                 createActionLabel(LOAD_GAME, r, SUBTITLE, true, ()->{
-                    app.refreshLoadGames();
+                    refreshLoadGamesPanel(loadGamePanel, app);
                     cardLayout.show(backPanel, LOAD_GAME);
                 }),
                 createActionLabel(SETTINGS, r, SUBTITLE, true, ()->cardLayout.show(backPanel, SETTINGS)),
@@ -142,11 +143,11 @@ public class PanelCreator{
 
         JPanel pnLoad = createRepeatableBackgroundPanel(Images.Pattern_2, app.getRender(), BoxLayout.Y_AXIS);
         JLabel lbTitle = createLabel("Load and Resume Games", app.getRender(), TITLE, true);
-        JLabel lbConfirm = createActionLabel("Back", app.getRender(),SUBTITLE, true, app::transitionToMenuScreen);
+        JLabel lbBack = createActionLabel("Back", app.getRender(),SUBTITLE, true, app::transitionToMenuScreen);
 
         // assemble this panel
-        app.refreshLoadGames();
-        addAll(pnLoad, lbTitle, Box.createVerticalGlue(), loadGamePanel, Box.createVerticalGlue(), lbConfirm);
+        refreshLoadGamesPanel(loadGamePanel, app);
+        addAll(pnLoad, lbTitle, Box.createVerticalGlue(), loadGamePanel, Box.createVerticalGlue(), lbBack);
 
         System.out.println("Done!");
         return pnLoad;
@@ -413,6 +414,33 @@ public class PanelCreator{
         Arrays.stream(components).forEach(parent::add);
     }
 
+    /**
+     * refreshes the save files in load game panel
+     * @param pnLoadGame the panel to be refreshed
+     * @param app the app object
+     */
+    public static void refreshLoadGamesPanel(JComponent pnLoadGame, App app){
+        pnLoadGame.removeAll();
+        List<Domain> saves;
+        try {
+            saves = Persistency.loadSaves();
+        } catch (Exception e) {
+            System.out.print("Failed to load saves, resetting save files.");
+            JOptionPane.showMessageDialog(null, "Error loading saved games, resetting save files.");
+            saves = List.of(Persistency.getInitialDomain(),Persistency.getInitialDomain(),Persistency.getInitialDomain());
+        }
+        addAll(pnLoadGame,
+                Box.createHorizontalGlue(),
+                createLoadGamePanel(1, app, app.getRender(), new DomainController(saves.get(0))),
+                Box.createHorizontalGlue(),
+                createLoadGamePanel(2, app, app.getRender(), new DomainController(saves.get(1))),
+                Box.createHorizontalGlue(),
+                createLoadGamePanel(3, app, app.getRender(), new DomainController(saves.get(2))),
+                Box.createHorizontalGlue());
+        pnLoadGame.revalidate();
+        pnLoadGame.repaint();
+    }
+
     //================================================================================================================//
     //========================================== Factory Methods =====================================================//
     //================================================================================================================//
@@ -509,8 +537,8 @@ public class PanelCreator{
         JLabel lbLevel = createLabel("Level: " + save.getCurrentLevel(), render, TEXT, true);
         JLabel lbTime = createLabel("Time Left: " + app.getTimeInMinutes(), render, TEXT, true);
         JLabel lbScore = createLabel("Score: " + save.getTreasuresLeft(), render, TEXT, true);
-        JLabel lbLoad = createActionLabel("Load!", render, SUBTITLE, true, ()->app.loadSavedGame(save).transitionToGameScreen());
-        JLabel lbReplay = createActionLabel("Replay", render, SUBTITLE, true, ()->app.loadSavedGame(save).transitionToReplayScreen());
+        JLabel lbLoad = createActionLabel("Load!", render, SUBTITLE, true, ()->app.startSavedGame(save));
+        JLabel lbReplay = createActionLabel("Replay", render, SUBTITLE, true, ()->app.startSavedReplay(save));
         JLabel lbDelete = createActionLabel("Delete", render, SUBTITLE, true, ()->{
             try {
                 Persistency.saveDomain(Persistency.getInitialDomain(), index);

@@ -1,12 +1,9 @@
 package nz.ac.vuw.ecs.swen225.gp6.app;
 
-import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.DomainEvent;
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
-import nz.ac.vuw.ecs.swen225.gp6.renderer.InventoryPanel;
-import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
-import nz.ac.vuw.ecs.swen225.gp6.renderer.LogPanel;
-import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
+import nz.ac.vuw.ecs.swen225.gp6.renderer.*;
 
 import javax.swing.*;
 import javax.swing.Timer;
@@ -33,48 +30,48 @@ import static nz.ac.vuw.ecs.swen225.gp6.app.PanelCreator.*;
 public class App extends JFrame {
     static final long serialVersionUID = 1L;
 
+    // Key bindings for the game
     private final List<String> actionNames = List.of("Move Up","Move Down","Move Left","Move Right","Pause Game",
             "Resume Game","Jump To Level 1","Jump To Level 2","Quit Game","Save And Quit Game","Reload Game");
-    @SuppressWarnings("FieldMayBeFinal")
-    private List<Integer> actionKeyBindings = new ArrayList<>(List.of(VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT,
-                                                                VK_SPACE, VK_ESCAPE, VK_1, VK_2, VK_X, VK_S, VK_R));
+    private final List<Integer> defaultKeyBindings = List.of(VK_UP,VK_DOWN,VK_LEFT,VK_RIGHT,VK_SPACE,VK_ESCAPE,VK_1,VK_2,VK_X,VK_S,VK_R);
+    private List<Integer> userKeyBindings = new ArrayList<>(defaultKeyBindings);
     private int indexOfKeyToSet = -1;
 
-    private DomainController game;
-    private MazeRenderer render;
-    private Controller controller;
-    private Actions actions;
-    private LogPanel logPanel = new LogPanel();
+    // Core components of the game
+    private DomainController game       = new DomainController(Persistency.getInitialDomain());
+    private final MazeRenderer render   = new MazeRenderer(game);
+    private final Actions actions       = new Actions(this);
+    private final Controller controller = new Controller(this);
+    private final LogPanel logPanel     = new LogPanel();
 
+    // Timers for the game
+    private boolean inReplayMode = false;
+    private Runnable replayObserver = ()->{};   // observer for the replay mode
+    private long time = 0;          // used to store accumulated time from the previous pause
+    private long timeStart = 0;     // starting time of current pause
+    private long playedTime = 0;    // total time played in a level
+    private final Timer gameTimer = new Timer(34, unused -> {
+        assert SwingUtilities.isEventDispatchThread();
+        game.pingAll();
+        playedTime = System.nanoTime() - timeStart + time;
+        if (inReplayMode) replayObserver.run();
+        repaint();
+    });
+    private Timer timer = gameTimer;
+
+    // GUI components
     static final int WIDTH = 1200;
     static final int HEIGHT = 800;
     private final JPanel outerPanel = new JPanel();
-    private final JPanel menuPanel = new JPanel();
-    private final JPanel gamePanel = new JPanel();
+    private final JPanel menuPanel  = new JPanel();
+    private final JPanel gamePanel  = new JPanel();
     private final JPanel functionPanel = PanelCreator.createClearPanel(BoxLayout.Y_AXIS);
-    private final JPanel loadGamePanel  = createClearPanel(BoxLayout.X_AXIS);
-    private InventoryPanel pnInventory;
+    private final JPanel loadGamePanel = createClearPanel(BoxLayout.X_AXIS);
+    private final InventoryPanel pnInventory = new InventoryPanel(game, true);
     private final CardLayout outerCardLayout = new CardLayout();
     private final CardLayout menuCardLayout = new CardLayout();
     private final CardLayout gameCardLayout = new CardLayout();
     private final CardLayout functionCardLayout = new CardLayout();
-
-
-    private boolean inReplay = false;
-    private Runnable ob = ()->{};   // observer for the replay mode
-    private long time = 0;          // used to store accumulated time from the previous pause
-    private long timeStart = 0;     // starting time of current pause
-    private long playedTime = 0;    // total time played in a level
-    private Timer timer;
-    private Timer gameTimer = new Timer(34, unused -> {
-        assert SwingUtilities.isEventDispatchThread();
-        game.pingAll();
-        playedTime = System.nanoTime() - timeStart + time;
-        if (inReplay) ob.run();
-        repaint();
-    });
-
-//    private Recorder recorder = new Recorder();
 
     /**
      * Constructor for the App class. Initializes the GUI and the main loop.
@@ -94,8 +91,8 @@ public class App extends JFrame {
                 System.exit(0);
             }}
         );
-        initialiseGame();
         initialiseGUI();
+        loadUserSettings();
     }
 
     /**
@@ -118,22 +115,9 @@ public class App extends JFrame {
                 System.exit(0);
             }}
         );
-        initialiseGame();
         initialiseGUI();
+        game.setCurrentLevel(i);
         transitionToGameScreen();
-    }
-
-    /**
-     * Initializes the game.
-     */
-    public void initialiseGame() {
-        game = new DomainController(Persistency.getInitialDomain());
-        pnInventory = new InventoryPanel(game, true);
-        render = new MazeRenderer(game);
-        actions = new Actions(this);
-        controller = new Controller(this);
-        addKeyListener(controller);
-        setTimer(gameTimer);
     }
 
     /**
@@ -151,19 +135,26 @@ public class App extends JFrame {
         PanelCreator.configureGameScreen(this, gamePanel, gameCardLayout, functionPanel, pnInventory);
         outerPanel.add(menuPanel, MENU);
         outerPanel.add(gamePanel, GAME);
+        addKeyListener(controller);
         transitionToMenuScreen();
         pack();
     }
+
+    //================================================================================================================//
+    //============================================ GUI Method =====================================================//
+    //================================================================================================================//
 
     /**
      * Transitions to the menu screen.
      */
     public void transitionToMenuScreen(){
         System.out.print("Transitioning to menu screen... ");
-        actions.actionPause();
+        timer.stop();
+        setTime(System.nanoTime() - getTimeStart() + getTime());
         functionCardLayout.show(functionPanel, MODE_NORMAL);
         menuCardLayout.show(menuPanel, MENU);
         outerCardLayout.show(outerPanel, MENU);
+        useMenuMusic();
         System.out.println("Complete");
     }
 
@@ -172,11 +163,13 @@ public class App extends JFrame {
      */
     public void transitionToGameScreen(){
         System.out.print("Transitioning to game screen... ");
-        inReplay = false;
+        inReplayMode = false;
+        resetTime();
+        timer.restart();
         functionCardLayout.show(functionPanel, MODE_NORMAL);
         gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
-        actions.actionStartNew();
+        useGameMusic();
         System.out.println("Complete");
     }
 
@@ -185,14 +178,19 @@ public class App extends JFrame {
      */
     public void transitionToReplayScreen(){
         System.out.print("Transitioning to replay screen... ");
-        inReplay = true;
+        inReplayMode = true;
+        resetTime();
+        timer.restart();
         functionCardLayout.show(functionPanel, MODE_REPLAY);
         gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
-        actions.actionStartNew();
+        useGameMusic();
         System.out.println("Complete");
     }
 
+    /**
+     * Transitions to the winning screen.
+     */
     public void transitionToWinScreen(){
         System.out.print("Transitioning to win screen... ");
         gameCardLayout.show(gamePanel, VICTORY);
@@ -200,6 +198,9 @@ public class App extends JFrame {
         System.out.println("Complete");
     }
 
+    /**
+     * Transitions to the losing screen.
+     */
     public void transitionToLostScreen(){
         System.out.print("Transitioning to win screen... ");
         gameCardLayout.show(gamePanel, LOOSE);
@@ -207,29 +208,14 @@ public class App extends JFrame {
         System.out.println("Complete");
     }
 
-    /**
-     *
-     */
-    public void refreshLoadGames(){
-        loadGamePanel.removeAll();
-        List<Domain> saves;
-        try {
-            saves = Persistency.loadSaves();
-        } catch (Exception e) {
-            System.out.print("Failed to load saves, resetting save files.");
-            JOptionPane.showMessageDialog(null, "Error loading saved games, resetting save files.");
-            saves = List.of(Persistency.getInitialDomain(),Persistency.getInitialDomain(),Persistency.getInitialDomain());
-        }
-        addAll(loadGamePanel,
-                Box.createHorizontalGlue(),
-                createLoadGamePanel(1, this, getRender(), new DomainController(saves.get(0))),
-                Box.createHorizontalGlue(),
-                createLoadGamePanel(2, this, getRender(), new DomainController(saves.get(1))),
-                Box.createHorizontalGlue(),
-                createLoadGamePanel(3, this, getRender(), new DomainController(saves.get(2))),
-                Box.createHorizontalGlue());
-        loadGamePanel.revalidate();
-        loadGamePanel.repaint();
+    private void useGameMusic(){
+        MusicPlayer.stopMenuMusic();
+        MusicPlayer.playGameMusic();
+    }
+
+    private void useMenuMusic(){
+        MusicPlayer.stopGameMusic();
+        MusicPlayer.playMenuMusic();
     }
 
     //================================================================================================================//
@@ -237,29 +223,70 @@ public class App extends JFrame {
     //================================================================================================================//
 
     /**
+     * Loads the user's setting configuration.
+     */
+    public void loadUserSettings(){
+        System.out.print("Loading user settings... ");
+        this.userKeyBindings = new ArrayList<>(defaultKeyBindings);
+        this.controller.resetController();
+        System.out.println("Complete");
+    }
+
+    /**
+     * Sets the game to a new game and enters game play mode
+     */
+    public void startNewGame() {
+        updateGameComponents(new DomainController(Persistency.getInitialDomain()), gameTimer);
+        transitionToGameScreen();
+    }
+
+    /**
+     * Sets the game to a saved game and enters game play mode
+     *
+     * @param save the save file to load
+     */
+    public void startSavedGame(DomainController save) {
+        updateGameComponents(save, gameTimer);
+        transitionToGameScreen();
+    }
+
+    /**
+     * Sets the game to a saved game and enters replay mode
+     *
+     * @param save the save file to load
+     */
+    public void startSavedReplay(DomainController save) {
+        updateGameComponents(save, timer);
+        transitionToReplayScreen();
+    }
+
+    /**
+     * Updates the game components to the correct state.
+     *
+     * @param game the new game to be updated
+     * @param timer the new timer to be updated
+     */
+    private void updateGameComponents(DomainController game, Timer timer) {
+        this.game = game;
+        this.render.setMaze(game);
+        this.pnInventory.setMaze(game);
+        try{
+            this.game.addEventListener(DomainEvent.onWin, ()->System.out.println("You win!"));
+            this.game.addEventListener(DomainEvent.onLose, ()->System.out.println("You lose!"));
+        }catch(Exception e){
+            System.out.println("Failed to add event listener");
+            e.printStackTrace();
+        }
+        this.setTimer(timer);
+    }
+
+    /**
      * Sets the observer to fire.
      *
      * @param ob the observer to fire
      */
     public void setObserver(Runnable ob){
-        this.ob = ob;
-    }
-
-    /**
-     * Sets the game to a new game.
-     *
-     * @param save the save file to load
-     * @return The app object
-     */
-    public App loadSavedGame(DomainController save) {
-        System.out.println("Setting game... ");
-        System.out.println("before set: "+game);
-        this.game = save;
-        this.render.setMaze(save);
-        this.pnInventory.setMaze(save);
-        System.out.println("after set: "+game);
-        System.out.println("Complete");
-        return this;
+        this.replayObserver = ob;
     }
 
     /**
@@ -426,8 +453,8 @@ public class App extends JFrame {
      *
      * @return the list of action key bindings
      */
-    public List<Integer> getActionKeyBindings() {
-        return actionKeyBindings;
+    public List<Integer> getUserKeyBindings() {
+        return userKeyBindings;
     }
 
     /**

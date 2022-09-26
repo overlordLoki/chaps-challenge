@@ -1,10 +1,14 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.*;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.*;
 
 public class Domain {
@@ -12,10 +16,23 @@ public class Domain {
     private Inventory inv;
     private int currentLvl; //Note: first level should be 1
 
+
+    public enum DomainEvent {
+        onWin,
+        onLose,
+        onInfo
+    }
+    //domain events that app will dictate the behaviour of
+    private EnumMap<DomainEvent, List<Runnable>>  eventListeners 
+    = new EnumMap<DomainEvent, List<Runnable>>(DomainEvent.class);
+
     public Domain(List<Maze> mazes, Inventory inv, int lvl){
         this.mazes = mazes;
         this.inv = inv;
         this.currentLvl = lvl;
+        
+        //initialise event listeners to empty lists (every domain event should always have an associated list)
+        for(DomainEvent e : DomainEvent.values()){eventListeners.put(e, new ArrayList<Runnable>());}
     }
 
     //GETTERS:
@@ -44,7 +61,33 @@ public class Domain {
      */
     public int getTreasuresLeft(){return this.getCurrentMaze().getTileCount(TileType.Coin);}
 
+    /*
+     * returns true if there is a next level
+     */
+    public boolean hasNextLvl(){return currentLvl < mazes.size();}
    
+    /*
+     * gets the list of event listeners for a given event
+     */
+    public List<Runnable> getEventListener(DomainEvent event){
+        return eventListeners.get(event);
+    }
+    
+    //SETTERS:
+    /*
+     * add an event listener to the domain
+     */ 
+    public void addEventListener(DomainEvent event, Runnable toRun) {
+        List<Runnable> listeners = eventListeners.get(event); //get list of listeners
+        listeners.add(toRun); //add new listener
+        eventListeners.put(event, listeners); 
+    }
+
+    /*
+     * sets current level to specified level index
+     */
+    public void setCurrentLvl(int lvl) {this.currentLvl = lvl;}
+    
     //PING:
     /*
      * pings the game one step, and replaces the current maze with a new one
@@ -62,5 +105,7 @@ public class Domain {
         //ping the maze
         nextMaze.pingMaze(this);
     }
+
+
 }
 

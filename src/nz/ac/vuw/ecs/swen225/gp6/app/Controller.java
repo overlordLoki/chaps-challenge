@@ -31,7 +31,7 @@ class Controller extends KeyAdapter {
     }
 
     public void resetController(){
-        List<Integer> keyBindings = app.getActionKeyBindings();
+        List<Integer> keyBindings = app.getUserKeyBindings();
         Actions actions = app.getActions();
         actionsPressed = new HashMap<>();
         actionsReleased = new HashMap<>();
