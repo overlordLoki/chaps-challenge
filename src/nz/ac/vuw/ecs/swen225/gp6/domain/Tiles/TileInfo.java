@@ -12,22 +12,36 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
  * and being able to pass larger chunks of information with one parameter.
  */
 public class TileInfo{
-    private Direction staticDirection = Direction.None; //mainly applicable to hero/enemies
-    private BiConsumer<Tile, Domain> alternativePing; //override ping method of tile (if overriding is supported by tile type) 
-                                                      //mainly applicable to enemies currently (self tile, domain)
+    private Direction staticDirection; //mainly applicable to hero/enemies
+    private String imageName;
     private Loc loc;
     private int ping; //to be used later perhaps to keep count of ping cycles
 
-    public TileInfo(Loc loc, BiConsumer<Tile, Domain> consumer){
+    public TileInfo(Loc loc){
         this.loc = loc;
-        this.alternativePing = consumer;
+        this.staticDirection = Direction.None;
+        this.ping = 0;
     }
+
+    public TileInfo(Loc loc, Direction dir, int pingCount){
+        this.loc = loc;
+        this.staticDirection = dir;
+        this.ping = pingCount;
+    }
+
+    public TileInfo(Loc loc, String imageName){
+        this.loc = loc;
+        this.imageName = imageName;
+    }
+
+
 
     //GETTERS:
     /*
-     * returns consumer given for some tiles, if null returns a -> {}
+     * returns image name
      */
-    public BiConsumer<Tile, Domain> consumer(){return alternativePing == null? (a,b) ->{}: alternativePing;}
+    public String getImageName(){return imageName;}
+
     /*
      * returns location of the associated tile
      */

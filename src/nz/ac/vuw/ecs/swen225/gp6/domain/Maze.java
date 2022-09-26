@@ -76,7 +76,7 @@ public class Maze {
             IntStream.range(0, height)
             .forEach(
                 y -> copy[x][y] = new Tile(tileArray[x][y].type(), 
-                new TileInfo(new Loc(x, y), tileArray[x][y].info().consumer())
+                new TileInfo(new Loc(x, y))
             )
         ));
         return copy;
@@ -141,12 +141,12 @@ public class Maze {
      * @param y of tile (0 to max - 1)
      * @param type enum for the tile type to place
      */
-    public void setTileAt(Loc loc, TileType type, BiConsumer<Tile, Domain> pingConsumer){
+    public void setTileAt(Loc loc, TileType type){
         //check in bound
         if(Loc.checkInBound(loc, this) == false) return;
             
         //make tile object from type enum and replace the tile at the location
-        tileArray[loc.x()][loc.y()] = new Tile(type, new TileInfo(loc, pingConsumer));
+        tileArray[loc.x()][loc.y()] = new Tile(type, new TileInfo(loc));
 
     }
 
