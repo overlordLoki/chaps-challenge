@@ -8,7 +8,7 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
  */
 public class Tile {
     
-    private TileType type;
+    private TileType type; //TODO : chabnge to tileTypeInterface talk to loki and ben about this
     private TileInfo info;
 
     public Tile(TileType state, TileInfo info){
@@ -55,4 +55,7 @@ public class Tile {
 }
 
 //TILE GROUPS:(classes that extend tile to help with grouping of tiles)
-//non currently
+//non currently 
+
+
+
