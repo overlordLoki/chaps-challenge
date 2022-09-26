@@ -23,16 +23,16 @@ public class Domain {
         onInfo
     }
     //domain events that app will dictate the behaviour of
-    private EnumMap<DomainEvent, Optional<List<Runnable>>>  eventListeners 
-    = new EnumMap<DomainEvent, Optional<List<Runnable>>>(DomainEvent.class);
+    private EnumMap<DomainEvent, List<Runnable>>  eventListeners 
+    = new EnumMap<DomainEvent, List<Runnable>>(DomainEvent.class);
 
     public Domain(List<Maze> mazes, Inventory inv, int lvl){
         this.mazes = mazes;
         this.inv = inv;
         this.currentLvl = lvl;
         
-        //initialise event listeners
-        for(DomainEvent e : DomainEvent.values()){eventListeners.put(e, Optional.empty());}
+        //initialise event listeners to empty lists (every domain event should always have an associated list)
+        for(DomainEvent e : DomainEvent.values()){eventListeners.put(e, new ArrayList<Runnable>());}
     }
 
     //GETTERS:
@@ -70,14 +70,18 @@ public class Domain {
      * gets the list of event listeners for a given event
      */
     public List<Runnable> getEventListener(DomainEvent event){
-        return eventListeners.get(event).orElse(new ArrayList<Runnable>());
+        return eventListeners.get(event);
     }
     
     //SETTERS:
     /*
      * add an event listener to the domain
      */ 
-    public void addEventListener(DomainEvent event, Runnable toRun) {eventListeners.get(event).get().add(toRun);}
+    public void addEventListener(DomainEvent event, Runnable toRun) {
+        List<Runnable> listeners = eventListeners.get(event); //get list of listeners
+        listeners.add(toRun); //add new listener
+        eventListeners.put(event, listeners); 
+    }
 
     /*
      * sets current level to specified level index

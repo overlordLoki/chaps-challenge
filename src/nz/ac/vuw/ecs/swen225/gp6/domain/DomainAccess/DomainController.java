@@ -97,9 +97,7 @@ public class DomainController {
     /*
      * add an event listener to the domain
      */
-    public void addEventListener(Domain.DomainEvent event, Runnable toRun) {
-        domain.addEventListener(event, toRun);
-    }
+    public void addEventListener(Domain.DomainEvent event, Runnable toRun) {domain.addEventListener(event, toRun);}
 
     /*
      * sets current level to specified level index
