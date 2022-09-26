@@ -5,6 +5,7 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.InventoryPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
+import nz.ac.vuw.ecs.swen225.gp6.renderer.MusicPlayer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack.Images;
 
@@ -69,10 +70,10 @@ public class PanelCreator{
     static void configureMenuScreen(App app, JPanel backPanel, CardLayout cardLayout, JPanel loadGamePanel){
         // components to be added to the shell
         JPanel pnMenu     = configurePanelMenu(backPanel, cardLayout, loadGamePanel, app);
-        JPanel pnLoad     = configurePanelLoad(app, loadGamePanel);
-        JPanel pnSettings = configurePanelSettings(app, app.getActionNames(), app.getUserKeyBindings());
-        JPanel pnCredits  = configurePanelCredits(app);
-        JPanel pnExit     = configurePanelExit(app);
+        JPanel pnLoad     = configurePanelLoad(backPanel, cardLayout, loadGamePanel, app);
+        JPanel pnSettings = configurePanelSettings(backPanel, cardLayout, app);
+        JPanel pnCredits  = configurePanelCredits(backPanel, cardLayout, app);
+        JPanel pnExit     = configurePanelExit(backPanel, cardLayout, app);
 
         // add components to the shell
         backPanel.add(pnMenu, MENU);
@@ -138,12 +139,12 @@ public class PanelCreator{
         return pnMenu;
     }
 
-    private static JPanel configurePanelLoad(App app, JPanel loadGamePanel) {
+    private static JPanel configurePanelLoad(JPanel backPanel, CardLayout cardLayout, JPanel loadGamePanel, App app) {
         System.out.print("Configuring Load Panel... ");
 
         JPanel pnLoad = createRepeatableBackgroundPanel(Images.Pattern_2, app.getRender(), BoxLayout.Y_AXIS);
         JLabel lbTitle = createLabel("Load and Resume Games", app.getRender(), TITLE, true);
-        JLabel lbBack = createActionLabel("Back", app.getRender(),SUBTITLE, true, app::transitionToMenuScreen);
+        JLabel lbBack = createActionLabel("Back", app.getRender(),SUBTITLE, true, ()->cardLayout.show(backPanel, MENU));
 
         // assemble this panel
         refreshLoadGamesPanel(loadGamePanel, app);
@@ -153,7 +154,7 @@ public class PanelCreator{
         return pnLoad;
     }
 
-    private static JPanel configurePanelSettings(App app, List<String> actionNames, List<Integer> actionKeyBindings) {
+    private static JPanel configurePanelSettings(JPanel backPanel, CardLayout cardLayout, App app) {
         System.out.print("Configuring Settings Panel... ");
 
         MazeRenderer r = app.getRender();
@@ -164,7 +165,7 @@ public class PanelCreator{
         JPanel pnTexturePack = createClearPanel(BoxLayout.X_AXIS);
 
         JLabel lbTitle = createLabel("Settings", r, TITLE, true);
-        JLabel lbConfirm = createActionLabel("Confirm", r, SUBTITLE, true, app::transitionToMenuScreen);
+        JLabel lbConfirm = createActionLabel("Confirm", r, SUBTITLE, true, ()->cardLayout.show(backPanel, MENU));
         JLabel lbTexturePack = createLabel("Texture Pack", r, TEXT, false);
         JLabel lbCurrentTexture = createLabel(r.getCurrentTexturePack()+"" , r, TEXT, false);
         JLabel lbNextTexture = createActionLabel("  >>>", app.getRender(),TEXT, false, ()->{
@@ -181,13 +182,27 @@ public class PanelCreator{
             lbCurrentTexture.setText(currentPack+"");
             app.repaint();
         });
+        JLabel lbPlayMusic = createLabel("Play Sound", r, TEXT, false);
+        JLabel lbIsMusicOn = createActionLabel(app.isMusicOn()+"", r, TEXT, false, ()->{});
+        lbIsMusicOn.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                app.setMusicOn(!app.isMusicOn());
+                lbIsMusicOn.setText(app.isMusicOn()+"");
+                if (app.isMusicOn()) {
+                    MusicPlayer.playMenuMusic();
+                } else {
+                    MusicPlayer.stopMenuMusic();
+                }
+            }
+        });
 
         List<JLabel> lbsActionNames = new ArrayList<>();
         List<JLabel> lbsActionKeys = new ArrayList<>();
-        for (int i = 0; i < actionKeyBindings.size(); i++) {
-            lbsActionNames.add(createLabel(actionNames.get(i), r, TEXT, false));
+        for (int i = 0; i < app.getUserKeyBindings().size(); i++) {
+            lbsActionNames.add(createLabel(app.getActionName(i), r, TEXT, false));
             int finalI = i;
-            lbsActionKeys.add(new JLabel((finalI < 6 ? "": "Ctrl + ") + KeyEvent.getKeyText(actionKeyBindings.get(finalI))){{
+            Controller.Key key = app.getKeyBinding(finalI);
+            lbsActionKeys.add(new JLabel((key.modifier() == 0  ? "": KeyEvent.getModifiersExText(key.modifier()) + " + ") + KeyEvent.getKeyText(key.key())){{
                 TexturePack currentTexture = app.getRender().getCurrentTexturePack();
                 setForeground(currentTexture.getColorDefault());
                 addMouseListener(new MouseAdapter() {
@@ -214,16 +229,18 @@ public class PanelCreator{
         }
 
         app.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
+            public void keyReleased(KeyEvent e) {
                 if (! app.inSettingKeyMode()) return;
+                int modifier = e.getModifiersEx();
+                int key = e.getKeyCode();
                 var label = lbsActionKeys.get(app.indexOfKeyToSet());
-                if (actionKeyBindings.contains(e.getKeyCode())){
+                if (app.checkKeyBinding(Controller.Key.key(modifier,key))){
                     app.exitKeySettingMode();
                     label.setForeground(Color.BLACK);
                     return;
                 }
-                actionKeyBindings.set(app.indexOfKeyToSet(), e.getKeyCode());
-                label.setText((app.indexOfKeyToSet() < 6 ? "": "Ctrl + " ) + KeyEvent.getKeyText(e.getKeyCode()));
+                app.setKeyBinding(app.indexOfKeyToSet(), Controller.Key.key(modifier,key));
+                label.setText(Controller.Key.toString(modifier, key));
                 label.setForeground(Color.BLACK);
                 app.exitKeySettingMode();
                 app.getController().resetController();
@@ -235,8 +252,8 @@ public class PanelCreator{
         pnBindingR.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
         // assemble this panel
         addAll(pnTexturePack, lbPrevTexture, lbCurrentTexture, lbNextTexture);
-        pnBindingL.add(lbTexturePack);
-        pnBindingR.add(pnTexturePack);
+        addAll(pnBindingL, lbPlayMusic, lbTexturePack);
+        addAll(pnBindingR, lbIsMusicOn, pnTexturePack);
         lbsActionNames.forEach(pnBindingL::add);
         lbsActionKeys.forEach(pnBindingR::add);
         addAll(pnMiddle, Box.createHorizontalGlue(), pnBindingL, pnBindingR, Box.createHorizontalGlue());
@@ -246,12 +263,12 @@ public class PanelCreator{
         return pnSettings;
     }
 
-    private static JPanel configurePanelCredits(App app) {
+    private static JPanel configurePanelCredits(JPanel backPanel, CardLayout cardLayout, App app) {
         System.out.print("Configuring Credits Panel... ");
 
         JPanel pnCredits = createRepeatableBackgroundPanel(Images.Pattern_2, app.getRender(), BoxLayout.Y_AXIS);
         JLabel lbTitle = createLabel("Credits", app.getRender(), TITLE, true);
-        JLabel lbBack = createActionLabel("Back", app.getRender(),SUBTITLE, true, app::transitionToMenuScreen);
+        JLabel lbBack = createActionLabel("Back", app.getRender(),SUBTITLE, true, ()->cardLayout.show(backPanel, MENU));
         JLabel[] credits = new JLabel[]{
                 createLabel("App: Jeff", app.getRender(), SUBTITLE, true),
                 createLabel("Domain: Matty", app.getRender(), SUBTITLE, true),
@@ -270,7 +287,7 @@ public class PanelCreator{
         return pnCredits;
     }
 
-    private static JPanel configurePanelExit(App app) {
+    private static JPanel configurePanelExit(JPanel backPanel, CardLayout cardLayout, App app) {
         System.out.print("Configuring Exit Panel... ");
 
         JPanel pnExit   = createRepeatableBackgroundPanel(Images.Pattern_2, app.getRender(), BoxLayout.Y_AXIS);
@@ -280,7 +297,7 @@ public class PanelCreator{
         JLabel lbYes    = createActionLabel("Yes", app.getRender(),SUBTITLE, true, ()->{
                                             System.out.println("Application closed with exit code 0");
                                             System.exit(0);});
-        JLabel lbNo     = createActionLabel("No", app.getRender(),SUBTITLE, true, app::transitionToMenuScreen);
+        JLabel lbNo     = createActionLabel("No", app.getRender(),SUBTITLE, true, ()->cardLayout.show(backPanel, MENU));
 
         // combine all components
         addAll(pnOption, Box.createHorizontalGlue(), lbNo, Box.createHorizontalGlue(), lbYes, Box.createHorizontalGlue());
