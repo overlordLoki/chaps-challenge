@@ -4,10 +4,12 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.DomainEvent;
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.*;
+import nz.ac.vuw.ecs.swen225.gp6.app.Controller.Key;
 
 import javax.swing.*;
 import javax.swing.Timer;
 import java.awt.*;
+import java.awt.event.InputEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -19,6 +21,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static java.awt.event.KeyEvent.*;
+import static nz.ac.vuw.ecs.swen225.gp6.app.Controller.Key.key;
 import static nz.ac.vuw.ecs.swen225.gp6.app.PanelCreator.*;
 
 
@@ -30,12 +33,20 @@ import static nz.ac.vuw.ecs.swen225.gp6.app.PanelCreator.*;
 public class App extends JFrame {
     static final long serialVersionUID = 1L;
 
-    // Key bindings for the game
+    // Default settings for the game
     private final List<String> actionNames = List.of("Move Up","Move Down","Move Left","Move Right","Pause Game",
             "Resume Game","Jump To Level 1","Jump To Level 2","Quit Game","Save And Quit Game","Reload Game");
-    private final List<Integer> defaultKeyBindings = List.of(VK_UP,VK_DOWN,VK_LEFT,VK_RIGHT,VK_SPACE,VK_ESCAPE,VK_1,VK_2,VK_X,VK_S,VK_R);
-    private List<Integer> userKeyBindings = new ArrayList<>(defaultKeyBindings);
+    private final int NO_MOD = 0;
+    private final List<Key> defaultKeyBindings =
+            List.of(key(NO_MOD,VK_UP),key(NO_MOD,VK_DOWN),key(NO_MOD,VK_LEFT),key(NO_MOD,VK_RIGHT),
+                    key(NO_MOD,VK_SPACE),key(NO_MOD,VK_ESCAPE),
+                    key(InputEvent.CTRL_DOWN_MASK,VK_1),key(InputEvent.CTRL_DOWN_MASK,VK_2),
+                    key(InputEvent.CTRL_DOWN_MASK,VK_X),key(InputEvent.CTRL_DOWN_MASK,VK_S),key(InputEvent.CTRL_DOWN_MASK,VK_R));
+
+    // User settings for the game
+    private List<Key> userKeyBindings = new ArrayList<>(defaultKeyBindings);
     private int indexOfKeyToSet = -1;
+    private boolean isMusicOn = true;
 
     // Core components of the game
     private DomainController game       = new DomainController(Persistency.getInitialDomain());
@@ -210,12 +221,12 @@ public class App extends JFrame {
 
     private void useGameMusic(){
         MusicPlayer.stopMenuMusic();
-        MusicPlayer.playGameMusic();
+        if(isMusicOn) MusicPlayer.playGameMusic();
     }
 
     private void useMenuMusic(){
         MusicPlayer.stopGameMusic();
-        MusicPlayer.playMenuMusic();
+        if(isMusicOn) MusicPlayer.playMenuMusic();
     }
 
     //================================================================================================================//
@@ -303,6 +314,23 @@ public class App extends JFrame {
      */
     public void setIndexOfKeyToSet(int indexOfKeyToSet) {
         this.indexOfKeyToSet = indexOfKeyToSet;
+    }
+
+    /**
+     * Sets the key binding for the action.
+     * @param index the index of the action to set key
+     * @param key the key to set
+     */
+    public void setKeyBinding(int index, Key key){
+        userKeyBindings.set(index, key);
+    }
+
+    /**
+     * Sets playing music to true or false
+     * @param musicOn true if music is to be played, false otherwise
+     */
+    public void setMusicOn(boolean musicOn) {
+        this.isMusicOn = musicOn;
     }
 
     /**
@@ -422,6 +450,24 @@ public class App extends JFrame {
     }
 
     /**
+     * Gets the action name
+     * @param index the index of the action
+     * @return the name of the action
+     */
+    public String getActionName(int index){
+        return actionNames.get(index);
+    }
+
+    /**
+     * Gets the key binding for the action.
+     * @param index the index of the action
+     * @return the key binding for the action
+     */
+    public Key getKeyBinding(int index){
+        return userKeyBindings.get(index);
+    }
+
+    /**
      * Gets the index of the action to set a different key binding.
      *
      * @return the setting key
@@ -440,21 +486,29 @@ public class App extends JFrame {
     }
 
     /**
-     * Gets the list of action names.
-     *
-     * @return the list of action names
-     */
-    public List<String> getActionNames() {
-        return actionNames;
-    }
-
-    /**
      * Gets the list of action key bindings.
      *
      * @return the list of action key bindings
      */
-    public List<Integer> getUserKeyBindings() {
+    public List<Key> getUserKeyBindings() {
         return userKeyBindings;
+    }
+
+    /**
+     *  Check if this key combo is already bound to an action.
+     * @param key the key to check
+     * @return true if the key is bound to an action, false otherwise
+     */
+    public boolean checkKeyBinding(Key key){
+        return userKeyBindings.contains(key);
+    }
+
+    /**
+     * Checks if the user is playing music.
+     * @return true if the user is playing music, false otherwise
+     */
+    public boolean isMusicOn() {
+        return isMusicOn;
     }
 
     /**
