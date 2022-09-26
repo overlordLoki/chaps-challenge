@@ -167,7 +167,15 @@ public enum TexturePack{
         /**
          * The image for the speedUp button
          */
-        SpeedUp("speedUp");
+        SpeedUp("speedUp"),
+        /**
+         * The image for the win screen
+         */
+        WinScreen("winScreen"),
+        /**
+         * The image for the lose screen
+         */
+        LoseScreen("loseScreen");
         
         //name of the image
         private String name;
@@ -216,6 +224,8 @@ public enum TexturePack{
                 case YellowLock -> Images.YellowLock.getImg();
                 case OrangeLock -> Images.OrangeLock.getImg();
                 case ExitDoor -> Images.Exit.getImg();
+                case ExitDoorOpen -> Images.Exit.getImg();
+                case Info -> Images.Empty_tile.getImg();
                 case Coin -> Images.Coin.getImg();
                 default -> throw new IllegalArgumentException("Unexpected value: " + tile.getClass().getName() + " : " + tile.type());
             };
@@ -228,7 +238,6 @@ public enum TexturePack{
          */
         public BufferedImage loadImg(String imageName){
             this.name = imageName;
-            
             //System.out.print("Loading " + imageName + "...    -> ");
             try {
                 File file = new File("res/textures/" + MazeRenderer.currentTP + "/" + imageName + ".png");

@@ -1,13 +1,15 @@
 package nz.ac.vuw.ecs.swen225.gp6.app;
 
+import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.DomainEvent;
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
-import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
-import nz.ac.vuw.ecs.swen225.gp6.renderer.LogPanel;
+import nz.ac.vuw.ecs.swen225.gp6.renderer.*;
+import nz.ac.vuw.ecs.swen225.gp6.app.Controller.Key;
 
 import javax.swing.*;
 import javax.swing.Timer;
 import java.awt.*;
+import java.awt.event.InputEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -19,6 +21,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static java.awt.event.KeyEvent.*;
+import static nz.ac.vuw.ecs.swen225.gp6.app.Controller.Key.key;
 import static nz.ac.vuw.ecs.swen225.gp6.app.PanelCreator.*;
 
 
@@ -30,46 +33,56 @@ import static nz.ac.vuw.ecs.swen225.gp6.app.PanelCreator.*;
 public class App extends JFrame {
     static final long serialVersionUID = 1L;
 
+    // Default settings for the game
     private final List<String> actionNames = List.of("Move Up","Move Down","Move Left","Move Right","Pause Game",
             "Resume Game","Jump To Level 1","Jump To Level 2","Quit Game","Save And Quit Game","Reload Game");
-    @SuppressWarnings("FieldMayBeFinal")
-    private List<Integer> actionKeyBindings = new ArrayList<>(List.of(VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT,
-                                                                VK_SPACE, VK_ESCAPE, VK_1, VK_2, VK_X, VK_S, VK_R));
+    private final int NO_MOD = 0;
+    private final List<Key> defaultKeyBindings =
+            List.of(key(NO_MOD,VK_UP),key(NO_MOD,VK_DOWN),key(NO_MOD,VK_LEFT),key(NO_MOD,VK_RIGHT),
+                    key(NO_MOD,VK_SPACE),key(NO_MOD,VK_ESCAPE),
+                    key(InputEvent.CTRL_DOWN_MASK,VK_1),key(InputEvent.CTRL_DOWN_MASK,VK_2),
+                    key(InputEvent.CTRL_DOWN_MASK,VK_X),key(InputEvent.CTRL_DOWN_MASK,VK_S),key(InputEvent.CTRL_DOWN_MASK,VK_R));
+
+    // User settings for the game
+    private List<Key> userKeyBindings = new ArrayList<>(defaultKeyBindings);
     private int indexOfKeyToSet = -1;
+    private boolean isMusicOn = true;
 
-    private DomainController game;
-    private MazeRenderer render;
-    private Controller controller;
-    private Actions actions;
-    private LogPanel logPanel = new LogPanel();
+    // Core components of the game
+    private DomainController game       = new DomainController(Persistency.getInitialDomain());
+    private final MazeRenderer render   = new MazeRenderer(game);
+    private final Actions actions       = new Actions(this);
+    private final Controller controller = new Controller(this);
+    private final LogPanel logPanel     = new LogPanel();
 
+    // Timers for the game
+    private boolean inReplayMode = false;
+    private Runnable replayObserver = ()->{};   // observer for the replay mode
+    private long time = 0;          // used to store accumulated time from the previous pause
+    private long timeStart = 0;     // starting time of current pause
+    private long playedTime = 0;    // total time played in a level
+    private final Timer gameTimer = new Timer(34, unused -> {
+        assert SwingUtilities.isEventDispatchThread();
+        game.pingAll();
+        playedTime = System.nanoTime() - timeStart + time;
+        if (inReplayMode) replayObserver.run();
+        repaint();
+    });
+    private Timer timer = gameTimer;
+
+    // GUI components
     static final int WIDTH = 1200;
     static final int HEIGHT = 800;
     private final JPanel outerPanel = new JPanel();
-    private final JPanel menuPanel = new JPanel();
-    private final JPanel gamePanel = new JPanel();
+    private final JPanel menuPanel  = new JPanel();
+    private final JPanel gamePanel  = new JPanel();
     private final JPanel functionPanel = PanelCreator.createClearPanel(BoxLayout.Y_AXIS);
+    private final JPanel loadGamePanel = createClearPanel(BoxLayout.X_AXIS);
+    private final InventoryPanel pnInventory = new InventoryPanel(game, true);
     private final CardLayout outerCardLayout = new CardLayout();
     private final CardLayout menuCardLayout = new CardLayout();
     private final CardLayout gameCardLayout = new CardLayout();
     private final CardLayout functionCardLayout = new CardLayout();
-
-
-    private boolean inReplay = false;
-    private Runnable ob = ()->{}; // observer for the replay mode
-    private long time = 0;          // used to store accumulated time from the previous pause
-    private long timeStart = 0;     // starting time of current pause
-    private long playedTime = 0;    // total time played in a level
-    private Timer timer;
-    private Timer gameTimer = new Timer(34, unused -> {
-        assert SwingUtilities.isEventDispatchThread();
-        game.pingAll();
-        playedTime = System.nanoTime() - timeStart + time;
-        if (inReplay) ob.run();
-        repaint();
-    });
-
-//    private Recorder recorder = new Recorder();
 
     /**
      * Constructor for the App class. Initializes the GUI and the main loop.
@@ -81,6 +94,7 @@ public class App extends JFrame {
         assert SwingUtilities.isEventDispatchThread(): "boot failed: Not in EDT";
         System.out.println("GUI thread started");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setIconImage(TexturePack.Images.Hero.getImg());
         setVisible(true);
         addWindowListener(new WindowAdapter() {
             public void windowClosed(WindowEvent e) {
@@ -88,20 +102,33 @@ public class App extends JFrame {
                 System.exit(0);
             }}
         );
-        initialiseGame();
         initialiseGUI();
+        loadUserSettings();
     }
 
     /**
-     * Initializes the game.
+     * Constructor used for testing purposes by Fuzz, it will load into the game directly.
+     *
+     * @param i which level to load
      */
-    public void initialiseGame() {
-        game = new DomainController(Persistency.getInitialDomain());
-        render = new MazeRenderer(game);
-        actions = new Actions(this);
-        controller = new Controller(this);
-        addKeyListener(controller);
-        setTimer(gameTimer);
+    public App(int i){
+        System.setOut(new Interceptor(System.out)); // intercepts the output of System.out.print/println
+        System.setErr(new Interceptor(System.err)); // intercepts the output of System.err.print/println
+        System.out.print( "Application boot... ");
+        assert SwingUtilities.isEventDispatchThread(): "boot failed: Not in EDT";
+        System.out.println("GUI thread started");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setIconImage(TexturePack.Images.Hero.getImg());
+        setVisible(true);
+        addWindowListener(new WindowAdapter() {
+            public void windowClosed(WindowEvent e) {
+                System.out.println("Application closed with exit code 0");
+                System.exit(0);
+            }}
+        );
+        initialiseGUI();
+        game.setCurrentLevel(i);
+        transitionToGameScreen();
     }
 
     /**
@@ -115,23 +142,30 @@ public class App extends JFrame {
         gamePanel.setLayout(gameCardLayout);
         functionPanel.setLayout(functionCardLayout);
         render.setFocusable(true);
-        PanelCreator.configureMenuScreen(this, menuPanel, menuCardLayout);
-        PanelCreator.configureGameScreen(this, gamePanel, gameCardLayout, functionPanel);
+        PanelCreator.configureMenuScreen(this, menuPanel, menuCardLayout, loadGamePanel);
+        PanelCreator.configureGameScreen(this, gamePanel, gameCardLayout, functionPanel, pnInventory);
         outerPanel.add(menuPanel, MENU);
         outerPanel.add(gamePanel, GAME);
+        addKeyListener(controller);
         transitionToMenuScreen();
         pack();
     }
+
+    //================================================================================================================//
+    //============================================ GUI Method =====================================================//
+    //================================================================================================================//
 
     /**
      * Transitions to the menu screen.
      */
     public void transitionToMenuScreen(){
         System.out.print("Transitioning to menu screen... ");
-        actions.actionPause();
+        timer.stop();
+        setTime(System.nanoTime() - getTimeStart() + getTime());
         functionCardLayout.show(functionPanel, MODE_NORMAL);
         menuCardLayout.show(menuPanel, MENU);
         outerCardLayout.show(outerPanel, MENU);
+        useMenuMusic();
         System.out.println("Complete");
     }
 
@@ -140,10 +174,13 @@ public class App extends JFrame {
      */
     public void transitionToGameScreen(){
         System.out.print("Transitioning to game screen... ");
+        inReplayMode = false;
+        resetTime();
+        timer.restart();
         functionCardLayout.show(functionPanel, MODE_NORMAL);
         gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
-        actions.actionStartNew();
+        useGameMusic();
         System.out.println("Complete");
     }
 
@@ -152,11 +189,44 @@ public class App extends JFrame {
      */
     public void transitionToReplayScreen(){
         System.out.print("Transitioning to replay screen... ");
+        inReplayMode = true;
+        resetTime();
+        timer.restart();
         functionCardLayout.show(functionPanel, MODE_REPLAY);
         gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
-        actions.actionStartNew();
+        useGameMusic();
         System.out.println("Complete");
+    }
+
+    /**
+     * Transitions to the winning screen.
+     */
+    public void transitionToWinScreen(){
+        System.out.print("Transitioning to win screen... ");
+        gameCardLayout.show(gamePanel, VICTORY);
+        outerCardLayout.show(outerPanel, GAME);
+        System.out.println("Complete");
+    }
+
+    /**
+     * Transitions to the losing screen.
+     */
+    public void transitionToLostScreen(){
+        System.out.print("Transitioning to win screen... ");
+        gameCardLayout.show(gamePanel, LOOSE);
+        outerCardLayout.show(outerPanel, GAME);
+        System.out.println("Complete");
+    }
+
+    private void useGameMusic(){
+        MusicPlayer.stopMenuMusic();
+        if(isMusicOn) MusicPlayer.playGameMusic();
+    }
+
+    private void useMenuMusic(){
+        MusicPlayer.stopGameMusic();
+        if(isMusicOn) MusicPlayer.playMenuMusic();
     }
 
     //================================================================================================================//
@@ -164,28 +234,70 @@ public class App extends JFrame {
     //================================================================================================================//
 
     /**
+     * Loads the user's setting configuration.
+     */
+    public void loadUserSettings(){
+        System.out.print("Loading user settings... ");
+        this.userKeyBindings = new ArrayList<>(defaultKeyBindings);
+        this.controller.resetController();
+        System.out.println("Complete");
+    }
+
+    /**
+     * Sets the game to a new game and enters game play mode
+     */
+    public void startNewGame() {
+        updateGameComponents(new DomainController(Persistency.getInitialDomain()), gameTimer);
+        transitionToGameScreen();
+    }
+
+    /**
+     * Sets the game to a saved game and enters game play mode
+     *
+     * @param save the save file to load
+     */
+    public void startSavedGame(DomainController save) {
+        updateGameComponents(save, gameTimer);
+        transitionToGameScreen();
+    }
+
+    /**
+     * Sets the game to a saved game and enters replay mode
+     *
+     * @param save the save file to load
+     */
+    public void startSavedReplay(DomainController save) {
+        updateGameComponents(save, timer);
+        transitionToReplayScreen();
+    }
+
+    /**
+     * Updates the game components to the correct state.
+     *
+     * @param game the new game to be updated
+     * @param timer the new timer to be updated
+     */
+    private void updateGameComponents(DomainController game, Timer timer) {
+        this.game = game;
+        this.render.setMaze(game);
+        this.pnInventory.setMaze(game);
+        try{
+            this.game.addEventListener(DomainEvent.onWin, ()->System.out.println("You win!"));
+            this.game.addEventListener(DomainEvent.onLose, ()->System.out.println("You lose!"));
+        }catch(Exception e){
+            System.out.println("Failed to add event listener");
+            e.printStackTrace();
+        }
+        this.setTimer(timer);
+    }
+
+    /**
      * Sets the observer to fire.
      *
      * @param ob the observer to fire
      */
     public void setObserver(Runnable ob){
-        this.ob = ob;
-    }
-
-    /**
-     * Sets the game to a new game.
-     *
-     * @param save the save file to load
-     * @return The app object
-     */
-    public App setGame(DomainController save) {
-        System.out.println("Setting game... ");
-        System.out.println("before set: "+game);
-        this.game = save;
-        this.render.setMaze(save);
-        System.out.println("after set: "+game);
-        System.out.println("Complete");
-        return this;
+        this.replayObserver = ob;
     }
 
     /**
@@ -202,6 +314,23 @@ public class App extends JFrame {
      */
     public void setIndexOfKeyToSet(int indexOfKeyToSet) {
         this.indexOfKeyToSet = indexOfKeyToSet;
+    }
+
+    /**
+     * Sets the key binding for the action.
+     * @param index the index of the action to set key
+     * @param key the key to set
+     */
+    public void setKeyBinding(int index, Key key){
+        userKeyBindings.set(index, key);
+    }
+
+    /**
+     * Sets playing music to true or false
+     * @param musicOn true if music is to be played, false otherwise
+     */
+    public void setMusicOn(boolean musicOn) {
+        this.isMusicOn = musicOn;
     }
 
     /**
@@ -321,6 +450,24 @@ public class App extends JFrame {
     }
 
     /**
+     * Gets the action name
+     * @param index the index of the action
+     * @return the name of the action
+     */
+    public String getActionName(int index){
+        return actionNames.get(index);
+    }
+
+    /**
+     * Gets the key binding for the action.
+     * @param index the index of the action
+     * @return the key binding for the action
+     */
+    public Key getKeyBinding(int index){
+        return userKeyBindings.get(index);
+    }
+
+    /**
      * Gets the index of the action to set a different key binding.
      *
      * @return the setting key
@@ -339,21 +486,29 @@ public class App extends JFrame {
     }
 
     /**
-     * Gets the list of action names.
-     *
-     * @return the list of action names
-     */
-    public List<String> getActionNames() {
-        return actionNames;
-    }
-
-    /**
      * Gets the list of action key bindings.
      *
      * @return the list of action key bindings
      */
-    public List<Integer> getActionKeyBindings() {
-        return actionKeyBindings;
+    public List<Key> getUserKeyBindings() {
+        return userKeyBindings;
+    }
+
+    /**
+     *  Check if this key combo is already bound to an action.
+     * @param key the key to check
+     * @return true if the key is bound to an action, false otherwise
+     */
+    public boolean checkKeyBinding(Key key){
+        return userKeyBindings.contains(key);
+    }
+
+    /**
+     * Checks if the user is playing music.
+     * @return true if the user is playing music, false otherwise
+     */
+    public boolean isMusicOn() {
+        return isMusicOn;
     }
 
     /**

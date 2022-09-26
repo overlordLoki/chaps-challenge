@@ -13,12 +13,12 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileType;
  */
 public class MazeRenderer extends JPanel{
     static final long serialVersionUID = 1L; //serialVersionUID
-    private TexturePack texturePack = TexturePack.Cats; //default texture pack
+    private TexturePack texturePack = TexturePack.Dogs; //default texture pack
     private Tile[][] gameArray; //the array of tiles
     public DomainController maze; //the domain controller
     public BufferedImage background; //the background image
     private int patternSize = 100; //the size of the pattern
-    static TexturePack currentTP = TexturePack.Cats; //the current texture pack
+    static TexturePack currentTP = TexturePack.Dogs; //the current texture pack
     /**
      * getter for patternSize
      * @return patternSize

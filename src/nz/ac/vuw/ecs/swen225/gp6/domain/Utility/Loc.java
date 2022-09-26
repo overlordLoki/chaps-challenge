@@ -39,7 +39,7 @@ public class Loc{
      * returns true if a given location is in bounds, else false.
      */
     public static boolean checkInBound(Loc l, Maze m) {
-        if( l.x() < 1 || l.y() < 1 || l.x() > m.width() || l.y() > m.height())return false;
+        if( l.x() < 0 || l.y() < 0 || l.x() > m.width() - 1 || l.y() > m.height() - 1)return false;
         return true;
     }
     

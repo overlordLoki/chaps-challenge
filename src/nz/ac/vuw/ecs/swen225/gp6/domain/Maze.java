@@ -1,16 +1,14 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.stream.IntStream;
-
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileInfo;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileType;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
+
+import java.util.Arrays;
+import java.util.function.BiConsumer;
+import java.util.stream.IntStream;
 
 
 public class Maze {
@@ -49,6 +47,9 @@ public class Maze {
      */
     public Direction getDirection(){return heroNextStep;}
 
+    /*
+     * toString method which creates the board with each tile's given symbol
+     */
     public String toString(){
         Tile[][] tileArray = this.getTileArrayCopy();
         String r = "";
@@ -75,7 +76,7 @@ public class Maze {
             IntStream.range(0, height)
             .forEach(
                 y -> copy[x][y] = new Tile(tileArray[x][y].type(), 
-                new TileInfo(new Loc(x, y), tileArray[x][y].info().consumer())
+                new TileInfo(new Loc(x, y))
             )
         ));
         return copy;
@@ -113,7 +114,7 @@ public class Maze {
      */
     public Tile getTileAt(int x, int y){
         if(Loc.checkInBound(new Loc(x, y), this) == false) return new Tile(TileType.Null, null);
-        return tileArray[x - 1][y - 1];
+        return tileArray[x][y];
     }
 
     /*
@@ -121,7 +122,7 @@ public class Maze {
      */
     public Tile getTileAt(Loc l){
         if(Loc.checkInBound(l, this) == false) return new Tile(TileType.Null, null);
-        return tileArray[l.x() - 1][l.y() - 1];
+        return tileArray[l.x()][l.y()];
     }
 
     //SETTERS and ACTIONS:
@@ -140,12 +141,12 @@ public class Maze {
      * @param y of tile (0 to max - 1)
      * @param type enum for the tile type to place
      */
-    public void setTileAt(Loc loc, TileType type, Consumer<Domain> pingConsumer){
+    public void setTileAt(Loc loc, TileType type){
         //check in bound
         if(Loc.checkInBound(loc, this) == false) return;
             
         //make tile object from type enum and replace the tile at the location
-        tileArray[loc.x() - 1][loc.y() - 1] = new Tile(type, new TileInfo(loc, pingConsumer));
+        tileArray[loc.x()][loc.y()] = new Tile(type, new TileInfo(loc));
 
     }
 
@@ -157,7 +158,7 @@ public class Maze {
         if(Loc.checkInBound(loc, this) == false) return;
 
         //replace tile at location
-        tileArray[loc.x() - 1][loc.y() - 1] = tile;
+        tileArray[loc.x()][loc.y()] = tile;
 
         //update tile info
         tile.info().loc(loc);
@@ -170,4 +171,6 @@ public class Maze {
     public void makeHeroStep(Direction d){
         this.heroNextStep = d;
     }
+
+
 }
