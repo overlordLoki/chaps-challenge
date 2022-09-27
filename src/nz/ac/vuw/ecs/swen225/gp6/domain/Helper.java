@@ -1,5 +1,8 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain;
 
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileManaging.Tile;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileManaging.TileInfo;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileManaging.TileType;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
@@ -14,14 +17,14 @@ public class Helper {
         //initialize the maze with Empty_tile. cant have null tiles
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                gameArray[i][j] = new Tile(TileType.Floor, new TileInfo(new Loc(i, j)));
+                gameArray[i][j] = new Floor(new TileInfo(new Loc(i, j)));
             }
         }
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 //make the walls
                 if(i == 0 || j == 0 || i == width - 1 || j == height - 1){
-                    gameArray[i][j] = new Tile(TileType.Wall, new TileInfo(new Loc(i, j)));
+                    gameArray[i][j] = new Wall(new TileInfo(new Loc(i, j)));
                 }
             }
         }

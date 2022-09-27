@@ -1,13 +1,13 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain;
 
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileInfo;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileType;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileManaging.Tile;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileManaging.TileInfo;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileManaging.TileType;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Null;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 
 import java.util.Arrays;
-import java.util.function.BiConsumer;
 import java.util.stream.IntStream;
 
 
@@ -57,7 +57,7 @@ public class Maze {
         for(int y = 0; y < height; y++){
             r += y + "|";
             for(int x = 0; x < width; x++){
-                r += tileArray[x][y].getSymbol() + "|";
+                r += tileArray[x][y].symbol() + "|";
             }
             r += "\n";
         }
@@ -74,11 +74,13 @@ public class Maze {
         IntStream.range(0, width)
         .forEach( x ->
             IntStream.range(0, height)
-            .forEach(
-                y -> copy[x][y] = new Tile(tileArray[x][y].type(), 
-                new TileInfo(new Loc(x, y))
+            .forEach(y->{
+                Tile t = tileArray[x][y];
+                copy[x][y] = TileType.makeTile(t.type(),
+                new TileInfo(new Loc(x, y), t.info().ping(), t.info().getImageName()));
+            }
             )
-        ));
+        );
         return copy;
     }
 
@@ -113,7 +115,7 @@ public class Maze {
      * if location is out of bounds return null typed tile
      */
     public Tile getTileAt(int x, int y){
-        if(Loc.checkInBound(new Loc(x, y), this) == false) return new Tile(TileType.Null, null);
+        if(Loc.checkInBound(new Loc(x, y), this) == false) return new Null(new TileInfo(null));
         return tileArray[x][y];
     }
 
@@ -121,7 +123,7 @@ public class Maze {
      * gets the tile at the given location in the array
      */
     public Tile getTileAt(Loc l){
-        if(Loc.checkInBound(l, this) == false) return new Tile(TileType.Null, null);
+        if(Loc.checkInBound(l, this) == false) return new Null(new TileInfo(null));
         return tileArray[l.x()][l.y()];
     }
 
@@ -146,7 +148,7 @@ public class Maze {
         if(Loc.checkInBound(loc, this) == false) return;
             
         //make tile object from type enum and replace the tile at the location
-        tileArray[loc.x()][loc.y()] = new Tile(type, new TileInfo(loc));
+        tileArray[loc.x()][loc.y()] = TileType.makeTile(type, new TileInfo(loc));
 
     }
 
