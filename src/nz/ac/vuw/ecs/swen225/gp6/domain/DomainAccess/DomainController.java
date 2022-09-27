@@ -1,10 +1,10 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileManaging.Tile;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 

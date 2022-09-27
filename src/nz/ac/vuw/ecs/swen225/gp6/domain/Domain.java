@@ -1,12 +1,10 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
 
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileManaging.TileType;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.*;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.*;
