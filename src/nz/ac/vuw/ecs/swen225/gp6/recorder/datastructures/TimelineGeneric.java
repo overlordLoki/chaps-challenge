@@ -1,15 +1,15 @@
-package nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.datastructures;
+package nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
 
-public class Timeline {
-    private Queue<Pair<Long, Runnable>> timeline;
+public class TimelineGeneric<E> {
+    private Queue<Pair<Long, E>> timeline;
 
     /**
      * Creates a new Timeline
      */
-    public Timeline() {
+    public TimelineGeneric() {
         this.timeline = new ArrayDeque<>();
     }
 
@@ -17,15 +17,15 @@ public class Timeline {
      * Creates a new Timeline from a saved timeline.
      * @param timeQueue
      */
-    public Timeline(Queue<Pair<Long, Runnable>> timeline) {
+    public TimelineGeneric(Queue<Pair<Long, E>> timeline) {
         this.timeline = timeline;
     }
 
     /**
      * Add actions to the timeline
      */
-    public void add(Long time, Runnable actions) {
-        this.timeline.add(new Pair<Long, Runnable>(time, actions));
+    public void add(Long time, E actions) {
+        this.timeline.add(new Pair<Long, E>(time, actions));
     }
 
     /**
@@ -33,7 +33,7 @@ public class Timeline {
      * in the timeline.
      * @return returns the list of actions to be executed
      */
-    public Pair<Long, Runnable> next(){
+    public Pair<Long, E> next(){
         return timeline.poll();
     }
 

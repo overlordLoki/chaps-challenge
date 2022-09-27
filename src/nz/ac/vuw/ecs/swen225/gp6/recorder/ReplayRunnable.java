@@ -1,23 +1,22 @@
 package nz.ac.vuw.ecs.swen225.gp6.recorder;
 
 import nz.ac.vuw.ecs.swen225.gp6.app.App;
-import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.datastructures.Pair;
-import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.datastructures.Timeline;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.Pair;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.TimelineRunnable;
 
-public class Replay implements Runnable {
-    private Timeline timeline;
+public class ReplayRunnable implements Runnable {
+    private TimelineRunnable timeline;
     private Pair<Long, Runnable> queuedAction;
     private App app;
     private boolean isRunning = false;
     private long time;
     float speed;
-    String game;    // testing purposes only
 
     /**
      * Constructor takes in an app to observe
      * @param app
      */
-    public Replay(App app){
+    public ReplayRunnable(App app){
         this.speed = 1;
         this.app = app;
     }
@@ -32,12 +31,10 @@ public class Replay implements Runnable {
     /**
      * Load method
      */
-    public Replay load(String game){
+    public ReplayRunnable load(String game){
         // this.timeline = Persistency.load(game);
-        this.game = game;
-        this.timeline = new Timeline();
+        this.timeline = new TimelineRunnable();
         this.speed = 1;
-        System.out.println("Loading game: " + game);
         return this;
     }
 
