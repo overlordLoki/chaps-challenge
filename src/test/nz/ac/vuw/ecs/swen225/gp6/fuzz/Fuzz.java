@@ -1,6 +1,6 @@
 package test.nz.ac.vuw.ecs.swen225.gp6.fuzz;
 
-import nz.ac.vuw.ecs.swen225.gp6.app.Actions;
+import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
 import nz.ac.vuw.ecs.swen225.gp6.app.App;
 import org.junit.Test;
 
