@@ -8,7 +8,7 @@ import nz.ac.vuw.ecs.swen225.gp6.renderer.MusicPlayer;
  *  @author Jeff Lin
  */
 public class Actions {
-    public enum Action {MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT;}
+    enum Action {MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT;}
 
     private final App app;
 

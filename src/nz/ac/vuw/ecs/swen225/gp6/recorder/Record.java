@@ -1,16 +1,17 @@
 package nz.ac.vuw.ecs.swen225.gp6.recorder;
 
-import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.TimelineGeneric;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.RecordTimeline;
 import nz.ac.vuw.ecs.swen225.gp6.app.Actions.Action;
 
-public class RecorderEnum {
-    private TimelineGeneric<Action> timeline;
+public class Record {
+    private RecordTimeline<Action> timeline;
 
     public void startRecording(){
-        this.timeline = new TimelineGeneric<Action>();
+        this.timeline = new RecordTimeline<Action>();
     }
     public void addActions(long time, Action actions) {
         this.timeline.add(time, actions); 
+        
     }
     public void stopRecording(){
         if(timeline == null){

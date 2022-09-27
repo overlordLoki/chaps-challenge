@@ -2,11 +2,12 @@ package nz.ac.vuw.ecs.swen225.gp6.recorder;
 
 import nz.ac.vuw.ecs.swen225.gp6.app.App;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.Pair;
-import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.TimelineGeneric;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.RecordTimeline;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.ReplayTimeline;
 import nz.ac.vuw.ecs.swen225.gp6.app.Actions.Action;
 
-public class ReplayEnum implements Runnable {
-    private TimelineGeneric<Action> timeline;
+public class Replay implements Runnable {
+    private ReplayTimeline<Action> timeline;
     private Pair<Long, Action> queuedAction;
     private App app;
     private long time;
@@ -17,7 +18,7 @@ public class ReplayEnum implements Runnable {
      * Constructor takes in an app to observe
      * @param app
      */
-    public ReplayEnum(App app){
+    public Replay(App app){
         if(app == null) {
             throw new IllegalArgumentException("App cannot be null");
         }
@@ -36,12 +37,12 @@ public class ReplayEnum implements Runnable {
      * @param game the name of the game to load
      * @return this replay object to chain methods
      */
-    public ReplayEnum load(String game){
+    public Replay load(String game){
         if(game == null) {
             System.out.println("Game cannot be null");
         }
         // this.timeline = Persistency.load(game);
-        this.timeline = new TimelineGeneric<Action>();
+        this.timeline = new ReplayTimeline<Action>(new RecordTimeline<Action>().getTimeline());
         this.speed = 1;
         return this;
     }
@@ -51,7 +52,7 @@ public class ReplayEnum implements Runnable {
      * If there is no next action, the method will popup a message.
      * @return this replay object to chain methods
      */
-    public ReplayEnum step(){
+    public Replay step(){
         // System.out.println("Stepping");
         checkGame();
         Pair<Long, Action> nextAction = timeline.next();
