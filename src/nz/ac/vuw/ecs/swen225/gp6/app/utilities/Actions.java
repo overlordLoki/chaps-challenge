@@ -1,5 +1,6 @@
-package nz.ac.vuw.ecs.swen225.gp6.app;
+package nz.ac.vuw.ecs.swen225.gp6.app.utilities;
 
+import nz.ac.vuw.ecs.swen225.gp6.app.App;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MusicPlayer;
 
 /**
@@ -68,8 +69,8 @@ public class Actions {
      * Pause the game.
      */
     public void actionPause(){
-        app.getTimer().stop();
-        app.setTime(System.nanoTime() - app.getTimeStart() + app.getTime());
+        app.getGameClock().stop();
+        app.getGameClock().setTime(System.nanoTime() - app.getGameClock().getTimeStart() + app.getGameClock().getTime());
         MusicPlayer.stopGameMusic();
     }
 
@@ -77,8 +78,8 @@ public class Actions {
      * Resume the game.
      */
     public void actionResume(){
-        app.getTimer().start();
-        app.setStartingTime(System.nanoTime());
+        app.getGameClock().start();
+        app.getGameClock().setStartingTime(System.nanoTime());
         MusicPlayer.playGameMusic();
     }
 
