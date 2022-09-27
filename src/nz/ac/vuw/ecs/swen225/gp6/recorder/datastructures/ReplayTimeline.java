@@ -10,11 +10,15 @@ public class ReplayTimeline<E> {
      * Creates a new Timeline
      * @param timeline the timeline to replay
      */
-    public ReplayTimeline(Stack<Pair<Long, E>> timeline) {
+    public ReplayTimeline(RecordTimeline<E> recording) {
+        if(recording == null){
+            throw new IllegalArgumentException("Timeline cannot be null");
+        }
         this.forward = new Stack<>();
         this.backward = new Stack<>();
-        while(!timeline.isEmpty()){
-            forward.push(timeline.pop());    // reverse stack
+        Stack<Pair<Long, E>> temp = recording.getTimeline();
+        while(!temp.isEmpty()){
+            forward.push(temp.pop());    // reverse stack
         }
     }
 
