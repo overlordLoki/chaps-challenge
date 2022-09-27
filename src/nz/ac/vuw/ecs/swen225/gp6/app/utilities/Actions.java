@@ -3,13 +3,27 @@ package nz.ac.vuw.ecs.swen225.gp6.app.utilities;
 import nz.ac.vuw.ecs.swen225.gp6.app.App;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MusicPlayer;
 
+import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.Action;
+
 /**
  *  This class is used to define the actions that can be performed by the user.
  *
  *  @author Jeff Lin
  */
 public class Actions {
-    enum Action {MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT;}
+    /**
+     * The action enum that represents the action performed.
+     */
+    public enum Action {
+        /** Represents the move player move up. */
+        MOVE_UP,
+        /** Represents the move player move down. */
+        MOVE_DOWN,
+        /** Represents the move player move left. */
+        MOVE_LEFT,
+        /** Represents the move player move right. */
+        MOVE_RIGHT
+    }
 
     private final App app;
 
@@ -34,7 +48,7 @@ public class Actions {
      */
     public void actionUp() {
         app.getGame().moveUp();
-//        app.recorder.record(app.getTime(),Action.MOVE_UP);
+//        app.recorder().addAction(app.getTime(),Action.MOVE_UP);
     }
 
     /**

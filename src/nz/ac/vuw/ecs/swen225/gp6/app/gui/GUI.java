@@ -12,14 +12,7 @@ import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack.Images;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import javax.swing.*;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -89,6 +82,7 @@ public class GUI {
      * @param app The App to attach the GUI to.
      */
     public void configureGUI(App app) {
+        assert SwingUtilities.isEventDispatchThread(): "Not in EDT";
         outerPanel.setLayout(outerCardLayout);
         menuPanel.setLayout(menuCardLayout);
         gamePanel.setLayout(gameCardLayout);
@@ -401,7 +395,8 @@ public class GUI {
         addAll(pnInventory, lbInventoryTitle, pnInventories);
         addAll(pnStatus, Box.createVerticalGlue(), pnStatusTop, Box.createVerticalGlue(), pnStatusMid,
                         Box.createVerticalGlue(), pnStatusBot, Box.createVerticalGlue());
-        mazeRender.add(pnPause);
+        // TODO: finish pause panel
+//        mazeRender.add(pnPause);
         pnMaze.add(mazeRender);
         addAll(pnRight, Box.createVerticalGlue(), functionPanel, Box.createVerticalGlue(), pnInventory, Box.createVerticalGlue());
         addAll(pnGame, Box.createHorizontalGlue(), pnStatus, Box.createHorizontalGlue(), pnMaze, Box.createHorizontalGlue(),

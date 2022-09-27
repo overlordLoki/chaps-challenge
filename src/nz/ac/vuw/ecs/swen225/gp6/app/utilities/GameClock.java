@@ -14,15 +14,21 @@ import javax.swing.Timer;
 public class GameClock {
     private App app;
     private boolean inReplayMode = false;
-    private Runnable replayObserver = ()->{};   // observer for the replay mode
-    private long time = 0;          // used to store accumulated time from the previous pause
-    private long timeStart = 0;     // starting time of current pause
-    private long playedTime = 0;    // total time played in a level
+    private Runnable replayObserver = ()->{}; // observer for the replay mode
+    private long time = 0;       // used to store accumulated time from the previous pause
+    private long timeStart = 0;  // starting time of current pause
+    private long playedTime = 0; // total time played in a level
     private final Timer gameTimer = new Timer(34, unused -> {
         assert SwingUtilities.isEventDispatchThread();
         app.getGame().pingAll();
         playedTime = System.nanoTime() - timeStart + time;
-        if (inReplayMode) replayObserver.run();
+        app.repaint();
+    });
+    private final Timer replayTimer = new Timer(34, unused -> {
+        assert SwingUtilities.isEventDispatchThread();
+        app.getGame().pingAll();
+        playedTime = System.nanoTime() - timeStart + time;
+        replayObserver.run();
         app.repaint();
     });
     private Timer timer = gameTimer;
@@ -76,6 +82,13 @@ public class GameClock {
      * @param ob the observer to be set
      */
     public void setObserver(Runnable ob) {this.replayObserver = ob;}
+
+    /**
+     * Sets the delay between pings for the replay timer
+     *
+     * @param delay the delay in milliseconds
+     */
+    public void setReplayDelay(int delay) {this.replayTimer.setDelay(delay);}
 
     /**
      * Sets the timer and its action going to be used for the game loop

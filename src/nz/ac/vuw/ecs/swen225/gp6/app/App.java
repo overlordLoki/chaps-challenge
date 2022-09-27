@@ -8,18 +8,15 @@ import nz.ac.vuw.ecs.swen225.gp6.app.utilities.GameClock;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.DomainEvent;
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
-import nz.ac.vuw.ecs.swen225.gp6.renderer.*;
+import nz.ac.vuw.ecs.swen225.gp6.renderer.MusicPlayer;
+import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
 
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import java.awt.*;
+import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 
 /**
@@ -54,22 +51,6 @@ public class App extends JFrame {
         System.out.println("GUI thread started");
         initialiseGUI();
         controller.update();
-    }
-
-    /**
-     * Constructor used for testing purposes by Fuzz, it will load into the game directly.
-     *
-     * @param i which level to load
-     */
-    public App(int i){
-        System.setOut(new Interceptor(System.out)); // intercepts the output of System.out.print/println
-        System.setErr(new Interceptor(System.err)); // intercepts the output of System.err.print/println
-        System.out.print( "Application boot... ");
-        assert SwingUtilities.isEventDispatchThread(): "boot failed: Not in EDT";
-        System.out.println("GUI thread started");
-        initialiseGUI();
-        game.setCurrentLevel(i);
-        transitionToGameScreen();
     }
 
     /**
@@ -236,7 +217,7 @@ public class App extends JFrame {
      *
      * @return the Configuration object
      */
-    public Configuration getConfiguration(){return config;}
+    public Configuration getConfiguration() {return config;}
 
     /**
      * Gets the controllable actions.
@@ -251,60 +232,4 @@ public class App extends JFrame {
      * @return the game clock object
      */
     public GameClock getGameClock() {return gameClock;}
-
-
-    //================================================================================================================//
-    //============================================ Logger Method =====================================================//
-    //================================================================================================================//
-
-    private static class NonBlockingLog extends Thread{
-        public BlockingQueue<String> queue = new LinkedBlockingQueue<>();
-        public void run(){
-            try {
-                while(true){
-                    String msg;
-                    while ((msg = queue.poll()) != null) {
-                        Persistency.log(msg);
-                    }
-                }
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(null, "Error writing to log file");
-            }
-        }
-    }
-
-    private static class Interceptor extends PrintStream{
-        NonBlockingLog logger;
-        public Interceptor(OutputStream out){
-            super(out, true);
-            logger = new NonBlockingLog();
-            logger.start();
-        }
-        @Override
-        public void print(String s){
-//            super.print(s);      // this line enables output to stdout
-            logger.queue.add(s); // this line enables output to log file
-            GUI.getLogPanel().print(s);   // this line enables output to log panel
-        }
-        @Override
-        public void println(String s){
-            print(s + "\n");
-        }
-        @Override
-        public PrintStream printf(String format, Object... args){
-            print(String.format(format, args));
-            return this;
-        }
-    }
-
-    //================================================================================================================//
-    //============================================= Main Method ======================================================//
-    //================================================================================================================//
-
-    /**
-     * Main method of the application.
-     *
-     * @param args No arguments required for this application
-     */
-    public static void main(String... args){SwingUtilities.invokeLater(App::new);}
 }
