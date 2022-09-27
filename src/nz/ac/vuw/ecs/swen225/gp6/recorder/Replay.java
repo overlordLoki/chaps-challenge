@@ -4,7 +4,7 @@ import nz.ac.vuw.ecs.swen225.gp6.app.App;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.Pair;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.RecordTimeline;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.ReplayTimeline;
-import nz.ac.vuw.ecs.swen225.gp6.app.Actions.Action;
+import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.Action;
 
 public class Replay implements Runnable {
     private ReplayTimeline<Action> timeline;
@@ -27,7 +27,7 @@ public class Replay implements Runnable {
 
     @Override
     public void run() {
-        time = app.getTime();
+        time = app.getGameClock().getTime();
         if (!isRunning) {return;}
         autoPlayActions();
     }
@@ -56,7 +56,7 @@ public class Replay implements Runnable {
         // System.out.println("Stepping");
         checkGame();
         Pair<Long, Action> nextAction = timeline.next();
-        app.setTime(nextAction.getKey());
+        app.getGameClock().setReplayDelay(12); // to change
         executeAction(nextAction.getValue());
         return this;
     }

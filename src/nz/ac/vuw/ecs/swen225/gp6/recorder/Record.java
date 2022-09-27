@@ -1,7 +1,7 @@
 package nz.ac.vuw.ecs.swen225.gp6.recorder;
 
 import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.RecordTimeline;
-import nz.ac.vuw.ecs.swen225.gp6.app.Actions.Action;
+import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.Action;
 
 public class Record {
     private RecordTimeline<Action> timeline;
