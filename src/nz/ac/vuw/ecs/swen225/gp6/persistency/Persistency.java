@@ -75,7 +75,7 @@ public class Persistency {
     record Settings(String texturePack, EnumMap<Keys, String> keyBindings, Boolean musicEnabled) {
     }
 
-    /*
+    /**
      * Get the settings from res/settings.xml
      * 
      * @return Settings object
@@ -110,7 +110,7 @@ public class Persistency {
         return null;
     }
 
-    /*
+    /**
      * Serialise a domain to an XML document
      *
      * @param domain The domain to serialise
@@ -131,7 +131,7 @@ public class Persistency {
         return document;
     }
 
-    /*
+    /**
      * Serialise a maze to an XML document
      * 
      * Example:
@@ -168,7 +168,7 @@ public class Persistency {
         return document;
     }
 
-    /*
+    /**
      * Serialise a tile to an XML element
      * 
      * @param tile The tile to serialise
@@ -187,7 +187,7 @@ public class Persistency {
         return document;
     }
 
-    /*
+    /**
      * Serialise an inventory to an XML document
      * 
      * Example:
@@ -256,12 +256,12 @@ public class Persistency {
         return null;
     }
 
-    /*
+    /**
      * Save a domain to a file
      *
      * @param domain The domain to save
      *
-     * @param path The file path to save to
+     * @param path   The file path to save to
      */
     public static void saveDomain(Domain domain, int slot) throws IOException {
         Document document = serializeDomain(domain);
