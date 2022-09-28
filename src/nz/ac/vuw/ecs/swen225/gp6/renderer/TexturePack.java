@@ -227,8 +227,18 @@ public enum TexturePack{
                 case ExitDoorOpen -> Images.Exit.getImg();
                 case Info -> Images.Empty_tile.getImg();
                 case Coin -> Images.Coin.getImg();
-                default -> throw new IllegalArgumentException("Unexpected value: " + tile.getClass().getName() + " : " + tile.type());
+                default -> Images.loadCustom(tile.info().getImageName());
             };
+        }
+
+        public static BufferedImage loadCustom(String path){
+            try {
+                return ImageIO.read(new File("res/textures/Custom_Textures/"+path+".png"));
+            } catch (IOException e) {
+                try{
+                    return ImageIO.read(new File("res/textures/Custom_Textures/default.png"));
+                }catch (IOException|IllegalArgumentException ex){
+                    System.out.println("Error loading image: " + path); return null;}}
         }
         
         /**
