@@ -11,8 +11,8 @@ public class Replay implements Runnable {
     private Pair<Long, Action> queuedAction;
     private App app;
     private long time;
+    private boolean step = false;
     private boolean isRunning = false;
-    float speed = 1;
 
     /**
      * Constructor takes in an app to observe
@@ -42,8 +42,7 @@ public class Replay implements Runnable {
             System.out.println("Game cannot be null");
         }
         // this.timeline = Persistency.load(game);
-        this.timeline = new ReplayTimeline<Action>(new RecordTimeline<Action>().getTimeline());
-        this.speed = 1;
+        this.timeline = new ReplayTimeline<Action>(new RecordTimeline<Action>());
         return this;
     }
 
@@ -55,44 +54,50 @@ public class Replay implements Runnable {
     public Replay step(){
         // System.out.println("Stepping");
         checkGame();
-        Pair<Long, Action> nextAction = timeline.next();
-        app.getGameClock().setReplayDelay(12); // to change
-        executeAction(nextAction.getValue());
+        this.queuedAction = timeline.next();
+        isRunning = true;
         return this;
     }
 
     /**
      * Method enables the autoPlay functionality.
-     * 
+     * @return this replay object to chain methods
      */
-    public void autoPlay(){
+    public Replay autoPlay(){
         // System.out.println("Auto Replay started");
         checkGame();
         isRunning = true;
+        return this;
     }
 
     /**
      * Method to pause the autoplay feature.
+     * @return this replay object to chain methods
      */
-    public void pauseReplay(){
+    public Replay pauseReplay(){
         this.app.getActions().actionPause();
         isRunning = false;
+        return this;
     }
 
     /**
      * Method sets the speed of the autoplay.
      * @param speed
+     * @return this replay object to chain methods
      */
-    public void setSpeed(float speed) {
-        this.speed = speed; 
+    public Replay setSpeed(int speed) {
+        int delay = 34 / speed;    // default delay is 34ms
+        this.app.getGameClock().setReplayDelay(delay);  
+        return this;
     }
 
     /**
      * Method exits the replay mode.
+     * @return this replay object to chain methods
      */
-    public void stopReplay(){
+    public Replay stopReplay(){
         System.out.println("Replay stopped");
-        // this.app.getActions().stop();  // discuss interaction with app
+        return this;
     }
     
     
@@ -122,6 +127,10 @@ public class Replay implements Runnable {
     private void autoPlayActions() { 
         if(queuedAction != null && queuedAction.getKey() <= this.time){
             executeAction(queuedAction.getValue());
+        }
+        if(step) {
+            isRunning = false;
+            step = false;
         }
         if (!timeline.hasNext()){
             System.out.println("Replay finished"); 

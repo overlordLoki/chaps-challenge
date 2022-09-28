@@ -48,7 +48,7 @@ public class Actions {
      */
     public void actionUp() {
         app.getGame().moveUp();
-//        app.recorder().addAction(app.getTime(),Action.MOVE_UP);
+        app.getRecorder().addActions(app.getGameClock().getTime(),Action.MOVE_UP);
     }
 
     /**
@@ -56,6 +56,7 @@ public class Actions {
      */
     public void actionDown(){
         app.getGame().moveDown();
+        app.getRecorder().addActions(app.getGameClock().getTime(),Action.MOVE_DOWN);
     }
 
     /**
@@ -63,6 +64,7 @@ public class Actions {
      */
     public void actionLeft(){
         app.getGame().moveLeft();
+        app.getRecorder().addActions(app.getGameClock().getTime(),Action.MOVE_LEFT);
     }
 
     /**
@@ -70,6 +72,7 @@ public class Actions {
      */
     public void actionRight(){
         app.getGame().moveRight();
+        app.getRecorder().addActions(app.getGameClock().getTime(),Action.MOVE_RIGHT);
     }
 
     /**
