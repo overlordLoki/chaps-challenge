@@ -1,14 +1,14 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain;
 
-import java.util.Arrays;
-import java.util.function.Consumer;
-import java.util.stream.IntStream;
-
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileInfo;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileType;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
+
+import java.util.Arrays;
+import java.util.function.BiConsumer;
+import java.util.stream.IntStream;
 
 
 public class Maze {
@@ -76,7 +76,7 @@ public class Maze {
             IntStream.range(0, height)
             .forEach(
                 y -> copy[x][y] = new Tile(tileArray[x][y].type(), 
-                new TileInfo(new Loc(x, y), tileArray[x][y].info().consumer())
+                new TileInfo(new Loc(x, y))
             )
         ));
         return copy;
@@ -141,12 +141,12 @@ public class Maze {
      * @param y of tile (0 to max - 1)
      * @param type enum for the tile type to place
      */
-    public void setTileAt(Loc loc, TileType type, Consumer<Domain> pingConsumer){
+    public void setTileAt(Loc loc, TileType type){
         //check in bound
         if(Loc.checkInBound(loc, this) == false) return;
             
         //make tile object from type enum and replace the tile at the location
-        tileArray[loc.x()][loc.y()] = new Tile(type, new TileInfo(loc, pingConsumer));
+        tileArray[loc.x()][loc.y()] = new Tile(type, new TileInfo(loc));
 
     }
 

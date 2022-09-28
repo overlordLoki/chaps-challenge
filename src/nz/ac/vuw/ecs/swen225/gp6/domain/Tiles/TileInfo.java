@@ -1,6 +1,6 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain.Tiles;
 
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
@@ -12,21 +12,36 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
  * and being able to pass larger chunks of information with one parameter.
  */
 public class TileInfo{
-    private Direction staticDirection = Direction.None; //mainly applicable to hero/enemies
-    private Consumer<Domain> consumer; //mainly applicable to enemies currently
+    private Direction staticDirection; //mainly applicable to hero/enemies
+    private String imageName;
     private Loc loc;
     private int ping; //to be used later perhaps to keep count of ping cycles
 
-    public TileInfo(Loc loc, Consumer<Domain> consumer){
+    public TileInfo(Loc loc){
         this.loc = loc;
-        this.consumer = consumer;
+        this.staticDirection = Direction.None;
+        this.ping = 0;
     }
+
+    public TileInfo(Loc loc, Direction dir, int pingCount){
+        this.loc = loc;
+        this.staticDirection = dir;
+        this.ping = pingCount;
+    }
+
+    public TileInfo(Loc loc, String imageName){
+        this.loc = loc;
+        this.imageName = imageName;
+    }
+
+
 
     //GETTERS:
     /*
-     * returns consumer given for some tiles, if null returns a -> {}
+     * returns image name
      */
-    public Consumer<Domain> consumer(){return consumer == null? a ->{}: consumer;}
+    public String getImageName(){return imageName;}
+
     /*
      * returns location of the associated tile
      */
