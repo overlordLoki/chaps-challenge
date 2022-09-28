@@ -29,8 +29,7 @@ public class BaseTests {
     @Test
     public void testEmptySerialise() {
         Inventory inventory = new Inventory(1);
-        inventory.addItem(new Tile(TileType.GreenKey, new TileInfo(new Loc(1, 1), (a) -> {
-        })));
+        inventory.addItem(new Tile(TileType.GreenKey, new TileInfo(new Loc(1, 1))));
         Maze maze = Helper.makeMaze();
         Domain domain = new Domain(List.of(maze), inventory, 1);
         System.out.println(domain);
