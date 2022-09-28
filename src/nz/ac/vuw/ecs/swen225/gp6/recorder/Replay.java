@@ -61,7 +61,7 @@ public class Replay implements Runnable {
 
     /**
      * Method enables the autoPlay functionality.
-     * 
+     * @return this replay object to chain methods
      */
     public Replay autoPlay(){
         // System.out.println("Auto Replay started");
@@ -72,6 +72,7 @@ public class Replay implements Runnable {
 
     /**
      * Method to pause the autoplay feature.
+     * @return this replay object to chain methods
      */
     public Replay pauseReplay(){
         this.app.getActions().actionPause();
@@ -82,6 +83,7 @@ public class Replay implements Runnable {
     /**
      * Method sets the speed of the autoplay.
      * @param speed
+     * @return this replay object to chain methods
      */
     public Replay setSpeed(int speed) {
         int delay = 34 / speed;    // default delay is 34ms
@@ -91,10 +93,11 @@ public class Replay implements Runnable {
 
     /**
      * Method exits the replay mode.
+     * @return this replay object to chain methods
      */
-    public void stopReplay(){
+    public Replay stopReplay(){
         System.out.println("Replay stopped");
-        // this.app.getActions().stop();  // discuss interaction with app
+        return this;
     }
     
     

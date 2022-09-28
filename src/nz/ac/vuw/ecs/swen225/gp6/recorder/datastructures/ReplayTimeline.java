@@ -1,5 +1,6 @@
 package nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures;
 
+
 import java.util.Stack;
 
 public class ReplayTimeline<E> {
@@ -8,7 +9,7 @@ public class ReplayTimeline<E> {
 
     /**
      * Creates a new Timeline
-     * @param timeline the timeline to replay
+     * @param recording the recording to replay from a RecordTimeline object
      */
     public ReplayTimeline(RecordTimeline<E> recording) {
         if(recording == null){
@@ -19,6 +20,21 @@ public class ReplayTimeline<E> {
         Stack<Pair<Long, E>> temp = recording.getTimeline();
         while(!temp.isEmpty()){
             forward.push(temp.pop());    // reverse stack
+        }
+    }
+
+    /**
+     * Creates a new Timeline
+     * @param recording the recording to replay from a stack of pairs
+     */
+    public ReplayTimeline(Stack<Pair<Long, E>> recording) {
+        if(recording == null){
+            throw new IllegalArgumentException("Timeline cannot be null");
+        }
+        this.forward = new Stack<>();
+        this.backward = new Stack<>();
+        while(!recording.isEmpty()){
+            forward.push(recording.pop());    // reverse stack
         }
     }
 

@@ -11,7 +11,7 @@ public class Record {
     }
     public void addActions(long time, Action actions) {
         this.timeline.add(time, actions); 
-        
+        System.out.println("Added action: " + actions.toString());        
     }
     public void stopRecording(){
         if(timeline == null){
