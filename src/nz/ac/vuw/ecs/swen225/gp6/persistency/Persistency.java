@@ -224,8 +224,7 @@ public class Persistency {
             // fill maze with null tiles
             for (int x = 0; x < width; ++x) {
                 for (int y = 0; y < height; ++y) {
-                    maze.setTileAt(new Loc(x, y), TileType.Null, (a) -> {
-                    });
+                    maze.setTileAt(new Loc(x, y), TileType.Null);
                 }
             }
             for (Element cell : grid.elements("cell")) {
@@ -236,15 +235,12 @@ public class Persistency {
                     String name = tile.getName();
                     if (name.equals("key")) {
                         String color = tile.attributeValue("color");
-                        maze.setTileAt(new Loc(x, y), Helper.stringToType.get(color + "Key"), (a) -> {
-                        });
+                        maze.setTileAt(new Loc(x, y), Helper.stringToType.get(color + "Key"));
                     } else if (name.equals("lock")) {
                         String color = tile.attributeValue("color");
-                        maze.setTileAt(new Loc(x, y), Helper.stringToType.get(color + "Lock"), (a) -> {
-                        });
+                        maze.setTileAt(new Loc(x, y), Helper.stringToType.get(color + "Lock"));
                     } else {
-                        maze.setTileAt(new Loc(x, y), Helper.stringToType.get(name), (a) -> {
-                        });
+                        maze.setTileAt(new Loc(x, y), Helper.stringToType.get(name));
                     }
                 }
             }
