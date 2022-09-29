@@ -3,8 +3,6 @@ package nz.ac.vuw.ecs.swen225.gp6.app.utilities;
 import nz.ac.vuw.ecs.swen225.gp6.app.App;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MusicPlayer;
 
-import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.Action;
-
 /**
  *  This class is used to define the actions that can be performed by the user.
  *
@@ -47,6 +45,7 @@ public class Actions {
      * Moves the player up.
      */
     public void actionUp() {
+        if (!app.isResuming()) return;
         app.getGame().moveUp();
         app.getRecorder().addActions(app.getGameClock().getTime(),Action.MOVE_UP);
     }
@@ -55,6 +54,7 @@ public class Actions {
      * Moves the player down.
      */
     public void actionDown(){
+        if (!app.isResuming()) return;
         app.getGame().moveDown();
         app.getRecorder().addActions(app.getGameClock().getTime(),Action.MOVE_DOWN);
     }
@@ -63,6 +63,7 @@ public class Actions {
      * Moves the player left.
      */
     public void actionLeft(){
+        if (!app.isResuming()) return;
         app.getGame().moveLeft();
         app.getRecorder().addActions(app.getGameClock().getTime(),Action.MOVE_LEFT);
     }
@@ -71,15 +72,9 @@ public class Actions {
      * Moves the player right.
      */
     public void actionRight(){
+        if (!app.isResuming()) return;
         app.getGame().moveRight();
         app.getRecorder().addActions(app.getGameClock().getTime(),Action.MOVE_RIGHT);
-    }
-
-    /**
-     * Starts a new game
-     */
-    public void actionStartNew(){
-        app.startNewGame();
     }
 
     /**
@@ -88,7 +83,9 @@ public class Actions {
     public void actionPause(){
         app.getGameClock().stop();
         app.getGameClock().setTime(System.nanoTime() - app.getGameClock().getTimeStart() + app.getGameClock().getTime());
+        app.getGUI().showPausePanel();
         MusicPlayer.stopGameMusic();
+        app.setResuming(false);
     }
 
     /**
@@ -97,7 +94,9 @@ public class Actions {
     public void actionResume(){
         app.getGameClock().start();
         app.getGameClock().setStartingTime(System.nanoTime());
+        app.getGUI().showResumePanel();
         MusicPlayer.playGameMusic();
+        app.setResuming(true);
     }
 
     /**
