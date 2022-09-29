@@ -38,7 +38,7 @@ public class Hero extends Actor{
         //System.out.println( "Location x: " + self.info().loc().x() + " y: " + self.info().loc().y());
         //System.out.println( d.getCurrentMaze().toString());
         
-        staticDirection = m.getDirection(); //set heros direction of facing TODO: change
+        staticDirection = m.getDirection(); //set heros direction of facing 
         m.makeHeroStep(Direction.None); //make hero stop moving
     }
 }

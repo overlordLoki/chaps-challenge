@@ -104,6 +104,18 @@ public class DomainController {
      * TODO: take care of inventory
      */
     public void setCurrentLevel(int lvl) {domain.setCurrentLvl(lvl);}
+
+    /*
+     * If there is another level increments the current level and returns true, 
+     * else return false
+     */
+    public boolean nextLvl(){
+        if(domain.hasNextLvl()){
+            this.domain.setCurrentLvl(this.getCurrentLevel() + 1);
+            return true;
+        }
+        return false;
+    }
     
 }
 

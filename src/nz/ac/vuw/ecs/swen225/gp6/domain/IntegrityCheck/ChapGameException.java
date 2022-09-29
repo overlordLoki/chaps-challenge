@@ -1,4 +1,4 @@
-package nz.ac.vuw.ecs.swen225.gp6.domain.Utility;
+package nz.ac.vuw.ecs.swen225.gp6.domain.IntegrityCheck;
 
 public class ChapGameException extends RuntimeException{
     public ChapGameException(String m){

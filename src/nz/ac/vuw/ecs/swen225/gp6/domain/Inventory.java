@@ -37,6 +37,11 @@ public class Inventory {
      * gets the items (as an umodifiable list)
      */
     public List<Tile> getItems(){return Arrays.stream(items).filter(t -> t.type() != TileType.Null).toList();}
+
+    /*
+     * if the inventory is full, returns true
+     */
+    public boolean isFull(){return Arrays.stream(items).allMatch(t -> t.type() != TileType.Null);}
     
     /*
      * gets the size of the inventory

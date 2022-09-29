@@ -20,7 +20,7 @@ public class Domain {
         onLose,
         onInfo
     }
-    //domain events that app will dictate the behaviour of
+    //domain events whose behaviour is dictated by app
     private EnumMap<DomainEvent, List<Runnable>>  eventListeners 
     = new EnumMap<DomainEvent, List<Runnable>>(DomainEvent.class);
 

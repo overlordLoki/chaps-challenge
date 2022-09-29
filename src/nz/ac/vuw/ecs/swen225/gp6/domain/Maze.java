@@ -1,14 +1,14 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain;
 
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileManaging.Tile;
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileManaging.TileInfo;
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileManaging.TileType;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Null;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
+
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileManaging.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.*;
 
 import java.util.Arrays;
 import java.util.stream.IntStream;
+
+import javax.swing.text.Position;
 
 
 public class Maze {
@@ -46,7 +46,7 @@ public class Maze {
      * @return direction of heros next step
      */
     public Direction getDirection(){return heroNextStep;}
-
+    
     /*
      * toString method which creates the board with each tile's given symbol
      */
@@ -127,6 +127,18 @@ public class Maze {
         return tileArray[l.x()][l.y()];
     }
 
+    /*
+     * gets the first tile found of a given type, otherwise a null typed tile
+     */
+    public Tile getTileWithType(TileType type){
+        return (Hero)Arrays
+        .stream(tileArray)
+        .flatMap(Arrays::stream)
+        .filter(t -> t.type() == type)
+        .findFirst()
+        .orElse(new Null(new TileInfo(null)));
+    }
+    
     //SETTERS and ACTIONS:
     /**
      * pings all tiles in the maze
@@ -173,6 +185,5 @@ public class Maze {
     public void makeHeroStep(Direction d){
         this.heroNextStep = d;
     }
-
 
 }
