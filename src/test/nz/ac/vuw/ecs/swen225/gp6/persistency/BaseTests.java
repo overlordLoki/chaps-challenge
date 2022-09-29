@@ -46,7 +46,7 @@ public class BaseTests {
     public void testMazeDeserialization() {
         Maze maze = Helper.makeMaze();
         Document doc = Persistency.serializeMaze(maze, 0);
-        Maze maze2 = Persistency.deserializeMaze(doc.getRootElement().asXML());
+        Maze maze2 = Persistency.deserializeMaze(doc);
         maze2.toString();
         assertEquals(maze.toString(), maze2.toString());
     }

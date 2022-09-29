@@ -20,6 +20,7 @@ import nz.ac.vuw.ecs.swen225.gp6.persistency.Helper;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Inventory;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.Tile;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileInfo;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 
@@ -27,6 +28,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 
 import nz.ac.vuw.ecs.swen225.gp6.app.*;
 
@@ -126,9 +128,28 @@ public class Persistency {
             Document mazeDoc = serializeMaze(maze, i);
             levels.add(mazeDoc.getRootElement());
         }
+        levels.addAttribute("current", Integer.toString(domain.getLvl() - 1));
         root.add(serializeInventory(domain.getInv()).getRootElement());
 
         return document;
+    }
+
+    /**
+     * Deserialise a domain from an XML document
+     * 
+     * @param document The XML document to deserialise
+     * @return The deserialised domain
+     */
+    public static Domain deserializeDomain(Document document) {
+        Element root = document.getRootElement();
+        Element levels = root.element("levels");
+        List<Maze> mazes = new ArrayList<>();
+        for (Element level : levels.elements()) {
+            mazes.add(deserializeMaze(level.getDocument()));
+        }
+        int currentLevel = Integer.parseInt(levels.attributeValue("current"));
+        Inventory inv = deserializeInventory(root.element("inventory").getDocument());
+        return new Domain(mazes, inv, currentLevel);
     }
 
     /**
@@ -208,48 +229,75 @@ public class Persistency {
     }
 
     /**
+     * Deserialise inventory from an XML document
+     * 
+     * @param document The XML document to deserialise
+     * @return The deserialised inventory
+     */
+    public static Inventory deserializeInventory(Document document) {
+        Element root = document.getRootElement();
+        Inventory inv = new Inventory(Integer.parseInt(root.attributeValue("size")));
+        for (Element item : root.elements()) {
+            inv.addItem(TileType.makeTile(deserializeTileType(item), new TileInfo(new Loc(0, 0))));
+        }
+        return inv;
+    }
+
+    /**
+     * Deserialise a tile type from an XML element
+     * 
+     * @param element The XML element to deserialise
+     * @return The deserialised tile type
+     */
+    public static TileType deserializeTileType(Element element) {
+        String name = element.getName();
+        if (name.equals("key")) {
+            String color = element.attributeValue("color");
+            return Helper.stringToType.get(color + "Key");
+        } else if (name.equals("lock")) {
+            String color = element.attributeValue("color");
+            return Helper.stringToType.get(color + "Lock");
+        } else {
+            return Helper.stringToType.get(name);
+        }
+    }
+
+    /**
      * Deserialise a maze from an XML document
      * 
      * @param xml
      * @return The unserialised maze
      */
-    public static Maze deserializeMaze(String xml) {
-        try {
-            Document doc = DocumentHelper.parseText(xml);
-            Element root = doc.getRootElement();
-            Element grid = root.element("grid");
-            int width = Integer.parseInt(grid.attributeValue("width"));
-            int height = Integer.parseInt(grid.attributeValue("height"));
-            Maze maze = new Maze(new Tile[width][height]);
-            // fill maze with null tiles
-            for (int x = 0; x < width; ++x) {
-                for (int y = 0; y < height; ++y) {
-                    maze.setTileAt(new Loc(x, y), TileType.Floor);
-                }
+    public static Maze deserializeMaze(Document doc) {
+        Element root = doc.getRootElement();
+        Element grid = root.element("grid");
+        int width = Integer.parseInt(grid.attributeValue("width"));
+        int height = Integer.parseInt(grid.attributeValue("height"));
+        Maze maze = new Maze(new Tile[width][height]);
+        // fill maze with null tiles
+        for (int x = 0; x < width; ++x) {
+            for (int y = 0; y < height; ++y) {
+                maze.setTileAt(new Loc(x, y), TileType.Floor);
             }
-            for (Element cell : grid.elements("cell")) {
-                int x = Integer.parseInt(cell.attributeValue("x"));
-                int y = Integer.parseInt(cell.attributeValue("y"));
-                Element tile = cell.elements().get(0);
-                if (tile != null) {
-                    String name = tile.getName();
-                    if (name.equals("key")) {
-                        String color = tile.attributeValue("color");
-                        maze.setTileAt(new Loc(x, y), Helper.stringToType.get(color + "Key"));
-                    } else if (name.equals("lock")) {
-                        String color = tile.attributeValue("color");
-                        maze.setTileAt(new Loc(x, y), Helper.stringToType.get(color + "Lock"));
-                    } else {
-                        maze.setTileAt(new Loc(x, y), Helper.stringToType.get(name));
-                    }
-                }
-            }
-            return maze;
-        } catch (DocumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
-        return null;
+        for (Element cell : grid.elements("cell")) {
+            int x = Integer.parseInt(cell.attributeValue("x"));
+            int y = Integer.parseInt(cell.attributeValue("y"));
+            Element tile = cell.elements().get(0);
+            if (tile != null) {
+                String name = tile.getName();
+                if (name.equals("key")) {
+                    String color = tile.attributeValue("color");
+                    maze.setTileAt(new Loc(x, y), Helper.stringToType.get(color + "Key"));
+                } else if (name.equals("lock")) {
+                    String color = tile.attributeValue("color");
+                    maze.setTileAt(new Loc(x, y), Helper.stringToType.get(color + "Lock"));
+                } else {
+                    maze.setTileAt(new Loc(x, y), Helper.stringToType.get(name));
+                }
+            }
+        }
+        return maze;
     }
 
     /**
@@ -287,12 +335,11 @@ public class Persistency {
      */
     public static Domain getInitialDomain() {
         File file = new File("res/levels/level1.xml");
-        String xml = "";
         try {
-            xml = new String(Files.readAllBytes(file.toPath()));
-            Maze maze = deserializeMaze(xml);
+            Document document = new SAXReader().read(file);
+            Maze maze = deserializeMaze(document);
             return new Domain(List.of(maze), new Inventory(8), 1);
-        } catch (IOException e) {
+        } catch (DocumentException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
             return new Domain(List.of(nz.ac.vuw.ecs.swen225.gp6.domain.Helper.makeMaze()), new Inventory(8), 1);
