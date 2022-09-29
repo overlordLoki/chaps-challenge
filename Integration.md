@@ -44,6 +44,8 @@
 
 ------
 ## Integration breakdown from package: Fuzz
-| Class Name | Destination | line Number |
-|------------|-------------|-------------|
-|            |             |             |
+| Class Name | Destination | line Number                                                  |
+|------------|-------------|--------------------------------------------------------------|
+| Fuzz.java  | App         | [39](/src/test/nz/ac/vuw/ecs/swen225/gp6/fuzz/Fuzz.java#L39) |
+| Fuzz.java  | Actions     | [40](/src/test/nz/ac/vuw/ecs/swen225/gp6/fuzz/Fuzz.java#L40) |
+| Fuzz.java  | App         | [46](/src/test/nz/ac/vuw/ecs/swen225/gp6/fuzz/Fuzz.java#L46) |
