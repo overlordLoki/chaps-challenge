@@ -224,7 +224,7 @@ public class Persistency {
             // fill maze with null tiles
             for (int x = 0; x < width; ++x) {
                 for (int y = 0; y < height; ++y) {
-                    maze.setTileAt(new Loc(x, y), TileType.Null);
+                    maze.setTileAt(new Loc(x, y), TileType.Floor);
                 }
             }
             for (Element cell : grid.elements("cell")) {
