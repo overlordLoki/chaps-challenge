@@ -18,16 +18,10 @@ public class MazeRenderer extends JPanel{
     public BufferedImage background; //the background image
     private int patternSize = 100; //the size of the pattern
     static TexturePack currentTP = TexturePack.Dogs; //the current texture pack
-    /**
-     * getter for patternSize
-     * @return patternSize
-     */
-    public int getPatternSize() {return patternSize;}
-    /**
-     * get current texture pack
-     * @return texturePack
-     */
-    public TexturePack getCurrentTexturePack(){return texturePack;}
+    private int renderSize = 50; //the size of the render
+    private int minRenderSize = 1, maxRenderSize = 50; //the min and max render size
+
+
     /**
      * Constructor. Takes a maze as parameters.
      * 
@@ -37,23 +31,6 @@ public class MazeRenderer extends JPanel{
         this.maze = maze;
         this.setOpaque(false);
     }
-    /**
-     * set the current texturePack and returns the new background image
-     * 
-     * @param texturePack
-     */
-    public void setTexturePack(TexturePack texturePack) {
-        this.texturePack = texturePack;
-        MazeRenderer.currentTP = texturePack;
-        TexturePack.Images.reloadAllTexturepack();
-        patternSize = 100;
-    }
-
-    /**
-     * set the maze to be rendered
-     * @param maze
-     */
-    public void setMaze(DomainController maze) {this.maze = maze;}
 
     /**
      * get a image from the image provided
@@ -69,7 +46,7 @@ public class MazeRenderer extends JPanel{
         //get the maze array
         gameArray = maze.getGameArray();
         //viewport of the maze
-        Tile[][] viewport = Viewport.getViewport(gameArray, 7);
+        Tile[][] viewport = Viewport.getViewport(gameArray, renderSize);
         //get the width and height of the maze
         int tileWidth = (getWidth() / viewport.length);
         int tileHeight = (getHeight() / viewport[1].length);
@@ -85,5 +62,61 @@ public class MazeRenderer extends JPanel{
             }
         }
     }
+
+    /**
+     * set the current texturePack and returns the new background image
+     * 
+     * @param texturePack
+     */
+    public void setTexturePack(TexturePack texturePack) {
+        this.texturePack = texturePack;
+        MazeRenderer.currentTP = texturePack;
+        TexturePack.Images.reloadAllTexturepack();
+        patternSize = 100;
+    }
+
+    //------------------------------------------------------------------------------------------------//
+    //getters and setters
+
+    /**
+     * get min render size
+     * @return minRenderSize
+     */
+    public int getMinRenderSize() {return minRenderSize;}
+    /**
+     * get maximum render size
+     * @return maxRenderSize
+     */
+    public int getMaxRenderSize() {return maxRenderSize;}
+    
+
+    /**
+     * get render size
+     * @return int
+     */
+    public int getRenderSize() {return renderSize;}
+
+    /**
+     * set render size
+     * @param renderSize
+     */
+    public void setRenderSize(int renderSize) {this.renderSize = renderSize;}
+
+    /**
+     * getter for patternSize
+     * @return patternSize
+     */
+    public int getPatternSize() {return patternSize;}
+    /**
+     * get current texture pack
+     * @return texturePack
+     */
+    public TexturePack getCurrentTexturePack(){return texturePack;}
+
+    /**
+     * set the maze to be rendered
+     * @param maze
+     */
+    public void setMaze(DomainController maze) {this.maze = maze;}
 
 }
