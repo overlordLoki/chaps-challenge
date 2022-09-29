@@ -76,13 +76,6 @@ public class Actions {
     }
 
     /**
-     * Starts a new game
-     */
-    public void actionStartNew(){
-        app.startNewGame();
-    }
-
-    /**
      * Pause the game.
      */
     public void actionPause(){
