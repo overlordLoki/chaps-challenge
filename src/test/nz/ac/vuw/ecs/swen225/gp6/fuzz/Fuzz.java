@@ -5,8 +5,11 @@ import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.IntStream;
+
 import static java.awt.event.KeyEvent.*;
 
 /**
@@ -28,12 +31,19 @@ public class Fuzz {
     static App app;
     static Robot robot;
     static List<Runnable> actionsList = List.of();
-
+    /**
+     * Initialize the test robot
+     */
     static {
         try {robot = new Robot();}
         catch (AWTException e) {throw new RuntimeException(e);}
     }
 
+    /**
+     * This method is used to generate a random action
+     * @Input: int number of actions for test
+     * @return a random action in App we initialized
+     */
     public static void testLevel(int numOfInputs){
         SwingUtilities.invokeLater(()->{
             app = new App();
@@ -53,6 +63,10 @@ public class Fuzz {
         System.out.println("Testing Level: "+app.getGame().getCurrentLevel() + " Completed");
     }
 
+    /**
+     * This method is used to keep testing in one level
+     * @return loop of random action in App we initialized until the first level is done
+     */
     public static void unlimittest(){
         SwingUtilities.invokeLater(()->{
             app = new App();
@@ -77,6 +91,10 @@ public class Fuzz {
 
     }
 
+    /**
+     * This method is used to test specific key combination
+     * @return robot will press specific key combination
+     */
     public static void keyTest() throws AWTException {
         App app = new App();
         app.startNewGame();
@@ -112,6 +130,10 @@ public class Fuzz {
         robot.keyRelease(KeyEvent.VK_2);
     }
 
+    /**
+     * This method is used to test specific mouse combination
+     * @return robot will do the specific mouse event and return messages
+     */
     public static void mouseTest() throws AWTException {
 //        App app = new App();
 //        app.transitionToGameScreen();
@@ -125,13 +147,95 @@ public class Fuzz {
 //        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
     }
 
+    /**
+     * This method is just hardcode to test level 1 can be passed
+     * @return print out the key event
+     */
+    static List<Runnable> test1HC = new ArrayList<>();
+    static Actions actions;
+    public static void hardCode(){
+        SwingUtilities.invokeLater(()->{
+            app = new App();
+            actions = app.getActions();
+            app.startNewGame();
+            app.transitionToGameScreen();
+            actionsList = List.of(actions::actionUp, actions::actionDown, actions::actionLeft, actions::actionRight);
+
+        });
+        JOptionPane.showMessageDialog(null,"Start Fuzzing");
+
+
+        test1HC.add(actions::actionUp);
+        IntStream.range(0,2).forEach(i->test1HC.add(actions::actionLeft));
+        IntStream.range(0,3).forEach(i->test1HC.add(actions::actionDown));
+
+        IntStream.range(0,7).forEach(i->test1HC.add(actions::actionRight));
+        IntStream.range(0,1).forEach(i->test1HC.add(actions::actionUp));
+        IntStream.range(0,1).forEach(i->test1HC.add(actions::actionLeft));
+        IntStream.range(0,2).forEach(i->test1HC.add(actions::actionDown));
+        IntStream.range(0,2).forEach(i->test1HC.add(actions::actionLeft));
+
+        IntStream.range(0,4).forEach(i->test1HC.add(actions::actionUp));
+        IntStream.range(0,4).forEach(i->test1HC.add(actions::actionRight));
+        IntStream.range(0,1).forEach(i->test1HC.add(actions::actionDown));
+        IntStream.range(0,2).forEach(i->test1HC.add(actions::actionLeft));
+        IntStream.range(0,1).forEach(i->test1HC.add(actions::actionUp));
+        IntStream.range(0,10).forEach(i->test1HC.add(actions::actionLeft));
+
+        IntStream.range(0,1).forEach(i->test1HC.add(actions::actionDown));
+        IntStream.range(0,2).forEach(i->test1HC.add(actions::actionRight));
+        IntStream.range(0,1).forEach(i->test1HC.add(actions::actionUp));
+
+        IntStream.range(0,2).forEach(i->test1HC.add(actions::actionRight));
+        IntStream.range(0,4).forEach(i->test1HC.add(actions::actionDown));
+        IntStream.range(0,3).forEach(i->test1HC.add(actions::actionLeft));
+        IntStream.range(0,1).forEach(i->test1HC.add(actions::actionUp));
+        IntStream.range(0,1).forEach(i->test1HC.add(actions::actionDown));
+
+        IntStream.range(0,4).forEach(i->test1HC.add(actions::actionRight));
+        IntStream.range(0,4).forEach(i->test1HC.add(actions::actionDown));
+        IntStream.range(0,4).forEach(i->test1HC.add(actions::actionUp));
+
+        IntStream.range(0,2).forEach(i->test1HC.add(actions::actionRight));
+        IntStream.range(0,4).forEach(i->test1HC.add(actions::actionDown));
+        IntStream.range(0,8).forEach(i->test1HC.add(actions::actionUp));
+        IntStream.range(0,1).forEach(i->test1HC.add(actions::actionRight));
+        IntStream.range(0,2).forEach(i->test1HC.add(actions::actionUp));
+
+        IntStream.range(0,1).forEach(i->test1HC.add(actions::actionRight));
+        IntStream.range(0,1).forEach(i->test1HC.add(actions::actionLeft));
+        IntStream.range(0,2).forEach(i->test1HC.add(actions::actionDown));
+        IntStream.range(0,4).forEach(i->test1HC.add(actions::actionLeft));
+        IntStream.range(0,2).forEach(i->test1HC.add(actions::actionUp));
+        IntStream.range(0,1).forEach(i->test1HC.add(actions::actionLeft));
+        IntStream.range(0,1).forEach(i->test1HC.add(actions::actionRight));
+
+        IntStream.range(0,2).forEach(i->test1HC.add(actions::actionDown));
+        IntStream.range(0,2).forEach(i->test1HC.add(actions::actionRight));
+
+        IntStream.range(0,2).forEach(i->test1HC.add(actions::actionUp));
+        test1HC.forEach(a->{
+            a.run();
+            robot.delay(100);
+        });
+
+    }
+
+    /**
+     * This method is used to print out the key event message what App get and action done
+     * @return message of key event
+     */
     public static void key_Event_Print(int e){
         System.out.println("Action key pressed: " + KeyEvent.getKeyText(e));
     }
 
+    /**
+     * Main method to run different test
+     */
     public static void main(String[] args) throws AWTException {
+//        hardCode();
 //        keyTest();
-        testLevel( 100);
+        testLevel( 1000);
 //        testLevel( 100);
 //        unlimittest();
         System.out.println("All Tests Complete");

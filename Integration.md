@@ -42,4 +42,6 @@
 ## Integration breakdown from package: Fuzz
 | Class Name | Destination | line Number |
 |------------|-------------|-------------|
-|            |             |             |
+| Fuzz.java  | App         | 39          |
+| Fuzz.java  | Actions     | 40          |
+| Fuzz.java  | App         | 46          |
