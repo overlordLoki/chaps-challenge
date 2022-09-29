@@ -7,9 +7,11 @@ import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.GameClock;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.DomainEvent;
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
-import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MusicPlayer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
+import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.Replay;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.Record;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -39,6 +41,8 @@ public class App extends JFrame {
     private final Controller controller = new Controller(this);
     private final GameClock gameClock   = new GameClock(this);
     private final GUI gui               = new GUI(this);
+    private final Record recorder       = new Record();
+    private final Replay replay         = new Replay(this);
 
     /**
      * Constructor for the App class. Initializes the GUI and the main loop.
@@ -151,6 +155,7 @@ public class App extends JFrame {
      */
     public void startNewGame() {
         updateGameComponents(new DomainController(Persistency.getInitialDomain()), gameClock.getTimer());
+        recorder.startRecording();
         transitionToGameScreen();
     }
 
@@ -161,6 +166,8 @@ public class App extends JFrame {
      */
     public void startSavedGame(DomainController save) {
         updateGameComponents(save, gameClock.getTimer());
+        replay.load("save");
+        recorder.startRecording();
         transitionToGameScreen();
     }
 
@@ -171,6 +178,7 @@ public class App extends JFrame {
      */
     public void startSavedReplay(DomainController save) {
         updateGameComponents(save, gameClock.getTimer());
+        replay.load("save");
         transitionToReplayScreen();
     }
 
@@ -232,4 +240,11 @@ public class App extends JFrame {
      * @return the game clock object
      */
     public GameClock getGameClock() {return gameClock;}
+
+    /**
+     * Gets the current Recorder.
+     *
+     * @return the recorder object
+     */
+    public Record getRecorder() {return recorder;}
 }
