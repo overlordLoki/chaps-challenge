@@ -18,7 +18,7 @@ public class MazeRenderer extends JPanel{
     public BufferedImage background; //the background image
     private int patternSize = 100; //the size of the pattern
     static TexturePack currentTP = TexturePack.Dogs; //the current texture pack
-    private int renderSize = 50; //the size of the render
+    private int renderSize = 7; //the size of the render
     private int minRenderSize = 1, maxRenderSize = 50; //the min and max render size
 
 
