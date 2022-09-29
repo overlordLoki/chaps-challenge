@@ -3,7 +3,7 @@ package nz.ac.vuw.ecs.swen225.gp6.persistency;
 import java.util.EnumMap;
 import java.util.HashMap;
 
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileType;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
 
 public class Helper {
     public static EnumMap<TileType, String> typeToString = new EnumMap<>(TileType.class);

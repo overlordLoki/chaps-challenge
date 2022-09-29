@@ -1,12 +1,11 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileType;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
 
 public class Inventory {
     private Tile[] items;
@@ -19,7 +18,7 @@ public class Inventory {
         this.coins = 0;
 
         //fill inventory with null typed tiles
-        IntStream.range(0, size).forEach(i -> items[i] = new Tile(TileType.Null, null));
+        IntStream.range(0, size).forEach(i -> items[i] = new Null(new TileInfo(null)));
     }
 
     public Inventory(int size, int coins, List<Tile> items){
@@ -28,7 +27,7 @@ public class Inventory {
         this.items = new Tile[size];
         
         //fill inventory with null typed tiles
-        IntStream.range(0, size).forEach(i -> this.items[i] = new Tile(TileType.Null, null));
+        IntStream.range(0, size).forEach(i -> this.items[i] = new Null(new TileInfo(null)));
 
         //add items to inventory
         items.forEach(this::addItem);
@@ -38,6 +37,11 @@ public class Inventory {
      * gets the items (as an umodifiable list)
      */
     public List<Tile> getItems(){return Arrays.stream(items).filter(t -> t.type() != TileType.Null).toList();}
+
+    /*
+     * if the inventory is full, returns true
+     */
+    public boolean isFull(){return Arrays.stream(items).allMatch(t -> t.type() != TileType.Null);}
     
     /*
      * gets the size of the inventory
@@ -87,14 +91,14 @@ public class Inventory {
         .orElse(-1);
 
         if(index == -1) return false; //if tile type not found return false
-        items[index] = new Tile(TileType.Null, null); //set to null tile type
+        items[index] = new Null(new TileInfo(null)); //set to null tile type
         return true;
     }
 
     public String toString(){
         String r = "Inv(" + size + "): ";
         for(Tile item : items){
-            if(item.type() != TileType.Null) r += item.getSymbol()+ ", ";
+            if(item.type() != TileType.Null) r += item.symbol()+ ", ";
         }
         return r.substring(0, r.length() - 2);
     }

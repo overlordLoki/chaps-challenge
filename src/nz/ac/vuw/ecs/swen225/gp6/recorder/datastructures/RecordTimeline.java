@@ -2,6 +2,13 @@ package nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures;
 
 import java.util.Stack;
 
+/**
+ * A generic record timeline class that stores a series of events in chronological order.
+ * Events can only be added to the end of the timeline.
+ * @param <E> the type of the events
+ * 
+ * @author: Jayden Hooper
+ */
 public class RecordTimeline<E> {
     private Stack<Pair<Long, E>> timeline;
 
@@ -13,17 +20,12 @@ public class RecordTimeline<E> {
     }
 
     /**
-     * Creates a new Timeline from a saved timeline.
-     * @param timeQueue
-     */
-    public RecordTimeline(Stack<Pair<Long, E>> timeline) {
-        this.timeline = timeline;
-    }
-
-    /**
      * Add actions to the timeline
      */
     public void add(Long time, E actions) {
+        if(time < timeline.peek().getKey()){
+            throw new IllegalArgumentException("Time recordered must be chronological.");
+        }
         this.timeline.add(new Pair<Long, E>(time, actions));
     }
 

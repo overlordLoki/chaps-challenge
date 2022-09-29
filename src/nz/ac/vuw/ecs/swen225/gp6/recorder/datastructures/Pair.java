@@ -2,6 +2,10 @@ package nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures;
 
 /**
  * Generic Pair class that has a key and value defined by the user.
+ * @param <T> the type of the key
+ * @param <V> the type of the value
+ * 
+ * @author: Jayden Hooper
  */
 public class Pair<T,E> {
     private T key;

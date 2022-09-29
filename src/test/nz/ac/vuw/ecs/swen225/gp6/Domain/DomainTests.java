@@ -1,6 +1,9 @@
 package test.nz.ac.vuw.ecs.swen225.gp6.Domain;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.Tile;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileInfo;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
@@ -22,9 +25,9 @@ public class DomainTests {
     @Test
     public void testMazeToString() {
         Maze maze = new Maze(new Tile[][] {
-            {new Tile(TileType.Wall, new TileInfo(null, null)), new Tile(TileType.Wall, new TileInfo(null, null)), new Tile(TileType.Wall, new TileInfo(null, null))},
-            {new Tile(TileType.Wall, new TileInfo(null, null)), new Tile(TileType.Floor, new TileInfo(null, null)), new Tile(TileType.Wall, new TileInfo(null, null))},
-            {new Tile(TileType.Wall, new TileInfo(null, null)), new Tile(TileType.Wall, new TileInfo(null, null)), new Tile(TileType.Wall, new TileInfo(null, null))}
+            {new Wall(new TileInfo(null, null)), new Wall( new TileInfo(null, null)), new Wall(new TileInfo(null, null))},
+            {new Wall(new TileInfo(null, null)), new Floor(new TileInfo(null, null)), new Wall(new TileInfo(null, null))},
+            {new Wall(new TileInfo(null, null)), new Wall(new TileInfo(null, null)), new Wall(new TileInfo(null, null))}
         });
         assertEquals(
             "0|||||||\n" + 
@@ -39,9 +42,9 @@ public class DomainTests {
     @Test
     public void testInventoryToString(){
         Inventory inv = new Inventory(8);
-        inv.addItem(new Tile(TileType.OrangeKey, new TileInfo(null)));
-        inv.addItem(new Tile(TileType.BlueKey, new TileInfo(null))); 
-        inv.addItem(new Tile(TileType.GreenKey, new TileInfo(null)));
+        inv.addItem(new OrangeKey(new TileInfo(null)));
+        inv.addItem(new BlueKey(new TileInfo(null))); 
+        inv.addItem(new GreenKey(new TileInfo(null)));
         assertEquals("Inv(8): o, b, g", 
         inv.toString());
     }
@@ -107,9 +110,11 @@ public class DomainTests {
      * with given info (e.g location x and y)
      */
     public Tile makeTile(char c, int x, int y){
-        TileType  type = Arrays.stream(TileType.values()).filter(t -> t.getSymbol() == c).findFirst().get();
+        TileType  type = Arrays.stream(TileType.values())
+        .filter(t -> TileType.makeTile(t, null).symbol() == c).findFirst().get();
+
         TileInfo info = new TileInfo(new Loc(x,y));
-        return new Tile(type, info);
+        return TileType.makeTile(type, info);
     }
 
     /*
