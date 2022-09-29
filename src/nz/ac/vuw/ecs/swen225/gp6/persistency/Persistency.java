@@ -316,6 +316,19 @@ public class Persistency {
     }
 
     /**
+     * Load a maze from a file
+     * 
+     * @param path The file path to load from
+     * @return The loaded maze
+     */
+    public static Domain loadDomain(int slot) {
+        // open level1.xml
+        File file = new File("res/save/" + slot + ".xml");
+
+        return new Domain(List.of(), new Inventory(8), 1);
+    }
+
+    /**
      * List saved games in res/saves
      * 
      * @return List of games
