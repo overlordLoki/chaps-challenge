@@ -11,9 +11,10 @@
 
 ------
 ## Integration breakdown from package: Domain
-| Class Name | Destination | line Number |
-|------------|-------------|-------------|
-|            |             |             |
+| Class Name          | Destination | line Number |
+|---------------------|-------------|-------------|
+|DomainController.java| App         | 18          |
+|Domain.java          | Persistency | 27          |
 
 
 ------
