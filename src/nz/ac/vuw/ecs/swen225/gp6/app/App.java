@@ -196,10 +196,12 @@ public class App extends JFrame {
         try{
             this.game.addEventListener(DomainEvent.onWin, ()->{
                 inResume = false;
-                System.out.println("You win!");});
+                System.out.println("You win!");
+                gui.transitionToWinScreen();});
             this.game.addEventListener(DomainEvent.onLose, ()->{
 //                inResume = false;
-                System.out.println("You lose!");});
+                System.out.println("You lose!");
+                gui.transitionToLostScreen();});
         }catch(Exception e){
             System.out.println("Failed to add event listener");
             e.printStackTrace();
