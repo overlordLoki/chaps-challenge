@@ -3,6 +3,13 @@ package nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures;
 
 import java.util.Stack;
 
+/**
+ * A generic timeline class that replays a series of events in chronological order.
+ * Events can be retrieved in both forward and reverse order.
+ * @param <E> the type of the events
+ * 
+ * @author: Jayden Hooper
+ */
 public class ReplayTimeline<E> {
     private Stack<Pair<Long, E>> forward;
     private Stack<Pair<Long, E>> backward;

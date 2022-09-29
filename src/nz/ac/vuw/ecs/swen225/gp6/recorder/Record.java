@@ -3,6 +3,11 @@ package nz.ac.vuw.ecs.swen225.gp6.recorder;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.RecordTimeline;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.Action;
 
+/**
+ * Class for recording actions in a game.
+ *
+ * @author: Jayden Hooper
+ */
 public class Record {
     private RecordTimeline<Action> timeline;
 
@@ -17,7 +22,7 @@ public class Record {
      * Starts a new recording.
      */
     public void startRecording(){
-        this.timeline = new RecordTimeline<Action>();
+        this.timeline = new RecordTimeline<>();
     }
 
     /**

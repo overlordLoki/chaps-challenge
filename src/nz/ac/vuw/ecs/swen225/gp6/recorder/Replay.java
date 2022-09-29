@@ -6,6 +6,14 @@ import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.RecordTimeline;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.ReplayTimeline;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.Action;
 
+/**
+ * Class for replaying a recorded game.
+ * The Replay class observes the App to be updated of the time, 
+ * to make sure actions are in sync with the game.
+ * This allows the App to still have control of the game during replay.
+ *
+ * @author: Jayden Hooper
+ */
 public class Replay implements Runnable {
     private ReplayTimeline<Action> timeline;
     private Pair<Long, Action> queuedAction;
@@ -16,7 +24,7 @@ public class Replay implements Runnable {
 
     /**
      * Constructor takes in an app to observe
-     * @param app
+     * @param app the app to observe
      */
     public Replay(App app){
         if(app == null) {
@@ -82,7 +90,7 @@ public class Replay implements Runnable {
 
     /**
      * Method sets the speed of the autoplay.
-     * @param speed
+     * @param speed the speed to set the replay to
      * @return this replay object to chain methods
      */
     public Replay setSpeed(int speed) {
