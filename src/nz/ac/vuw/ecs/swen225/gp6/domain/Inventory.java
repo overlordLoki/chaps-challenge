@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileManaging.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
 
 public class Inventory {

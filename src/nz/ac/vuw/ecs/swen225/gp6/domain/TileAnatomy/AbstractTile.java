@@ -1,4 +1,4 @@
-package nz.ac.vuw.ecs.swen225.gp6.domain.TileManaging;
+package nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy;
 
 /*
  * This class is the parent class of all tiles in the game.

@@ -1,7 +1,7 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain;
 
 
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileManaging.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.*;
 

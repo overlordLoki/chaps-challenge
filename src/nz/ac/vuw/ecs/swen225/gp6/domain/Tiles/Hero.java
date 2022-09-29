@@ -2,7 +2,8 @@ package nz.ac.vuw.ecs.swen225.gp6.domain.Tiles;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileManaging.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.Actor;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 

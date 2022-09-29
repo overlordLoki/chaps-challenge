@@ -1,7 +1,7 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain.Tiles;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileManaging.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 
 public class Info extends AbstractTile{//future idea: not disappear after once usage
     

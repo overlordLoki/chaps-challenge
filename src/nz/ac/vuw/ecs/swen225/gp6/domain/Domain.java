@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileManaging.TileType;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.*;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.*;
@@ -84,7 +84,10 @@ public class Domain {
     /*
      * sets current level to specified level index
      */
-    public void setCurrentLvl(int lvl) {this.currentLvl = lvl;}
+    public void setCurrentLvl(int lvl) {
+        this.currentLvl = lvl;
+        this.inv = new Inventory(this.inv.size()); //replace inventory
+    }
     
     //PING:
     /*

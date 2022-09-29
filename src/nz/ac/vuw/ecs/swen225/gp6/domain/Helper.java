@@ -1,8 +1,8 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain;
 
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileManaging.Tile;
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileManaging.TileInfo;
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileManaging.TileType;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.Tile;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileInfo;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
