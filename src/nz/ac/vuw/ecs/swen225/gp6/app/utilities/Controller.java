@@ -69,8 +69,8 @@ public class Controller extends KeyAdapter {
         actionsPressed.put(keyBindings.get(3), actions::actionRight); // Move right
         actionsPressed.put(keyBindings.get(4), actions::actionPause); // Pause game
         actionsPressed.put(keyBindings.get(5), actions::actionResume);// Resume game
-        actionsPressed.put(keyBindings.get(6), actions::actionToLevel2); // Jump to level 1
-        actionsPressed.put(keyBindings.get(7), actions::actionToLevel1); // Jump to level 2
+        actionsPressed.put(keyBindings.get(6), actions::actionToLevel1); // Jump to level 1
+        actionsPressed.put(keyBindings.get(7), actions::actionToLevel2); // Jump to level 2
         actionsPressed.put(keyBindings.get(8), actions::actionQuit);  // Quit game
         actionsPressed.put(keyBindings.get(9), actions::actionSave);  // Save game
         actionsPressed.put(keyBindings.get(10), actions::actionLoad); // Reload game

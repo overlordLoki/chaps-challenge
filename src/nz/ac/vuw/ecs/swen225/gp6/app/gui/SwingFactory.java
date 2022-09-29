@@ -13,10 +13,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.LayoutManager;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
@@ -66,6 +63,20 @@ class SwingFactory {
             setLayout(new BoxLayout(this, axis));
             setOpaque(false);
         }};
+    }
+
+    public static JPanel creatTransparentPanel(TexturePack.Images img, float transparency){
+        return new JPanel(){{
+            setOpaque(false);
+            setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+            SwingFactory.setSize(this, 700, 700, 600, 600, 800, 800);}
+            public void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transparency));
+                g2d.drawImage(img.getImg(), 0, 0, getWidth(),getHeight(),null);
+            }
+        };
     }
 
     /**
