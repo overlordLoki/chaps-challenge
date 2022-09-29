@@ -23,9 +23,9 @@ public class RecordTimeline<E> {
      * Add actions to the timeline
      */
     public void add(Long time, E actions) {
-        if(time < timeline.peek().getKey()){
-            throw new IllegalArgumentException("Time recordered must be chronological.");
-        }
+        // if(time < timeline.peek().getKey()){
+        //     throw new IllegalArgumentException("Time recordered must be chronological.");
+        // }
         this.timeline.add(new Pair<Long, E>(time, actions));
     }
 
