@@ -1,8 +1,7 @@
 package test.nz.ac.vuw.ecs.swen225.gp6.fuzz;
-
 import nz.ac.vuw.ecs.swen225.gp6.app.App;
+import nz.ac.vuw.ecs.swen225.gp6.app.Main;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -10,10 +9,22 @@ import java.util.List;
 import java.util.Random;
 import static java.awt.event.KeyEvent.*;
 
-// Property based testing on automatically generated data sets
+/**
+ * This class is used to fuzz test the game.
+ * It will randomly generate a sequence of actions and then play them.
+ * It will then check if the game has crashed.
+ * It will then repeat this process a number of times.
+ * It will then print out the number of crashes.
+ */
 public class Fuzz {
-
+    /**
+     * The File path of random integers 'r'
+     */
     static final Random r = new Random();
+    /**
+     * Setup App object and Robot object for test environment
+     * actionsList is a list will store all the actions for robot to get redomly
+     */
     static App app;
     static Robot robot;
     static List<Runnable> actionsList = List.of();
@@ -27,12 +38,12 @@ public class Fuzz {
         SwingUtilities.invokeLater(()->{
             app = new App();
             Actions actions = app.getActions();
-            app.transitionToGameScreen();
             actionsList = List.of(actions::actionUp, actions::actionDown, actions::actionLeft, actions::actionRight);
         });
         // Start robot automating sequence
-
-        robot.delay(1000); // wait 1 second before start testing
+        JOptionPane.showMessageDialog(null,"Start Fuzzing");
+        app.startNewGame();
+        app.transitionToGameScreen();
         for (int i =0; i < numOfInputs; i++){
             int randomIndex = r.nextInt(actionsList.size());
             actionsList.get(randomIndex).run();
@@ -42,10 +53,35 @@ public class Fuzz {
         System.out.println("Testing Level: "+app.getGame().getCurrentLevel() + " Completed");
     }
 
+    public static void unlimittest(){
+        SwingUtilities.invokeLater(()->{
+            app = new App();
+            Actions actions = app.getActions();
+            app.startNewGame();
+            app.transitionToGameScreen();
+            actionsList = List.of(actions::actionUp, actions::actionDown, actions::actionLeft, actions::actionRight);
+        });
+        int move = 0;
+        boolean finish = true;
+        robot.delay(1000); // wait 1 second before start testing
+        while (finish){
+            int randomIndex = r.nextInt(actionsList.size());
+            actionsList.get(randomIndex).run();
+            System.out.print("Action: " + move + " >>> " + randomIndex);
+            robot.delay(100);
+            move++;
+            if(app.getGame().getCurrentLevel() ==2){
+                finish = false;
+            }
+        }
+
+    }
+
     public static void keyTest() throws AWTException {
         App app = new App();
-        Actions actions = new Actions();
+        app.startNewGame();
         app.transitionToGameScreen();
+
         Robot robot = new Robot();
         robot.setAutoDelay(100);
 
@@ -58,12 +94,22 @@ public class Fuzz {
         robot.keyRelease(VK_W);
 
         robot.keyPress(KeyEvent.VK_CONTROL);
-        System.out.println(KeyEvent.getKeyText(KeyEvent.VK_CONTROL) + " pressed");
+        robot.setAutoDelay(100);
         robot.keyPress(KeyEvent.VK_1);
-
-        System.out.println(KeyEvent.getKeyText(KeyEvent.VK_1) + " pressed");
+        robot.setAutoDelay(100);
+        System.out.println( KeyEvent.getKeyText(KeyEvent.VK_CONTROL) +"and " +
+                            KeyEvent.getKeyText(KeyEvent.VK_1) +" pressed");
         robot.keyRelease(KeyEvent.VK_CONTROL);
         robot.keyRelease(KeyEvent.VK_1);
+
+        robot.keyPress(KeyEvent.VK_CONTROL);
+        robot.setAutoDelay(100);
+        robot.keyPress(KeyEvent.VK_2);
+        robot.setAutoDelay(100);
+        System.out.println( KeyEvent.getKeyText(KeyEvent.VK_CONTROL)+ "and " +
+                            KeyEvent.getKeyText(KeyEvent.VK_2) + " pressed");
+        robot.keyRelease(KeyEvent.VK_CONTROL);
+        robot.keyRelease(KeyEvent.VK_2);
     }
 
     public static void mouseTest() throws AWTException {
@@ -83,13 +129,14 @@ public class Fuzz {
         System.out.println("Action key pressed: " + KeyEvent.getKeyText(e));
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws AWTException {
+//        keyTest();
         testLevel( 100);
-        testLevel( 100);
+//        testLevel( 100);
+//        unlimittest();
         System.out.println("All Tests Complete");
-        if (JOptionPane.showConfirmDialog(null,"All Tests Completed") == 1 || true){
-            System.exit(0);
-        };
+        JOptionPane.showMessageDialog(null, "All Tests Complete");
+        System.exit(0);
     }
 
 }
