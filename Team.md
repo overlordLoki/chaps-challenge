@@ -1,3 +1,5 @@
+# Team members and their roles
+
 | Module      | Team Member | Gitlab                      |
 |-------------|-------------|-----------------------------|
 | Domain      | Matty       | najafimahd@ecs.vuw.ac.nz    |
