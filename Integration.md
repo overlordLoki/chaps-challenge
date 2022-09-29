@@ -33,10 +33,12 @@
 
 ------
 ## Integration breakdown from package: Renderer
-| Class Name | Destination | line Number |
-|------------|-------------|-------------|
-|            |             |             |
-
+| Class Name           | SourceDestination | line Number                                                           |
+|----------------------|-------------------|-----------------------------------------------------------------------|
+| MazeRenderer.java    | DomainController  | [47](/src/nz/ac/vuw/ecs/swen225/gp6/renderer/MazeRenderer.java#L47)   |
+| InventtoryPanel.java | DomainController  | [34](/src/nz/ac/vuw/ecs/swen225/gp6/renderer/InventoryPanel.java#L34) |
+| TexturePack.java     | DomainController  | [212](/src/nz/ac/vuw/ecs/swen225/gp6/renderer/TexturePack.java#L212)  |
+| LogPanel.java        | Persistency       | [40](/src/nz/ac/vuw/ecs/swen225/gp6/renderer/LogPanel.java#L40)       |
 
 ------
 ## Integration breakdown from package: Fuzz
