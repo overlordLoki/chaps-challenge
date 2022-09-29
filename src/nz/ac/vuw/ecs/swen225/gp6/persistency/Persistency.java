@@ -224,7 +224,7 @@ public class Persistency {
             // fill maze with null tiles
             for (int x = 0; x < width; ++x) {
                 for (int y = 0; y < height; ++y) {
-                    maze.setTileAt(new Loc(x, y), TileType.Null);
+                    maze.setTileAt(new Loc(x, y), TileType.Floor);
                 }
             }
             for (Element cell : grid.elements("cell")) {
@@ -286,29 +286,17 @@ public class Persistency {
      * @return The initial domain
      */
     public static Domain getInitialDomain() {
-        return new Domain(List.of(nz.ac.vuw.ecs.swen225.gp6.domain.Helper.makeMaze()), new Inventory(8), 1);
-    }
-
-    /**
-     * Unserialise a maze from xml
-     * 
-     * @param xml The xml to unserialise
-     * @return The unserialised maze
-     */
-    public static Maze unserializeMaze(String xml) {
-        return new Maze(new Tile[1][1]);
-    }
-
-    /**
-     * Load a maze from a file
-     * 
-     * @param path The file path to load from
-     * @return The loaded maze
-     */
-    public static Maze load(String path) {
-        // TODO: Implement
-        return new Maze(new Tile[1][1]);
-        // return new Maze(new Tile[1][1]);
+        File file = new File("res/levels/level1.xml");
+        String xml = "";
+        try {
+            xml = new String(Files.readAllBytes(file.toPath()));
+            Maze maze = deserializeMaze(xml);
+            return new Domain(List.of(maze), new Inventory(8), 1);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return new Domain(List.of(nz.ac.vuw.ecs.swen225.gp6.domain.Helper.makeMaze()), new Inventory(8), 1);
+        }
     }
 
     /**
