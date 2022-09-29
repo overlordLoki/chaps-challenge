@@ -11,10 +11,10 @@
 
 ------
 ## Integration breakdown from package: Domain
-| Class Name          | Destination | line Number |
-|---------------------|-------------|-------------|
-|DomainController.java| App         | 18          |
-|Domain.java          | Persistency | 27          |
+| Class Name          | Destination | line Number                                                |
+|---------------------|-------------|------------------------------------------------------------|
+|DomainController.java| App         | [18](/src/nz/ac/vuw/ecs/swen225/gp6/Domain/DomainAccess/DomainController.java#L18)|
+|Domain.java          | Persistency | [27](/src/nz/ac/vuw/ecs/swen225/gp6/Domain/Domain.java#L27)|
 
 
 ------
