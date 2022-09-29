@@ -19,9 +19,11 @@
 
 ------
 ## Integration breakdown from package: Persistency
-| Class Name | Destination | line Number |
-|------------|-------------|-------------|
-|            |             |             |
+| Class Name       | Destination | line Number |
+|------------------|-------------|-------------|
+| Persistency.java | Domain      | 396         |
+| Persistency.java | Recorder    | 335         |
+| Persistency.java | App         | 374         |
 
 
 ------
