@@ -1,8 +1,10 @@
 package nz.ac.vuw.ecs.swen225.gp6.renderer;
 
+import java.io.Flushable;
+
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Floor;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Hero;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Wall;
 
 /*
  * change the array to be centered on the player
@@ -38,17 +40,29 @@ public class Viewport {
         int xStart = heroX - renderSize/2;
         int yStart = heroY - renderSize/2;
         Tile[][] viewport = new Tile[renderSize][renderSize];
+        Floor floor = getFloor(gameArray);
         for(int i = 0; i < renderSize; i++) {
             for(int j = 0; j < renderSize; j++) {
                 if(xStart + i < 0 || xStart + i >= gameArray.length || yStart + j < 0 || yStart + j >= gameArray[0].length) {
-                    //viewport[i][j] = new patternTile();
+                    viewport[i][j] = floor;
                 } else {
                     viewport[i][j] = gameArray[xStart + i][yStart + j];
                 }
             }
         }
         return viewport;
+    }
 
+    //get a Floor Tile from the maze array
+    public static Floor getFloor(Tile[][] gameArray) {
+        for(int i = 0; i < gameArray.length; i++) {
+            for(int j = 0; j < gameArray[i].length; j++) {
+                if(gameArray[i][j] instanceof Floor) {
+                    return (Floor) gameArray[i][j];
+                }
+            }
+        }
+        return null;
     }
 
 }

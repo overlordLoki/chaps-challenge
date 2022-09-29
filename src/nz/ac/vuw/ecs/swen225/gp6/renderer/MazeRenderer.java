@@ -68,16 +68,18 @@ public class MazeRenderer extends JPanel{
         super.paintComponent(g);
         //get the maze array
         gameArray = maze.getGameArray();
+        //viewport of the maze
+        Tile[][] viewport = Viewport.getViewport(gameArray, 7);
         //get the width and height of the maze
-        int tileWidth = (getWidth() / gameArray.length);
-        int tileHeight = (getHeight() / gameArray[1].length);
+        int tileWidth = (getWidth() / viewport.length);
+        int tileHeight = (getHeight() / viewport[1].length);
         //loop through the maze array and paint the tiles
-        for (int i = 0; i < gameArray.length; i++) {
-            for (int j = 0; j < gameArray[1].length; j++) {
+        for (int i = 0; i < viewport.length; i++) {
+            for (int j = 0; j < viewport[1].length; j++) {
                 //clear the floor
                 g.drawImage(TexturePack.Images.Floor.getImg(), i * tileWidth, j * tileHeight, tileWidth, tileHeight, null);
                 // if there is a item draw on top of the floor or a wall tile
-                Tile tile = gameArray[i][j];
+                Tile tile = viewport[i][j];
                 if(tile.type() == TileType.Floor) {continue;}
                 g.drawImage(TexturePack.Images.getImage(tile), i * tileWidth, j * tileHeight, tileWidth, tileHeight, null);
             }
