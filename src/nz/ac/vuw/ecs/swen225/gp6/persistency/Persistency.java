@@ -249,7 +249,7 @@ public class Persistency {
      * @param element The XML element to deserialise
      * @return The deserialised tile type
      */
-    public static TileType deserializeTileType(Element element) {
+    private static TileType deserializeTileType(Element element) {
         String name = element.getName();
         if (name.equals("key")) {
             String color = element.attributeValue("color");
@@ -321,23 +321,26 @@ public class Persistency {
      * @param path The file path to load from
      * @return The loaded maze
      */
-    public static Domain loadDomain(int slot) {
-        // open level1.xml
-        File file = new File("res/save/" + slot + ".xml");
-
-        return new Domain(List.of(), new Inventory(8), 1);
+    public static Domain loadSave(int slot) throws DocumentException {
+        SAXReader reader = new SAXReader();
+        Document document = reader.read(new File("res/save/" + slot + ".xml"));
+        return deserializeDomain(document);
     }
 
     /**
-     * List saved games in res/saves
+     * Load saves 1, 2, 3 to a list
      * 
-     * @return List of games
+     * @return The list of saves
      */
-    public static List<Domain> loadSaves() {
+    public static List<Domain> loadSaves() throws DocumentException {
         List<Domain> saves = new ArrayList<Domain>();
-        saves.add(new Domain(List.of(nz.ac.vuw.ecs.swen225.gp6.domain.Helper.makeMaze()), new Inventory(10), 1));
-        saves.add(new Domain(List.of(nz.ac.vuw.ecs.swen225.gp6.domain.Helper.makeMaze()), new Inventory(10), 1));
-        saves.add(new Domain(List.of(nz.ac.vuw.ecs.swen225.gp6.domain.Helper.makeMaze()), new Inventory(10), 1));
+        for (int i = 1; i <= 3; ++i) {
+            try {
+                saves.add(loadSave(i));
+            } catch (DocumentException | NullPointerException e) {
+                saves.add(getInitialDomain());
+            }
+        }
         return saves;
     }
 
@@ -357,15 +360,6 @@ public class Persistency {
             e.printStackTrace();
             return new Domain(List.of(nz.ac.vuw.ecs.swen225.gp6.domain.Helper.makeMaze()), new Inventory(8), 1);
         }
-    }
-
-    /**
-     * Get all mazes in res/mazes
-     * 
-     * @return A list of maze objects
-     */
-    public static List<Maze> getMazes() {
-        return new ArrayList<Maze>();
     }
 
 }
