@@ -43,7 +43,6 @@ public class App extends JFrame {
     private final GUI gui               = new GUI(this);
     private final Record recorder       = new Record();
     private final Replay replay         = new Replay(this);
-    private boolean inGameMode          = false;
     private boolean inResume            = false;
 
     /**
@@ -159,7 +158,6 @@ public class App extends JFrame {
      */
     public void startNewGame() {
         updateGameComponents(new DomainController(Persistency.getInitialDomain()), gameClock.getTimer());
-        recorder.startRecording();
         transitionToGameScreen();
     }
 
@@ -171,7 +169,6 @@ public class App extends JFrame {
     public void startSavedGame(DomainController save) {
         updateGameComponents(save, gameClock.getTimer());
         replay.load("save");
-        recorder.startRecording();
         transitionToGameScreen();
     }
 
@@ -197,14 +194,26 @@ public class App extends JFrame {
         gui.getRender().setMaze(game);
         gui.getInventory().setMaze(game);
         try{
-            this.game.addEventListener(DomainEvent.onWin, ()->System.out.println("You win!"));
-            this.game.addEventListener(DomainEvent.onLose, ()->System.out.println("You lose!"));
+            this.game.addEventListener(DomainEvent.onWin, ()->{
+                inResume = false;
+                System.out.println("You win!");});
+            this.game.addEventListener(DomainEvent.onLose, ()->{
+//                inResume = false;
+                System.out.println("You lose!");});
         }catch(Exception e){
             System.out.println("Failed to add event listener");
             e.printStackTrace();
         }
         gameClock.setTimer(timer);
+        inResume = true;
+        recorder.startRecording();
     }
+
+    /**
+     * Sets the game to be in resuming mode or not
+     * @param isResuming true if in resume mode, false otherwise
+     */
+    public void setResuming(boolean isResuming){inResume = isResuming;}
 
     //================================================================================================================//
     //============================================ Getter Method =====================================================//
@@ -258,4 +267,11 @@ public class App extends JFrame {
      * @return the GUI object
      */
     public GUI getGUI() {return gui;}
+
+    /**
+     * Returns if the game is in resume mode or not.
+     *
+     * @return true if in resume mode, false otherwise
+     */
+    public boolean isResuming(){return inResume;}
 }
