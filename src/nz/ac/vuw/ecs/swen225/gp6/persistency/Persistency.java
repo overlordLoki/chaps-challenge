@@ -312,7 +312,7 @@ public class Persistency {
      * @param timeline The timeline to serialize
      * @return The serialized timeline
      */
-    public static Document serializeRecorderTimeline(RecordTimeline<Action> recordTimeline) {
+    public static Document serializeRecordTimeline(RecordTimeline<Action> recordTimeline) {
         Document document = DocumentHelper.createDocument();
         Element root = document.addElement("recorder");
         Stack<Pair<Long, Action>> timeline = recordTimeline.getTimeline();
@@ -330,7 +330,7 @@ public class Persistency {
      * @param document The XML document to deserialize
      * @return The deserialized timeline
      */
-    public static RecordTimeline<Action> deserializeRecorderTimeline(Document document) {
+    public static RecordTimeline<Action> deserializeRecordTimeline(Document document) {
         Element root = document.getRootElement();
         RecordTimeline<Action> timeline = new RecordTimeline<Action>();
         for (Element action : root.elements()) {
