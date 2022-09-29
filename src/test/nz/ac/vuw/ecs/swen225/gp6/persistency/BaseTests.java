@@ -12,8 +12,8 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Helper;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Inventory;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileManaging.TileInfo;
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileManaging.TileType;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileInfo;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
 
