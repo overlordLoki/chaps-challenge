@@ -13,11 +13,7 @@ import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack.Images;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
 
 import javax.swing.*;
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.GridBagLayout;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -45,8 +41,8 @@ public class GUI {
     private static final String LOOSE   = "Loose";
     private static final String VICTORY = "Victory";
 
-    private static final String PAUSE  = "Pause";
-    private static final String RESUME = "Resume";
+    private static final String STATUS_PAUSE = "Pause";
+    private static final String STATUS_RESUME = "Resume";
 
     private static final String MODE_REPLAY = "Replay";
     private static final String MODE_NORMAL = "Normal";
@@ -64,6 +60,7 @@ public class GUI {
     private final CardLayout menuCardLayout = new CardLayout();
     private final CardLayout gameCardLayout = new CardLayout();
     private final CardLayout functionCardLayout = new CardLayout();
+    private final CardLayout pauseCardLayout = new CardLayout();
 
     private final MazeRenderer render;
     private final InventoryPanel pnInventory;
@@ -87,6 +84,7 @@ public class GUI {
         menuPanel.setLayout(menuCardLayout);
         gamePanel.setLayout(gameCardLayout);
         functionPanel.setLayout(functionCardLayout);
+        pnPause.setLayout(pauseCardLayout);
         render.setFocusable(true);
         configureMenuScreen(app);
         configureGameScreen(app);
@@ -364,8 +362,8 @@ public class GUI {
         JLabel lbTimer      = createInfoLabel(app.getGameClock()::getTimeInMinutes, mazeRender, SUBTITLE, false);
         JLabel lbTreasuresTitle = createLabel("Treasures", mazeRender, SUBTITLE, false);
         JLabel lbTreasures  = createInfoLabel(()->app.getGame().getTreasuresLeft()+"", mazeRender, SUBTITLE, false);
-        JLabel lbPauseNormal = createActionLabel("Pause", render,SUBTITLE, true, app::transitionToMenuScreen);
-        JLabel lbPauseReplay = createActionLabel("Pause", render,SUBTITLE, true, app::transitionToMenuScreen);
+        JLabel lbPauseNormal = createActionLabel("Pause", render,SUBTITLE, true,()->app.getActions().actionPause());
+        JLabel lbPauseReplay = createActionLabel("Pause", render,SUBTITLE, true, ()->app.getActions().actionPause());
         JLabel lbReplayTitle = createLabel("Replay Mode", render,SUBTITLE, true);
         JLabel lbReplayAuto = createActionLabel("Auto", render,SUBTITLE, true, app::transitionToReplayScreen);
         JLabel lbReplayStep = createActionLabel("Step", render,SUBTITLE, true, app::transitionToReplayScreen);
@@ -383,6 +381,8 @@ public class GUI {
         setSize(pnMaze, 700, 700, 600, 600, 800, 800);
         setSize(pnInventory, width, height, width, height, width, height);
         setSize(functionPanel, 200,200,200,200,200,200);
+        pnInventory.setAlignmentX(Component.CENTER_ALIGNMENT);
+        mazeRender.setLayout(new GridBagLayout());
 
         functionPanel.add(pnModeNormal, MODE_NORMAL);
         functionPanel.add(pnModeReplay, MODE_REPLAY);
@@ -396,7 +396,7 @@ public class GUI {
         addAll(pnStatus, Box.createVerticalGlue(), pnStatusTop, Box.createVerticalGlue(), pnStatusMid,
                         Box.createVerticalGlue(), pnStatusBot, Box.createVerticalGlue());
         // TODO: finish pause panel
-//        mazeRender.add(pnPause);
+        mazeRender.add(pnPause);
         pnMaze.add(mazeRender);
         addAll(pnRight, Box.createVerticalGlue(), functionPanel, Box.createVerticalGlue(), pnInventory, Box.createVerticalGlue());
         addAll(pnGame, Box.createHorizontalGlue(), pnStatus, Box.createHorizontalGlue(), pnMaze, Box.createHorizontalGlue(),
@@ -409,10 +409,27 @@ public class GUI {
     private JPanel configurePanelPause(App app) {
         System.out.print("Configuring Pause Panel... ");
 
-        JPanel pnPause = createClearPanel(BoxLayout.Y_AXIS);
-        JLabel lbMenu = createActionLabel("Menu", render, TITLE, true, app::transitionToMenuScreen);
+        JPanel pnOnPause = creatTransparentPanel(Images.Empty_tile, 0.8f);
+        JPanel pnOnResume = createClearPanel(BoxLayout.Y_AXIS);
+        pnPause.add(pnOnResume, STATUS_RESUME);
+        pnPause.add(pnOnPause, STATUS_PAUSE);
 
-        addAll(pnPause, Box.createVerticalGlue(), Box.createVerticalGlue(), lbMenu);
+
+        JLabel lbResume = createActionLabel("Resume", render, TITLE, true, ()->app.getActions().actionResume());
+        JLabel lbRestart = createActionLabel("Restart", render, TITLE, true, ()->{});
+        JLabel lbSave = createActionLabel("Save", render, TITLE, true, ()->{});
+        JLabel lbMenu = createActionLabel("Quit to Menu", render, TITLE, true, app::transitionToMenuScreen);
+
+        addAll(pnOnPause,
+                        Box.createVerticalGlue(),
+                        lbResume,
+                        Box.createVerticalGlue(),
+                        lbRestart,
+                        Box.createVerticalGlue(),
+                        lbSave,
+                        Box.createVerticalGlue(),
+                        lbMenu,
+                        Box.createVerticalGlue());
 
         System.out.println("Done!");
         return pnPause;
@@ -553,5 +570,19 @@ public class GUI {
     public void transitionToLostScreen(){
         gameCardLayout.show(gamePanel, LOOSE);
         outerCardLayout.show(outerPanel, GAME);
+    }
+
+    /**
+     * Brings up the pause screen.
+     */
+    public void showPausePanel(){
+        pauseCardLayout.show(pnPause, STATUS_PAUSE);
+    }
+
+    /**
+     * Hides the pause screen and continue with resume screen.
+     */
+    public void showResumePanel(){
+        pauseCardLayout.show(pnPause, STATUS_RESUME);
     }
 }

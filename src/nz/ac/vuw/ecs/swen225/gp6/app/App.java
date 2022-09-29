@@ -43,6 +43,8 @@ public class App extends JFrame {
     private final GUI gui               = new GUI(this);
     private final Record recorder       = new Record();
     private final Replay replay         = new Replay(this);
+    private boolean inGameMode          = false;
+    private boolean inResume            = false;
 
     /**
      * Constructor for the App class. Initializes the GUI and the main loop.
@@ -102,6 +104,7 @@ public class App extends JFrame {
         gameClock.setReplayMode(false);
         gameClock.start();
         gui.transitionToGameScreen();
+        gui.showResumePanel();
         useGameMusic();
         System.out.println("Complete");
     }
@@ -114,6 +117,7 @@ public class App extends JFrame {
         gameClock.setReplayMode(true);
         gameClock.start();
         gui.transitionToReplayScreen();
+        gui.showResumePanel();
         useGameMusic();
         System.out.println("Complete");
     }
@@ -247,4 +251,11 @@ public class App extends JFrame {
      * @return the recorder object
      */
     public Record getRecorder() {return recorder;}
+
+    /**
+     * Gets the gui object.
+     *
+     * @return the GUI object
+     */
+    public GUI getGUI() {return gui;}
 }

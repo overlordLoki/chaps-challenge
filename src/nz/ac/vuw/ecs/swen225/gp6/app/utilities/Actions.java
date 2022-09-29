@@ -88,6 +88,7 @@ public class Actions {
     public void actionPause(){
         app.getGameClock().stop();
         app.getGameClock().setTime(System.nanoTime() - app.getGameClock().getTimeStart() + app.getGameClock().getTime());
+        app.getGUI().showPausePanel();
         MusicPlayer.stopGameMusic();
     }
 
@@ -97,6 +98,7 @@ public class Actions {
     public void actionResume(){
         app.getGameClock().start();
         app.getGameClock().setStartingTime(System.nanoTime());
+        app.getGUI().showResumePanel();
         MusicPlayer.playGameMusic();
     }
 
