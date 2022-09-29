@@ -3,8 +3,7 @@ import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 import java.awt.Graphics;
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileType;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 
 /**
  * makes a jPanel that can be added to a JFrame
