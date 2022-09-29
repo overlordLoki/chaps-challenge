@@ -16,10 +16,12 @@ import java.util.List;
 import java.util.Objects;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Helper;
+import nz.ac.vuw.ecs.swen225.gp6.persistency.Helper;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Inventory;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.Tile;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -73,7 +75,7 @@ public class Persistency {
     record Settings(String texturePack, EnumMap<Keys, String> keyBindings, Boolean musicEnabled) {
     }
 
-    /*
+    /**
      * Get the settings from res/settings.xml
      * 
      * @return Settings object
@@ -108,7 +110,7 @@ public class Persistency {
         return null;
     }
 
-    /*
+    /**
      * Serialise a domain to an XML document
      *
      * @param domain The domain to serialise
@@ -117,27 +119,145 @@ public class Persistency {
      */
     public static Document serializeDomain(Domain domain) {
         Document document = DocumentHelper.createDocument();
-        Element root = document.addElement("Domain");
+        Element root = document.addElement("domain");
+        Element levels = root.addElement("levels");
+        for (int i = 0; i < domain.getMazes().size(); i++) {
+            Maze maze = domain.getMazes().get(i);
+            Document mazeDoc = serializeMaze(maze, i);
+            levels.add(mazeDoc.getRootElement());
+        }
+        root.add(serializeInventory(domain.getInv()).getRootElement());
+
         return document;
     }
 
-    /*
-     * Unserialise a domain to a file
-     *
-     * @param xml The XML document to unserialise
-     *
-     * @param domain The domain to unserialise to
+    /**
+     * Serialise a maze to an XML document
+     * 
+     * Example:
+     * <level index="1" name="Level 1">
+     * <grid width="10" height="10">
+     * <cell x="5" y="0">
+     * <wall />
+     * </cell>
+     * </grid>
+     * </level>
+     * 
+     * @param maze The maze to serialise
      */
-    public static Domain unserialize(String xml) {
-        return new Domain(List.of(Helper.makeMaze()), new Inventory(1), 1);
+    public static Document serializeMaze(Maze maze, int i) {
+        Document document = DocumentHelper.createDocument();
+        Element level = document.addElement("level");
+        level.addAttribute("index", Integer.toString(i));
+        level.addAttribute("name", "Level " + (i + 1));
+        Element grid = level.addElement("grid");
+        grid.addAttribute("width", Integer.toString(maze.width()));
+        grid.addAttribute("height", Integer.toString(maze.height()));
+        for (int x = 0; x < maze.width(); x++) {
+            for (int y = 0; y < maze.height(); y++) {
+                Tile tile = maze.getTileAt(x, y);
+                if (tile != null && tile.type() != TileType.Null) {
+                    Element cell = grid.addElement("cell");
+                    cell.addAttribute("x", Integer.toString(x));
+                    cell.addAttribute("y", Integer.toString(y));
+                    cell.add(serializeTile(tile).getRootElement());
+                }
+            }
+        }
+
+        return document;
     }
 
-    /*
+    /**
+     * Serialise a tile to an XML element
+     * 
+     * @param tile The tile to serialise
+     * 
+     * @return The serialised tile as an XML element
+     */
+    public static Document serializeTile(Tile tile) {
+        Document document = DocumentHelper.createDocument();
+        String name = Helper.typeToString.get(tile.type());
+        if (name.contains("Key") || name.contains("Lock") && name.equals("exitLock")) {
+            Element element = document.addElement(name.contains("Key") ? "key" : "lock");
+            element.addAttribute("color", name.replace("Key", "").replace("Lock", "").toLowerCase());
+        } else {
+            document.addElement(name);
+        }
+        return document;
+    }
+
+    /**
+     * Serialise an inventory to an XML document
+     * 
+     * Example:
+     * <inventory>
+     * <key color="green" />
+     * </inventory>
+     * 
+     * @param inventory The inventory to serialise
+     */
+    public static Document serializeInventory(Inventory inventory) {
+        Document document = DocumentHelper.createDocument();
+        Element root = document.addElement("inventory");
+        for (Tile item : inventory.getItems()) {
+            root.add(serializeTile(item).getRootElement());
+        }
+        root.addAttribute("size", inventory.size() + "");
+        return document;
+    }
+
+    /**
+     * Deserialise a maze from an XML document
+     * 
+     * @param xml
+     * @return The unserialised maze
+     */
+    public static Maze deserializeMaze(String xml) {
+        try {
+            Document doc = DocumentHelper.parseText(xml);
+            Element root = doc.getRootElement();
+            Element grid = root.element("grid");
+            int width = Integer.parseInt(grid.attributeValue("width"));
+            int height = Integer.parseInt(grid.attributeValue("height"));
+            Maze maze = new Maze(new Tile[width][height]);
+            // fill maze with null tiles
+            for (int x = 0; x < width; ++x) {
+                for (int y = 0; y < height; ++y) {
+                    maze.setTileAt(new Loc(x, y), TileType.Floor);
+                }
+            }
+            for (Element cell : grid.elements("cell")) {
+                int x = Integer.parseInt(cell.attributeValue("x"));
+                int y = Integer.parseInt(cell.attributeValue("y"));
+                Element tile = cell.elements().get(0);
+                if (tile != null) {
+                    String name = tile.getName();
+                    if (name.equals("key")) {
+                        String color = tile.attributeValue("color");
+                        maze.setTileAt(new Loc(x, y), Helper.stringToType.get(color + "Key"));
+                    } else if (name.equals("lock")) {
+                        String color = tile.attributeValue("color");
+                        maze.setTileAt(new Loc(x, y), Helper.stringToType.get(color + "Lock"));
+                    } else {
+                        maze.setTileAt(new Loc(x, y), Helper.stringToType.get(name));
+                    }
+                }
+            }
+            return maze;
+        } catch (DocumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
      * Save a domain to a file
      *
      * @param domain The domain to save
      *
-     * @param path The file path to save to
+     * @param path   The file path to save to
      */
     public static void saveDomain(Domain domain, int slot) throws IOException {
         Document document = serializeDomain(domain);
@@ -154,9 +274,9 @@ public class Persistency {
      */
     public static List<Domain> loadSaves() {
         List<Domain> saves = new ArrayList<Domain>();
-        saves.add(new Domain(List.of(Helper.makeMaze()), new Inventory(1), 1));
-        saves.add(new Domain(List.of(Helper.makeMaze()), new Inventory(1), 1));
-        saves.add(new Domain(List.of(Helper.makeMaze()), new Inventory(1), 1));
+        saves.add(new Domain(List.of(nz.ac.vuw.ecs.swen225.gp6.domain.Helper.makeMaze()), new Inventory(10), 1));
+        saves.add(new Domain(List.of(nz.ac.vuw.ecs.swen225.gp6.domain.Helper.makeMaze()), new Inventory(10), 1));
+        saves.add(new Domain(List.of(nz.ac.vuw.ecs.swen225.gp6.domain.Helper.makeMaze()), new Inventory(10), 1));
         return saves;
     }
 
@@ -166,29 +286,17 @@ public class Persistency {
      * @return The initial domain
      */
     public static Domain getInitialDomain() {
-        return new Domain(List.of(Helper.makeMaze()), new Inventory(8), 1);
-    }
-
-    /**
-     * Unserialise a maze from xml
-     * 
-     * @param xml The xml to unserialise
-     * @return The unserialised maze
-     */
-    public static Maze unserializeMaze(String xml) {
-        return new Maze(new Tile[1][1]);
-    }
-
-    /**
-     * Load a maze from a file
-     * 
-     * @param path The file path to load from
-     * @return The loaded maze
-     */
-    public static Maze load(String path) {
-        // TODO: Implement
-        return new Maze(new Tile[1][1]);
-        // return new Maze(new Tile[1][1]);
+        File file = new File("res/levels/level1.xml");
+        String xml = "";
+        try {
+            xml = new String(Files.readAllBytes(file.toPath()));
+            Maze maze = deserializeMaze(xml);
+            return new Domain(List.of(maze), new Inventory(8), 1);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return new Domain(List.of(nz.ac.vuw.ecs.swen225.gp6.domain.Helper.makeMaze()), new Inventory(8), 1);
+        }
     }
 
     /**

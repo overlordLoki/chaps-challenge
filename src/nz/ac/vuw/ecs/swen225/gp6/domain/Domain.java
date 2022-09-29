@@ -1,12 +1,10 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
 
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.*;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.*;
@@ -22,7 +20,7 @@ public class Domain {
         onLose,
         onInfo
     }
-    //domain events that app will dictate the behaviour of
+    //domain events whose behaviour is dictated by app
     private EnumMap<DomainEvent, List<Runnable>>  eventListeners 
     = new EnumMap<DomainEvent, List<Runnable>>(DomainEvent.class);
 
@@ -86,7 +84,10 @@ public class Domain {
     /*
      * sets current level to specified level index
      */
-    public void setCurrentLvl(int lvl) {this.currentLvl = lvl;}
+    public void setCurrentLvl(int lvl) {
+        this.currentLvl = lvl;
+        this.inv = new Inventory(this.inv.size()); //replace inventory
+    }
     
     //PING:
     /*
