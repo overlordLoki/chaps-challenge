@@ -7,7 +7,7 @@ import java.awt.Graphics;
 import java.awt.GridLayout;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.Tile;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack.Images;
 /**
  *  @author Loki
