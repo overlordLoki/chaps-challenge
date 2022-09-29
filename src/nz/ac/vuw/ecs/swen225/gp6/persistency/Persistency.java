@@ -14,12 +14,17 @@ import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.Stack;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Helper;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.Record;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.Pair;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.RecordTimeline;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Inventory;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.Tile;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileInfo;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 
@@ -27,8 +32,11 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 
 import nz.ac.vuw.ecs.swen225.gp6.app.*;
+import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
+import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.Action;
 
 public class Persistency {
     public record Log(LocalDateTime date, String message) {
@@ -126,9 +134,28 @@ public class Persistency {
             Document mazeDoc = serializeMaze(maze, i);
             levels.add(mazeDoc.getRootElement());
         }
+        levels.addAttribute("current", Integer.toString(domain.getLvl() - 1));
         root.add(serializeInventory(domain.getInv()).getRootElement());
 
         return document;
+    }
+
+    /**
+     * Deserialise a domain from an XML document
+     * 
+     * @param document The XML document to deserialise
+     * @return The deserialised domain
+     */
+    public static Domain deserializeDomain(Document document) {
+        Element root = document.getRootElement();
+        Element levels = root.element("levels");
+        List<Maze> mazes = new ArrayList<>();
+        for (Element level : levels.elements()) {
+            mazes.add(deserializeMaze(level.getDocument()));
+        }
+        int currentLevel = Integer.parseInt(levels.attributeValue("current"));
+        Inventory inv = deserializeInventory(root.element("inventory").getDocument());
+        return new Domain(mazes, inv, currentLevel);
     }
 
     /**
@@ -208,48 +235,108 @@ public class Persistency {
     }
 
     /**
+     * Deserialise inventory from an XML document
+     * 
+     * @param document The XML document to deserialise
+     * @return The deserialised inventory
+     */
+    public static Inventory deserializeInventory(Document document) {
+        Element root = document.getRootElement();
+        Inventory inv = new Inventory(Integer.parseInt(root.attributeValue("size")));
+        for (Element item : root.elements()) {
+            inv.addItem(TileType.makeTile(deserializeTileType(item), new TileInfo(new Loc(0, 0))));
+        }
+        return inv;
+    }
+
+    /**
+     * Deserialise a tile type from an XML element
+     * 
+     * @param element The XML element to deserialise
+     * @return The deserialised tile type
+     */
+    private static TileType deserializeTileType(Element element) {
+        String name = element.getName();
+        if (name.equals("key")) {
+            String color = element.attributeValue("color");
+            return Helper.stringToType.get(color + "Key");
+        } else if (name.equals("lock")) {
+            String color = element.attributeValue("color");
+            return Helper.stringToType.get(color + "Lock");
+        } else {
+            return Helper.stringToType.get(name);
+        }
+    }
+
+    /**
      * Deserialise a maze from an XML document
      * 
      * @param xml
      * @return The unserialised maze
      */
-    public static Maze deserializeMaze(String xml) {
-        try {
-            Document doc = DocumentHelper.parseText(xml);
-            Element root = doc.getRootElement();
-            Element grid = root.element("grid");
-            int width = Integer.parseInt(grid.attributeValue("width"));
-            int height = Integer.parseInt(grid.attributeValue("height"));
-            Maze maze = new Maze(new Tile[width][height]);
-            // fill maze with null tiles
-            for (int x = 0; x < width; ++x) {
-                for (int y = 0; y < height; ++y) {
-                    maze.setTileAt(new Loc(x, y), TileType.Floor);
-                }
+    public static Maze deserializeMaze(Document doc) {
+        Element root = doc.getRootElement();
+        Element grid = root.element("grid");
+        int width = Integer.parseInt(grid.attributeValue("width"));
+        int height = Integer.parseInt(grid.attributeValue("height"));
+        Maze maze = new Maze(new Tile[width][height]);
+        // fill maze with null tiles
+        for (int x = 0; x < width; ++x) {
+            for (int y = 0; y < height; ++y) {
+                maze.setTileAt(new Loc(x, y), TileType.Floor);
             }
-            for (Element cell : grid.elements("cell")) {
-                int x = Integer.parseInt(cell.attributeValue("x"));
-                int y = Integer.parseInt(cell.attributeValue("y"));
-                Element tile = cell.elements().get(0);
-                if (tile != null) {
-                    String name = tile.getName();
-                    if (name.equals("key")) {
-                        String color = tile.attributeValue("color");
-                        maze.setTileAt(new Loc(x, y), Helper.stringToType.get(color + "Key"));
-                    } else if (name.equals("lock")) {
-                        String color = tile.attributeValue("color");
-                        maze.setTileAt(new Loc(x, y), Helper.stringToType.get(color + "Lock"));
-                    } else {
-                        maze.setTileAt(new Loc(x, y), Helper.stringToType.get(name));
-                    }
-                }
-            }
-            return maze;
-        } catch (DocumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
-        return null;
+        for (Element cell : grid.elements("cell")) {
+            int x = Integer.parseInt(cell.attributeValue("x"));
+            int y = Integer.parseInt(cell.attributeValue("y"));
+            Element tile = cell.elements().get(0);
+            if (tile != null) {
+                String name = tile.getName();
+                if (name.equals("key")) {
+                    String color = tile.attributeValue("color");
+                    maze.setTileAt(new Loc(x, y), Helper.stringToType.get(color + "Key"));
+                } else if (name.equals("lock")) {
+                    String color = tile.attributeValue("color");
+                    maze.setTileAt(new Loc(x, y), Helper.stringToType.get(color + "Lock"));
+                } else {
+                    maze.setTileAt(new Loc(x, y), Helper.stringToType.get(name));
+                }
+            }
+        }
+        return maze;
+    }
+
+    /**
+     * Serialize a record timeline object to an XML document
+     * 
+     * @param timeline The timeline to serialize
+     * @return The serialized timeline
+     */
+    public static Document serializeRecordTimeline(RecordTimeline<Action> recordTimeline) {
+        Document document = DocumentHelper.createDocument();
+        Element root = document.addElement("recorder");
+        Stack<Pair<Long, Action>> timeline = recordTimeline.getTimeline();
+        root.addAttribute("size", timeline.size() + "");
+        for (Pair<Long, Action> pair : timeline) {
+            Element action = root.addElement(pair.getValue().toString());
+            action.addAttribute("time", pair.getKey() + "");
+        }
+        return document;
+    }
+
+    /**
+     * Deserialize a record timeline object from an XML document
+     * 
+     * @param document The XML document to deserialize
+     * @return The deserialized timeline
+     */
+    public static RecordTimeline<Action> deserializeRecordTimeline(Document document) {
+        Element root = document.getRootElement();
+        RecordTimeline<Action> timeline = new RecordTimeline<Action>();
+        for (Element action : root.elements()) {
+            timeline.add(Long.parseLong(action.attributeValue("time")), Action.valueOf(action.getName()));
+        }
+        return timeline;
     }
 
     /**
@@ -268,15 +355,31 @@ public class Persistency {
     }
 
     /**
-     * List saved games in res/saves
+     * Load a maze from a file
      * 
-     * @return List of games
+     * @param path The file path to load from
+     * @return The loaded maze
      */
-    public static List<Domain> loadSaves() {
+    public static Domain loadSave(int slot) throws DocumentException {
+        SAXReader reader = new SAXReader();
+        Document document = reader.read(new File("res/save/" + slot + ".xml"));
+        return deserializeDomain(document);
+    }
+
+    /**
+     * Load saves 1, 2, 3 to a list
+     * 
+     * @return The list of saves
+     */
+    public static List<Domain> loadSaves() throws DocumentException {
         List<Domain> saves = new ArrayList<Domain>();
-        saves.add(new Domain(List.of(nz.ac.vuw.ecs.swen225.gp6.domain.Helper.makeMaze()), new Inventory(10), 1));
-        saves.add(new Domain(List.of(nz.ac.vuw.ecs.swen225.gp6.domain.Helper.makeMaze()), new Inventory(10), 1));
-        saves.add(new Domain(List.of(nz.ac.vuw.ecs.swen225.gp6.domain.Helper.makeMaze()), new Inventory(10), 1));
+        for (int i = 1; i <= 3; ++i) {
+            try {
+                saves.add(loadSave(i));
+            } catch (DocumentException | NullPointerException e) {
+                saves.add(getInitialDomain());
+            }
+        }
         return saves;
     }
 
@@ -287,25 +390,15 @@ public class Persistency {
      */
     public static Domain getInitialDomain() {
         File file = new File("res/levels/level1.xml");
-        String xml = "";
         try {
-            xml = new String(Files.readAllBytes(file.toPath()));
-            Maze maze = deserializeMaze(xml);
+            Document document = new SAXReader().read(file);
+            Maze maze = deserializeMaze(document);
             return new Domain(List.of(maze), new Inventory(8), 1);
-        } catch (IOException e) {
+        } catch (DocumentException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
             return new Domain(List.of(nz.ac.vuw.ecs.swen225.gp6.domain.Helper.makeMaze()), new Inventory(8), 1);
         }
-    }
-
-    /**
-     * Get all mazes in res/mazes
-     * 
-     * @return A list of maze objects
-     */
-    public static List<Maze> getMazes() {
-        return new ArrayList<Maze>();
     }
 
 }

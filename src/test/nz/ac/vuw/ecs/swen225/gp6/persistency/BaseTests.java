@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.dom4j.Document;
 import org.junit.jupiter.api.Test;
+
+import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.Action;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Helper;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Inventory;
@@ -16,6 +18,8 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileInfo;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.Pair;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.RecordTimeline;
 
 public class BaseTests {
     @Test
@@ -46,9 +50,34 @@ public class BaseTests {
     public void testMazeDeserialization() {
         Maze maze = Helper.makeMaze();
         Document doc = Persistency.serializeMaze(maze, 0);
-        Maze maze2 = Persistency.deserializeMaze(doc.getRootElement().asXML());
+        Maze maze2 = Persistency.deserializeMaze(doc);
         maze2.toString();
         assertEquals(maze.toString(), maze2.toString());
+    }
+
+    @Test
+    public void testRecorderTimelineSerialization() {
+        RecordTimeline<Action> timeline = new RecordTimeline<Action>();
+        timeline.add(10l, Action.MOVE_DOWN);
+        timeline.add(20l, Action.MOVE_LEFT);
+
+        Document doc = Persistency.serializeRecordTimeline(timeline);
+
+        assertEquals(doc.asXML(), """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <recorder size="2"><MOVE_DOWN time="10"/><MOVE_LEFT time="20"/></recorder>""");
+    }
+
+    @Test
+    public void testRecorderTimelineDeerialization() {
+        RecordTimeline<Action> timeline = new RecordTimeline<Action>();
+        timeline.add(10l, Action.MOVE_DOWN);
+        timeline.add(20l, Action.MOVE_LEFT);
+
+        Document doc = Persistency.serializeRecordTimeline(timeline);
+        RecordTimeline<Action> timeline2 = Persistency.deserializeRecordTimeline(doc);
+
+        assertEquals(timeline.toString(), timeline2.toString());
     }
 
     // @Test
