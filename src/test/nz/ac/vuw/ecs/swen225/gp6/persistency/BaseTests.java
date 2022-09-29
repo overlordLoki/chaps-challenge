@@ -3,33 +3,25 @@ package test.nz.ac.vuw.ecs.swen225.gp6.persistency;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
 import org.dom4j.Document;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.console.shadow.picocli.CommandLine.Help;
-
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Helper;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Inventory;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Tile;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileInfo;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.TileType;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileManaging.TileInfo;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileManaging.TileType;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
-import nz.ac.vuw.ecs.swen225.gp6.renderer.MusicPlayer;
 
 public class BaseTests {
     @Test
     public void testEmptySerialise() {
         Inventory inventory = new Inventory(1);
-        inventory.addItem(new Tile(TileType.GreenKey, new TileInfo(new Loc(1, 1))));
+        inventory.addItem(TileType.makeTile(TileType.GreenKey, new TileInfo(new Loc(1, 1))));
         Maze maze = Helper.makeMaze();
         Domain domain = new Domain(List.of(maze), inventory, 1);
         System.out.println(domain);
