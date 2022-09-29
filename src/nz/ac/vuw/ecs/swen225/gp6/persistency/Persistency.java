@@ -14,9 +14,13 @@ import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.Stack;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Helper;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.Record;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.Pair;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.RecordTimeline;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Inventory;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.Tile;
@@ -31,6 +35,8 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import nz.ac.vuw.ecs.swen225.gp6.app.*;
+import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
+import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.Action;
 
 public class Persistency {
     public record Log(LocalDateTime date, String message) {
@@ -298,6 +304,39 @@ public class Persistency {
             }
         }
         return maze;
+    }
+
+    /**
+     * Serialize a record timeline object to an XML document
+     * 
+     * @param timeline The timeline to serialize
+     * @return The serialized timeline
+     */
+    public static Document serializeRecorderTimeline(RecordTimeline<Action> recordTimeline) {
+        Document document = DocumentHelper.createDocument();
+        Element root = document.addElement("recorder");
+        Stack<Pair<Long, Action>> timeline = recordTimeline.getTimeline();
+        root.addAttribute("size", timeline.size() + "");
+        for (Pair<Long, Action> pair : timeline) {
+            Element action = root.addElement(pair.getValue().toString());
+            action.addAttribute("time", pair.getKey() + "");
+        }
+        return document;
+    }
+
+    /**
+     * Deserialize a record timeline object from an XML document
+     * 
+     * @param document The XML document to deserialize
+     * @return The deserialized timeline
+     */
+    public static RecordTimeline<Action> deserializeRecorderTimeline(Document document) {
+        Element root = document.getRootElement();
+        RecordTimeline<Action> timeline = new RecordTimeline<Action>();
+        for (Element action : root.elements()) {
+            timeline.add(Long.parseLong(action.attributeValue("time")), Action.valueOf(action.getName()));
+        }
+        return timeline;
     }
 
     /**
