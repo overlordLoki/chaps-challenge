@@ -1,7 +1,5 @@
 package nz.ac.vuw.ecs.swen225.gp6.renderer;
 
-import java.io.Flushable;
-
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Floor;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Hero;
@@ -53,7 +51,11 @@ public class Viewport {
         return viewport;
     }
 
-    //get a Floor Tile from the maze array
+    /**
+     * get a Floor Tile from the maze array
+     * @param gameArray
+     * @return Floor
+     */
     public static Floor getFloor(Tile[][] gameArray) {
         for(int i = 0; i < gameArray.length; i++) {
             for(int j = 0; j < gameArray[i].length; j++) {
