@@ -151,23 +151,6 @@ public enum TexturePack{
          * The image for the exit
          */
         Exit("exitDoor"),
-        //pause , play , speedDown , speedUp
-        /**
-         * The image for the pause button
-         */
-        Pause("pause"),
-        /**
-         * The image for the play button
-         */
-        Play("play"),
-        /**
-         * The image for the speedDown button
-         */
-        SpeedDown("speedDown"),
-        /**
-         * The image for the speedUp button
-         */
-        SpeedUp("speedUp"),
         /**
          * The image for the win screen
          */
