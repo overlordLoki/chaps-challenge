@@ -210,6 +210,7 @@ public enum TexturePack{
                 case ExitDoorOpen -> Images.Exit.getImg();
                 case Info -> Images.Empty_tile.getImg();
                 case Coin -> Images.Coin.getImg();
+                case Periphery -> Images.Pattern.getImg();
                 default -> Images.loadCustom(tile.info().getImageName());
             };
         }
