@@ -17,20 +17,20 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.*;
  */
 public class CheckGame {
     public static void checkStateChange(Maze preMaze, Inventory preInv, Maze afterMaze, Inventory afterInv){
-        //make a mock pre and after domain
+        //make a mock pre and after domain //TODO: make sure this works
         Domain preDomain = new Domain(List.of(preMaze), preInv, 1);
         Domain afterDomain = new Domain(List.of(afterMaze), afterInv, 1);
 
-        
 
         //check if hero is moved on an obstruction
         Hero h = (Hero) afterMaze.getTileWithType(TileType.Hero);
         Loc heroNewLoc = h.info().loc();
-        if(preMaze.getTileAt(heroNewLoc).isObstruction(h, preDomain)){
+        if(preMaze.getTileAt(heroNewLoc).obstructsHero(preDomain)){
             throw new IllegalStateException("Hero has moved on an obstruction: " 
             + preMaze.getTileAt(heroNewLoc).type().name());
         }
 
+        //check if en
         
     }
 

@@ -15,6 +15,7 @@ public class Enemy extends Actor{
         d.getCurrentMaze().setTileAt(info.loc(), t);
         d.getEventListener(Domain.DomainEvent.onLose).forEach(r -> r.run()); //LOSE (since only hero can move on enemy)
     }//TODO: LOSE
+    
     @Override public void ping(Domain d){} //TODO: figure out how to make ben override/make all this
 
     
