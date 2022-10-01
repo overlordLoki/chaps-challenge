@@ -8,7 +8,6 @@ public class BlueKey extends Key{
     public BlueKey (TileInfo info){super(info);}
 
     @Override public TileType type(){ return TileType.BlueKey;}
-    @Override public char symbol(){return 'b';}
     @Override public KeyColor color(){return KeyColor.BLUE;}
 
 }

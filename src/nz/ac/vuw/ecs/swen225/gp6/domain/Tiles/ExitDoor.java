@@ -10,7 +10,6 @@ public class ExitDoor extends Door{
     public ExitDoor(TileInfo info){super(info);}
 
     @Override public TileType type(){ return TileType.ExitDoor;}
-    @Override public char symbol(){return 'X';}
     @Override public KeyColor color(){return KeyColor.NONE;}
 
     @Override public boolean obstructsHero(Domain d){  return true;}//no one can go through un opened exit door

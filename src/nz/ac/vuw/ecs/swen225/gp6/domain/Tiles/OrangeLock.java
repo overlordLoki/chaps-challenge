@@ -9,6 +9,5 @@ public class OrangeLock extends Door{
     public OrangeLock (TileInfo info){super(info);}
 
     @Override public TileType type(){ return TileType.OrangeLock;}
-    @Override public char symbol(){return 'O';}
     @Override public KeyColor color(){return KeyColor.ORANGE;}
 }

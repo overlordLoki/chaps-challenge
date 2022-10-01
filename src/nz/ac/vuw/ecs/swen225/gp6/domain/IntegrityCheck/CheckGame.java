@@ -30,7 +30,12 @@ public class CheckGame {
             + preMaze.getTileAt(heroNewLoc).type().name());
         }
 
-        //check if en
+        //check if there is exactly one hero on the maze
+
+        //check there is the same amounts of coins in the maze and inventory combined and its non negative
+
+        //check if enemy is moved on an obstruction
+        
         
     }
 

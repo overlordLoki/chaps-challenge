@@ -7,5 +7,4 @@ public class Floor extends AbstractTile{
     public Floor (TileInfo info){super(info);}
 
     @Override public TileType type(){ return TileType.Floor;}
-    @Override public char symbol(){return '_';}
 }

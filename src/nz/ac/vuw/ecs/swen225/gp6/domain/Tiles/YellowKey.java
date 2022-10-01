@@ -8,6 +8,5 @@ public class YellowKey extends Key{
     public YellowKey (TileInfo info){super(info);}
 
     @Override public TileType type(){ return TileType.YellowKey;}
-    @Override public char symbol(){return 'y';}
     @Override public KeyColor color(){return KeyColor.YELLOW;}
 }

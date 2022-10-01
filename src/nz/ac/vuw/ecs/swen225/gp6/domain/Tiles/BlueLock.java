@@ -9,6 +9,5 @@ public class BlueLock extends Door{
     public BlueLock (TileInfo info){super(info);}
 
     @Override public TileType type(){ return TileType.BlueLock;}
-    @Override public char symbol(){return 'B';}
     @Override public KeyColor color(){return KeyColor.BLUE;}
 }
