@@ -8,7 +8,6 @@ public class Info extends AbstractTile{//future idea: not disappear after once u
     public Info (TileInfo info){super(info);}
 
     @Override public TileType type(){ return TileType.Info;}
-    @Override public char symbol(){return 'i';}
 
     @Override public Tile replaceWith(TileInfo info){return this;}
     

@@ -8,6 +8,5 @@ public class OrangeKey extends Key{
     public OrangeKey (TileInfo info){super(info);}
 
     @Override public TileType type(){ return TileType.OrangeKey;}
-    @Override public char symbol(){return 'o';}
     @Override public KeyColor color(){return KeyColor.ORANGE;}
 }

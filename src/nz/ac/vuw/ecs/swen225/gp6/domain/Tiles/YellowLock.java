@@ -9,6 +9,5 @@ public class YellowLock extends Door {
     public YellowLock(TileInfo info){super(info);}
 
     @Override public TileType type(){ return TileType.YellowLock;}
-    @Override public char symbol(){return 'Y';}
     @Override public KeyColor color(){return KeyColor.YELLOW;}
 }

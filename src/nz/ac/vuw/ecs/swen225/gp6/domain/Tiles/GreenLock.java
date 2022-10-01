@@ -9,7 +9,6 @@ public class GreenLock extends Door {
     public GreenLock (TileInfo info){super(info);}
 
     @Override public TileType type(){ return TileType.GreenLock;}
-    @Override public char symbol(){return 'G';}
     @Override public KeyColor color(){return KeyColor.GREEN;}
 
 }

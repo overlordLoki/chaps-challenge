@@ -7,5 +7,4 @@ public class Null extends AbstractTile{
     public Null (TileInfo info){super(info);}
 
     @Override public TileType type(){ return TileType.Null;}
-    @Override public char symbol(){return Character.MIN_VALUE;}
 }

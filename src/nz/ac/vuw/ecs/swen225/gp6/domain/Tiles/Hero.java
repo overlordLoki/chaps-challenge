@@ -17,7 +17,6 @@ public class Hero extends Actor{
     }
 
     @Override public TileType type(){ return TileType.Hero;}
-    @Override public char symbol(){return 'A';}
     
     @Override public void setOn(Tile t, Domain d){
         d.getCurrentMaze().setTileAt(info.loc(), t);

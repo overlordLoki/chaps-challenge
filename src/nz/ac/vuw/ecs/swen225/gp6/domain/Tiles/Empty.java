@@ -8,5 +8,4 @@ public class Empty extends AbstractTile{ //empty INVENTORY tile
     public Empty (TileInfo info){super(info);}
 
     @Override public TileType type(){ return TileType.Empty;}
-    @Override public char symbol(){return ' ';}
 }

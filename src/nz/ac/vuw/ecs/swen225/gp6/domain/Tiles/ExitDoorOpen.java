@@ -10,7 +10,6 @@ public class ExitDoorOpen extends Door{
     public ExitDoorOpen (TileInfo info){super(info);}
 
     @Override public TileType type(){ return TileType.ExitDoorOpen;}
-    @Override public char symbol(){return 'Z';}
     @Override public KeyColor color(){return KeyColor.NONE;}
 
     @Override public boolean obstructsEnemy(Domain d){  return true;} //only hero can move on it

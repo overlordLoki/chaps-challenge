@@ -15,4 +15,6 @@ public abstract class AbstractTile implements Tile{
     }
 
     @Override public TileInfo info() {return info;}
+    @Override public char symbol() {return type().symbol();} // gets the symbol of the tile type
+                                                            //(can be overriden in runtime to custom symbols)
 }

@@ -8,7 +8,6 @@ public class Wall extends AbstractTile{
     public Wall (TileInfo info){super(info);}
 
     @Override public TileType type(){ return TileType.Wall;}
-    @Override public char symbol(){return '|';}
     
     @Override public boolean obstructsHero(Domain d) { return true;} //no one can move on wall
     @Override public boolean obstructsEnemy(Domain d) { return true;}
