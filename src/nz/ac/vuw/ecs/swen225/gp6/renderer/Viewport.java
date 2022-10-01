@@ -30,7 +30,12 @@ public class Viewport {
         return heroPos;
     }
     
-
+    /**
+     * get a viewport for the current game array
+     * @param gameArray
+     * @param renderSize
+     * @return
+     */
     public static Tile[][] getViewport(Tile[][] gameArray, int renderSize) {
         int[] heroPos = findHero(gameArray);
         int heroX = heroPos[0];
