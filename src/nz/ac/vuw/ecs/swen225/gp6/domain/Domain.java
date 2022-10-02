@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.*;
-import nz.ac.vuw.ecs.swen225.gp6.persistency.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.IntegrityCheck.CheckGame;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 
 public class Domain {
     private List<Maze> mazes; //each corresponds to a level (in order)
@@ -94,17 +92,27 @@ public class Domain {
      * pings the game one step, and replaces the current maze with a new one
      */
     public void pingDomain(){
-        //copy current maze TODO: see if this is necessary, or what it is useful for
         Maze currentMaze = getCurrentMaze();
+        CheckGame.checkCurrentState(currentMaze, inv); //check current state integrity
+
+        //copy mazes
         Maze nextMaze = new Maze(currentMaze.getTileArrayCopy(), currentMaze.getDirection());
-        currentMaze = nextMaze;
+        List<Maze> newMazes = new ArrayList<Maze>(mazes);
+        newMazes.set(currentLvl - 1, nextMaze);
         
         //copy current inventory
         Inventory nextInv = new Inventory(inv.size(), inv.coins(), inv.getItems());
-        inv = nextInv;
 
-        //ping the maze
-        nextMaze.pingMaze(this);
+        //copy domain 
+        Domain nextDomain = new Domain(newMazes, nextInv, currentLvl);
+        nextDomain.eventListeners = this.eventListeners;
+
+        nextMaze.pingMaze(nextDomain); //ping the new domain
+        CheckGame.checkStateChange(currentMaze, inv, nextMaze, nextInv); //check state change integrity 
+
+        this.mazes = newMazes;//replace current domain's field with next 
+        this.inv = nextInv;
+        this.currentLvl = nextDomain.currentLvl;
     }
 
 

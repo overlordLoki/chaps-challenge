@@ -1,6 +1,7 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain.Tiles;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
+import nz.ac.vuw.ecs.swen225.gp6.domain.IntegrityCheck.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.Key.KeyColor;
@@ -16,7 +17,11 @@ public class ExitDoorOpen extends Door{
     @Override public boolean obstructsHero(Domain d){  return false;}
 
     @Override public void setOn(Tile t, Domain d){
-        d.getEventListener(Domain.DomainEvent.onWin).forEach(r -> r.run());
-    }// WIN
+        //if the tile is hero, WIN
+        if(t.type() == TileType.Hero){
+            d.getEventListener(Domain.DomainEvent.onWin).forEach(r -> r.run());
+            CheckGame.gameHasEnded = true; //let the integrity checker know the game has ended
+        } 
+    }
             
 }

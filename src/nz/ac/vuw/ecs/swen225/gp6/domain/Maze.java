@@ -6,9 +6,11 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.*;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
-import javax.swing.text.Position;
+
 
 
 public class Maze {
@@ -128,17 +130,28 @@ public class Maze {
     }
 
     /*
-     * gets the first tile found of a given type, otherwise a null typed tile
+     * gets the first tile that satisfies the given predicate, otherwise a null typed tile
      */
-    public Tile getTileWithType(TileType type){
-        return (Hero)Arrays
+    public Tile getTileThat(Predicate<Tile> p){
+        return Arrays
         .stream(tileArray)
         .flatMap(Arrays::stream)
-        .filter(t -> t.type() == type)
+        .filter(p)
         .findFirst()
         .orElse(new Null(new TileInfo(null)));
     }
     
+    /*
+     * get all the tiles that satisfy the given predicate, otherwise an empty list
+     */
+    public List<Tile> getAllTilesThat(Predicate<Tile> p){
+        return Arrays
+        .stream(tileArray)
+        .flatMap(Arrays::stream)
+        .filter(p)
+        .toList();
+    }
+
     //SETTERS and ACTIONS:
     /**
      * pings all tiles in the maze

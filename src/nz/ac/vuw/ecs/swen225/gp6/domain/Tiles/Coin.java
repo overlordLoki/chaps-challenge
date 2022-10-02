@@ -11,7 +11,15 @@ public class Coin extends Item{
     @Override public TileType type(){ return TileType.Coin;}
     
     @Override public void setOn(Tile t, Domain d){ 
+        //add coin to inventory
         d.getInv().addCoin();
         d.getCurrentMaze().setTileAt(info.loc(), t);
+
+        //if all treasures collected replace exitdoor with open exit door
+        if(d.getTreasuresLeft() == 0){
+            //find exit door and replace it with open exit door
+            Tile exitDoor = d.getCurrentMaze().getTileThat(tile -> tile.type() == TileType.ExitDoor);
+            d.getCurrentMaze().setTileAt(exitDoor.info().loc(), TileType.ExitDoorOpen); 
+        }
     }
 }

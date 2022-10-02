@@ -2,6 +2,7 @@ package nz.ac.vuw.ecs.swen225.gp6.domain.Tiles;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
+import nz.ac.vuw.ecs.swen225.gp6.domain.IntegrityCheck.CheckGame;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.Actor;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
@@ -9,7 +10,7 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 
 public class Hero extends Actor{
     Direction staticDirection; //TODO implement this
-    Tile tileOn; //tile the hero is currently on
+    Tile tileOn; //tile the hero will replace when moved 
 
     public Hero (TileInfo info){
         super(info);
@@ -17,11 +18,17 @@ public class Hero extends Actor{
     }
 
     @Override public TileType type(){ return TileType.Hero;}
+    public Tile tileOn(){return tileOn;} //returns the tile the hero will replace when moved
+    public Direction dir(){return staticDirection;} //returns the direction the hero is facing
     
     @Override public void setOn(Tile t, Domain d){
         d.getCurrentMaze().setTileAt(info.loc(), t);
-        if(t.type() != TileType.Enemy) return; //TODO: temporary solution, make more future proof
-        d.getEventListener(Domain.DomainEvent.onLose).forEach(r -> r.run()); //LOSE (if enemy on hero)
+
+        //if the tile damages the hero, LOSE
+        if(t.damagesHero(d)){
+            d.getEventListener(Domain.DomainEvent.onLose).forEach(r -> r.run());
+            CheckGame.gameHasEnded = true; //let the integrity checker know the game has ended
+        }
     }
 
     @Override public void ping(Domain d) {
@@ -41,7 +48,7 @@ public class Hero extends Actor{
         //System.out.println( "Location x: " + self.info().loc().x() + " y: " + self.info().loc().y());
         //System.out.println( d.getCurrentMaze().toString());
 
-        this.tileOn = tileToOccupy.replaceWith(tileToOccupy.info()); // set tile heros to replace when moving off
+        this.tileOn = tileToOccupy.replaceWith(); // set tile heros to replace when moving off
         staticDirection = m.getDirection(); //set heros direction of facing 
         m.makeHeroStep(Direction.None); //make hero stop moving
     }
