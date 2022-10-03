@@ -4,8 +4,8 @@ import java.util.List;
 
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.IntegrityCheck.CheckGame;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.Tile;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 
 /*
@@ -17,6 +17,7 @@ public class DomainController {
 
     public DomainController(Domain domain){
         this.domain = domain;
+        CheckGame.gameHasEnded = false; //reset the gameHasEnded flag
     }
 
     //ACTIONS ON DOMAIN:

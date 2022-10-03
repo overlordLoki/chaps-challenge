@@ -14,11 +14,4 @@ public class ExitDoor extends Door{
 
     @Override public boolean obstructsHero(Domain d){  return true;}//no one can go through un opened exit door
     @Override public boolean obstructsEnemy( Domain d) { return true;}
-
-    @Override public void ping(Domain d) {
-        //if all treasures collected replace exitdoor with open exit door
-        if(d.getTreasuresLeft() == 0){
-            d.getCurrentMaze().setTileAt(info.loc(), TileType.ExitDoorOpen); 
-        }
-    }
 }

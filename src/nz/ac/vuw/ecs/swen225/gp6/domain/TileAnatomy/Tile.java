@@ -24,24 +24,35 @@ public interface Tile {
     public char symbol();
 
     //MOVING ON AND OFF THE TILE:
+    /*
+     * This method checks wether a given tile can cause damage/kill the hero.
+     * this is not a field, since tiles may behave different depending on the state of the game.
+     * e.g having armor in inventory
+     * 
+     * if not implemented, defaults to false
+     */
+    public default boolean damagesHero(Domain d){return false;};
     /**
      * Checks wether this tile is an obstruction for hero tile ,in a given domain.
      * NOTE: does not alter the tile, maze or hero in anyway.
+     * 
      * if not implemented, defaults to false.
      */
     public default boolean obstructsHero( Domain d){return false;}
     /**
      * Checks wether this tile is an obstruction for enemy tile ,in a given domain.
      * NOTE: does not alter the tile, maze or enemy in anyway.
+     * 
      * if not implemented, defaults to false.
      */
     public default boolean obstructsEnemy( Domain d){return false;}
     /*
      * when an actor is moved onto this tile, then is to move off of it, 
      * replace it with the tile that this method returns.
+     * 
      * if not implemented, defaults to Floor.
      */
-    public default Tile replaceWith(TileInfo info){return TileType.makeTile(TileType.Floor, info);}
+    public default Tile replaceWith(){return TileType.makeTile(TileType.Floor, new TileInfo(info().loc(), info().ping()));} 
     /**
      * ALTERS DOMAIN.
      * 

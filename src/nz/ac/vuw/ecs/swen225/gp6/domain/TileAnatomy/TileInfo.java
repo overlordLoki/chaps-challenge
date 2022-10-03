@@ -21,13 +21,11 @@ public class TileInfo{
         this.imageName = imageName;
     }
 
-    public TileInfo(Loc loc){
-        this(loc, 0, "");
-    }
+    public TileInfo(Loc loc){this(loc, 0, "");}
 
-    public TileInfo(Loc loc, String imageName){
-        this(loc, 0, imageName);
-    }
+    public TileInfo(Loc loc, String imageName){ this(loc, 0, imageName);}
+
+    public TileInfo(Loc loc, int pingCount){ this(loc, pingCount, "");}
 
 
 

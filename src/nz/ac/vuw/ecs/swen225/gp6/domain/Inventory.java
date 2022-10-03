@@ -2,6 +2,7 @@ package nz.ac.vuw.ecs.swen225.gp6.domain;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
@@ -74,6 +75,12 @@ public class Inventory {
         return true;
     }
 
+    /*
+     * counts the number of a certain items tile in the inventory
+     * that satisfy the given predicate
+     */
+    public int countItem(Predicate<Tile> p){return (int) Arrays.stream(items).filter(p).count();}
+    
     /**
      * @return true if a tile name found in inv, otherwise false
      */
