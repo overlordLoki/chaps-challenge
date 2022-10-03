@@ -380,8 +380,6 @@ public class Persistency {
         file.delete();
     }
 
-}
-
     /**
      * Load saves 1, 2, 3 to a list
      * 
