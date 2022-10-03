@@ -395,9 +395,9 @@ public class Persistency {
             Maze maze = deserializeMaze(document);
             return new Domain(List.of(maze), new Inventory(8), 1);
         } catch (DocumentException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
-            return new Domain(List.of(nz.ac.vuw.ecs.swen225.gp6.domain.Helper.makeMaze()), new Inventory(8), 1);
+            return new Domain(List.of(nz.ac.vuw.ecs.swen225.gp6.domain.Helper.makeMaze(),
+                    nz.ac.vuw.ecs.swen225.gp6.domain.Helper.makeMaze()), new Inventory(8), 1);
         }
     }
 
