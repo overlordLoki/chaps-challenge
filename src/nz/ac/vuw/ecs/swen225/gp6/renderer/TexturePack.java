@@ -99,17 +99,7 @@ public enum TexturePack{
         /**
          * The image for the hero.
          */
-        Hero("hero"){
-            public BufferedImage getHeroImg(Direction direction) {
-                return switch (direction) {
-                    case Up -> HeroBack.getImg();
-                    case Down -> HeroFront.getImg();
-                    case Left -> HeroLeft.getImg();
-                    case Right -> HeroRight.getImg();
-                    default -> throw new IllegalArgumentException("Unexpected value: " + direction);
-                };
-            }
-        },
+        Hero("hero"),
         /**
          * The image for the enemy.
          */
@@ -232,8 +222,14 @@ public enum TexturePack{
             };
         }
 
-        private BufferedImage getHeroImg(Direction dir) {
-            return null;
+        private BufferedImage getHeroImg(Direction direction) {
+            return switch (direction) {
+                case Up -> HeroBack.getImg();
+                case Down -> HeroFront.getImg();
+                case Left -> HeroLeft.getImg();
+                case Right -> HeroRight.getImg();
+                default -> throw new IllegalArgumentException("Unexpected value: " + direction);
+            };
         }
         public static BufferedImage loadCustom(String path){
             try {
