@@ -1,9 +1,7 @@
 package nz.ac.vuw.ecs.swen225.gp6.renderer;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Floor;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Hero;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Periphery;
 
 /*
  * change the array to be centered on the player

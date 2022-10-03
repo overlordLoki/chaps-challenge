@@ -4,6 +4,8 @@ import javax.swing.JPanel;
 import java.awt.Graphics;
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Hero;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 
 /**
  * makes a jPanel that can be added to a JFrame
@@ -58,8 +60,30 @@ public class MazeRenderer extends JPanel{
                 // if there is a item draw on top of the floor or a wall tile
                 Tile tile = viewport[i][j];
                 if(tile.type() == TileType.Floor) {continue;}
-                g.drawImage(TexturePack.Images.getImage(tile), i * tileWidth, j * tileHeight, tileWidth, tileHeight, null);
+                //if hero tile then draw the hero depending on the direction
+                if(tile.type() == TileType.Hero) {
+                    Hero hero = (Hero) tile;
+                    BufferedImage img = getHeroImg(hero.dir());
+                    g.drawImage(img, i * tileWidth, j * tileHeight, tileWidth, tileHeight, null);
+                }else{
+                    g.drawImage(TexturePack.Images.getImage(tile), i * tileWidth, j * tileHeight, tileWidth, tileHeight, null);
+                }
+
             }
+        }
+    }
+
+    private BufferedImage getHeroImg(Direction dir) {
+        switch(dir) {
+            case Up:
+                return TexturePack.Images.HeroBack.getImg();
+            case Down:
+                return TexturePack.Images.HeroFront.getImg();
+            case Left:
+                return TexturePack.Images.HeroLeft.getImg();
+            case Right:
+                return TexturePack.Images.HeroRight.getImg();
+            default: return null;
         }
     }
 
