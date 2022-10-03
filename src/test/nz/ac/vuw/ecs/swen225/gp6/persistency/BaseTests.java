@@ -80,6 +80,21 @@ public class BaseTests {
         assertEquals(timeline.toString(), timeline2.toString());
     }
 
+    @Test
+    public void testDomainSerialisation() {
+        Domain domain = Persistency.getInitialDomain();
+        Document doc = Persistency.serializeDomain(domain);
+        // assertEquals(doc.asXML(), "");
+        Domain domain2 = Persistency.deserializeDomain(doc);
+
+        assertEquals(domain.toString(), domain2.toString());
+    }
+
+    @Test
+    public void deleteSave() {
+        Persistency.deleteSave(1);
+    }
+
     // @Test
     // public void testEmptyUnserialise() {
     // assertEquals(Persistency.unserialize("<Domain/>").toString(), new
