@@ -74,7 +74,6 @@ public class MazeRenderer extends JPanel{
     }
 
     private BufferedImage getHeroImg(Direction dir) {
-        System.out.println(dir);
         switch(dir) {
             case Up:
                 return TexturePack.Images.HeroBack.getImg();
