@@ -1,10 +1,12 @@
 package nz.ac.vuw.ecs.swen225.gp6.persistency;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
@@ -151,10 +153,10 @@ public class Persistency {
         Element levels = root.element("levels");
         List<Maze> mazes = new ArrayList<>();
         for (Element level : levels.elements()) {
-            mazes.add(deserializeMaze(level.getDocument()));
+            mazes.add(deserializeMaze(level));
         }
         int currentLevel = Integer.parseInt(levels.attributeValue("current"));
-        Inventory inv = deserializeInventory(root.element("inventory").getDocument());
+        Inventory inv = deserializeInventory(root.element("inventory"));
         return new Domain(mazes, inv, currentLevel);
     }
 
@@ -240,8 +242,7 @@ public class Persistency {
      * @param document The XML document to deserialise
      * @return The deserialised inventory
      */
-    public static Inventory deserializeInventory(Document document) {
-        Element root = document.getRootElement();
+    public static Inventory deserializeInventory(Element root) {
         Inventory inv = new Inventory(Integer.parseInt(root.attributeValue("size")));
         for (Element item : root.elements()) {
             inv.addItem(TileType.makeTile(deserializeTileType(item), new TileInfo(new Loc(0, 0))));
@@ -274,8 +275,8 @@ public class Persistency {
      * @param xml
      * @return The unserialised maze
      */
-    public static Maze deserializeMaze(Document doc) {
-        Element root = doc.getRootElement();
+    public static Maze deserializeMaze(Element root) {
+        String thing = root.asXML();
         Element grid = root.element("grid");
         int width = Integer.parseInt(grid.attributeValue("width"));
         int height = Integer.parseInt(grid.attributeValue("height"));
@@ -362,23 +363,35 @@ public class Persistency {
      */
     public static Domain loadSave(int slot) throws DocumentException {
         SAXReader reader = new SAXReader();
-        Document document = reader.read(new File("res/save/" + slot + ".xml"));
-        return deserializeDomain(document);
+        try {
+            InputStream in = new FileInputStream("res/save/" + slot + ".xml");
+            Document document = reader.read(in);
+            return deserializeDomain(document);
+        } catch (FileNotFoundException e) {
+            return getInitialDomain();
+        }
     }
+
+    /**
+     * Delete a save file
+     */
+    public static void deleteSave(int slot) {
+        File file = new File("res/save/" + slot + ".xml");
+        file.delete();
+    }
+
+}
 
     /**
      * Load saves 1, 2, 3 to a list
      * 
      * @return The list of saves
      */
+    @Deprecated
     public static List<Domain> loadSaves() throws DocumentException {
         List<Domain> saves = new ArrayList<Domain>();
         for (int i = 1; i <= 3; ++i) {
-            try {
-                saves.add(loadSave(i));
-            } catch (DocumentException | NullPointerException e) {
-                saves.add(getInitialDomain());
-            }
+            saves.add(loadSave(i));
         }
         return saves;
     }
@@ -392,7 +405,7 @@ public class Persistency {
         File file = new File("res/levels/level1.xml");
         try {
             Document document = new SAXReader().read(file);
-            Maze maze = deserializeMaze(document);
+            Maze maze = deserializeMaze(document.getRootElement());
             return new Domain(List.of(maze), new Inventory(8), 1);
         } catch (DocumentException e) {
             e.printStackTrace();
