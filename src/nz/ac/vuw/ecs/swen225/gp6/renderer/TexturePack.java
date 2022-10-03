@@ -158,7 +158,12 @@ public enum TexturePack{
         /**
          * The image for the lose screen
          */
-        LoseScreen("loseScreen");
+        LoseScreen("loseScreen"),
+
+        HeroBack("heroBack"),
+        HeroFront("heroFront"),
+        HeroLeft("heroSide"),
+        HeroRight("hero");
         
         //name of the image
         private String name;
@@ -195,7 +200,6 @@ public enum TexturePack{
             return switch(tile.type()){
                 case Floor -> getImage(Empty_tile);
                 case Empty -> Images.Empty_tile.getImg();
-                case Hero -> Images.Hero.getImg();
                 case Enemy -> Images.Enemy.getImg();
                 case Wall -> Images.Wall.getImg();
                 case BlueKey -> Images.BlueKey.getImg();
@@ -251,5 +255,9 @@ public enum TexturePack{
             }
         }
         
+    }
+
+    protected static BufferedImage getDynamicImage(Images images) {
+        return null;
     }
 }

@@ -7,20 +7,33 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.Key.KeyColor;
 
 public class ExitDoorOpen extends Door{
+    private static boolean heroOn = false;
 
     public ExitDoorOpen (TileInfo info){super(info);}
 
+
+
     @Override public TileType type(){ return TileType.ExitDoorOpen;}
     @Override public KeyColor color(){return KeyColor.NONE;}
+    /*
+     * returns true if hero is on the tile
+     */
+    public boolean heroOn(){return heroOn;}
 
     @Override public boolean obstructsEnemy(Domain d){  return true;} //only hero can move on it
     @Override public boolean obstructsHero(Domain d){  return false;}
 
+    
+
     @Override public void setOn(Tile t, Domain d){
         //if the tile is hero, WIN
         if(t.type() == TileType.Hero){
+            heroOn = true; 
+
             d.getEventListener(Domain.DomainEvent.onWin).forEach(r -> r.run());
             CheckGame.gameHasEnded = true; //let the integrity checker know the game has ended
+            CheckGame.won = true;
+            
         } 
     }
             
