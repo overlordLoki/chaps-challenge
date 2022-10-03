@@ -73,7 +73,20 @@ public class Domain {
     public List<Runnable> getEventListener(DomainEvent event){
         return eventListeners.get(event);
     }
-    
+   
+    /*
+     * a specific toString method that uses the toString methods in 
+     * maze and inventory as well as displaying the current level
+     * TODO check if works
+     */
+    public String toString(){
+        String s = "Current Level: " + currentLvl + "\n";
+        s += "Inventory: " + inv.toString() + "\n";
+        s += mazes.get(currentLvl - 1).toString();
+
+        return s;
+    }
+
     //SETTERS:
     /**
      * add an event listener to the domain
