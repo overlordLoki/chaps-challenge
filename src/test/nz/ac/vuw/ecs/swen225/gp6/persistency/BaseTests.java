@@ -50,7 +50,7 @@ public class BaseTests {
     public void testMazeDeserialization() {
         Maze maze = Helper.makeMaze();
         Document doc = Persistency.serializeMaze(maze, 0);
-        Maze maze2 = Persistency.deserializeMaze(doc);
+        Maze maze2 = Persistency.deserializeMaze(doc.getRootElement());
         maze2.toString();
         assertEquals(maze.toString(), maze2.toString());
     }
