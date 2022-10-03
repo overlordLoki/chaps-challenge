@@ -9,8 +9,8 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 
 public class Hero extends Actor{
-    Direction staticDirection = Direction.Up; //should never be None
-    Tile tileOn; //tile the hero will replace when moved 
+    private static Direction staticDirection = Direction.Up; //should never be None(can be static atm since we have only one player - also has to be)
+    private static Tile tileOn; //tile the hero will replace when moved 
 
     public Hero (TileInfo info){
         super(info);
@@ -44,6 +44,8 @@ public class Hero extends Actor{
 
         m.getTileAt(l1).setOn(tileOn, d); //set previous location to tileOn
         m.getTileAt(l2).setOn(this, d); //set new location to hero, NOTE: Order matters here!
+
+        System.out.println(staticDirection);
 
         //TODO remove after testing
         //System.out.println( "Location x: " + self.info().loc().x() + " y: " + self.info().loc().y());
