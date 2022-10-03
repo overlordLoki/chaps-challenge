@@ -254,6 +254,13 @@ public final class CheckGame {
         //current conditions are:
         //-1: hero is on openExitDoor
         //-2: all coins are in inventory
+        if(domain.getTreasuresLeft() != 0){
+            throw new IllegalStateException("Not all coins are in inventory, but game is claimed to be won");
+        }
+
+        if(((ExitDoorOpen)getTile(maze, TileType.ExitDoorOpen)).heroOn() == false){
+            throw new IllegalStateException("Hero is not on open exit door, but game is claimed to be won");
+        }
     }
 
     //HELPER

@@ -7,9 +7,11 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.Key.KeyColor;
 
 public class ExitDoorOpen extends Door{
-    private boolean heroOn = false;
+    private static boolean heroOn = false;
 
     public ExitDoorOpen (TileInfo info){super(info);}
+
+
 
     @Override public TileType type(){ return TileType.ExitDoorOpen;}
     @Override public KeyColor color(){return KeyColor.NONE;}
@@ -26,9 +28,12 @@ public class ExitDoorOpen extends Door{
     @Override public void setOn(Tile t, Domain d){
         //if the tile is hero, WIN
         if(t.type() == TileType.Hero){
+            heroOn = true; 
+
             d.getEventListener(Domain.DomainEvent.onWin).forEach(r -> r.run());
             CheckGame.gameHasEnded = true; //let the integrity checker know the game has ended
             CheckGame.won = true;
+            
         } 
     }
             
