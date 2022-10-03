@@ -64,8 +64,10 @@ public class MazeRenderer extends JPanel{
                 if(tile.type() == TileType.Hero) {
                     Hero hero = (Hero) tile;
                     BufferedImage img = getHeroImg(hero.dir());
+                }else{
+                    g.drawImage(TexturePack.Images.getImage(tile), i * tileWidth, j * tileHeight, tileWidth, tileHeight, null);
                 }
-                g.drawImage(TexturePack.Images.getImage(tile), i * tileWidth, j * tileHeight, tileWidth, tileHeight, null);
+
             }
         }
     }
