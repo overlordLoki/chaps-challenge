@@ -57,22 +57,30 @@ public class Domain {
      */
     public int getTreasuresLeft(){return this.getCurrentMaze().getTileCount(TileType.Coin);}
 
-    /*
-     * returns true if there is a next level
+    /**
+     * checks if there is a next level
+     * 
+     * @return true if there is a next level
      */
     public boolean hasNextLvl(){return currentLvl < mazes.size();}
    
-    /*
+    /**
      * gets the list of event listeners for a given event
+     * 
+     * @param e the event to get the listeners for
+     * @return the list of listeners for the given event
      */
     public List<Runnable> getEventListener(DomainEvent event){
         return eventListeners.get(event);
     }
     
     //SETTERS:
-    /*
+    /**
      * add an event listener to the domain
-     */ 
+     * 
+     * @param event the event to listen for
+     * @param listener the listener to add
+     */
     public void addEventListener(DomainEvent event, Runnable toRun) {
         List<Runnable> listeners = eventListeners.get(event); //get list of listeners
         listeners.add(toRun); //add new listener
@@ -92,10 +100,10 @@ public class Domain {
      * pings the game one step, and replaces the current maze with a new one
      */
     public void pingDomain(){
-        Maze currentMaze = getCurrentMaze();
-        CheckGame.checkCurrentState(currentMaze, inv); //check current state integrity
+        CheckGame.checkCurrentState(this); //check current state integrity
 
         //copy mazes
+        Maze currentMaze = getCurrentMaze();
         Maze nextMaze = new Maze(currentMaze.getTileArrayCopy(), currentMaze.getDirection());
         List<Maze> newMazes = new ArrayList<Maze>(mazes);
         newMazes.set(currentLvl - 1, nextMaze);
@@ -107,8 +115,10 @@ public class Domain {
         Domain nextDomain = new Domain(newMazes, nextInv, currentLvl);
         nextDomain.eventListeners = this.eventListeners;
 
+        //ping
         nextMaze.pingMaze(nextDomain); //ping the new domain
-        CheckGame.checkStateChange(currentMaze, inv, nextMaze, nextInv); //check state change integrity 
+
+        CheckGame.checkStateChange(this, nextDomain); //check state change integrity 
 
         this.mazes = newMazes;//replace current domain's field with next 
         this.inv = nextInv;

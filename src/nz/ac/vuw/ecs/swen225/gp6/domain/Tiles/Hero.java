@@ -9,7 +9,7 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 
 public class Hero extends Actor{
-    Direction staticDirection; //TODO implement this
+    Direction staticDirection = Direction.Up; //should never be None
     Tile tileOn; //tile the hero will replace when moved 
 
     public Hero (TileInfo info){
@@ -28,6 +28,7 @@ public class Hero extends Actor{
         if(t.damagesHero(d)){
             d.getEventListener(Domain.DomainEvent.onLose).forEach(r -> r.run());
             CheckGame.gameHasEnded = true; //let the integrity checker know the game has ended
+            CheckGame.won = false;
         }
     }
 

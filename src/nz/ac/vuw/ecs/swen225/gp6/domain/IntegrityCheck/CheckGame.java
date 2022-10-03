@@ -1,5 +1,7 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain.IntegrityCheck;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -16,16 +18,25 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.*;
  * the game:
  *  - before a ping step is successfully completed (by comparing the previous maze and inv to next ones)
  *  - after a ping (by looking at the new altered domain, and making sure certain rules are always followed)
+ * 
+ * this class should be UPDATED REGULARLY to keep up with any new futures the game will have.
  */
 public final class CheckGame {
     public static boolean gameHasEnded;
+    public static boolean won;
     
-    public static void checkStateChange(Maze preMaze, Inventory preInv, Maze afterMaze, Inventory afterInv){
-        //make a mock pre and after domain //TODO: make sure this works
-        Domain preDomain = new Domain(List.of(preMaze), preInv, 1);
-        Domain afterDomain = new Domain(List.of(afterMaze), afterInv, 1);
+    /**
+     * Checks the integrity of the game after a ping, and the game state is transitioning a step forward.
+     * (so the domain have correctly transitioned from before ping state to after ping state)
+     * 
+     */
+    public static void checkStateChange(Domain preDomain, Domain afterDomain){
+        Maze preMaze = preDomain.getCurrentMaze();
+        Inventory preInv = preDomain.getInv();
+        Maze afterMaze = afterDomain.getCurrentMaze();
+        Inventory afterInv = afterDomain.getInv();
 
-        //if the game has ended, then do end game checks and return TODO BREAKS SOMETIMES
+        //if the game has ended, then do end game checks and return 
         if(gameHasEnded){
             return;
         }
@@ -47,9 +58,17 @@ public final class CheckGame {
         
     }
 
-    public static void checkCurrentState(Maze maze, Inventory inv){
+    /**
+     * Checks the integrity of the maze and inventory of a given game.
+     */
+    public static void checkCurrentState(Domain domain){
+        Maze maze = domain.getCurrentMaze();
+        Inventory inv = domain.getInv();
+
         //if the game has ended, then do end game checks and return 
         if(gameHasEnded){
+            if(won)checkWin(domain);
+            else checkLose(domain);
             return;
         }
 
@@ -180,6 +199,61 @@ public final class CheckGame {
         }
 
         
+    }
+
+    /**
+     * checks the integrity of the game if game is claimed to be lost.
+     */
+    private static void checkLose(Domain domain) {
+        Maze maze = domain.getCurrentMaze();
+
+        //check if one of the conditions that make the player lose is true 
+        //NOTE: must be extended if these conditions are extended
+        //current conditons:
+        //-1: hero moved on a damaging tile
+        //-2: damaging tile moved on a hero
+        //-3.. to be added later
+        
+        Tile h = getTile(maze, TileType.Hero); //will return Null tile if hero not maze
+        boolean heroOnDangerTile = h instanceof Hero && ((Hero)h).tileOn().damagesHero(domain);
+        boolean dangerTileOnHero = false;
+        List<Tile> damagingTiles = maze.getAllTilesThat(t -> t.damagesHero(domain));
+        for(Tile tile : damagingTiles){
+            //use reflection to find out the damaging tiles on maze, have a tileOn method
+            try{
+                Method m = tile.getClass().getMethod("tileOn");
+                Tile tileOn = (Tile) m.invoke(tile);
+                if(tileOn instanceof Hero){
+                    dangerTileOnHero = true;
+                    break;
+                }
+            } catch (NoSuchMethodException | SecurityException | IllegalAccessException 
+            | IllegalArgumentException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }
+        // if a tile is on hero, then hero is not on maze, so need to check h is not an instance of hero
+        dangerTileOnHero = dangerTileOnHero && h instanceof Hero == false; 
+
+        if(heroOnDangerTile == false && dangerTileOnHero == false){
+            throw new IllegalStateException("Hero has not moved on a damaging tile, or a damaging" 
+            + " tile has not moved on hero, but game is claimed to be lost");
+        }
+
+        
+    }
+
+    /**
+     * checks the integrity of the maze if game is claimed to be won.TODO
+     */
+    private static void checkWin(Domain domain) {
+        Maze maze = domain.getCurrentMaze();
+        Inventory inv = domain.getInv();
+
+        //check all conditions that player need to win is true
+        //current conditions are:
+        //-1: hero is on openExitDoor
+        //-2: all coins are in inventory
     }
 
     //HELPER
