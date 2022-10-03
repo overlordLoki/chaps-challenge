@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
 
 public enum TexturePack{
     
@@ -97,7 +99,17 @@ public enum TexturePack{
         /**
          * The image for the hero.
          */
-        Hero("hero"),
+        Hero("hero"){
+            public BufferedImage getHeroImg(Direction direction) {
+                return switch (direction) {
+                    case Up -> HeroBack.getImg();
+                    case Down -> HeroFront.getImg();
+                    case Left -> HeroLeft.getImg();
+                    case Right -> HeroRight.getImg();
+                    default -> throw new IllegalArgumentException("Unexpected value: " + direction);
+                };
+            }
+        },
         /**
          * The image for the enemy.
          */
@@ -158,7 +170,12 @@ public enum TexturePack{
         /**
          * The image for the lose screen
          */
-        LoseScreen("loseScreen");
+        LoseScreen("loseScreen"),
+
+        HeroBack("heroBack"),
+        HeroFront("heroFront"),
+        HeroLeft("heroSide"),
+        HeroRight("hero");
         
         //name of the image
         private String name;
@@ -195,7 +212,7 @@ public enum TexturePack{
             return switch(tile.type()){
                 case Floor -> getImage(Empty_tile);
                 case Empty -> Images.Empty_tile.getImg();
-                case Hero -> Images.Hero.getImg();
+                case Hero -> Images.Hero.getHeroImg(((Hero)tile).dir());
                 case Enemy -> Images.Enemy.getImg();
                 case Wall -> Images.Wall.getImg();
                 case BlueKey -> Images.BlueKey.getImg();
@@ -215,6 +232,9 @@ public enum TexturePack{
             };
         }
 
+        private BufferedImage getHeroImg(Direction dir) {
+            return null;
+        }
         public static BufferedImage loadCustom(String path){
             try {
                 return ImageIO.read(new File("res/textures/Custom_Textures/"+path+".png"));
@@ -251,5 +271,9 @@ public enum TexturePack{
             }
         }
         
+    }
+
+    protected static BufferedImage getDynamicImage(Images images) {
+        return null;
     }
 }
