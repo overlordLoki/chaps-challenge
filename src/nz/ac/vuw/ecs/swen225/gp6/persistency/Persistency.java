@@ -84,39 +84,56 @@ public class Persistency {
     }
 
     /**
-     * Get the settings from res/settings.xml
+     * Deserialize the settings xml
      * 
      * @return Settings object
      */
-    public static Settings getSettings() throws IOException {
-        // read file
-        String content = new String(Files.readAllBytes(Paths.get("res/settings.xml"))).strip();
+    public static Settings deserializeSettings(Element root) {
+        // get texture pack
+        String texturePack = root.element("texturePack").getText();
 
-        // parse xml
-        try {
-            Document doc = DocumentHelper.parseText(content);
-            Element root = doc.getRootElement();
-
-            // get texture pack
-            String texturePack = root.element("texturePack").getText();
-
-            // get key bindings
-            EnumMap<Keys, String> keyBindings = new EnumMap<>(Keys.class);
-            for (Keys key : Keys.values()) {
-                keyBindings.put(key, root.element("keyBindings").element(key.name()).getText());
-            }
-
-            // get music enabled
-            Boolean musicEnabled = Boolean.parseBoolean(root.element("musicEnabled").getText());
-
-            return new Settings(texturePack, keyBindings, musicEnabled);
-        } catch (DocumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        // get key bindings
+        EnumMap<Keys, String> keyBindings = new EnumMap<>(Keys.class);
+        for (Keys key : Keys.values()) {
+            keyBindings.put(key, root.element("keyBindings").element(key.name()).getText());
         }
 
-        return null;
+        // get music enabled
+        Boolean musicEnabled = Boolean.parseBoolean(root.element("musicEnabled").getText());
+
+        return new Settings(texturePack, keyBindings, musicEnabled);
     }
+
+    /**
+     * Serialize the settings xml
+     * 
+     * @param settings Settings object
+     * @return XML document
+     */
+    public static Document serializeSettings(Settings settings) {
+        Document document = DocumentHelper.createDocument();
+        Element root = document.addElement("settings");
+
+        // add texture pack
+        root.addElement("texturePack").addText(settings.texturePack());
+
+        // add key bindings
+        Element keyBindings = root.addElement("keyBindings");
+        for (Keys key : Keys.values()) {
+            keyBindings.addElement(key.name()).addText(settings.keyBindings().get(key));
+        }
+
+        // add music enabled
+        root.addElement("musicEnabled").addText(settings.musicEnabled().toString());
+
+        return document;
+    }
+
+    /**
+     * Save the settings to res/settings.xml
+     * 
+     * @param settings The settings to save
+     */
 
     /**
      * Serialise a domain to an XML document
@@ -352,6 +369,17 @@ public class Persistency {
         FileWriter out = new FileWriter("res/save/" + slot + ".xml");
         document.write(out);
         out.close();
+    }
+
+    /**
+     * Load settings from file
+     * 
+     * @return The settings
+     */
+    public static Settings loadSettings() throws DocumentException {
+        SAXReader reader = new SAXReader();
+        Document document = reader.read(new File("res/settings.xml"));
+        return deserializeSettings(document.getRootElement());
     }
 
     /**
