@@ -50,7 +50,7 @@ public class BaseTests {
     public void testMazeDeserialization() {
         Maze maze = Helper.makeMaze();
         Document doc = Persistency.serializeMaze(maze, 0);
-        Maze maze2 = Persistency.deserializeMaze(doc);
+        Maze maze2 = Persistency.deserializeMaze(doc.getRootElement());
         maze2.toString();
         assertEquals(maze.toString(), maze2.toString());
     }
@@ -78,6 +78,21 @@ public class BaseTests {
         RecordTimeline<Action> timeline2 = Persistency.deserializeRecordTimeline(doc);
 
         assertEquals(timeline.toString(), timeline2.toString());
+    }
+
+    @Test
+    public void testDomainSerialisation() {
+        Domain domain = Persistency.getInitialDomain();
+        Document doc = Persistency.serializeDomain(domain);
+        // assertEquals(doc.asXML(), "");
+        Domain domain2 = Persistency.deserializeDomain(doc);
+
+        assertEquals(domain.toString(), domain2.toString());
+    }
+
+    @Test
+    public void deleteSave() {
+        Persistency.deleteSave(1);
     }
 
     // @Test
