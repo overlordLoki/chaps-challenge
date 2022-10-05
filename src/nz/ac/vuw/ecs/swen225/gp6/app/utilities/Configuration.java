@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.awt.event.KeyEvent.*;
-import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller.Key.key;
+import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller.Key;
 
 /**
  * Configuration class for the App class. Stores all the settings used by the App class.
@@ -22,10 +22,10 @@ public class Configuration {
     // Default settings for the game
     private final boolean defaultMusicOn = true;
     private final List<Controller.Key> defaultKeyBindings =
-            List.of(key(NO_MOD,VK_UP),key(NO_MOD,VK_DOWN),key(NO_MOD,VK_LEFT),key(NO_MOD,VK_RIGHT),
-                    key(NO_MOD,VK_SPACE),key(NO_MOD,VK_ESCAPE),
-                    key(InputEvent.CTRL_DOWN_MASK,VK_1),key(InputEvent.CTRL_DOWN_MASK,VK_2),
-                    key(InputEvent.CTRL_DOWN_MASK,VK_X),key(InputEvent.CTRL_DOWN_MASK,VK_S),key(InputEvent.CTRL_DOWN_MASK,VK_R));
+            List.of(new Key(NO_MOD,VK_UP),new Key(NO_MOD,VK_DOWN),new Key(NO_MOD,VK_LEFT),new Key(NO_MOD,VK_RIGHT),
+                    new Key(NO_MOD,VK_SPACE),new Key(NO_MOD,VK_ESCAPE),
+                    new Key(InputEvent.CTRL_DOWN_MASK,VK_1),new Key(InputEvent.CTRL_DOWN_MASK,VK_2),
+                    new Key(InputEvent.CTRL_DOWN_MASK,VK_X),new Key(InputEvent.CTRL_DOWN_MASK,VK_S),new Key(InputEvent.CTRL_DOWN_MASK,VK_R));
 
     // User settings for the game
     private boolean isMusicOn = defaultMusicOn;

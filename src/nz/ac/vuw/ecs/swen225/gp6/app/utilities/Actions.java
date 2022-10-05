@@ -35,13 +35,6 @@ public class Actions {
     }
 
     /**
-     * Constructor for the Actions class.
-     */
-    public Actions(){
-        this.app = new App();
-    }
-
-    /**
      * Moves the player up.
      */
     public void actionUp() {
@@ -103,14 +96,20 @@ public class Actions {
      * Load a saved game.
      */
     public void actionLoad(){
-        System.out.println("Game loaded");
+        actionPause();
+        app.refreshSaves();
+        app.transitionToMenuScreen();
+        app.getGUI().transitionToLoadPanel();
     }
 
     /**
      * Save and quits the current game.
      */
     public void actionSave(){
-        System.out.println("Game saved");
+        actionPause();
+        app.refreshSaves();
+        app.transitionToMenuScreen();
+        app.getGUI().transitionToSavePanel();
     }
 
     /**

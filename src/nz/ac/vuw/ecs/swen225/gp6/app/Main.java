@@ -14,6 +14,7 @@ public class Main {
      * @param args No arguments required for this application
      */
     public static void main(String... args){
+        ClassLoader.getSystemClassLoader().setDefaultAssertionStatus(true);
         SwingUtilities.invokeLater(App::new);
     }
 }
