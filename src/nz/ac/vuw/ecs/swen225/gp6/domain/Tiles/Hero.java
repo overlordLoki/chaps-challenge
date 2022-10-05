@@ -50,6 +50,7 @@ public class Hero extends Actor{
         //TODO remove after testing
         //System.out.println( "Location x: " + self.info().loc().x() + " y: " + self.info().loc().y());
         //System.out.println( d.getCurrentMaze().toString());
+        System.out.println( d.toString());
 
         this.tileOn = tileToOccupy.replaceWith(); // set tile heros to replace when moving off
         staticDirection = m.getDirection(); //set heros direction of facing 
