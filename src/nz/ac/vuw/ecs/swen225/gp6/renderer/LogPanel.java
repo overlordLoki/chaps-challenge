@@ -3,10 +3,7 @@ package nz.ac.vuw.ecs.swen225.gp6.renderer;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-
-import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
 import java.awt.*;
-import java.io.IOException;
 
 public class LogPanel extends JPanel{
     
@@ -33,27 +30,6 @@ public class LogPanel extends JPanel{
     }
 
     /**
-     * read the log file and display it in the text area
-     */
-    public void readLogs(){
-        try {
-            Persistency.getLogs().forEach(log -> {
-                textArea.append(log.toString());
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    /**
-	 * appends String to textArea and adds \n to the string
-     * @param text
-	 */
-	public String printLine(String s) {
-		textArea.append(s+"\n");
-        return s;
-	}
-
-    /**
      * appends String to textArea
      * @param s
      * @return
@@ -63,10 +39,4 @@ public class LogPanel extends JPanel{
         this.repaint();
         return s;
     }
-	/**
-	 * Clears all text
-	 */
-	public void clearText() {
-		textArea.setText("");
-	}
 }
