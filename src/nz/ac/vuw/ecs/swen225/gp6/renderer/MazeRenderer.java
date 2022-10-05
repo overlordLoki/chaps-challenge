@@ -68,7 +68,6 @@ public class MazeRenderer extends JPanel{
                 }else{
                     g.drawImage(TexturePack.Images.getImage(tile), i * tileWidth, j * tileHeight, tileWidth, tileHeight, null);
                 }
-
             }
         }
     }
