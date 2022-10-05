@@ -375,9 +375,11 @@ public class Persistency {
     /**
      * Delete a save file
      */
-    public static void deleteSave(int slot) {
+    public static void deleteSave(int slot) throws IOException {
         File file = new File("res/save/" + slot + ".xml");
-        file.delete();
+        if (!file.delete()) {
+            throw new IOException("Could not delete file");
+        }
     }
 
     /**
