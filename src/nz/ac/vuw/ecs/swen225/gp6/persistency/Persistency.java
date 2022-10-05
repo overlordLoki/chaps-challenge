@@ -350,7 +350,12 @@ public class Persistency {
     public static void saveDomain(Domain domain, int slot) throws IOException {
         Document document = serializeDomain(domain);
 
-        FileWriter out = new FileWriter("res/save/" + slot + ".xml");
+        File dir = new File("res/saves");
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        FileWriter out = new FileWriter("res/saves/" + slot + ".xml");
         document.write(out);
         out.close();
     }
@@ -364,7 +369,7 @@ public class Persistency {
     public static Domain loadSave(int slot) throws DocumentException {
         SAXReader reader = new SAXReader();
         try {
-            InputStream in = new FileInputStream("res/save/" + slot + ".xml");
+            InputStream in = new FileInputStream("res/saves/" + slot + ".xml");
             Document document = reader.read(in);
             return deserializeDomain(document);
         } catch (FileNotFoundException e) {
