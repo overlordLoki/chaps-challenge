@@ -23,15 +23,6 @@ public class Controller extends KeyAdapter {
     public record Key(int modifier, int key){
 
         /**
-         * Creates a new Key object.
-         *
-         * @param modifier The modifier keys pressed.
-         * @param key The key pressed.
-         * @return The new Key object.
-         */
-        public static Key key(int modifier, int key){return new Key(modifier, key);}
-
-        /**
          * Converts the key combo to a string.
          *
          * @param modifier The modifier keys pressed.
@@ -79,6 +70,6 @@ public class Controller extends KeyAdapter {
     @Override
     public void keyPressed(KeyEvent e) {
         assert SwingUtilities.isEventDispatchThread(): "Controller: keyPressed: Not in EDT";
-        actionsPressed.getOrDefault(Key.key(e.getModifiersEx(),e.getKeyCode()), ()->{}).run();
+        actionsPressed.getOrDefault(new Key(e.getModifiersEx(),e.getKeyCode()), ()->{}).run();
     }
 }
