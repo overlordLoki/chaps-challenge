@@ -402,11 +402,19 @@ public class Persistency {
      * @return The initial domain
      */
     public static Domain getInitialDomain() {
-        File file = new File("res/levels/level1.xml");
         try {
-            Document document = new SAXReader().read(file);
-            Maze maze = deserializeMaze(document.getRootElement());
-            return new Domain(List.of(maze), new Inventory(8), 1);
+            SAXReader reader = new SAXReader();
+            // list files in res/levels
+            File dir = new File("res/levels");
+            File[] files = dir.listFiles();
+            List<Maze> mazes = new ArrayList<Maze>();
+            for (File file : files) {
+                if (file.getName().endsWith(".xml")) {
+                    Document document = reader.read(file);
+                    mazes.add(deserializeMaze(document.getRootElement()));
+                }
+            }
+            return new Domain(mazes, new Inventory(8), 1);
         } catch (DocumentException e) {
             e.printStackTrace();
             return new Domain(List.of(nz.ac.vuw.ecs.swen225.gp6.domain.Helper.makeMaze(),

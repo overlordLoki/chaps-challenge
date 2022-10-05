@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<level index="0" name="Level 1">
+    <grid width="17" height="17">
+        <cell x="3" y="1">
+            <wall/>
+        </cell>
+        <cell x="4" y="1">
+            <wall/>
+        </cell>
+        <cell x="5" y="1">
+            <wall/>
+        </cell>
+        <cell x="6" y="1">
+            <wall/>
+        </cell>
+        <cell x="7" y="1">
+            <wall/>
+        </cell>
+        <cell x="9" y="1">
+            <wall/>
+        </cell>
+        <cell x="10" y="1">
+            <wall/>
+        </cell>
+        <cell x="11" y="1">
+            <wall/>
+        </cell>
+        <cell x="12" y="1">
+            <wall/>
+        </cell>
+        <cell x="13" y="1">
+            <wall/>
+        </cell>
+        <cell x="3" y="2">
+            <wall/>
+        </cell>
+        <cell x="7" y="2">
+            <wall/>
+        </cell>
+        <cell x="8" y="2">
+            <wall/>
+        </cell>
+        <cell x="9" y="2">
+            <wall/>
+        </cell>
+        <cell x="13" y="2">
+            <wall/>
+        </cell>
+        <cell x="3" y="3">
+            <wall/>
+        </cell>
+        <cell x="5" y="3">
+            <coin/>
+        </cell>
+        <cell x="7" y="3">
+            <wall/>
+        </cell>
+        <cell x="8" y="3">
+            <exitDoor/>
+        </cell>
+        <cell x="9" y="3">
+            <wall/>
+        </cell>
+        <cell x="11" y="3">
+            <coin/>
+        </cell>
+        <cell x="13" y="3">
+            <wall/>
+        </cell>
+        <cell x="1" y="4">
+            <wall/>
+        </cell>
+        <cell x="2" y="4">
+            <wall/>
+        </cell>
+        <cell x="3" y="4">
+            <wall/>
+        </cell>
+        <cell x="4" y="4">
+            <wall/>
+        </cell>
+        <cell x="5" y="4">
+            <wall/>
+        </cell>
+        <cell x="6" y="4">
+            <lock color="green"/>
+        </cell>
+        <cell x="7" y="4">
+            <wall/>
+        </cell>
+        <cell x="9" y="4">
+            <wall/>
+        </cell>
+        <cell x="10" y="4">
+            <lock color="green"/>
+        </cell>
+        <cell x="11" y="4">
+            <wall/>
+        </cell>
+        <cell x="12" y="4">
+            <wall/>
+        </cell>
+        <cell x="13" y="4">
+            <wall/>
+        </cell>
+        <cell x="14" y="4">
+            <wall/>
+        </cell>
+        <cell x="15" y="4">
+            <wall/>
+        </cell>
+        <cell x="1" y="5">
+            <wall/>
+        </cell>
+        <cell x="2" y="5">
+            <key color="yellow"/>
+        </cell>
+        <cell x="5" y="5">
+            <lock color="blue"/>
+        </cell>
+        <cell x="11" y="5">
+            <lock color="orange"/>
+        </cell>
+        <cell x="14" y="5">
+            <key color="yellow"/>
+        </cell>
+        <cell x="15" y="5">
+            <wall/>
+        </cell>
+        <cell x="1" y="6">
+            <wall/>
+        </cell>
+        <cell x="3" y="6">
+            <coin/>
+        </cell>
+        <cell x="5" y="6">
+            <wall/>
+        </cell>
+        <cell x="6" y="6">
+            <key color="blue"/>
+        </cell>
+        <cell x="10" y="6">
+            <key color="orange"/>
+        </cell>
+        <cell x="11" y="6">
+            <wall/>
+        </cell>
+        <cell x="13" y="6">
+            <coin/>
+        </cell>
+        <cell x="15" y="6">
+            <wall/>
+        </cell>
+        <cell x="1" y="7">
+            <wall/>
+        </cell>
+        <cell x="2" y="7">
+            <wall/>
+        </cell>
+        <cell x="3" y="7">
+            <wall/>
+        </cell>
+        <cell x="4" y="7">
+            <wall/>
+        </cell>
+        <cell x="5" y="7">
+            <wall/>
+        </cell>
+        <cell x="6" y="7">
+            <coin/>
+        </cell>
+        <cell x="8" y="7">
+            <hero/>
+        </cell>
+        <cell x="10" y="7">
+            <coin/>
+        </cell>
+        <cell x="11" y="7">
+            <wall/>
+        </cell>
+        <cell x="12" y="7">
+            <wall/>
+        </cell>
+        <cell x="13" y="7">
+            <wall/>
+        </cell>
+        <cell x="14" y="7">
+            <wall/>
+        </cell>
+        <cell x="15" y="7">
+            <wall/>
+        </cell>
+        <cell x="1" y="8">
+            <wall/>
+        </cell>
+        <cell x="3" y="8">
+            <coin/>
+        </cell>
+        <cell x="5" y="8">
+            <wall/>
+        </cell>
+        <cell x="6" y="8">
+            <key color="blue"/>
+        </cell>
+        <cell x="10" y="8">
+            <key color="orange"/>
+        </cell>
+        <cell x="11" y="8">
+            <wall/>
+        </cell>
+        <cell x="13" y="8">
+            <coin/>
+        </cell>
+        <cell x="15" y="8">
+            <wall/>
+        </cell>
+        <cell x="1" y="9">
+            <wall/>
+        </cell>
+        <cell x="5" y="9">
+            <lock color="orange"/>
+        </cell>
+        <cell x="8" y="9">
+            <coin/>
+        </cell>
+        <cell x="11" y="9">
+            <lock color="blue"/>
+        </cell>
+        <cell x="15" y="9">
+            <wall/>
+        </cell>
+        <cell x="1" y="10">
+            <wall/>
+        </cell>
+        <cell x="2" y="10">
+            <wall/>
+        </cell>
+        <cell x="3" y="10">
+            <wall/>
+        </cell>
+        <cell x="4" y="10">
+            <wall/>
+        </cell>
+        <cell x="5" y="10">
+            <wall/>
+        </cell>
+        <cell x="6" y="10">
+            <wall/>
+        </cell>
+        <cell x="7" y="10">
+            <lock color="yellow"/>
+        </cell>
+        <cell x="8" y="10">
+            <wall/>
+        </cell>
+        <cell x="9" y="10">
+            <lock color="yellow"/>
+        </cell>
+        <cell x="10" y="10">
+            <wall/>
+        </cell>
+        <cell x="11" y="10">
+            <wall/>
+        </cell>
+        <cell x="12" y="10">
+            <wall/>
+        </cell>
+        <cell x="13" y="10">
+            <wall/>
+        </cell>
+        <cell x="14" y="10">
+            <wall/>
+        </cell>
+        <cell x="15" y="10">
+            <wall/>
+        </cell>
+        <cell x="5" y="11">
+            <wall/>
+        </cell>
+        <cell x="8" y="11">
+            <wall/>
+        </cell>
+        <cell x="11" y="11">
+            <wall/>
+        </cell>
+        <cell x="5" y="12">
+            <wall/>
+        </cell>
+        <cell x="7" y="12">
+            <coin/>
+        </cell>
+        <cell x="8" y="12">
+            <wall/>
+        </cell>
+        <cell x="9" y="12">
+            <coin/>
+        </cell>
+        <cell x="11" y="12">
+            <wall/>
+        </cell>
+        <cell x="5" y="13">
+            <wall/>
+        </cell>
+        <cell x="7" y="13">
+            <key color="green"/>
+        </cell>
+        <cell x="8" y="13">
+            <wall/>
+        </cell>
+        <cell x="9" y="13">
+            <key color="green"/>
+        </cell>
+        <cell x="11" y="13">
+            <wall/>
+        </cell>
+        <cell x="5" y="14">
+            <wall/>
+        </cell>
+        <cell x="6" y="14">
+            <wall/>
+        </cell>
+        <cell x="7" y="14">
+            <wall/>
+        </cell>
+        <cell x="8" y="14">
+            <wall/>
+        </cell>
+        <cell x="9" y="14">
+            <wall/>
+        </cell>
+        <cell x="10" y="14">
+            <wall/>
+        </cell>
+        <cell x="11" y="14">
+            <wall/>
+        </cell>
+    </grid>
+</level>
