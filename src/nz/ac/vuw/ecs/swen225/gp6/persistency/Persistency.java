@@ -136,7 +136,7 @@ public class Persistency {
             Document mazeDoc = serializeMaze(maze, i);
             levels.add(mazeDoc.getRootElement());
         }
-        levels.addAttribute("current", Integer.toString(domain.getLvl() - 1));
+        levels.addAttribute("current", Integer.toString(domain.getLvl()));
         root.add(serializeInventory(domain.getInv()).getRootElement());
 
         return document;
