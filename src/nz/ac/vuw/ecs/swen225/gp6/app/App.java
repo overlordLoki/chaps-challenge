@@ -7,7 +7,6 @@ import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.GameClock;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.DomainEvent;
-import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MusicPlayer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.logging.Interceptor;
@@ -44,7 +43,7 @@ public class App extends JFrame {
     public static final int HEIGHT = 800;
 
     // Core components of the game
-    private DomainController game       = new DomainController(Persistency.getInitialDomain());
+    private Domain game                 = Persistency.getInitialDomain();
     private final Actions actions       = new Actions(this);
     private final Configuration config  = new Configuration(true,new EnumMap<>(Map.ofEntries(
             Map.entry(MOVE_UP, new Controller.Key(0,VK_UP)),
@@ -194,7 +193,7 @@ public class App extends JFrame {
      * Sets the game to a new game and enters game play mode
      */
     public void startNewGame() {
-        updateGameComponents(new DomainController(Persistency.getInitialDomain()), gameClock.getTimer());
+        updateGameComponents(Persistency.getInitialDomain(), gameClock.getTimer());
         transitionToGameScreen();
     }
 
@@ -204,7 +203,7 @@ public class App extends JFrame {
      * @param slot the save file to load
      */
     public void startSavedGame(int slot) {
-        updateGameComponents(new DomainController(saves[slot-1]), gameClock.getTimer());
+        updateGameComponents(saves[slot-1], gameClock.getTimer());
         replay.load("save");
         transitionToGameScreen();
     }
@@ -215,7 +214,7 @@ public class App extends JFrame {
      * @param slot the save file to load
      */
     public void startSavedReplay(int slot) {
-        updateGameComponents(new DomainController(saves[slot]), gameClock.getTimer());
+        updateGameComponents(saves[slot], gameClock.getTimer());
         replay.load("save");
         transitionToReplayScreen();
     }
@@ -226,7 +225,7 @@ public class App extends JFrame {
      * @param game the new game to be updated
      * @param timer the new timer to be updated
      */
-    private void updateGameComponents(DomainController game, Timer timer) {
+    private void updateGameComponents(Domain game, Timer timer) {
         this.game = game;
         this.gui.getRender().setMaze(game);
         this.gui.getInventory().setMaze(game);
@@ -265,7 +264,7 @@ public class App extends JFrame {
      *
      * @return the game object
      */
-    public DomainController getGame() {return game;}
+    public Domain getGame() {return game;}
 
     /**
      * Gets the current controller.

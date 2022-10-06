@@ -31,7 +31,7 @@ public class ExitDoorOpen extends Door{
             heroOn = true; 
                                            
             //let CheckGame know that the the game is won/inbetween levels
-            if(d.getMazes().size() == d.getLvl()){ 
+            if(d.getMazes().size() == d.getCurrentLevel()){ 
                 CheckGame.state = CheckGame.GameState.WON;
             } else{
                 CheckGame.state = CheckGame.GameState.BETWEENLEVELS;

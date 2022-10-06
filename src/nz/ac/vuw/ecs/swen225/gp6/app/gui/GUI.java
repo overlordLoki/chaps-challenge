@@ -4,7 +4,7 @@ import nz.ac.vuw.ecs.swen225.gp6.app.App;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.Action;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller;
-import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.InventoryPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.LogPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
@@ -350,7 +350,7 @@ public class GUI {
         JPanel pnLoad = createRepeatableBackgroundPanel(TexturePack.Images.Wall, render, BoxLayout.Y_AXIS);
         JPanel pnInfo = createClearPanel(BoxLayout.Y_AXIS);
         JPanel pnStatus = createClearPanel(BoxLayout.Y_AXIS);
-        JPanel pnInventory = new InventoryPanel(new DomainController(app.getSave(slot)), true, render);
+        JPanel pnInventory = new InventoryPanel(new DomainController(app.getSave(slot)), true);
         JPanel pnOptions = createClearPanel(BoxLayout.X_AXIS);
 
         // assemble this panel
@@ -361,7 +361,7 @@ public class GUI {
                 pnInfo,
                 pnOptions);
         addAll(pnStatus,
-                createInfoLabel(()->"Level: " + app.getSave(slot).getLvl(), render, TEXT, true),
+                createInfoLabel(()->"Level: " + app.getSave(slot).getCurrentLevel(), render, TEXT, true),
                 createInfoLabel(()->"Time Left: " + app.getGameClock().getTimeInMinutes(), render, TEXT, true),
                 createInfoLabel(()->"Score: " + app.getSave(slot).getTreasuresLeft(), render, TEXT, true));
         if (isSave){    // Options for Saving

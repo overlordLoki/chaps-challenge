@@ -6,19 +6,19 @@ import javax.swing.JPanel;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 
-import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.Tile;
 /**
  *  @author Loki
  */
 public class InventoryPanel extends JPanel{
     //maze
-    private DomainController maze;
+    private Domain maze;
     /**
      * Constructor. Takes a maze as parameters.
      * @param maze
      */
-    public InventoryPanel(DomainController Maze, boolean isGamePanel,MazeRenderer mazeRenderer) {
+    public InventoryPanel(Domain Maze, boolean isGamePanel) {
         this.maze = Maze;
         //use grid layout based on boolean. gamePanel is 4,2 and inventoryPanel is 1x9
         this.setLayout(isGamePanel ? new GridLayout(4,2): new GridLayout(1,9));
@@ -41,5 +41,5 @@ public class InventoryPanel extends JPanel{
      * set the maze to be rendered
      * @param maze
      */
-    public void setMaze(DomainController maze) {this.maze = maze;}
+    public void setMaze(Domain maze) {this.maze = maze;}
 }
