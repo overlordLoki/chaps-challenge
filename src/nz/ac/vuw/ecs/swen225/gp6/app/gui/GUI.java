@@ -74,7 +74,7 @@ public class GUI {
      */
     public GUI(App app){
         render = new MazeRenderer(app.getGame());
-        pnInventory = new InventoryPanel(app.getGame(), true);
+        pnInventory = new InventoryPanel(app.getGame(), true, render);
     }
 
     /**
@@ -226,7 +226,7 @@ public class GUI {
         JPanel pnBindingR = createClearPanel(BoxLayout.Y_AXIS);
         JPanel pnTexturePack = createClearPanel(BoxLayout.X_AXIS);
 
-        JLabel lbCurrentTexture = createLabel(render.getCurrentTexturePack()+"" , render, TEXT, false);
+        JLabel lbCurrentTexture = createInfoLabel(()->render.getCurrentTexturePack().getName()+"" , render, TEXT, false);
 
         // setting layout
         pnBindingL.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
@@ -235,18 +235,12 @@ public class GUI {
         // assemble this panel
         addAll(pnTexturePack,
                 createActionLabel("<<<  ", render,SUBTITLE, false, ()->{
-                    int newTexture = (render.getCurrentTexturePack().ordinal()-1+TexturePack.values().length)%TexturePack.values().length;
-                    TexturePack currentPack = TexturePack.values()[newTexture];
-                    render.setTexturePack(currentPack);
-                    lbCurrentTexture.setText(currentPack+"");
+                    render.usePrevTexturePack();
                     app.repaint();
                 }),
                 lbCurrentTexture,
                 createActionLabel("  >>>", render,TEXT, false, ()->{
-                    int newTexture = (render.getCurrentTexturePack().ordinal()+1)%TexturePack.values().length;
-                    TexturePack currentPack = TexturePack.values()[newTexture];
-                    render.setTexturePack(currentPack);
-                    lbCurrentTexture.setText(currentPack+"");
+                    render.useNextTexturePack();
                     app.repaint();
                 }));
         addAll(pnBindingL,
@@ -356,7 +350,7 @@ public class GUI {
         JPanel pnLoad = createRepeatableBackgroundPanel(TexturePack.Images.Wall, render, BoxLayout.Y_AXIS);
         JPanel pnInfo = createClearPanel(BoxLayout.Y_AXIS);
         JPanel pnStatus = createClearPanel(BoxLayout.Y_AXIS);
-        JPanel pnInventory = new InventoryPanel(new DomainController(app.getSave(slot)), true);
+        JPanel pnInventory = new InventoryPanel(new DomainController(app.getSave(slot)), true, render);
         JPanel pnOptions = createClearPanel(BoxLayout.X_AXIS);
 
         // assemble this panel
