@@ -9,7 +9,7 @@ public abstract class Item extends AbstractTile {
     
     @Override public boolean obstructsEnemy(Domain d){return true;}
     @Override public void setOn(Tile t, Domain d){ 
-        d.getInv().addItem(this); //put this item in the inventory(doesn't remove from maze)
+        d.getInventory().addItem(this); //put this item in the inventory(doesn't remove from maze)
         d.getCurrentMaze().setTileAt(info.loc(), t);
     }
 }

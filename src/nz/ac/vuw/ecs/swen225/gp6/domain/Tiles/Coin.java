@@ -12,7 +12,7 @@ public class Coin extends Item{
     
     @Override public void setOn(Tile t, Domain d){ 
         //add coin to inventory
-        d.getInv().addCoin();
+        d.getInventory().addCoin();
         d.getCurrentMaze().setTileAt(info.loc(), t);
 
         //if all treasures collected replace exitdoor with open exit door

@@ -32,9 +32,9 @@ public final class CheckGame {
      */
     public static void checkStateChange(Domain preDomain, Domain afterDomain){
         Maze preMaze = preDomain.getCurrentMaze();
-        Inventory preInv = preDomain.getInv();
+        Inventory preInv = preDomain.getInventory();
         Maze afterMaze = afterDomain.getCurrentMaze();
-        Inventory afterInv = afterDomain.getInv();
+        Inventory afterInv = afterDomain.getInventory();
 
          //if the game is won, lost or in between levels, behave appropriately
         if(state == GameState.WON || state == GameState.LOST){
@@ -67,7 +67,7 @@ public final class CheckGame {
      */
     public static void checkCurrentState(Domain domain){
         Maze maze = domain.getCurrentMaze();
-        Inventory inv = domain.getInv();
+        Inventory inv = domain.getInventory();
 
         //if the game is won, lost or in between levels, behave appropriately
         if(state == GameState.WON){
@@ -259,7 +259,7 @@ public final class CheckGame {
      */
     private static void checkWin(Domain domain) {
         Maze maze = domain.getCurrentMaze();
-        Inventory inv = domain.getInv();
+        Inventory inv = domain.getInventory();
 
         //check all conditions that player need to win is true
         //current conditions are:
