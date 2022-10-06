@@ -233,7 +233,6 @@ public class Fuzz {
      * Main method to run different test
      */
     public static void main(String[] args) throws AWTException {
-        
 
         String[] buttons = { "hardCode", "testLevel(1000)", "testLevel(100)", "Cancel" };
         int rc = JOptionPane.showOptionDialog(null, "Choose a test", "Test",
