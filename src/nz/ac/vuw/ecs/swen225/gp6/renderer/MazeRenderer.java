@@ -129,6 +129,29 @@ public class MazeRenderer extends JPanel{
         return textures;
     }
 
+    //check if folder has all png files required for a texture pack
+    public boolean checkFolder(File folder) {
+        File[] listOfFiles = folder.listFiles();
+        List<String> files = new ArrayList<>();
+        for (File file : listOfFiles) {
+            if (file.isFile()) {
+                files.add(file.getName());
+            }
+        }
+        String n = "background,pattern,floor,wall_tile,pattern2,enemy,coin,blueKey,greenKey"+
+                    "orangeKey,yellowKey,blueLock,greenLock,orangeLock,yellowLock,empty_tile"+
+                    "exitDoor,winScreen,loseScreen,heroBack,heroFront,heroSide,hero";
+        String[] must = n.split(",");
+        for(String s : must) {
+            if(!files.contains(s+".png")) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+
     //------------------------------------------------------------------------------------------------//
     //getters and setters
 
