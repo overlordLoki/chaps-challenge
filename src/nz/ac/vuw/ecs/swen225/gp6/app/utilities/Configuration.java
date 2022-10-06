@@ -1,14 +1,7 @@
 package nz.ac.vuw.ecs.swen225.gp6.app.utilities;
 
-import java.awt.event.InputEvent;
 import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
 
-import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.Action;
-
-import static java.awt.event.KeyEvent.*;
-import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.Action.*;
 import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller.Key;
 
 /**
@@ -18,7 +11,7 @@ import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller.Key;
  */
 public class Configuration {
     private boolean isMusicOn;
-    private final EnumMap<Action, Key> userKeyBindings;
+    private final EnumMap<Actions, Key> userKeyBindings;
 
     /**
      * Constructor for the Configuration class
@@ -26,7 +19,7 @@ public class Configuration {
      * @param isMusicOn Whether the music is on or off.
      * @param userKeyBindings The key bindings for the game.
      */
-    public Configuration(boolean isMusicOn, EnumMap<Action, Key> userKeyBindings){
+    public Configuration(boolean isMusicOn, EnumMap<Actions, Key> userKeyBindings){
         this.isMusicOn = isMusicOn;
         this.userKeyBindings = userKeyBindings;
     }
@@ -41,7 +34,7 @@ public class Configuration {
      * @param action the action to set key binding
      * @param key the key to set
      */
-    public void setKeyBinding(Action action, Controller.Key key){this.userKeyBindings.put(action,key);}
+    public void setKeyBinding(Actions action, Controller.Key key){this.userKeyBindings.put(action,key);}
 
     /**
      * Sets playing music to true or false
@@ -56,21 +49,24 @@ public class Configuration {
 
     /**
      * Gets the key binding for the action.
-     * @param index the index of the action
+     *
+     * @param action The action to get the key binding for.
      * @return the key binding for the action
      */
-    public Controller.Key getKeyBinding(Action action){return userKeyBindings.get(action);}
+    public Controller.Key getKeyBinding(Actions action){return userKeyBindings.get(action);}
 
     /**
      * Gets the list of action key bindings.
      *
      * @return the list of action key bindings
      */
-    public EnumMap<Action, Key> getUserKeyBindings() {return userKeyBindings;}
+    public EnumMap<Actions, Key> getUserKeyBindings() {return userKeyBindings;}
 
     /**
      *  Check if this key combo is already bound to an action.
-     * @param key the key to check
+     *
+     * @param modifier The key modifier
+     * @param key the key code
      * @return true if the key is bound to an action, false otherwise
      */
     public boolean checkKeyBinding(int modifier, int key){
