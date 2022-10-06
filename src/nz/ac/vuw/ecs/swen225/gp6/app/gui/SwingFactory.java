@@ -17,6 +17,8 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
+import java.util.function.BooleanSupplier;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 class SwingFactory {
@@ -212,24 +214,49 @@ class SwingFactory {
     }
 
     /**
-     * This method is used to create a JLabel with texture-dynamic fonts with executable action upon pressed.
+     * This method is used to create a JLabel with texture-dynamic fonts that automatically updates the text.
      *
-     * @param image    the image to be displayed
-     * @param runnable the action to be executed when the label is pressed
+     * @param display  method to invoke the information to be displayed
+     * @param render   the renderer object
+     * @param textType size of the text, should use the constants {@code PanelCreator.TITLE},
+     *                 {@code PanelCreator.SUBTITLE}, or {@code PanelCreator.TEXT} to specify
+     * @param Centered true if this label should be center aligned
      * @return the JLabel
      */
-    public static JLabel createBackgroundActionLabel(App app, TexturePack.Images image, Runnable runnable) {
-        return new JLabel() {{
+    public static JLabel createInfoActionLabel(Supplier<String> display, MazeRenderer render, int textType, boolean Centered, BooleanSupplier mouseActionGuard, Runnable runnable) {
+        return new JLabel(display.get()) {{
+            if (Centered) setAlignmentX(CENTER_ALIGNMENT);
+            setForeground(render.getCurrentTexturePack().getColorDefault());
+            setFocusable(true);
             addMouseListener(new MouseAdapter() {
-                public void mousePressed(MouseEvent e) {runnable.run();}
+                public void mouseEntered(MouseEvent e){
+                    if (mouseActionGuard.getAsBoolean()) return;
+                    setForeground(render.getCurrentTexturePack().getColorHover());
+                }
+                public void mouseExited(MouseEvent e) {
+                    if (mouseActionGuard.getAsBoolean()) return;
+                    setForeground(render.getCurrentTexturePack().getColorDefault());
+                }
+                public void mousePressed(MouseEvent e) {
+                    if (mouseActionGuard.getAsBoolean()) return;
+                    setForeground(render.getCurrentTexturePack().getColorSelected());
+                    grabFocus();
+                    runnable.run();
+                }
             });}
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                setSize(app.getSize());
-                g.drawImage(image.getImg(), 0, 0, app.getWidth(), app.getHeight(), null);
+                setText(display.get());
+                TexturePack tp = render.getCurrentTexturePack();
+                setFont(switch (textType) {
+                    case TITLE    -> tp.getTitleFont();
+                    case SUBTITLE -> tp.getSubtitleFont();
+                    default       -> tp.getTextFont();
+                });
             }
         };
     }
+
 
 
     //================================================================================================================//

@@ -18,10 +18,16 @@ import org.dom4j.DocumentException;
 
 import javax.swing.*;
 import java.awt.Dimension;
+import java.awt.event.InputEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.stream.IntStream;
+
+import static java.awt.event.KeyEvent.*;
+import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.Action.*;
 
 
 /**
@@ -40,7 +46,19 @@ public class App extends JFrame {
     // Core components of the game
     private DomainController game       = new DomainController(Persistency.getInitialDomain());
     private final Actions actions       = new Actions(this);
-    private final Configuration config  = new Configuration();
+    private final Configuration config  = new Configuration(true,new EnumMap<>(Map.ofEntries(
+            Map.entry(MOVE_UP, new Controller.Key(0,VK_UP)),
+            Map.entry(MOVE_DOWN, new Controller.Key(0,VK_DOWN)),
+            Map.entry(MOVE_LEFT, new Controller.Key(0,VK_LEFT)),
+            Map.entry(MOVE_RIGHT, new Controller.Key(0,VK_RIGHT)),
+            Map.entry(PAUSE_GAME, new Controller.Key(0,VK_SPACE)),
+            Map.entry(RESUME_GAME, new Controller.Key(0,VK_ESCAPE)),
+            Map.entry(TO_LEVEL_1, new Controller.Key(InputEvent.CTRL_DOWN_MASK,VK_1)),
+            Map.entry(TO_LEVEL_2, new Controller.Key(InputEvent.CTRL_DOWN_MASK,VK_2)),
+            Map.entry(QUIT_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK,VK_X)),
+            Map.entry(SAVE_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK,VK_S)),
+            Map.entry(LOAD_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK,VK_R))
+    )));
     private final Controller controller = new Controller(this);
     private final GameClock gameClock   = new GameClock(this);
     private final GUI gui               = new GUI(this);
@@ -92,11 +110,6 @@ public class App extends JFrame {
         });
     }
 
-    /**
-     * @param slot f
-     * @return f
-     */
-    public Domain getSave(int slot) {return saves[slot-1];}
 
 
     /**
@@ -115,7 +128,7 @@ public class App extends JFrame {
         );
         setMinimumSize(new Dimension(WIDTH, HEIGHT));
         setContentPane(gui.getOuterPanel());
-        addKeyListener(controller);
+        gui.getRender().addKeyListener(controller);
         transitionToMenuScreen();
         pack();
     }
@@ -191,7 +204,7 @@ public class App extends JFrame {
      * @param slot the save file to load
      */
     public void startSavedGame(int slot) {
-        updateGameComponents(new DomainController(saves[slot]), gameClock.getTimer());
+        updateGameComponents(new DomainController(saves[slot-1]), gameClock.getTimer());
         replay.load("save");
         transitionToGameScreen();
     }
@@ -302,4 +315,12 @@ public class App extends JFrame {
      * @return true if in resume mode, false otherwise
      */
     public boolean isResuming(){return inResume;}
+
+    /**
+     * Gets a saved game indicated by the save slot
+     *
+     * @param slot which save slot to access
+     * @return The corresponding game save
+     */
+    public Domain getSave(int slot) {return saves[slot-1];}
 }

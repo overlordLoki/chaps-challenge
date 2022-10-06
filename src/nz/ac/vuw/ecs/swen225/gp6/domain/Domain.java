@@ -9,6 +9,7 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 
 public class Domain {
     private List<Maze> mazes; //each corresponds to a level (in order)
+    private List<Integer> levelTimeLimits; //each corresponds to a level (in order), the level restarts if time runs out
     private Inventory inv;
     private int currentLvl; //Note: first level should be 1
 
@@ -26,9 +27,18 @@ public class Domain {
         this.mazes = mazes;
         this.inv = inv;
         this.currentLvl = lvl;
-        
+
+        //initialise default level times to 0
+        levelTimeLimits = new ArrayList<Integer>();
+        mazes.stream().forEach(a ->  levelTimeLimits.add(120));
+
         //initialise event listeners to empty lists (every domain event should always have an associated list)
         for(DomainEvent e : DomainEvent.values()){eventListeners.put(e, new ArrayList<Runnable>());}
+    }
+
+    public Domain(List<Maze> mazes, Inventory inv, int lvl, List<Integer> levelTimeLimits){
+        this(mazes, inv, lvl);
+        this.levelTimeLimits = levelTimeLimits;
     }
 
     //GETTERS:
@@ -47,12 +57,20 @@ public class Domain {
      */
     public List<Maze> getMazes(){ return mazes;}
     
+    /**
+     * returns the list of level time limits, where each element corresponds to a level,
+     * and the level is restarted if time runs out.
+     * 
+     * @return the list of level time limits (in order)
+     */
+    public List<Integer> getLevelTimeLimits(){return levelTimeLimits;}
+
     /*
      * returns the inventory of the current maze
      */
     public Inventory getInv(){return inv;}
 
-    /*
+    /**
      * returns number of treasures left on current maze
      */
     public int getTreasuresLeft(){return this.getCurrentMaze().getTileCount(TileType.Coin);}
@@ -74,14 +92,14 @@ public class Domain {
         return eventListeners.get(event);
     }
    
-    /*
+    /**
      * a specific toString method that uses the toString methods in 
      * maze and inventory as well as displaying the current level
      * TODO check if works
      */
     public String toString(){
         String s = "Current Level: " + currentLvl + "\n";
-        s += "Inventory: " + inv.toString() + "\n";
+        s += inv.toString() + "\n";
         s += mazes.get(currentLvl - 1).toString();
 
         return s;
@@ -135,9 +153,11 @@ public class Domain {
 
         this.mazes = newMazes;//replace current domain's field with next 
         this.inv = nextInv;
-        this.currentLvl = nextDomain.currentLvl;
+        
+        //the nextDomain level should not be assigned to this domain, 
+        //since the level may change in the ping and
+        //the level changes will happen directly in this.domain
     }
-
 
 }
 

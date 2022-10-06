@@ -27,8 +27,7 @@ public class Hero extends Actor{
         //if the tile damages the hero, LOSE
         if(t.damagesHero(d)){
             d.getEventListener(Domain.DomainEvent.onLose).forEach(r -> r.run());
-            CheckGame.gameHasEnded = true; //let the integrity checker know the game has ended
-            CheckGame.won = false;
+            CheckGame.state = CheckGame.GameState.LOST; //let the integrity checker know the game is LOST
         }
     }
 
@@ -44,8 +43,6 @@ public class Hero extends Actor{
 
         m.getTileAt(l1).setOn(tileOn, d); //set previous location to tileOn
         m.getTileAt(l2).setOn(this, d); //set new location to hero, NOTE: Order matters here!
-
-        System.out.println(staticDirection);
 
         //TODO remove after testing
         //System.out.println( "Location x: " + self.info().loc().x() + " y: " + self.info().loc().y());

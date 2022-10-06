@@ -1,13 +1,16 @@
 package nz.ac.vuw.ecs.swen225.gp6.app.utilities;
 
 import nz.ac.vuw.ecs.swen225.gp6.app.App;
+import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.Action;
 
 import javax.swing.SwingUtilities;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
+import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.Action.*;
 
 /**
  * Package-private class for Controller class for the App class. Handles all the controllable key actions.
@@ -32,6 +35,11 @@ public class Controller extends KeyAdapter {
         public static String toString(int modifier, int key){
             return (modifier == 0 ? "": KeyEvent.getModifiersExText(modifier) + " + " ) + KeyEvent.getKeyText(key);
         }
+
+        @Override
+        public String toString(){
+            return (modifier == 0 ? "": KeyEvent.getModifiersExText(modifier) + " + " ) + KeyEvent.getKeyText(key);
+        }
     }
 
     private final App app;
@@ -51,20 +59,20 @@ public class Controller extends KeyAdapter {
      * Updates the key bindings to the current setting.
      */
     public void update(){
-        List<Key> keyBindings = app.getConfiguration().getUserKeyBindings();
+        EnumMap<Action, Key> actionKeyBindings = app.getConfiguration().getUserKeyBindings();
         Actions actions = app.getActions();
         actionsPressed = new HashMap<>();
-        actionsPressed.put(keyBindings.get(0), actions::actionUp);    // Move up
-        actionsPressed.put(keyBindings.get(1), actions::actionDown);  // Move down
-        actionsPressed.put(keyBindings.get(2), actions::actionLeft);  // Move left
-        actionsPressed.put(keyBindings.get(3), actions::actionRight); // Move right
-        actionsPressed.put(keyBindings.get(4), actions::actionPause); // Pause game
-        actionsPressed.put(keyBindings.get(5), actions::actionResume);// Resume game
-        actionsPressed.put(keyBindings.get(6), actions::actionToLevel1); // Jump to level 1
-        actionsPressed.put(keyBindings.get(7), actions::actionToLevel2); // Jump to level 2
-        actionsPressed.put(keyBindings.get(8), actions::actionQuit);  // Quit game
-        actionsPressed.put(keyBindings.get(9), actions::actionSave);  // Save game
-        actionsPressed.put(keyBindings.get(10), actions::actionLoad); // Reload game
+        actionsPressed.put(actionKeyBindings.get(MOVE_UP), actions::actionUp);    // Move up
+        actionsPressed.put(actionKeyBindings.get(MOVE_DOWN), actions::actionDown);  // Move down
+        actionsPressed.put(actionKeyBindings.get(MOVE_LEFT), actions::actionLeft);  // Move left
+        actionsPressed.put(actionKeyBindings.get(MOVE_RIGHT), actions::actionRight); // Move right
+        actionsPressed.put(actionKeyBindings.get(PAUSE_GAME), actions::actionPause); // Pause game
+        actionsPressed.put(actionKeyBindings.get(RESUME_GAME), actions::actionResume);// Resume game
+        actionsPressed.put(actionKeyBindings.get(TO_LEVEL_1), actions::actionToLevel1); // Jump to level 1
+        actionsPressed.put(actionKeyBindings.get(TO_LEVEL_2), actions::actionToLevel2); // Jump to level 2
+        actionsPressed.put(actionKeyBindings.get(QUIT_GAME), actions::actionQuit);  // Quit game
+        actionsPressed.put(actionKeyBindings.get(SAVE_GAME), actions::actionSave);  // Save game
+        actionsPressed.put(actionKeyBindings.get(LOAD_GAME), actions::actionLoad); // Reload game
     }
 
     @Override
