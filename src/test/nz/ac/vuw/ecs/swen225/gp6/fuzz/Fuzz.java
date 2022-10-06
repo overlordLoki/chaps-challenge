@@ -86,6 +86,8 @@ public class Fuzz {
             move++;
             if(app.getGame().getCurrentLevel() ==2){
                 finish = false;
+                JOptionPane.showMessageDialog(null, "First level test Complete");
+                System.exit(0);
             }
         }
 
@@ -233,13 +235,28 @@ public class Fuzz {
      * Main method to run different test
      */
     public static void main(String[] args) throws AWTException {
-//        hardCode();
-//        keyTest();
-        testLevel( 1000);
-//        testLevel( 100);
-//        unlimittest();
+
+        String[] buttons = { "hardCode", "testLevel(1000)", "testLevel(100)", "unlimittest" ,"Cancel" };
+        int rc = JOptionPane.showOptionDialog(null, "Choose a test", "Test",
+                JOptionPane.WARNING_MESSAGE, 0, null, buttons, buttons[4]);
+        if (rc == 0) {
+            hardCode();
+        } else if (rc == 1) {
+            testLevel(1000);
+        } else if (rc == 2) {
+            testLevel(100);
+        } else if (rc == 3) {
+            unlimittest();
+        } else {
+            System.exit(0);
+        }
+
         System.out.println("All Tests Complete");
         JOptionPane.showMessageDialog(null, "All Tests Complete");
+        String[] buttons2 = { "Exit", "Show the log" };
+        int rc2 = JOptionPane.showOptionDialog(null, "Choose a test", "Test",
+                JOptionPane.WARNING_MESSAGE, 0, null, buttons2, buttons2[0]);
+
         System.exit(0);
     }
 

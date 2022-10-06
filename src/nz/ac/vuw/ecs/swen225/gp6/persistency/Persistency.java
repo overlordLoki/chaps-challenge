@@ -22,7 +22,6 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Helper;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.Record;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.Pair;
-import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.RecordTimeline;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Inventory;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.Tile;
@@ -136,7 +135,7 @@ public class Persistency {
             Document mazeDoc = serializeMaze(maze, i);
             levels.add(mazeDoc.getRootElement());
         }
-        levels.addAttribute("current", Integer.toString(domain.getLvl() - 1));
+        levels.addAttribute("current", Integer.toString(domain.getLvl()));
         root.add(serializeInventory(domain.getInv()).getRootElement());
 
         return document;
@@ -313,10 +312,9 @@ public class Persistency {
      * @param timeline The timeline to serialize
      * @return The serialized timeline
      */
-    public static Document serializeRecordTimeline(RecordTimeline<Action> recordTimeline) {
+    public static Document serializeRecordTimeline(Stack<Pair<Long, Action>> timeline) {
         Document document = DocumentHelper.createDocument();
         Element root = document.addElement("recorder");
-        Stack<Pair<Long, Action>> timeline = recordTimeline.getTimeline();
         root.addAttribute("size", timeline.size() + "");
         for (Pair<Long, Action> pair : timeline) {
             Element action = root.addElement(pair.getValue().toString());
@@ -331,11 +329,12 @@ public class Persistency {
      * @param document The XML document to deserialize
      * @return The deserialized timeline
      */
-    public static RecordTimeline<Action> deserializeRecordTimeline(Document document) {
+    public static Stack<Pair<Long, Action>> deserializeRecordTimeline(Document document) {
         Element root = document.getRootElement();
-        RecordTimeline<Action> timeline = new RecordTimeline<Action>();
+        Stack<Pair<Long, Action>> timeline = new Stack<Pair<Long, Action>>();
         for (Element action : root.elements()) {
-            timeline.add(Long.parseLong(action.attributeValue("time")), Action.valueOf(action.getName()));
+            timeline.add(new Pair<Long, Actions.Action>(Long.parseLong(action.attributeValue("time")),
+                    Action.valueOf(action.getName())));
         }
         return timeline;
     }
@@ -350,7 +349,12 @@ public class Persistency {
     public static void saveDomain(Domain domain, int slot) throws IOException {
         Document document = serializeDomain(domain);
 
-        FileWriter out = new FileWriter("res/save/" + slot + ".xml");
+        File dir = new File("res/saves");
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        FileWriter out = new FileWriter("res/saves/" + slot + ".xml");
         document.write(out);
         out.close();
     }
@@ -364,7 +368,7 @@ public class Persistency {
     public static Domain loadSave(int slot) throws DocumentException {
         SAXReader reader = new SAXReader();
         try {
-            InputStream in = new FileInputStream("res/save/" + slot + ".xml");
+            InputStream in = new FileInputStream("res/saves/" + slot + ".xml");
             Document document = reader.read(in);
             return deserializeDomain(document);
         } catch (FileNotFoundException e) {
@@ -402,11 +406,19 @@ public class Persistency {
      * @return The initial domain
      */
     public static Domain getInitialDomain() {
-        File file = new File("res/levels/level1.xml");
         try {
-            Document document = new SAXReader().read(file);
-            Maze maze = deserializeMaze(document.getRootElement());
-            return new Domain(List.of(maze), new Inventory(8), 1);
+            SAXReader reader = new SAXReader();
+            // list files in res/levels
+            File dir = new File("res/levels");
+            File[] files = dir.listFiles();
+            List<Maze> mazes = new ArrayList<Maze>();
+            for (File file : files) {
+                if (file.getName().endsWith(".xml")) {
+                    Document document = reader.read(file);
+                    mazes.add(deserializeMaze(document.getRootElement()));
+                }
+            }
+            return new Domain(mazes, new Inventory(8), 1);
         } catch (DocumentException e) {
             e.printStackTrace();
             return new Domain(List.of(nz.ac.vuw.ecs.swen225.gp6.domain.Helper.makeMaze(),
