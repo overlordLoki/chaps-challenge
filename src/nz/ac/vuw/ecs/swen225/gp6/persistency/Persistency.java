@@ -37,7 +37,6 @@ import org.dom4j.io.SAXReader;
 
 import nz.ac.vuw.ecs.swen225.gp6.app.*;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
-import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.Action;
 
 public class Persistency {
     public record Log(LocalDateTime date, String message) {
@@ -312,11 +311,11 @@ public class Persistency {
      * @param timeline The timeline to serialize
      * @return The serialized timeline
      */
-    public static Document serializeRecordTimeline(Stack<Pair<Long, Action>> timeline) {
+    public static Document serializeRecordTimeline(Stack<Pair<Long, Actions>> timeline) {
         Document document = DocumentHelper.createDocument();
         Element root = document.addElement("recorder");
         root.addAttribute("size", timeline.size() + "");
-        for (Pair<Long, Action> pair : timeline) {
+        for (Pair<Long, Actions> pair : timeline) {
             Element action = root.addElement(pair.getValue().toString());
             action.addAttribute("time", pair.getKey() + "");
         }
@@ -329,12 +328,12 @@ public class Persistency {
      * @param document The XML document to deserialize
      * @return The deserialized timeline
      */
-    public static Stack<Pair<Long, Action>> deserializeRecordTimeline(Document document) {
+    public static Stack<Pair<Long, Actions>> deserializeRecordTimeline(Document document) {
         Element root = document.getRootElement();
-        Stack<Pair<Long, Action>> timeline = new Stack<Pair<Long, Action>>();
+        Stack<Pair<Long, Actions>> timeline = new Stack<Pair<Long, Actions>>();
         for (Element action : root.elements()) {
-            timeline.add(new Pair<Long, Actions.Action>(Long.parseLong(action.attributeValue("time")),
-                    Action.valueOf(action.getName())));
+            timeline.add(new Pair<Long, Actions>(Long.parseLong(action.attributeValue("time")),
+                    Actions.valueOf(action.getName())));
         }
         return timeline;
     }

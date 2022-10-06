@@ -10,7 +10,7 @@ import java.util.Stack;
 import org.dom4j.Document;
 import org.junit.jupiter.api.Test;
 
-import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.Action;
+import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Helper;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Inventory;
@@ -68,9 +68,9 @@ public class BaseTests {
 
     @Test
     public void testRecorderTimelineSerialization() {
-        RecordTimeline<Action> timeline = new RecordTimeline<Action>();
-        timeline.add(10l, Action.MOVE_DOWN);
-        timeline.add(20l, Action.MOVE_LEFT);
+        RecordTimeline<Actions> timeline = new RecordTimeline<Actions>();
+        timeline.add(10l, Actions.MOVE_DOWN);
+        timeline.add(20l, Actions.MOVE_LEFT);
 
         Document doc = Persistency.serializeRecordTimeline(timeline.getTimeline());
 
@@ -81,12 +81,12 @@ public class BaseTests {
 
     @Test
     public void testRecorderTimelineDeerialization() {
-        RecordTimeline<Action> timeline = new RecordTimeline<Action>();
-        timeline.add(10l, Action.MOVE_DOWN);
-        timeline.add(20l, Action.MOVE_LEFT);
+        RecordTimeline<Actions> timeline = new RecordTimeline<Actions>();
+        timeline.add(10l, Actions.MOVE_DOWN);
+        timeline.add(20l, Actions.MOVE_LEFT);
 
         Document doc = Persistency.serializeRecordTimeline(timeline.getTimeline());
-        Stack<Pair<Long, Action>> timeline2 = Persistency.deserializeRecordTimeline(doc);
+        Stack<Pair<Long, Actions>> timeline2 = Persistency.deserializeRecordTimeline(doc);
 
         assertEquals(timeline.getTimeline().toString(), timeline2.toString());
     }
