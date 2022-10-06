@@ -3,7 +3,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.awt.*;
 import javax.swing.JPanel;
 import java.awt.Graphics;
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
@@ -18,13 +18,12 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
  */
 public class MazeRenderer extends JPanel{
     static final long serialVersionUID = 1L; //serialVersionUID
-    private List<String> textures = getTexturePacksList();
-    private String texturePack = textures.get(0); //default texture pack
+    private List<TexturePack> textures = getTexturePacksList();
+    private TexturePack texturePack = textures.get(0); //default texture pack
     private Tile[][] gameArray; //the array of tiles
     public DomainController maze; //the domain controller
     public BufferedImage background; //the background image
     private int patternSize = 100; //the size of the pattern
-    static String currentTP = "Dogs"; //the current texture pack
     private int renderSize = 7; //the size of the render
     private int minRenderSize = 1, maxRenderSize = 50; //the min and max render size
 
@@ -41,10 +40,17 @@ public class MazeRenderer extends JPanel{
 
     /**
      * get a image from the image provided
-     * @param TexturePack.Images
+     * @param String
      * @return BufferedImage
      */
-    public BufferedImage getImage(Images imgName) {return imgName.getImg();}
+    public BufferedImage getImage(String imgName) {return texturePack.getImage(imgName);}
+
+    /**
+     * get a image from the image provided
+     * @param Tile
+     * @return BufferedImage
+     */
+    public BufferedImage getImage(Tile tile) {return texturePack.getImage(tile);}
    
     @Override
     public void paintComponent(Graphics g) {
@@ -61,7 +67,7 @@ public class MazeRenderer extends JPanel{
         for (int i = 0; i < viewport.length; i++) {
             for (int j = 0; j < viewport[1].length; j++) {
                 //clear the floor
-                g.drawImage(Images.Floor.getImg(), i * tileWidth, j * tileHeight, tileWidth, tileHeight, null);
+                g.drawImage(texturePack.getImage("floor"), i * tileWidth, j * tileHeight, tileWidth, tileHeight, null);
                 // if there is a item draw on top of the floor or a wall tile
                 Tile tile = viewport[i][j];
                 if(tile.type() == TileType.Floor) {continue;}
@@ -71,7 +77,7 @@ public class MazeRenderer extends JPanel{
                     BufferedImage img = getHeroImg(hero.dir());
                     g.drawImage(img, i * tileWidth, j * tileHeight, tileWidth, tileHeight, null);
                 }else{
-                    g.drawImage(Images.getImage(tile), i * tileWidth, j * tileHeight, tileWidth, tileHeight, null);
+                    g.drawImage(texturePack.getImage(tile), i * tileWidth, j * tileHeight, tileWidth, tileHeight, null);
                 }
             }
         }
@@ -80,13 +86,13 @@ public class MazeRenderer extends JPanel{
     private BufferedImage getHeroImg(Direction dir) {
         switch(dir) {
             case Up:
-                return Images.HeroBack.getImg();
+                return texturePack.getImage("heroBack");
             case Down:
-                return Images.HeroFront.getImg();
+                return texturePack.getImage("heroFront");
             case Left:
-                return Images.HeroLeft.getImg();
+                return texturePack.getImage("heroSide");
             case Right:
-                return Images.HeroRight.getImg();
+                return texturePack.getImage("hero");
             default: return null;
         }
     }
@@ -96,24 +102,28 @@ public class MazeRenderer extends JPanel{
      * 
      * @param texturePack
      */
-    public void setTexturePack(String texturePack) {
+    public void setTexturePack(TexturePack texturePack) {
         this.texturePack = texturePack;
-        MazeRenderer.currentTP = texturePack;
-        Images.reloadAllTexturepack();
         patternSize = 100;
     }
 
 
     //-----------------------------load in texture packs---------------------------------------------//
 
-    public List<String> getTexturePacksList() {
+    public List<TexturePack> getTexturePacksList() {
         File folder = new File("res/textures");
         File[] listOfFiles = folder.listFiles();
-        List<String> textures = new ArrayList<>();
+        List<TexturePack> textures = new ArrayList<>();
         //for each texture in the folder add it to the list
         for (File file : listOfFiles) {
             if (file.isFile()) {
-                textures.add(file.getName());
+            Font title = new Font("Arial", Font.BOLD, 80);
+            Font subtitle = new Font("Arial", Font.BOLD, 40);
+            Font text =new Font("Arial", Font.BOLD, 30);
+            Color colorHover = Color.ORANGE;
+            Color colorSelected = Color.RED;
+            TexturePack tp = new TexturePack(file.getName(), title, subtitle, text, colorHover, colorSelected);
+            textures.add(tp);
             }
         }
         return textures;
@@ -155,12 +165,15 @@ public class MazeRenderer extends JPanel{
      * get current texture pack
      * @return texturePack
      */
-    public String getCurrentTexturePack(){return texturePack;}
+    public TexturePack getCurrentTexturePack(){return texturePack;}
 
     /**
      * set the maze to be rendered
      * @param maze
      */
     public void setMaze(DomainController maze) {this.maze = maze;}
+
+    //get list of TexturePacks
+    public List<TexturePack> getTexturePacks() {return textures;}
 
 }
