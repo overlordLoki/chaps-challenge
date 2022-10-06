@@ -2,7 +2,7 @@ package nz.ac.vuw.ecs.swen225.gp6.renderer;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 import java.awt.Graphics;
-import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
+import nz.ac.vuw.ecs.swen225.gp6.domain.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Hero;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
@@ -16,7 +16,7 @@ public class MazeRenderer extends JPanel{
     static final long serialVersionUID = 1L; //serialVersionUID
     private TexturePack texturePack = TexturePack.Dogs; //default texture pack
     private Tile[][] gameArray; //the array of tiles
-    public DomainController maze; //the domain controller
+    public Domain maze; //the domain controller
     public BufferedImage background; //the background image
     private int patternSize = 100; //the size of the pattern
     static TexturePack currentTP = TexturePack.Dogs; //the current texture pack
@@ -29,7 +29,7 @@ public class MazeRenderer extends JPanel{
      * 
      * @param maze Maze to be rendered.
      */
-    public MazeRenderer(DomainController maze) {
+    public MazeRenderer(Domain maze) {
         this.maze = maze;
         this.setOpaque(false);
     }
@@ -140,6 +140,6 @@ public class MazeRenderer extends JPanel{
      * set the maze to be rendered
      * @param maze
      */
-    public void setMaze(DomainController maze) {this.maze = maze;}
+    public void setMaze(Domain maze) {this.maze = maze;}
 
 }
