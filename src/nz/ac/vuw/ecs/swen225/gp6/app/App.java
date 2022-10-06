@@ -7,7 +7,6 @@ import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.GameClock;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.DomainEvent;
-import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MusicPlayer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.logging.Interceptor;
