@@ -20,13 +20,13 @@ public class GameClock {
     private long playedTime = 0; // total time played in a level
     private final Timer gameTimer = new Timer(34, unused -> {
         assert SwingUtilities.isEventDispatchThread();
-        app.getGame().pingAll();
+        app.getGame().pingDomain();
         playedTime = System.nanoTime() - timeStart + time;
         app.repaint();
     });
     private final Timer replayTimer = new Timer(34, unused -> {
         assert SwingUtilities.isEventDispatchThread();
-        app.getGame().pingAll();
+        app.getGame().pingDomain();
         playedTime = System.nanoTime() - timeStart + time;
         replayObserver.run();
         app.repaint();
