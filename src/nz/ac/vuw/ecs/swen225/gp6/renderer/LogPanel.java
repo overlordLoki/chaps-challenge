@@ -12,6 +12,7 @@ public class LogPanel extends JPanel{
     //textArea
     private JTextArea textArea;
     private Commands commands;
+    private MazeRenderer mazeRenderer;
 
     /**
      * Constructor for logPanel
@@ -32,6 +33,7 @@ public class LogPanel extends JPanel{
         JScrollPane scrollPane = new JScrollPane(textArea);
         this.add(scrollPane);
         commands = new Commands(this);
+
         //add key listeners to textArea
         textArea.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -105,5 +107,14 @@ public class LogPanel extends JPanel{
      */
     public void addCommands(String command, String discription, Runnable action) {
         commands.addCommands(command, discription, action);
+    }
+
+    /**
+     * sets the mazeRenderer
+     * @param mazeRenderer
+     */
+    public void setRenderer(MazeRenderer mazeRenderer) {
+        this.mazeRenderer = mazeRenderer;
+        commands.setRenderer(mazeRenderer);
     }
 }

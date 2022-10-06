@@ -5,15 +5,17 @@ import java.util.HashMap;
 import java.util.List;
 public final class Commands {
     private final LogPanel logPanel;
+    private MazeRenderer mazeRenderer;
     private HashMap<String, Runnable> commands = new HashMap<String, Runnable>();
     private List<String> helpCommands = new ArrayList<>();
     
-    public Commands(LogPanel logPanel){
+    public Commands(LogPanel logPanel) {
         this.logPanel = logPanel;
         addCommands("clear", "Clears the text area", this::clear);
         addCommands("help", "Displays the availble commands", this::help);
         addCommands("loadPack", "Reloads the texturepacks", this::loadPack);
         addCommands("test", "test", this::test);
+        addCommands("packsNumber", "Displays the number of texture packs", this::numberOfPacks);
     }
 
     /**
@@ -36,6 +38,10 @@ public final class Commands {
             logPanel.println("");
             commands.get(s).run();
         }
+    }
+    //set themazeRenderer
+    public void setRenderer(MazeRenderer mazeRenderer){
+        this.mazeRenderer = mazeRenderer;
     }
   //-----------------------------------------------COMANDS------------------------------------//
     /**
@@ -62,11 +68,17 @@ public final class Commands {
         logPanel.print("Loaded " + num + " textures");
     }
 
+    public void numberOfPacks(){
+        int num = mazeRenderer.getTexturePacks().size();
+        logPanel.print("Loaded " + num + " textures");
+    }
+
     //Testing command
     public void test(){
         logPanel.println("Running Test");
         Textures textures = new Textures();
         logPanel.println(textures.test());
     }
+
 
 }
