@@ -233,11 +233,20 @@ public class Fuzz {
      * Main method to run different test
      */
     public static void main(String[] args) throws AWTException {
-//        hardCode();
-//        keyTest();
-        testLevel( 1000);
-//        testLevel( 100);
-//        unlimittest();
+
+        String[] buttons = { "hardCode", "testLevel(1000)", "testLevel(100)", "Cancel" };
+        int rc = JOptionPane.showOptionDialog(null, "Choose a test", "Test",
+                JOptionPane.WARNING_MESSAGE, 0, null, buttons, buttons[3]);
+        if (rc == 0) {
+            hardCode();
+        } else if (rc == 1) {
+            testLevel(1000);
+        } else if (rc == 2) {
+            testLevel(100);
+        } else {
+            System.exit(0);
+        }
+
         System.out.println("All Tests Complete");
         JOptionPane.showMessageDialog(null, "All Tests Complete");
         System.exit(0);
