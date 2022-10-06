@@ -47,15 +47,18 @@ public class MazeRenderer extends JPanel{
         this.maze = maze;
         this.setOpaque(false);
         textures = getTexturePacksList();
-        //texturePack == Dogs
         for(TexturePack tp : textures){
             System.out.println(tp.getName());
-            if(tp.getName().equals("Dogs")){
-                System.out.println("Found Dogs");
-                this.texturePack = tp;
-                break;
-            }
         }
+        //texturePack == Dogs
+        // for(TexturePack tp : textures){
+        //     System.out.println(tp.getName());
+        //     if(tp.getName().equals("Dogs")){
+        //         System.out.println("Found Dogs");
+        //         this.texturePack = tp;
+        //         break;
+        //     }
+        // }
         if(texturePack == null){texturePack = textures.get(0);}
     }
 
@@ -155,6 +158,7 @@ public class MazeRenderer extends JPanel{
             System.out.println("no texture packs found");
             System.exit(0);
         }
+        System.out.println(textures.size());
         return textures;
     }
 
