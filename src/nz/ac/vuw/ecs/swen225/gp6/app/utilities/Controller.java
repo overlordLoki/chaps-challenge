@@ -1,7 +1,6 @@
 package nz.ac.vuw.ecs.swen225.gp6.app.utilities;
 
 import nz.ac.vuw.ecs.swen225.gp6.app.App;
-import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.Action;
 
 import javax.swing.SwingUtilities;
 import java.awt.event.KeyAdapter;
@@ -10,7 +9,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
-import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.Action.*;
+import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.*;
 
 /**
  * Package-private class for Controller class for the App class. Handles all the controllable key actions.
@@ -43,7 +42,7 @@ public class Controller extends KeyAdapter {
     }
 
     private final App app;
-    private Map<Key, Runnable> actionsPressed;
+    private Map<Key, Actions> actionKeyBindings;
 
     /**
      * Constructor for the Controller class. Initializes the actions and key bindings.
@@ -59,25 +58,13 @@ public class Controller extends KeyAdapter {
      * Updates the key bindings to the current setting.
      */
     public void update(){
-        EnumMap<Action, Key> actionKeyBindings = app.getConfiguration().getUserKeyBindings();
-        Actions actions = app.getActions();
-        actionsPressed = new HashMap<>();
-        actionsPressed.put(actionKeyBindings.get(MOVE_UP), actions::actionUp);    // Move up
-        actionsPressed.put(actionKeyBindings.get(MOVE_DOWN), actions::actionDown);  // Move down
-        actionsPressed.put(actionKeyBindings.get(MOVE_LEFT), actions::actionLeft);  // Move left
-        actionsPressed.put(actionKeyBindings.get(MOVE_RIGHT), actions::actionRight); // Move right
-        actionsPressed.put(actionKeyBindings.get(PAUSE_GAME), actions::actionPause); // Pause game
-        actionsPressed.put(actionKeyBindings.get(RESUME_GAME), actions::actionResume);// Resume game
-        actionsPressed.put(actionKeyBindings.get(TO_LEVEL_1), actions::actionToLevel1); // Jump to level 1
-        actionsPressed.put(actionKeyBindings.get(TO_LEVEL_2), actions::actionToLevel2); // Jump to level 2
-        actionsPressed.put(actionKeyBindings.get(QUIT_GAME), actions::actionQuit);  // Quit game
-        actionsPressed.put(actionKeyBindings.get(SAVE_GAME), actions::actionSave);  // Save game
-        actionsPressed.put(actionKeyBindings.get(LOAD_GAME), actions::actionLoad); // Reload game
+        actionKeyBindings = new HashMap<>();
+        app.getConfiguration().getUserKeyBindings().forEach((action, key) -> actionKeyBindings.put(key, action));
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
         assert SwingUtilities.isEventDispatchThread(): "Controller: keyPressed: Not in EDT";
-        actionsPressed.getOrDefault(new Key(e.getModifiersEx(),e.getKeyCode()), ()->{}).run();
+        actionKeyBindings.getOrDefault(new Key(e.getModifiersEx(),e.getKeyCode()), NONE).run(app);
     }
 }

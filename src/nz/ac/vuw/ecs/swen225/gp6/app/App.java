@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.stream.IntStream;
 
 import static java.awt.event.KeyEvent.*;
-import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.Action.*;
+import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.*;
 
 
 /**
@@ -44,7 +44,6 @@ public class App extends JFrame {
 
     // Core components of the game
     private Domain game                 = Persistency.getInitialDomain();
-    private final Actions actions       = new Actions(this);
     private final Configuration config  = new Configuration(true,new EnumMap<>(Map.ofEntries(
             Map.entry(MOVE_UP, new Controller.Key(0,VK_UP)),
             Map.entry(MOVE_DOWN, new Controller.Key(0,VK_DOWN)),
@@ -81,37 +80,6 @@ public class App extends JFrame {
     }
 
     /**
-     * Refreshes the saved games array.
-     */
-    public void refreshSaves(){
-        IntStream.range(1, 4).forEach(i ->{
-            try {
-                saves[i-1] = Persistency.loadSave(i);
-            } catch (DocumentException e) {
-                System.out.printf("Failed to load save %d.\n", i);
-                e.printStackTrace();
-                String[] options = {"Reset", "Delete"};
-                int choice = JOptionPane.showOptionDialog(null,
-                        "Failed to load save " + i + ". What would you like to do?",
-                        "Save file corrupted",
-                        JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
-                if (choice == 0) saves[i-1] = Persistency.getInitialDomain();
-                else if (choice == 1) {
-                    try {
-                        Persistency.deleteSave(i);
-                    } catch (IOException ex) {
-                        System.out.println("Error deleting save slot: " + i);
-                        e.printStackTrace();
-                        JOptionPane.showMessageDialog(null, "Error deleting save slot: " + i);
-                    }
-                }
-            }
-        });
-    }
-
-
-
-    /**
      * Initializes the GUI and displays menu screen.
      */
     public void initialiseGUI(){
@@ -131,6 +99,7 @@ public class App extends JFrame {
         transitionToMenuScreen();
         pack();
     }
+
 
     //================================================================================================================//
     //========================================== Transition Method ===================================================//
@@ -242,8 +211,9 @@ public class App extends JFrame {
             }});
         this.game.addEventListener(DomainEvent.onLose, ()->{
 //                inResume = false;
-        System.out.println("You lose!");
-        this.gui.transitionToLostScreen();});
+            System.out.println("You lose!");
+            this.gui.transitionToLostScreen();
+        });
         this.gameClock.setTimer(timer);
         this.inResume = true;
         this.recorder.startRecording();
@@ -254,6 +224,37 @@ public class App extends JFrame {
      * @param isResuming true if in resume mode, false otherwise
      */
     public void setResuming(boolean isResuming){inResume = isResuming;}
+
+    /**
+     * Refreshes the saved games array.
+     */
+    public void refreshSaves(){
+        IntStream.range(0, 3).forEach(index ->{
+            int slot = index + 1;
+            try {
+                saves[index] = Persistency.loadSave(slot);
+            } catch (DocumentException e) {
+                System.out.printf("Failed to load save %d.\n", slot);
+                e.printStackTrace();
+                String[] options = {"Reset", "Delete"};
+                int choice = JOptionPane.showOptionDialog(null,
+                        "Failed to load save " + slot + ". What would you like to do?",
+                        "Save file corrupted",
+                        JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+                if (choice == 0) saves[index] = Persistency.getInitialDomain();
+                else if (choice == 1) {
+                    try {
+                        Persistency.deleteSave(slot);
+                    } catch (IOException ex) {
+                        System.out.println("Error deleting save slot: " + slot);
+                        e.printStackTrace();
+                        JOptionPane.showMessageDialog(null, "Error deleting save slot: " + slot);
+                    }
+                }
+            }
+        });
+    }
+
 
     //================================================================================================================//
     //============================================ Getter Method =====================================================//
@@ -280,12 +281,6 @@ public class App extends JFrame {
      */
     public Configuration getConfiguration() {return config;}
 
-    /**
-     * Gets the controllable actions.
-     *
-     * @return the actions object
-     */
-    public Actions getActions() {return actions;}
 
     /**
      * Gets the current game clock.

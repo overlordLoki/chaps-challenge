@@ -2,7 +2,6 @@ package nz.ac.vuw.ecs.swen225.gp6.app.gui;
 
 import nz.ac.vuw.ecs.swen225.gp6.app.App;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
-import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.Action;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.InventoryPanel;
@@ -261,21 +260,21 @@ public class GUI {
                                 MusicPlayer.stopMenuMusic();
                             }}),
                 pnTexturePack);
-        AtomicReference<Action> keyToSet = new AtomicReference<>(Action.NONE);
+        AtomicReference<Actions> keyToSet = new AtomicReference<>(Actions.NONE);
         app.getConfiguration().getUserKeyBindings().forEach((action, key) -> {
             JLabel lbActionName = createLabel(action.getDisplayName(), render, TEXT, false);
             JLabel lbKey = createInfoActionLabel(
                             ()->app.getConfiguration().getKeyBinding(action).toString(),
                             render, TEXT, false,
-                            ()->!keyToSet.get().equals(Action.NONE),
+                            ()->!keyToSet.get().equals(Actions.NONE),
                             ()->keyToSet.set(action));
             lbKey.addKeyListener(new KeyAdapter() {
                 public void keyReleased(KeyEvent e) {
                     int modifier = e.getModifiersEx();
                     int key = e.getKeyCode();
-                    if (keyToSet.get().equals(Action.NONE)) return;
+                    if (keyToSet.get().equals(Actions.NONE)) return;
                     if (app.getConfiguration().checkKeyBinding(modifier,key)){
-                        keyToSet.set(Action.NONE);
+                        keyToSet.set(Actions.NONE);
                         JOptionPane.showMessageDialog(lbKey, "Key already in use!");
                     }else{
                         app.getConfiguration().setKeyBinding(action, new Controller.Key(modifier,key));
@@ -283,7 +282,7 @@ public class GUI {
                         app.getController().update();
                     }
                     lbKey.setForeground(Color.BLACK);
-                    keyToSet.set(Action.NONE);
+                    keyToSet.set(Actions.NONE);
                 }
             });
             pnBindingL.add(lbActionName);
@@ -435,8 +434,8 @@ public class GUI {
         JLabel lbTimer      = createInfoLabel(app.getGameClock()::getTimeInMinutes, mazeRender, SUBTITLE, false);
         JLabel lbTreasuresTitle = createLabel("Treasures", mazeRender, SUBTITLE, false);
         JLabel lbTreasures  = createInfoLabel(()->app.getGame().getTreasuresLeft()+"", mazeRender, SUBTITLE, false);
-        JLabel lbPauseNormal = createActionLabel("Pause", render,SUBTITLE, true,()->app.getActions().actionPause());
-        JLabel lbPauseReplay = createActionLabel("Pause", render,SUBTITLE, true, ()->app.getActions().actionPause());
+        JLabel lbPauseNormal = createActionLabel("Pause", render,SUBTITLE, true,()->Actions.PAUSE_GAME.run(app));
+        JLabel lbPauseReplay = createActionLabel("Pause", render,SUBTITLE, true, ()->Actions.PAUSE_GAME.run(app));
         JLabel lbReplayTitle = createLabel("Replay Mode", render,SUBTITLE, true);
         JLabel lbReplayAuto = createActionLabel("Auto", render,SUBTITLE, true, app::transitionToReplayScreen);
         JLabel lbReplayStep = createActionLabel("Step", render,SUBTITLE, true, app::transitionToReplayScreen);
@@ -488,9 +487,9 @@ public class GUI {
 
         addAll(pnOnPause,
                 Box.createVerticalGlue(),
-                createActionLabel("Resume", render, TITLE, true, ()->app.getActions().actionResume()),
+                createActionLabel("Resume", render, TITLE, true, ()->Actions.LOAD_GAME.run(app)),
                 Box.createVerticalGlue(),
-                createActionLabel("Save and return to menu", render, TITLE, true, ()->app.getActions().actionSave()),
+                createActionLabel("Save and return to menu", render, TITLE, true, ()->Actions.SAVE_GAME.run(app)),
                 Box.createVerticalGlue(),
                 createActionLabel("Quit to menu", render, TITLE, true, app::transitionToMenuScreen),
                 Box.createVerticalGlue());
@@ -504,7 +503,7 @@ public class GUI {
         JPanel pnVictory = createBackgroundPanel(Images.WinScreen, BoxLayout.Y_AXIS);
         pnVictory.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                app.getActions().actionSave();
+                Actions.SAVE_GAME.run(app);
             }
         });
 
@@ -518,7 +517,7 @@ public class GUI {
         JPanel pnLost = createBackgroundPanel(Images.LoseScreen, BoxLayout.Y_AXIS);
         pnLost.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                app.getActions().actionSave();
+                Actions.SAVE_GAME.run(app);
             }
         });
 
