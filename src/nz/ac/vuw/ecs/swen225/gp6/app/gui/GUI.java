@@ -75,6 +75,7 @@ public class GUI {
     public GUI(App app){
         render = new MazeRenderer(app.getGame());
         pnInventory = new InventoryPanel(app.getGame(), true, render);
+        logPanel.setRenderer(render);
     }
 
     /**
