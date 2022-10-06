@@ -29,11 +29,15 @@ public class ExitDoorOpen extends Door{
         //if the tile is hero, WIN
         if(t.type() == TileType.Hero){
             heroOn = true; 
-
-            d.getEventListener(Domain.DomainEvent.onWin).forEach(r -> r.run());
-            CheckGame.gameHasEnded = true; //let the integrity checker know the game has ended
-            CheckGame.won = true;
+                                           
+            //let CheckGame know that the the game is won/inbetween levels
+            if(d.getMazes().size() == d.getLvl()){ 
+                CheckGame.state = CheckGame.GameState.WON;
+            } else{
+                CheckGame.state = CheckGame.GameState.BETWEENLEVELS;
+            }
             
+            d.getEventListener(Domain.DomainEvent.onWin).forEach(r -> r.run());
         } 
     }
             

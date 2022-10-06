@@ -70,7 +70,7 @@ public class Domain {
      */
     public Inventory getInv(){return inv;}
 
-    /*
+    /**
      * returns number of treasures left on current maze
      */
     public int getTreasuresLeft(){return this.getCurrentMaze().getTileCount(TileType.Coin);}
@@ -92,7 +92,7 @@ public class Domain {
         return eventListeners.get(event);
     }
    
-    /*
+    /**
      * a specific toString method that uses the toString methods in 
      * maze and inventory as well as displaying the current level
      * TODO check if works
@@ -153,9 +153,11 @@ public class Domain {
 
         this.mazes = newMazes;//replace current domain's field with next 
         this.inv = nextInv;
-        this.currentLvl = nextDomain.currentLvl;
+        
+        //the nextDomain level should not be assigned to this domain, 
+        //since the level may change in the ping and
+        //the level changes will happen directly in this.domain
     }
-
 
 }
 

@@ -22,8 +22,8 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.*;
  * this class should be UPDATED REGULARLY to keep up with any new futures the game will have.
  */
 public final class CheckGame {
-    public static boolean gameHasEnded;
-    public static boolean won;
+    public enum GameState{WON, LOST, PLAYING, BETWEENLEVELS};
+    public static GameState state = GameState.PLAYING;
     
     /**
      * Checks the integrity of the game after a ping, and the game state is transitioning a step forward.
@@ -36,8 +36,12 @@ public final class CheckGame {
         Maze afterMaze = afterDomain.getCurrentMaze();
         Inventory afterInv = afterDomain.getInv();
 
-        //if the game has ended, then do end game checks and return 
-        if(gameHasEnded){
+         //if the game is won, lost or in between levels, behave appropriately
+        if(state == GameState.WON || state == GameState.LOST){
+            return;
+        } 
+        if(state == GameState.BETWEENLEVELS){
+            state = GameState.PLAYING;
             return;
         }
 
@@ -65,10 +69,17 @@ public final class CheckGame {
         Maze maze = domain.getCurrentMaze();
         Inventory inv = domain.getInv();
 
-        //if the game has ended, then do end game checks and return 
-        if(gameHasEnded){
-            if(won)checkWin(domain);
-            else checkLose(domain);
+        //if the game is won, lost or in between levels, behave appropriately
+        if(state == GameState.WON){
+            checkWin(domain);
+            return;
+        }
+        if(state == GameState.LOST){
+            checkLose(domain);
+            return;
+        }
+        if(state == GameState.BETWEENLEVELS){
+            state = GameState.PLAYING;
             return;
         }
 

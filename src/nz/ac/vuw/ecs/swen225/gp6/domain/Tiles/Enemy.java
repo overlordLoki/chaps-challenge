@@ -24,8 +24,8 @@ public class Enemy extends Actor{
         //if the tile is hero, LOSE
         if(t.type() == TileType.Hero){
             d.getEventListener(Domain.DomainEvent.onLose).forEach(r -> r.run());
-            CheckGame.gameHasEnded = true; //let the integrity checker know the game has ended
-            CheckGame.won = false;
+            CheckGame.state = CheckGame.GameState.LOST; //let the integrity checker know the game is LOST
+
         }
     }
     
