@@ -11,6 +11,8 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Hero;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 
+import static nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack.Images.reloadAllTexturepack;
+
 /**
  * makes a jPanel that can be added to a JFrame
  * 
@@ -19,7 +21,7 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 public class MazeRenderer extends JPanel{
     static final long serialVersionUID = 1L; //serialVersionUID
     private List<TexturePack> textures;
-    private TexturePack texturePack = null; //default texture pack
+    private static TexturePack texturePack = null; //default texture pack
     private Tile[][] gameArray; //the array of tiles
     public DomainController maze; //the domain controller
     public BufferedImage background; //the background image
@@ -30,12 +32,14 @@ public class MazeRenderer extends JPanel{
     public void useNextTexturePack(){
         int nextIndex = (textures.indexOf(texturePack) + 1 ) % textures.size();
         texturePack = textures.get(nextIndex);
+        reloadAllTexturepack();
     }
 
     public void usePrevTexturePack(){
         int nextIndex = (textures.indexOf(texturePack) - 1 ) % textures.size();
         if(nextIndex < 0) nextIndex = textures.size() - 1;
         texturePack = textures.get(nextIndex);
+        reloadAllTexturepack();
     }
 
     /**
@@ -47,9 +51,6 @@ public class MazeRenderer extends JPanel{
         this.maze = maze;
         this.setOpaque(false);
         textures = getTexturePacksList();
-        for(TexturePack tp : textures){
-            System.out.println(tp.getName());
-        }
         //texturePack == Dogs
         // for(TexturePack tp : textures){
         //     System.out.println(tp.getName());
@@ -127,16 +128,17 @@ public class MazeRenderer extends JPanel{
      * @param texturePack
      */
     public void setTexturePack(TexturePack texturePack) {
-        this.texturePack = texturePack;
+        MazeRenderer.texturePack = texturePack;
         patternSize = 100;
+        reloadAllTexturepack();
     }
 
 
     //-----------------------------load in texture packs---------------------------------------------//
 
     public List<TexturePack> getTexturePacksList() {
-        File folder = new File("res/textures");
-        File[] listOfFiles = folder.listFiles();
+        File texturePackRoot = new File("res/textures");
+        File[] listOfFiles = texturePackRoot.listFiles();
         List<TexturePack> textures1 = new ArrayList<>();
         //for each texture in the folder add it to the list
         for (File file : listOfFiles) {
@@ -145,7 +147,6 @@ public class MazeRenderer extends JPanel{
             //     System.out.println("not a folder: " + file.getName());
             //     continue;
             // }
-            //if(!file.getName().equals("Cats")) continue;
             Font title = new Font("Arial", Font.BOLD, 80);
             Font subtitle = new Font("Arial", Font.BOLD, 40);
             Font text =new Font("Arial", Font.BOLD, 30);
@@ -158,7 +159,6 @@ public class MazeRenderer extends JPanel{
             System.out.println("no texture packs found");
             System.exit(0);
         }
-        System.out.println(textures1.size());
         return textures1;
     }
 
@@ -223,6 +223,12 @@ public class MazeRenderer extends JPanel{
      * @return texturePack
      */
     public TexturePack getCurrentTexturePack(){return texturePack;}
+
+    /**
+     * get current texture pack
+     * @return texturePack
+     */
+    public static TexturePack getTexturePack(){return texturePack;}
 
     /**
      * set the maze to be rendered

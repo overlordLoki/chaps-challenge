@@ -7,7 +7,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 public class TexturePack {
-    private static String texturePackName;
+    private final String texturePackName;
     private final Font titleFont;
     private final Font subtitleFont;
     private final Font textFont;
@@ -234,7 +234,7 @@ public class TexturePack {
             this.name = imageName;
             //System.out.print("Loading " + imageName + "...    -> ");
             try {
-                File file = new File("res/textures/" + texturePackName + "/" + imageName + ".png");
+                File file = new File("res/textures/" + MazeRenderer.getTexturePack().getName() + "/" + imageName + ".png");
                 BufferedImage img = ImageIO.read(file);
                 //System.out.println("Loaded!");
                 return img;
