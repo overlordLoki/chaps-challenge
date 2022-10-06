@@ -86,10 +86,10 @@ public class Fuzz {
             move++;
             if(app.getGame().getCurrentLevel() ==2){
                 finish = false;
-                JOptionPane.showMessageDialog(null, "First level test Complete");
-                System.exit(0);
             }
         }
+        JOptionPane.showMessageDialog(null, "First level test Complete");
+        System.exit(0);
 
     }
 
