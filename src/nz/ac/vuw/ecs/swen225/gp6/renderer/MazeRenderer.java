@@ -137,7 +137,7 @@ public class MazeRenderer extends JPanel{
     public List<TexturePack> getTexturePacksList() {
         File folder = new File("res/textures");
         File[] listOfFiles = folder.listFiles();
-        List<TexturePack> textures = new ArrayList<>();
+        List<TexturePack> textures1 = new ArrayList<>();
         //for each texture in the folder add it to the list
         for (File file : listOfFiles) {
             //if(checkFolder(file)){System.out.println("not a folder: " + file.getName());}
@@ -152,14 +152,14 @@ public class MazeRenderer extends JPanel{
             Color colorHover = Color.ORANGE;
             Color colorSelected = Color.RED;
             TexturePack tp = new TexturePack(file.getName(), title, subtitle, text, colorHover, colorSelected);
-            textures.add(tp);
+            textures1.add(tp);
         }
-        if(textures.size() == 0) {
+        if(textures1.size() == 0) {
             System.out.println("no texture packs found");
             System.exit(0);
         }
-        System.out.println(textures.size());
-        return textures;
+        System.out.println(textures1.size());
+        return textures1;
     }
 
     //check if folder has all png files required for a texture pack
