@@ -350,7 +350,7 @@ public class GUI {
         JPanel pnLoad = createRepeatableBackgroundPanel(TexturePack.Images.Wall, render, BoxLayout.Y_AXIS);
         JPanel pnInfo = createClearPanel(BoxLayout.Y_AXIS);
         JPanel pnStatus = createClearPanel(BoxLayout.Y_AXIS);
-        JPanel pnInventory = new InventoryPanel(new DomainController(app.getSave(slot)), true);
+        JPanel pnInventory = new InventoryPanel(app.getSave(slot), true, render);
         JPanel pnOptions = createClearPanel(BoxLayout.X_AXIS);
 
         // assemble this panel
