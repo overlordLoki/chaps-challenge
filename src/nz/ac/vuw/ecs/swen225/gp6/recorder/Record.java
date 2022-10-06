@@ -1,7 +1,7 @@
 package nz.ac.vuw.ecs.swen225.gp6.recorder;
 
 import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.RecordTimeline;
-import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.Action;
+import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
 
 /**
  * Class for recording actions in a game.
@@ -9,7 +9,7 @@ import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.Action;
  * @author: Jayden Hooper
  */
 public class Record {
-    private RecordTimeline<Action> timeline;
+    private RecordTimeline<Actions> timeline;
 
     /**
      * Create a new Record object.
@@ -30,7 +30,7 @@ public class Record {
      * @param time the time the action is executed
      * @param actions the action executed
      */
-    public void addActions(long time, Action actions) {
+    public void addActions(long time, Actions actions) {
         this.timeline.add(time, actions); 
         System.out.println("Added action: " + actions.toString());        
     }
