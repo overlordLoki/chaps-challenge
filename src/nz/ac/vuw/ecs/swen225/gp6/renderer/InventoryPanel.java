@@ -8,6 +8,7 @@ import java.awt.GridLayout;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.Tile;
+import nz.ac.vuw.ecs.swen225.gp6.renderer.*;
 /**
  *  @author Loki
  */
@@ -18,7 +19,7 @@ public class InventoryPanel extends JPanel{
      * Constructor. Takes a maze as parameters.
      * @param maze
      */
-    public InventoryPanel(Domain Maze, boolean isGamePanel) {
+    public InventoryPanel(Domain Maze, boolean isGamePanel,MazeRenderer mazeRenderer) {
         this.maze = Maze;
         //use grid layout based on boolean. gamePanel is 4,2 and inventoryPanel is 1x9
         this.setLayout(isGamePanel ? new GridLayout(4,2): new GridLayout(1,9));
