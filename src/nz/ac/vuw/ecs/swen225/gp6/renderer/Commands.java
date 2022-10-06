@@ -14,6 +14,7 @@ public final class Commands {
         addCommands("clear", "Clears the text area", this::clear);
         addCommands("help", "Displays the availble commands", this::help);
         addCommands("loadPack", "Reloads the texturepacks", this::loadPack);
+        addCommands("test", "test", this::test);
     }
 
     /**
@@ -58,8 +59,15 @@ public final class Commands {
     public void loadPack(){
         Textures textures = new Textures();
         //print number of textures loaded
-        int num = textures.loadPack().length;
+        int num = textures.numberOfTexturePacks().length;
         logPanel.print("Loaded " + num + " textures");
+    }
+
+    //Testing command
+    public void test(){
+        logPanel.println("Running Test");
+        Textures textures = new Textures();
+        logPanel.println(textures.test());
     }
 
 }
