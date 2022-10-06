@@ -7,7 +7,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 public class TexturePack {
-    private String name;
+    private static String texturePackName;
     private final Font titleFont;
     private final Font subtitleFont;
     private final Font textFont;
@@ -16,7 +16,8 @@ public class TexturePack {
     private final Color colorSelected;
     private  Color dynamicColor;
 
-    public String getName()         {return name;}
+
+    public String getName()         {return texturePackName;}
     public Font getTitleFont()      {return titleFont;}
     public Font getSubtitleFont()   {return subtitleFont;}
     public Font getTextFont()       {return textFont;}
@@ -36,7 +37,7 @@ public class TexturePack {
      * @param colorSelected
      */
     TexturePack(String name,Font title,Font subtitle, Font text, Color colorHover, Color colorSelected){
-        this.name = name;
+        this.texturePackName = name;
         this.titleFont = title;
         this.subtitleFont = subtitle;
         this.textFont = text;
@@ -51,12 +52,7 @@ public class TexturePack {
     }
     //get image from string
     public BufferedImage getImage(String imgName) {
-        for (Images img : Images.values()) {
-            if (img.name().equals(imgName)) {
-                return img.getImg();
-            }
-        }
-        return null;
+        return Images.getImage(imgName);
     }
 
     public enum Images{
@@ -203,6 +199,21 @@ public class TexturePack {
                 default -> Images.loadCustom(tile.info().getImageName());
             };
         }
+
+        /**
+         * get the image for the String provided.
+         * @param String
+         * @return BufferedImage
+         */
+        public static BufferedImage getImage(String imgName){
+            for (Images img : Images.values()) {
+                if (img.getName().equals(imgName)) {
+                    return img.getImg();
+                }
+            }
+            System.out.println("Image not found: " + imgName);
+            return null;
+        }
     
         public static BufferedImage loadCustom(String path){
             try {
@@ -223,7 +234,7 @@ public class TexturePack {
             this.name = imageName;
             //System.out.print("Loading " + imageName + "...    -> ");
             try {
-                File file = new File("res/textures/" + name + "/" + imageName + ".png");
+                File file = new File("res/textures/" + texturePackName + "/" + imageName + ".png");
                 BufferedImage img = ImageIO.read(file);
                 //System.out.println("Loaded!");
                 return img;

@@ -18,8 +18,8 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
  */
 public class MazeRenderer extends JPanel{
     static final long serialVersionUID = 1L; //serialVersionUID
-    private List<TexturePack> textures = getTexturePacksList();
-    private TexturePack texturePack = textures.get(0); //default texture pack
+    private List<TexturePack> textures;
+    private TexturePack texturePack = null; //default texture pack
     private Tile[][] gameArray; //the array of tiles
     public DomainController maze; //the domain controller
     public BufferedImage background; //the background image
@@ -46,6 +46,17 @@ public class MazeRenderer extends JPanel{
     public MazeRenderer(DomainController maze) {
         this.maze = maze;
         this.setOpaque(false);
+        textures = getTexturePacksList();
+        //texturePack == Dogs
+        for(TexturePack tp : textures){
+            System.out.println(tp.getName());
+            if(tp.getName().equals("Dogs")){
+                System.out.println("Found Dogs");
+                this.texturePack = tp;
+                break;
+            }
+        }
+        if(texturePack == null){texturePack = textures.get(0);}
     }
 
     /**
@@ -126,7 +137,12 @@ public class MazeRenderer extends JPanel{
         List<TexturePack> textures = new ArrayList<>();
         //for each texture in the folder add it to the list
         for (File file : listOfFiles) {
-            if (file.isFile()) {
+            //if(checkFolder(file)){System.out.println("not a folder: " + file.getName());}
+            // if(checkFolder(file)){
+            //     System.out.println("not a folder: " + file.getName());
+            //     continue;
+            // }
+            //if(!file.getName().equals("Cats")) continue;
             Font title = new Font("Arial", Font.BOLD, 80);
             Font subtitle = new Font("Arial", Font.BOLD, 40);
             Font text =new Font("Arial", Font.BOLD, 30);
@@ -134,7 +150,10 @@ public class MazeRenderer extends JPanel{
             Color colorSelected = Color.RED;
             TexturePack tp = new TexturePack(file.getName(), title, subtitle, text, colorHover, colorSelected);
             textures.add(tp);
-            }
+        }
+        if(textures.size() == 0) {
+            System.out.println("no texture packs found");
+            System.exit(0);
         }
         return textures;
     }
@@ -148,12 +167,13 @@ public class MazeRenderer extends JPanel{
                 files.add(file.getName());
             }
         }
-        String n = "background,pattern,floor,wall_tile,pattern2,enemy,coin,blueKey,greenKey"+
-                    "orangeKey,yellowKey,blueLock,greenLock,orangeLock,yellowLock,empty_tile"+
-                    "exitDoor,winScreen,loseScreen,heroBack,heroFront,heroSide,hero";
-        String[] must = n.split(",");
+        String[] must = {"background","blueKey","blueLock","coin","empty_tile","enemy","exitDoor","floor","greenKey","greenLock",
+                        "hero","heroBack","heroFront","heroSide","empty_tile","loseScreen","orangeKey",
+                        "orangeLock","pattern","pattern2","wall_tile","winScreen","yellowKey","yellowLock"};
+
         for(String s : must) {
             if(!files.contains(s+".png")) {
+                System.out.println("missing file: " + s + " in " + folder.getName());
                 return false;
             }
         }

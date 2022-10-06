@@ -3,7 +3,6 @@ package nz.ac.vuw.ecs.swen225.gp6.renderer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 public final class Commands {
     private final LogPanel logPanel;
     private HashMap<String, Runnable> commands = new HashMap<String, Runnable>();
