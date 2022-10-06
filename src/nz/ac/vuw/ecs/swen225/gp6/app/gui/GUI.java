@@ -1,6 +1,8 @@
 package nz.ac.vuw.ecs.swen225.gp6.app.gui;
 
 import nz.ac.vuw.ecs.swen225.gp6.app.App;
+import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
+import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.Action;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller;
 import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.InventoryPanel;
@@ -18,8 +20,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static nz.ac.vuw.ecs.swen225.gp6.app.gui.SwingFactory.*;
 
@@ -217,107 +220,82 @@ public class GUI {
     private JPanel configurePanelSettings(JPanel backPanel, CardLayout cardLayout, App app) {
         System.out.print("Configuring Settings Panel... ");
 
-        MazeRenderer r = render;
         JPanel pnSettings = createRepeatableBackgroundPanel(Images.Pattern_2, render, BoxLayout.Y_AXIS);
         JPanel pnMiddle = createClearPanel(BoxLayout.X_AXIS);
         JPanel pnBindingL = createClearPanel(BoxLayout.Y_AXIS);
         JPanel pnBindingR = createClearPanel(BoxLayout.Y_AXIS);
         JPanel pnTexturePack = createClearPanel(BoxLayout.X_AXIS);
 
-        JLabel lbTitle = createLabel("Settings", r, TITLE, true);
-        JLabel lbConfirm = createActionLabel("Confirm", r, SUBTITLE, true, ()->cardLayout.show(backPanel, MENU));
-        JLabel lbTexturePack = createLabel("Texture Pack", r, TEXT, false);
-        JLabel lbCurrentTexture = createLabel(r.getCurrentTexturePack()+"" , r, TEXT, false);
-        JLabel lbNextTexture = createActionLabel("  >>>", render,TEXT, false, ()->{
-            int newTexture = (render.getCurrentTexturePack().ordinal()+1)%TexturePack.values().length;
-            TexturePack currentPack = TexturePack.values()[newTexture];
-            render.setTexturePack(currentPack);
-            lbCurrentTexture.setText(currentPack+"");
-            app.repaint();
-        });
-        JLabel lbPrevTexture = createActionLabel("<<<  ", render,SUBTITLE, false, ()->{
-            int newTexture = (render.getCurrentTexturePack().ordinal()-1+TexturePack.values().length)%TexturePack.values().length;
-            TexturePack currentPack = TexturePack.values()[newTexture];
-            render.setTexturePack(currentPack);
-            lbCurrentTexture.setText(currentPack+"");
-            app.repaint();
-        });
-        JLabel lbPlayMusic = createLabel("Play Sound", r, TEXT, false);
-        JLabel lbIsMusicOn = createActionLabel(app.getConfiguration().isMusicOn()+"", r, TEXT, false, ()->{});
-        lbIsMusicOn.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                app.getConfiguration().setMusicOn(!app.getConfiguration().isMusicOn());
-                lbIsMusicOn.setText(app.getConfiguration().isMusicOn()+"");
-                if (app.getConfiguration().isMusicOn()) {
-                    MusicPlayer.playMenuMusic();
-                } else {
-                    MusicPlayer.stopMenuMusic();
-                }
-            }
-        });
-
-        List<JLabel> lbsActionNames = new ArrayList<>();
-        List<JLabel> lbsActionKeys = new ArrayList<>();
-        for (int i = 0; i < app.getConfiguration().getUserKeyBindings().size(); i++) {
-            lbsActionNames.add(createLabel(app.getConfiguration().getActionName(i), r, TEXT, false));
-            int finalI = i;
-            Controller.Key key = app.getConfiguration().getKeyBinding(finalI);
-            lbsActionKeys.add(new JLabel((key.modifier() == 0  ? "": KeyEvent.getModifiersExText(key.modifier()) + " + ") + KeyEvent.getKeyText(key.key())){{
-                TexturePack currentTexture = render.getCurrentTexturePack();
-                setForeground(currentTexture.getColorDefault());
-                addMouseListener(new MouseAdapter() {
-                    public void mouseEntered(MouseEvent e){
-                        if (app.getConfiguration().inSettingKeyMode()) return;
-                        setForeground(currentTexture.getColorHover());
-                    }
-                    public void mouseExited(MouseEvent e) {
-                        if (app.getConfiguration().inSettingKeyMode()) return;
-                        setForeground(currentTexture.getColorDefault());
-                    }
-                    public void mousePressed(MouseEvent e){
-                        if (app.getConfiguration().inSettingKeyMode()) return;
-                        setForeground(currentTexture.getColorSelected());
-                        app.getConfiguration().setIndexOfKeyToSet(finalI);
-                    }
-                });}
-                public void paintComponent(Graphics g) {
-                    TexturePack currentTexture = render.getCurrentTexturePack();
-                    setFont(currentTexture.getTextFont());
-                    super.paintComponent(g);
-                }
-            });
-        }
-
-        app.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent e) {
-                if (! app.getConfiguration().inSettingKeyMode()) return;
-                int modifier = e.getModifiersEx();
-                int key = e.getKeyCode();
-                var label = lbsActionKeys.get(app.getConfiguration().indexOfKeyToSet());
-                if (app.getConfiguration().checkKeyBinding(new Controller.Key(modifier,key))){
-                    app.getConfiguration().exitKeySettingMode();
-                    label.setForeground(Color.BLACK);
-                    return;
-                }
-                app.getConfiguration().setKeyBinding(app.getConfiguration().indexOfKeyToSet(), new Controller.Key(modifier,key));
-                label.setText(Controller.Key.toString(modifier, key));
-                label.setForeground(Color.BLACK);
-                app.getConfiguration().exitKeySettingMode();
-                app.getController().update();
-            }
-        });
+        JLabel lbCurrentTexture = createLabel(render.getCurrentTexturePack()+"" , render, TEXT, false);
 
         // setting layout
         pnBindingL.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
         pnBindingR.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
+
         // assemble this panel
-        addAll(pnTexturePack, lbPrevTexture, lbCurrentTexture, lbNextTexture);
-        addAll(pnBindingL, lbPlayMusic, lbTexturePack);
-        addAll(pnBindingR, lbIsMusicOn, pnTexturePack);
-        lbsActionNames.forEach(pnBindingL::add);
-        lbsActionKeys.forEach(pnBindingR::add);
+        addAll(pnTexturePack,
+                createActionLabel("<<<  ", render,SUBTITLE, false, ()->{
+                    int newTexture = (render.getCurrentTexturePack().ordinal()-1+TexturePack.values().length)%TexturePack.values().length;
+                    TexturePack currentPack = TexturePack.values()[newTexture];
+                    render.setTexturePack(currentPack);
+                    lbCurrentTexture.setText(currentPack+"");
+                    app.repaint();
+                }),
+                lbCurrentTexture,
+                createActionLabel("  >>>", render,TEXT, false, ()->{
+                    int newTexture = (render.getCurrentTexturePack().ordinal()+1)%TexturePack.values().length;
+                    TexturePack currentPack = TexturePack.values()[newTexture];
+                    render.setTexturePack(currentPack);
+                    lbCurrentTexture.setText(currentPack+"");
+                    app.repaint();
+                }));
+        addAll(pnBindingL,
+                createLabel("Play Sound", render, TEXT, false),
+                createLabel("Texture Pack", render, TEXT, false));
+        addAll(pnBindingR,
+                createInfoActionLabel(()->app.getConfiguration().isMusicOn()? "On" : "Off", render, TEXT, false, ()->false,
+                        ()->{app.getConfiguration().setMusicOn(!app.getConfiguration().isMusicOn());
+                            if (app.getConfiguration().isMusicOn()) {
+                                MusicPlayer.playMenuMusic();
+                            } else {
+                                MusicPlayer.stopMenuMusic();
+                            }}),
+                pnTexturePack);
+        AtomicReference<Action> keyToSet = new AtomicReference<>(Action.NONE);
+        app.getConfiguration().getUserKeyBindings().forEach((action, key) -> {
+            JLabel lbActionName = createLabel(action.getDisplayName(), render, TEXT, false);
+            JLabel lbKey = createInfoActionLabel(
+                            ()->app.getConfiguration().getKeyBinding(action).toString(),
+                            render, TEXT, false,
+                            ()->!keyToSet.get().equals(Action.NONE),
+                            ()->keyToSet.set(action));
+            lbKey.addKeyListener(new KeyAdapter() {
+                public void keyReleased(KeyEvent e) {
+                    int modifier = e.getModifiersEx();
+                    int key = e.getKeyCode();
+                    if (keyToSet.get().equals(Action.NONE)) return;
+                    if (app.getConfiguration().checkKeyBinding(modifier,key)){
+                        keyToSet.set(Action.NONE);
+                        JOptionPane.showMessageDialog(lbKey, "Key already in use!");
+                    }else{
+                        app.getConfiguration().setKeyBinding(action, new Controller.Key(modifier,key));
+                        lbKey.setText(Controller.Key.toString(modifier, key));
+                        app.getController().update();
+                    }
+                    lbKey.setForeground(Color.BLACK);
+                    keyToSet.set(Action.NONE);
+                }
+            });
+            pnBindingL.add(lbActionName);
+            pnBindingR.add(lbKey);
+        });
         addAll(pnMiddle, Box.createHorizontalGlue(), pnBindingL, pnBindingR, Box.createHorizontalGlue());
-        addAll(pnSettings, lbTitle, Box.createVerticalGlue(), pnMiddle, Box.createVerticalGlue(), lbConfirm);
+        addAll(pnSettings,
+                createLabel("Settings", render, TITLE, true),
+                Box.createVerticalGlue(),
+                pnMiddle,
+                Box.createVerticalGlue(),
+                createActionLabel("Confirm", render, SUBTITLE, true, ()->cardLayout.show(backPanel, MENU)));
 
         System.out.println("Done!");
         return pnSettings;
@@ -512,9 +490,7 @@ public class GUI {
                 Box.createVerticalGlue(),
                 createActionLabel("Resume", render, TITLE, true, ()->app.getActions().actionResume()),
                 Box.createVerticalGlue(),
-                createActionLabel("Save and return to menu", render, TITLE, true, ()->{
-                    app.getActions().actionSave();
-                }),
+                createActionLabel("Save and return to menu", render, TITLE, true, ()->app.getActions().actionSave()),
                 Box.createVerticalGlue(),
                 createActionLabel("Quit to menu", render, TITLE, true, app::transitionToMenuScreen),
                 Box.createVerticalGlue());
@@ -620,6 +596,7 @@ public class GUI {
         functionCardLayout.show(functionPanel, MODE_NORMAL);
         gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
+        render.grabFocus();
     }
 
     /**

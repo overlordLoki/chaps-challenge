@@ -14,13 +14,38 @@ public class Actions {
      */
     public enum Action {
         /** Represents the move player move up. */
-        MOVE_UP,
+        MOVE_UP("Move Up"),
         /** Represents the move player move down. */
-        MOVE_DOWN,
+        MOVE_DOWN("Move Down"),
         /** Represents the move player move left. */
-        MOVE_LEFT,
+        MOVE_LEFT("Move Left"),
         /** Represents the move player move right. */
-        MOVE_RIGHT
+        MOVE_RIGHT("Move Right"),
+        /** Represents the action pausing game. */
+        PAUSE_GAME("Pause Game"),
+        /** Represents the action resuming game. */
+        RESUME_GAME("Resume Game"),
+        /** Represents the action jump straight to level 1. */
+        TO_LEVEL_1("Jump To Level 1"),
+        /** Represents the action jump straight to level 2. */
+        TO_LEVEL_2("Jump To Level 2"),
+        /** Represents the action quitting without saving game. */
+        QUIT_GAME("Quit Game"),
+        /** Represents the action saving and quit game. */
+        SAVE_GAME("Save And Quit Game"),
+        /** Represents the action reloading from saved game. */
+        LOAD_GAME("Reload Game"),
+        /** Represents no action is being performed. */
+        NONE("No Action");
+
+        private final String name;
+        Action(String name){this.name = name;}
+
+        /**
+         * Gets the display name of the action.
+         * @return the display name of the action.
+         */
+        public String getDisplayName(){return name;}
     }
 
     private final App app;
