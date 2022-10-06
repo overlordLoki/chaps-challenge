@@ -162,78 +162,77 @@ public class Fuzz {
      * This method is just hardcode to test level 1 can be passed
      * @return print out the key event
      */
-    static List<Runnable> test1HC = new ArrayList<>();
+    static List<Actions> test1HC = new ArrayList<>();
     static Actions actions;
-//    public static void hardCode(){
-//        SwingUtilities.invokeLater(()->{
-//            app = new App();
-//            app.startNewGame();
-//            app.transitionToGameScreen();
-//            actionsList = List.of(
-//                    MOVE_UP,
-//                    MOVE_DOWN,
-//                    MOVE_LEFT,
-//                    MOVE_RIGHT
-//            );
-//        });
-//        JOptionPane.showMessageDialog(null,"Start Fuzzing");
-//
-//
-//        test1HC.add(actions::actionUp);
-//        IntStream.range(0,2).forEach(i->test1HC.add(actions::actionLeft));
-//        IntStream.range(0,3).forEach(i->test1HC.add(actions::actionDown));
-//
-//        IntStream.range(0,7).forEach(i->test1HC.add(actions::actionRight));
-//        IntStream.range(0,1).forEach(i->test1HC.add(actions::actionUp));
-//        IntStream.range(0,1).forEach(i->test1HC.add(actions::actionLeft));
-//        IntStream.range(0,2).forEach(i->test1HC.add(actions::actionDown));
-//        IntStream.range(0,2).forEach(i->test1HC.add(actions::actionLeft));
-//
-//        IntStream.range(0,4).forEach(i->test1HC.add(actions::actionUp));
-//        IntStream.range(0,4).forEach(i->test1HC.add(actions::actionRight));
-//        IntStream.range(0,1).forEach(i->test1HC.add(actions::actionDown));
-//        IntStream.range(0,2).forEach(i->test1HC.add(actions::actionLeft));
-//        IntStream.range(0,1).forEach(i->test1HC.add(actions::actionUp));
-//        IntStream.range(0,10).forEach(i->test1HC.add(actions::actionLeft));
-//
-//        IntStream.range(0,1).forEach(i->test1HC.add(actions::actionDown));
-//        IntStream.range(0,2).forEach(i->test1HC.add(actions::actionRight));
-//        IntStream.range(0,1).forEach(i->test1HC.add(actions::actionUp));
-//
-//        IntStream.range(0,2).forEach(i->test1HC.add(actions::actionRight));
-//        IntStream.range(0,4).forEach(i->test1HC.add(actions::actionDown));
-//        IntStream.range(0,3).forEach(i->test1HC.add(actions::actionLeft));
-//        IntStream.range(0,1).forEach(i->test1HC.add(actions::actionUp));
-//        IntStream.range(0,1).forEach(i->test1HC.add(actions::actionDown));
-//
-//        IntStream.range(0,4).forEach(i->test1HC.add(actions::actionRight));
-//        IntStream.range(0,4).forEach(i->test1HC.add(actions::actionDown));
-//        IntStream.range(0,4).forEach(i->test1HC.add(actions::actionUp));
-//
-//        IntStream.range(0,2).forEach(i->test1HC.add(actions::actionRight));
-//        IntStream.range(0,4).forEach(i->test1HC.add(actions::actionDown));
-//        IntStream.range(0,8).forEach(i->test1HC.add(actions::actionUp));
-//        IntStream.range(0,1).forEach(i->test1HC.add(actions::actionRight));
-//        IntStream.range(0,2).forEach(i->test1HC.add(actions::actionUp));
-//
-//        IntStream.range(0,1).forEach(i->test1HC.add(actions::actionRight));
-//        IntStream.range(0,1).forEach(i->test1HC.add(actions::actionLeft));
-//        IntStream.range(0,2).forEach(i->test1HC.add(actions::actionDown));
-//        IntStream.range(0,4).forEach(i->test1HC.add(actions::actionLeft));
-//        IntStream.range(0,2).forEach(i->test1HC.add(actions::actionUp));
-//        IntStream.range(0,1).forEach(i->test1HC.add(actions::actionLeft));
-//        IntStream.range(0,1).forEach(i->test1HC.add(actions::actionRight));
-//
-//        IntStream.range(0,2).forEach(i->test1HC.add(actions::actionDown));
-//        IntStream.range(0,2).forEach(i->test1HC.add(actions::actionRight));
-//
-//        IntStream.range(0,2).forEach(i->test1HC.add(actions::actionUp));
-//        test1HC.forEach(a->{
-//            a.run();
-//            robot.delay(100);
-//        });
-//
-//    }
+    public static void hardCode(){
+        SwingUtilities.invokeLater(()->{
+            app = new App();
+            app.startNewGame();
+            app.transitionToGameScreen();
+            actionsList = List.of(
+                    MOVE_UP,
+                    MOVE_DOWN,
+                    MOVE_LEFT,
+                    MOVE_RIGHT
+            );
+        });
+        JOptionPane.showMessageDialog(null,"Start Fuzzing");
+
+        test1HC.add(MOVE_UP);
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_LEFT));
+        IntStream.range(0,3).forEach(i->test1HC.add(MOVE_DOWN));
+
+        IntStream.range(0,7).forEach(i->test1HC.add(MOVE_RIGHT));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_UP));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_LEFT));
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_DOWN));
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_LEFT));
+
+        IntStream.range(0,4).forEach(i->test1HC.add(MOVE_UP));
+        IntStream.range(0,4).forEach(i->test1HC.add(MOVE_RIGHT));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_DOWN));
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_LEFT));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_UP));
+        IntStream.range(0,10).forEach(i->test1HC.add(MOVE_LEFT));
+
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_DOWN));
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_RIGHT));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_UP));
+
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_RIGHT));
+        IntStream.range(0,4).forEach(i->test1HC.add(MOVE_DOWN));
+        IntStream.range(0,3).forEach(i->test1HC.add(MOVE_LEFT));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_UP));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_DOWN));
+
+        IntStream.range(0,4).forEach(i->test1HC.add(MOVE_RIGHT));
+        IntStream.range(0,4).forEach(i->test1HC.add(MOVE_DOWN));
+        IntStream.range(0,4).forEach(i->test1HC.add(MOVE_UP));
+
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_RIGHT));
+        IntStream.range(0,4).forEach(i->test1HC.add(MOVE_DOWN));
+        IntStream.range(0,8).forEach(i->test1HC.add(MOVE_UP));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_RIGHT));
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_UP));
+
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_RIGHT));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_LEFT));
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_DOWN));
+        IntStream.range(0,4).forEach(i->test1HC.add(MOVE_LEFT));
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_UP));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_LEFT));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_RIGHT));
+
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_DOWN));
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_RIGHT));
+
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_UP));
+        test1HC.forEach(a->{
+            a.run(app);
+            robot.delay(100);
+        });
+
+    }
 
     /**
      * This method is used to print out the key event message what App get and action done
