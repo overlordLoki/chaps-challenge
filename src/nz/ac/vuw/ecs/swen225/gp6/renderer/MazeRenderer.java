@@ -27,6 +27,16 @@ public class MazeRenderer extends JPanel{
     private int renderSize = 7; //the size of the render
     private int minRenderSize = 1, maxRenderSize = 50; //the min and max render size
 
+    public void useNextTexturePack(){
+        int nextIndex = (textures.indexOf(texturePack) + 1 ) % textures.size();
+        texturePack = textures.get(nextIndex);
+    }
+
+    public void usePrevTexturePack(){
+        int nextIndex = (textures.indexOf(texturePack) - 1 ) % textures.size();
+        if(nextIndex < 0) nextIndex = textures.size() - 1;
+        texturePack = textures.get(nextIndex);
+    }
 
     /**
      * Constructor. Takes a maze as parameters.
@@ -198,5 +208,7 @@ public class MazeRenderer extends JPanel{
 
     //get list of TexturePacks
     public List<TexturePack> getTexturePacks() {return textures;}
+
+
 
 }
