@@ -54,6 +54,11 @@ public class Domain {
      */
     public List<Maze> getMazes(){ return mazes;}
 
+    /*
+     * returns the inventory of the current maze
+     */
+    public Inventory getInv(){return inv;}
+
      /**
      * returns the list of level time limits, where each element corresponds to a level,
      * and the level is restarted if time runs out.
@@ -142,14 +147,14 @@ public class Domain {
     public int getCurrentTimeLimit(){return levelTimeLimits.get(currentLvl - 1);}
 
     /**
-     * returns number of treasures left on current maze
+     * gets number of treasures left on current maze
      */
     public int getTreasuresLeft(){return getCurrentMaze().getTileCount(TileType.Coin);}
 
-    /*
-     * returns the inventory of the current maze
+    /**
+     * gets a list of current items in the inventory 
      */
-    public Inventory getInv(){return inv;}
+    public List<Tile> getInventory(){return inv.getItems();}
 
     /**
      * gets a copy of current level's maze's game array
