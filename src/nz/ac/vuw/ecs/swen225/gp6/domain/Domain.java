@@ -149,7 +149,7 @@ public class Domain {
     /*
      * returns the inventory of the current maze
      */
-    public Inventory getInventory(){return inv;}
+    public Inventory getInv(){return inv;}
 
     /**
      * gets a copy of current level's maze's game array

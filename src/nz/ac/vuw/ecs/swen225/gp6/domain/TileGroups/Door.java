@@ -15,12 +15,12 @@ public abstract class Door extends AbstractTile {
 
     @Override public boolean obstructsEnemy(Domain d){return true;} // doors obstruct enemies
     @Override public boolean obstructsHero(Domain d){
-        return d.getInventory().getItems().stream()
+        return d.getInv().getItems().stream()
         .anyMatch(t -> t instanceof Key && ((Key) t).color() == color()) == false;
     } // if hero has key with correct color, then it does not obstruct
 
     @Override public void setOn(Tile t, Domain d){ 
-        Inventory inv = d.getInventory();
+        Inventory inv = d.getInv();
 
         inv.getItems().stream().filter(tile -> tile instanceof Key && ((Key) tile).color() == color())
         .findFirst().ifPresent(k -> {
