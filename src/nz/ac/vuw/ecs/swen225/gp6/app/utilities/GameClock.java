@@ -134,15 +134,23 @@ public class GameClock {
     public long getTimePlayed() {return timePlayed;}
 
     /**
+     * Gets the time left for the current level
+     *
+     * @return the time left for the current level in nanoseconds
+     */
+    public long getTimeLeft() {return 60 * 1000000000L - timePlayed;}
+
+    /**
      * Gets the time elapsed since the start of the game in Minutes and Seconds.
      *
      * @return the time elapsed since the start of the game
      */
     public String getTimeInMinutes() {
-        long time = this.timePlayed;
+        long time = getTimeLeft();
+        long millis = time / 1000000 % 1000 / 10;
         long seconds = time / 1000000000;
         long minutes = seconds / 60;
-        seconds = seconds % 60;
-        return String.format("%02d:%02d", minutes, seconds);
+        seconds %= 60;
+        return String.format("%02d:%02d:%02d", minutes, seconds, millis);
     }
 }
