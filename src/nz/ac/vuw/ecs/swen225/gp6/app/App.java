@@ -1,13 +1,11 @@
 package nz.ac.vuw.ecs.swen225.gp6.app;
 
 import nz.ac.vuw.ecs.swen225.gp6.app.gui.GUI;
-import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Configuration;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.GameClock;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.DomainEvent;
-import nz.ac.vuw.ecs.swen225.gp6.renderer.InventoryPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MusicPlayer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.logging.Interceptor;
@@ -97,7 +95,7 @@ public class App extends JFrame {
         );
         setMinimumSize(new Dimension(WIDTH, HEIGHT));
         setContentPane(gui.getOuterPanel());
-        gui.getRender().addKeyListener(controller);
+        gui.getRenderPanel().addKeyListener(controller);
         transitionToMenuScreen();
         pack();
     }
@@ -198,7 +196,7 @@ public class App extends JFrame {
      */
     private void updateGameComponents(Domain game, Timer timer) {
         this.game = game;
-        this.gui.getRender().setMaze(game);
+        this.gui.getRenderPanel().setMaze(game);
         this.gui.getInventory().setMaze(game);
         this.game.addEventListener(DomainEvent.onWin, ()->{
             inResume = false;
