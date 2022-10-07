@@ -15,28 +15,28 @@ public enum Actions {
     MOVE_UP("Move Up") {{ this.action = (app)->{
         if (!app.isResuming()) return;
         app.getGame().moveUp();
-        app.getRecorder().addActions(app.getGameClock().getTime(), this);
+        app.getRecorder().addActions(app.getGameClock().getTimePlayed(), this);
     };}},
 
     /** Represents the move player move down. */
     MOVE_DOWN("Move Down"){{ this.action = (app)->{
         if (!app.isResuming()) return;
         app.getGame().moveDown();
-        app.getRecorder().addActions(app.getGameClock().getTime(), this);
+        app.getRecorder().addActions(app.getGameClock().getTimePlayed(), this);
     };}},
 
     /** Represents the move player move left. */
     MOVE_LEFT("Move Left"){{ this.action = (app)->{
         if (!app.isResuming()) return;
         app.getGame().moveLeft();
-        app.getRecorder().addActions(app.getGameClock().getTime(),this);
+        app.getRecorder().addActions(app.getGameClock().getTimePlayed(),this);
     };}},
 
     /** Represents the move player move right. */
     MOVE_RIGHT("Move Right"){{ this.action = (app)->{
         if (!app.isResuming()) return;
         app.getGame().moveRight();
-        app.getRecorder().addActions(app.getGameClock().getTime(), this);
+        app.getRecorder().addActions(app.getGameClock().getTimePlayed(), this);
     };}},
 
     /** Represents the action pausing game. */

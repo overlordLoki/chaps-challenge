@@ -91,8 +91,8 @@ public class GameClock {
      *
      * @param speed the delay in milliseconds
      */
-    public void setReplayDelay(int speed) {
-        this.replayTimer.setDelay(timeIntervalReplay * speed);
+    public void setReplaySpeed(float speed) {
+        this.replayTimer.setDelay((int)(timeIntervalReplay * speed));
         this.replaySpeed = speed;
     }
 
@@ -131,7 +131,7 @@ public class GameClock {
      *
      * @return the time elapsed since the start of the game
      */
-    public long getTime() {return timePlayed;}
+    public long getTimePlayed() {return timePlayed;}
 
     /**
      * Gets the time elapsed since the start of the game in Minutes and Seconds.
