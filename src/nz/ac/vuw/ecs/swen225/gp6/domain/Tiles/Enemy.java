@@ -10,7 +10,10 @@ public class Enemy extends Actor{
     Direction staticDirection = Direction.Up; //should never be None
     Tile tileOn; //tile the enemy will replace when moved
     
-    public Enemy(TileInfo info){super(info);}
+    public Enemy(TileInfo info){
+        super(info);
+        tileOn = new Floor((new TileInfo(info.loc()))); //set the tile initially is on to a floor
+    }
 
     @Override public TileType type(){ return TileType.Enemy;}
     public Tile tileOn(){return tileOn;} //returns the tile the hero will replace when moved
@@ -24,12 +27,15 @@ public class Enemy extends Actor{
         //if the tile is hero, LOSE
         if(t.type() == TileType.Hero){
             d.getEventListener(Domain.DomainEvent.onLose).forEach(r -> r.run());
-            CheckGame.gameHasEnded = true; //let the integrity checker know the game has ended
-            CheckGame.won = false;
+            CheckGame.state = CheckGame.GameState.LOST; //let the integrity checker know the game is LOST
+
         }
     }
     
     @Override public void ping(Domain d){
+        info.pingStep(); //step the ping counter
+        if(info.ping() % 10 != 0) return; //only move every 20 pings
+
         Maze m = d.getCurrentMaze();
         Loc l1 = info.loc();
         Direction dir = Direction.values()[(int)(Math.random()*4)]; //random direction
