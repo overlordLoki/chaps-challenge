@@ -122,7 +122,6 @@ public class App extends JFrame {
      */
     public void transitionToGameScreen(){
         System.out.print("Transitioning to game screen... ");
-        gameClock.setReplayMode(false);
         gameClock.start();
         gui.transitionToGameScreen();
         gui.showResumePanel();
@@ -135,7 +134,6 @@ public class App extends JFrame {
      */
     public void transitionToReplayScreen(){
         System.out.print("Transitioning to replay screen... ");
-        gameClock.setReplayMode(true);
         gameClock.start();
         gui.transitionToReplayScreen();
         gui.showResumePanel();
@@ -162,7 +160,8 @@ public class App extends JFrame {
      * Sets the game to a new game and enters game play mode
      */
     public void startNewGame() {
-        updateGameComponents(Persistency.getInitialDomain(), gameClock.getTimer());
+        updateGameComponents(Persistency.getInitialDomain());
+        gameClock.useGameTimer();
         transitionToGameScreen();
     }
 
@@ -172,7 +171,8 @@ public class App extends JFrame {
      * @param slot the save file to load
      */
     public void startSavedGame(int slot) {
-        updateGameComponents(saves[slot-1], gameClock.getTimer());
+        updateGameComponents(saves[slot-1]);
+        gameClock.useGameTimer();
         replay.load("save");
         transitionToGameScreen();
     }
@@ -183,7 +183,8 @@ public class App extends JFrame {
      * @param slot the save file to load
      */
     public void startSavedReplay(int slot) {
-        updateGameComponents(saves[slot], gameClock.getTimer());
+        updateGameComponents(saves[slot-1]);
+        gameClock.useReplayTimer();
         replay.load("save");
         transitionToReplayScreen();
     }
@@ -192,9 +193,8 @@ public class App extends JFrame {
      * Updates the game components to the correct state.
      *
      * @param game the new game to be updated
-     * @param timer the new timer to be updated
      */
-    private void updateGameComponents(Domain game, Timer timer) {
+    private void updateGameComponents(Domain game) {
         this.game = game;
         this.gui.getRenderPanel().setMaze(game);
         this.gui.getInventory().setMaze(game);
@@ -214,7 +214,6 @@ public class App extends JFrame {
             System.out.println("You lose!");
             this.gui.transitionToLostScreen();
         });
-        this.gameClock.setTimer(timer);
         this.inResume = true;
         this.recorder.startRecording();
     }

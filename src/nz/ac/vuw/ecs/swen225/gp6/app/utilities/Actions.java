@@ -41,8 +41,8 @@ public enum Actions {
 
     /** Represents the action pausing game. */
     PAUSE_GAME("Pause Game"){{ this.action = (app)->{
+        if (!app.isResuming()) return;
         app.getGameClock().stop();
-        app.getGameClock().setTime(System.nanoTime() - app.getGameClock().getTimeStart() + app.getGameClock().getTime());
         app.getGUI().showPausePanel();
         MusicPlayer.stopGameMusic();
         app.setResuming(false);
@@ -50,8 +50,8 @@ public enum Actions {
 
     /** Represents the action resuming game. */
     RESUME_GAME("Resume Game"){{ this.action = (app)->{
+        if (app.isResuming()) return;
         app.getGameClock().start();
-        app.getGameClock().setStartingTime(System.nanoTime());
         app.getGUI().showResumePanel();
         MusicPlayer.playGameMusic();
         app.setResuming(true);
@@ -74,7 +74,6 @@ public enum Actions {
     /** Represents the action reloading from saved game. */
     LOAD_GAME("Reload Game"){{ this.action = (app)->{
         app.getGameClock().stop();
-        app.getGameClock().setTime(System.nanoTime() - app.getGameClock().getTimeStart() + app.getGameClock().getTime());
         app.getGUI().showPausePanel();
         MusicPlayer.stopGameMusic();
         app.setResuming(false);
@@ -86,7 +85,6 @@ public enum Actions {
     /** Represents the action saving and quit game. */
     SAVE_GAME("Save And Quit Game"){{ this.action = (app)->{
         app.getGameClock().stop();
-        app.getGameClock().setTime(System.nanoTime() - app.getGameClock().getTimeStart() + app.getGameClock().getTime());
         app.getGUI().showPausePanel();
         MusicPlayer.stopGameMusic();
         app.setResuming(false);
