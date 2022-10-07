@@ -19,7 +19,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -66,8 +65,10 @@ public class GUI {
 
     private final MazeRenderer render;
     private final InventoryPanel pnInventory;
+    private final InventoryPanel[] saveInventoryPanels, loadInventoryPanels;
 
     /**
+     * Constructor for GUI.
      *
      * @param app The App object that is using this
      */
@@ -75,10 +76,21 @@ public class GUI {
         render = new MazeRenderer(app.getGame());
         pnInventory = new InventoryPanel(app.getGame(), true, render);
         logPanel.setRenderer(render);
+        saveInventoryPanels = new InventoryPanel[]{
+                InventoryPanel.of(render),
+                InventoryPanel.of(render),
+                InventoryPanel.of(render)
+        };
+        loadInventoryPanels = new InventoryPanel[]{
+                InventoryPanel.of(render),
+                InventoryPanel.of(render),
+                InventoryPanel.of(render)
+        };
     }
 
     /**
      * Configures the App GUI to be displayed.
+     *
      * @param app The App to attach the GUI to.
      */
     public void configureGUI(App app) {
@@ -225,26 +237,28 @@ public class GUI {
         JPanel pnBindingL = createClearPanel(BoxLayout.Y_AXIS);
         JPanel pnBindingR = createClearPanel(BoxLayout.Y_AXIS);
         JPanel pnTexturePack = createClearPanel(BoxLayout.X_AXIS);
-
-        JLabel lbCurrentTexture = createInfoLabel(()->render.getCurrentTexturePack().getName()+"" , render, TEXT, false);
+        JPanel pnViewDistance = createClearPanel(BoxLayout.X_AXIS);
 
         // setting layout
         pnBindingL.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
         pnBindingR.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
 
         // assemble this panel
+        addAll(pnViewDistance,
+                createActionLabel("<<<  ", render, TEXT, false,
+                        ()->runAndRepaint(app, render::decreaseViewDistance).run()),
+                createInfoLabel(()->render.getRenderSize()+"", render, TEXT, true),
+                createActionLabel("  >>>", render, TEXT, false,
+                        ()->runAndRepaint(app, render::increaseViewDistance).run()));
         addAll(pnTexturePack,
-                createActionLabel("<<<  ", render,SUBTITLE, false, ()->{
-                    render.usePrevTexturePack();
-                    app.repaint();
-                }),
-                lbCurrentTexture,
-                createActionLabel("  >>>", render,TEXT, false, ()->{
-                    render.useNextTexturePack();
-                    app.repaint();
-                }));
+                createActionLabel("<<<  ", render,TEXT, false,
+                        ()->runAndRepaint(app, render::usePrevTexturePack).run()),
+                createInfoLabel(()->render.getCurrentTexturePack().getName()+"" , render, TEXT, false),
+                createActionLabel("  >>>", render,TEXT, false,
+                        ()->runAndRepaint(app, render::useNextTexturePack).run()));
         addAll(pnBindingL,
                 createLabel("Play Sound", render, TEXT, false),
+                createLabel("View Distance", render, TEXT, false),
                 createLabel("Texture Pack", render, TEXT, false));
         addAll(pnBindingR,
                 createInfoActionLabel(()->app.getConfiguration().isMusicOn()? "On" : "Off", render, TEXT, false, ()->false,
@@ -254,6 +268,7 @@ public class GUI {
                             } else {
                                 MusicPlayer.stopMenuMusic();
                             }}),
+                pnViewDistance,
                 pnTexturePack);
         AtomicReference<Actions> keyToSet = new AtomicReference<>(Actions.NONE);
         app.getConfiguration().getUserKeyBindings().forEach((action, key) -> {
@@ -350,12 +365,9 @@ public class GUI {
         JPanel pnLoad = createRepeatableBackgroundPanel(TexturePack.Images.Wall, render, BoxLayout.Y_AXIS);
         JPanel pnInfo = createClearPanel(BoxLayout.Y_AXIS);
         JPanel pnStatus = createClearPanel(BoxLayout.Y_AXIS);
-        JPanel pnInventory = new InventoryPanel(app.getSave(slot), true, render);
         JPanel pnOptions = createClearPanel(BoxLayout.X_AXIS);
 
         // assemble this panel
-        setSize(pnInventory, 150,300, 150,300, 150,300);
-        addAll(pnInfo, pnStatus, pnInventory);
         addAll(pnLoad,
                 createInfoLabel(()->"Slot "+(slot), render, SUBTITLE, true),
                 pnInfo,
@@ -365,12 +377,14 @@ public class GUI {
                 createInfoLabel(()->"Time Left: " + app.getGameClock().getTimeInMinutes(), render, TEXT, true),
                 createInfoLabel(()->"Score: " + app.getSave(slot).getTreasuresLeft(), render, TEXT, true));
         if (isSave){    // Options for Saving
+            JPanel pnSaveInv = saveInventoryPanels[slot-1];
+            setSize(pnSaveInv, 150,300, 150,300, 150,300);
+            addAll(pnInfo, pnStatus, pnSaveInv);
             addAll(pnOptions,
                     Box.createHorizontalGlue(),
                     createActionLabel("Save here!", render, SUBTITLE, true, ()->{
                         try {
-                            // TODO: change to saving current game when domain implement getDomain()
-                            Persistency.saveDomain(app.getSave(slot), slot);
+                            Persistency.saveDomain(app.getGame(), slot);
                             app.refreshSaves();
                             app.repaint();
                         }catch (IOException e){
@@ -380,13 +394,16 @@ public class GUI {
                         }}),
                     Box.createHorizontalGlue());
         }else{  // Options for Loading
+            JPanel pnLoadInv = loadInventoryPanels[slot-1];
+            setSize(pnLoadInv, 150,300, 150,300, 150,300);
+            addAll(pnInfo, pnStatus, pnLoadInv);
             addAll(pnOptions,
                     Box.createHorizontalGlue(),
-                    createActionLabel("Resume!", render, SUBTITLE, true, ()->app.startSavedGame(slot)),
+                    createActionLabel("Resume!", render, TEXT, true, ()->app.startSavedGame(slot)),
                     Box.createHorizontalGlue(),
-                    createActionLabel("Replay", render, SUBTITLE, true, ()->app.startSavedReplay(slot)),
+                    createActionLabel("Replay", render, TEXT, true, ()->app.startSavedReplay(slot)),
                     Box.createHorizontalGlue(),
-                    createActionLabel("Delete", render, SUBTITLE, true, ()->{
+                    createActionLabel("Delete", render, TEXT, true, ()->{
                         try {
                             Persistency.deleteSave(slot);
                             app.refreshSaves();
@@ -520,6 +537,28 @@ public class GUI {
         return pnLost;
     }
 
+
+    //================================================================================================================//
+    //=========================================== Helper Methods =====================================================//
+    //================================================================================================================//
+
+    private Runnable runAndRepaint(App app, Runnable runnable){
+        return () -> {
+            runnable.run();
+            app.repaint();
+        };
+    }
+
+    /**
+     * Updates the current save inventory panel to the correct one
+     *
+     * @param index the index of the inventory to be displayed
+     * @param save the save to be displayed
+     */
+    public void updateSaveInventory(int index, Domain save){
+        saveInventoryPanels[index].setMaze(save);
+        loadInventoryPanels[index].setMaze(save);
+    }
 
     //================================================================================================================//
     //=========================================== Getter Methods =====================================================//

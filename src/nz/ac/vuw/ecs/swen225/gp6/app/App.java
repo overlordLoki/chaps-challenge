@@ -7,6 +7,7 @@ import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.GameClock;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.DomainEvent;
+import nz.ac.vuw.ecs.swen225.gp6.renderer.InventoryPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MusicPlayer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.logging.Interceptor;
@@ -63,7 +64,8 @@ public class App extends JFrame {
     private final Record recorder       = new Record();
     private final Replay replay         = new Replay(this);
     private boolean inResume            = false;
-    private final Domain[] saves        = new Domain[3];
+
+    private final Domain[] saves        = new Domain[3];;
 
     /**
      * Constructor for the App class. Initializes the GUI and the main loop.
@@ -233,6 +235,7 @@ public class App extends JFrame {
             int slot = index + 1;
             try {
                 saves[index] = Persistency.loadSave(slot);
+                gui.updateSaveInventory(index, saves[index]);
             } catch (DocumentException e) {
                 System.out.printf("Failed to load save %d.\n", slot);
                 e.printStackTrace();
