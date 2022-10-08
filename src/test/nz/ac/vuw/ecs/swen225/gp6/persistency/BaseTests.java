@@ -102,25 +102,7 @@ public class BaseTests {
     }
 
     @Test
-    public void deleteSave() {
-        try {
-            Persistency.deleteSave(1);
-        } catch (Exception e) {
-        }
-    }
-
-    @Test
-    public void testDomainSerialisation() {
-        Domain domain = Persistency.getInitialDomain();
-        Document doc = Persistency.serializeDomain(domain);
-        // assertEquals(doc.asXML(), "");
-        Domain domain2 = Persistency.deserializeDomain(doc);
-
-        assertEquals(domain.toString(), domain2.toString());
-    }
-
-    @Test
-    public void deleteSave() {
+    public void deleteSave() throws IOException {
         Persistency.deleteSave(1);
     }
 
