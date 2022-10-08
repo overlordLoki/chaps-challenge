@@ -1,7 +1,6 @@
 package nz.ac.vuw.ecs.swen225.gp6.renderer;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Floor;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Hero;
 
 /*
@@ -30,7 +29,12 @@ public class Viewport {
         return heroPos;
     }
     
-
+    /**
+     * get a viewport for the current game array
+     * @param gameArray
+     * @param renderSize
+     * @return
+     */
     public static Tile[][] getViewport(Tile[][] gameArray, int renderSize) {
         int[] heroPos = findHero(gameArray);
         int heroX = heroPos[0];
@@ -38,33 +42,17 @@ public class Viewport {
         int xStart = heroX - renderSize/2;
         int yStart = heroY - renderSize/2;
         Tile[][] viewport = new Tile[renderSize][renderSize];
-        Floor floor = getFloor(gameArray);
+        Tile periphery = TileType.makeTile(TileType.Periphery, new TileInfo(null));
         for(int i = 0; i < renderSize; i++) {
             for(int j = 0; j < renderSize; j++) {
                 if(xStart + i < 0 || xStart + i >= gameArray.length || yStart + j < 0 || yStart + j >= gameArray[0].length) {
-                    viewport[i][j] = floor;
+                    viewport[i][j] = periphery;
                 } else {
                     viewport[i][j] = gameArray[xStart + i][yStart + j];
                 }
             }
         }
         return viewport;
-    }
-
-    /**
-     * get a Floor Tile from the maze array
-     * @param gameArray
-     * @return Floor
-     */
-    public static Floor getFloor(Tile[][] gameArray) {
-        for(int i = 0; i < gameArray.length; i++) {
-            for(int j = 0; j < gameArray[i].length; j++) {
-                if(gameArray[i][j] instanceof Floor) {
-                    return (Floor) gameArray[i][j];
-                }
-            }
-        }
-        return null;
     }
 
 }

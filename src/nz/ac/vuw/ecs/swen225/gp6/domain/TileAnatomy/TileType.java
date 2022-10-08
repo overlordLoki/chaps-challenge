@@ -15,47 +15,55 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
  */
 public enum TileType{
     //ACTORS:
-    Hero,
+    Hero('A'),
 
-    Enemy,
+    Enemy('E'),
 
     //STATIC TERRAINS:
-    Empty,
+    Floor('_'), 
 
-    Floor, 
-
-    Wall,
+    Wall('/'),
 
     //INTERACTIVE TERRAINS:
-    Info,
+    Info('i'),
 
-    ExitDoor,
+    ExitDoor('X'),
 
-    ExitDoorOpen,
+    ExitDoorOpen('Z'),
 
-    BlueLock,
+    BlueLock('B'),
 
-    GreenLock,
+    GreenLock('G'),
 
-    OrangeLock,
+    OrangeLock('O'),
 
-    YellowLock,
+    YellowLock('Y'),
 
     //PICKABLES(ITEMS):
-    BlueKey,
+    BlueKey('b'),
 
-    GreenKey,
+    GreenKey('g'),
 
-    OrangeKey,
+    OrangeKey('o'),
 
-    YellowKey,
+    YellowKey('y'),
 
-    Coin, 
+    Coin('$'), 
 
     //SPECIAL:
-    Other, 
+    Empty(' '), //used ONLY in inventory
 
-    Null;
+    Periphery('*'), //used to draw the peripheries of the maze(out of bound areas)
+
+    Other('?'), //used for tiles that are implemented at run time and such
+
+    Null(Character.MIN_VALUE); //used to represent null tiles
+
+    //FIELDS:
+    private char symbol;
+
+    //CONSTRUCTOR:
+    TileType(char symbol){this.symbol = symbol;}
 
     //METHODS:
     /*
@@ -72,8 +80,10 @@ public enum TileType{
         }
     }
     
-    //FIELDS://TODO: consider using this
-    private char symbol;
+    /*
+     * gets the symbol of the tile type
+     */
+    public char symbol(){return symbol;}
 }
 
 

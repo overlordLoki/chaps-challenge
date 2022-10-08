@@ -4,7 +4,7 @@ import nz.ac.vuw.ecs.swen225.gp6.app.App;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.Pair;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.RecordTimeline;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.ReplayTimeline;
-import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.Action;
+import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
 
 /**
  * Class for replaying a recorded game.
@@ -15,8 +15,8 @@ import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.Action;
  * @author: Jayden Hooper
  */
 public class Replay implements Runnable {
-    private ReplayTimeline<Action> timeline;
-    private Pair<Long, Action> queuedAction;
+    private ReplayTimeline<Actions> timeline;
+    private Pair<Long, Actions> queuedAction;
     private App app;
     private long time;
     private boolean step = false;
@@ -35,7 +35,7 @@ public class Replay implements Runnable {
 
     @Override
     public void run() {
-        time = app.getGameClock().getTime();
+        time = app.getGameClock().getTimePlayed();
         if (!isRunning) {return;}
         autoPlayActions();
     }
@@ -50,7 +50,7 @@ public class Replay implements Runnable {
             System.out.println("Game cannot be null");
         }
         // this.timeline = Persistency.load(game);
-        this.timeline = new ReplayTimeline<Action>(new RecordTimeline<Action>());
+        this.timeline = new ReplayTimeline<Actions>(new RecordTimeline<Actions>());
         return this;
     }
 
@@ -83,7 +83,7 @@ public class Replay implements Runnable {
      * @return this replay object to chain methods
      */
     public Replay pauseReplay(){
-        this.app.getActions().actionPause();
+        Actions.PAUSE_GAME.run(app);
         isRunning = false;
         return this;
     }
@@ -95,7 +95,7 @@ public class Replay implements Runnable {
      */
     public Replay setSpeed(int speed) {
         int delay = 34 / speed;    // default delay is 34ms
-        this.app.getGameClock().setReplayDelay(delay);  
+        this.app.getGameClock().setReplaySpeed(delay);
         return this;
     }
 
@@ -152,20 +152,9 @@ public class Replay implements Runnable {
      * Throws IllegalArgumentException if the action is null or not recognized.
      * @param action Action to be executed
      */
-    private void executeAction(Action action) throws IllegalArgumentException {
+    private void executeAction(Actions action) throws IllegalArgumentException {
         if(action == null) {throw new IllegalArgumentException("Null action encountered");}
-        if(action.equals(Action.MOVE_UP)){
-            this.app.getActions().actionUp();
-        }
-        if(action.equals(Action.MOVE_DOWN)){
-            this.app.getActions().actionDown();
-        }
-        if(action.equals(Action.MOVE_LEFT)){
-            this.app.getActions().actionLeft();
-        }
-        if(action.equals(Action.MOVE_RIGHT)){
-            this.app.getActions().actionRight();
-        }
+        action.run(app);
         throw new IllegalArgumentException("No such action: " + action);
     }
 }

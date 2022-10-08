@@ -8,8 +8,8 @@ public class Info extends AbstractTile{//future idea: not disappear after once u
     public Info (TileInfo info){super(info);}
 
     @Override public TileType type(){ return TileType.Info;}
-    @Override public char symbol(){return 'i';}
+
+    @Override public Tile replaceWith(){return this;} //the info tile is permanent
     
-    @Override public void setOn(Tile t, Domain d){d.getCurrentMaze().setTileAt(info.loc(), t);} 
     @Override public void ping(Domain d){}//TODO: display info
 }

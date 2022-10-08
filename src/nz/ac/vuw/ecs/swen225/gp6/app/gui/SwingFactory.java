@@ -1,7 +1,7 @@
 package nz.ac.vuw.ecs.swen225.gp6.app.gui;
 
 import nz.ac.vuw.ecs.swen225.gp6.app.App;
-import nz.ac.vuw.ecs.swen225.gp6.domain.DomainAccess.DomainController;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.InventoryPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
@@ -17,6 +17,8 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
+import java.util.function.BooleanSupplier;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 class SwingFactory {
@@ -123,50 +125,6 @@ class SwingFactory {
         };
     }
 
-    /**
-     * Creates a load game panel for a single load
-     *
-     * @param index  the index of the load
-     * @param app    the app to be used to get the render
-     * @param render the render to be used to get the size of the frame
-     * @param save   the save to be loaded
-     * @return a JPanel with the specified index load game
-     */
-    public static JPanel createLoadGamePanel(int index, App app, MazeRenderer render, DomainController save) {
-        JPanel pnLoad = createRepeatableBackgroundPanel(TexturePack.Images.Wall, render, BoxLayout.Y_AXIS);
-        JPanel pnInfo = createClearPanel(BoxLayout.Y_AXIS);
-        JPanel pnStatus = createClearPanel(BoxLayout.Y_AXIS);
-        JPanel pnInventory = new InventoryPanel(save, true);
-        JPanel pnOptions = createClearPanel(BoxLayout.X_AXIS);
-
-        JLabel lbTitle = createLabel("Load "+index, render, SUBTITLE, true);
-        JLabel lbLevel = createLabel("Level: " + save.getCurrentLevel(), render, TEXT, true);
-        JLabel lbTime = createLabel("Time Left: " + app.getGameClock().getTimeInMinutes(), render, TEXT, true);
-        JLabel lbScore = createLabel("Score: " + save.getTreasuresLeft(), render, TEXT, true);
-        JLabel lbLoad = createActionLabel("Load!", render, SUBTITLE, true, ()->app.startSavedGame(save));
-        JLabel lbReplay = createActionLabel("Replay", render, SUBTITLE, true, ()->app.startSavedReplay(save));
-        JLabel lbDelete = createActionLabel("Delete", render, SUBTITLE, true, ()->{
-            try {
-                Persistency.saveDomain(Persistency.getInitialDomain(), index);
-                app.repaint();
-            }catch (Exception e){
-                System.out.println("Failed to delete save file.");
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "There is an error in saving the game slot: " + index);
-            }
-        });
-
-        // assemble this panel
-//        setSize(pnLoad, 800, 200, 800, 200, 800, 200);
-        setSize(pnInventory, 150,300, 150,300, 150,300);
-//        setSize(pnStatus, 675, 30, 675, 30, 675, 30);
-        // assemble this panel
-        addAll(pnStatus, lbLevel, lbTime, lbScore);
-        addAll(pnInfo, pnStatus, pnInventory);
-        addAll(pnOptions, Box.createHorizontalGlue(), lbLoad, Box.createHorizontalGlue(),lbReplay,Box.createHorizontalGlue(),lbDelete, Box.createHorizontalGlue());
-        addAll(pnLoad, lbTitle, pnInfo, pnOptions);
-        return pnLoad;
-    }
 
     /**
      * This method is used to create a JLabel with texture-dynamic fonts.
@@ -245,6 +203,50 @@ class SwingFactory {
             });}
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
+                TexturePack tp = render.getCurrentTexturePack();
+                setFont(switch (textType) {
+                    case TITLE    -> tp.getTitleFont();
+                    case SUBTITLE -> tp.getSubtitleFont();
+                    default       -> tp.getTextFont();
+                });
+            }
+        };
+    }
+
+    /**
+     * This method is used to create a JLabel with texture-dynamic fonts that automatically updates the text.
+     *
+     * @param display  method to invoke the information to be displayed
+     * @param render   the renderer object
+     * @param textType size of the text, should use the constants {@code PanelCreator.TITLE},
+     *                 {@code PanelCreator.SUBTITLE}, or {@code PanelCreator.TEXT} to specify
+     * @param Centered true if this label should be center aligned
+     * @return the JLabel
+     */
+    public static JLabel createInfoActionLabel(Supplier<String> display, MazeRenderer render, int textType, boolean Centered, BooleanSupplier mouseActionGuard, Runnable runnable) {
+        return new JLabel(display.get()) {{
+            if (Centered) setAlignmentX(CENTER_ALIGNMENT);
+            setForeground(render.getCurrentTexturePack().getColorDefault());
+            setFocusable(true);
+            addMouseListener(new MouseAdapter() {
+                public void mouseEntered(MouseEvent e){
+                    if (mouseActionGuard.getAsBoolean()) return;
+                    setForeground(render.getCurrentTexturePack().getColorHover());
+                }
+                public void mouseExited(MouseEvent e) {
+                    if (mouseActionGuard.getAsBoolean()) return;
+                    setForeground(render.getCurrentTexturePack().getColorDefault());
+                }
+                public void mousePressed(MouseEvent e) {
+                    if (mouseActionGuard.getAsBoolean()) return;
+                    setForeground(render.getCurrentTexturePack().getColorSelected());
+                    grabFocus();
+                    runnable.run();
+                }
+            });}
+            public void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                setText(display.get());
                 TexturePack tp = render.getCurrentTexturePack();
                 setFont(switch (textType) {
                     case TITLE    -> tp.getTitleFont();

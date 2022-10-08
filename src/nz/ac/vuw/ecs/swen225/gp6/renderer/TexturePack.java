@@ -6,46 +6,18 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
-
-public enum TexturePack{
-    
-    /**
-     * The Original texture pack.
-     */
-    Original(new Font("Arial", Font.BOLD, 80),
-            new Font("Arial", Font.BOLD, 40),
-            new Font("Arial", Font.BOLD, 30),
-            Color.white, Color.ORANGE, Color.RED),
-    /**
-     * The Cats texture pack.
-     */
-    Cats(new Font("Agency FB", Font.BOLD, 80),
-            new Font("Agency FB", Font.BOLD, 40),
-            new Font("Agency FB", Font.BOLD, 30),
-            Color.BLACK, Color.ORANGE, Color.RED),
-    /**
-     * The Dogs texture pack.
-     */
-    Dogs(new Font("Agency FB", Font.BOLD, 80),
-            new Font("Agency FB", Font.BOLD, 40),
-            new Font("Agency FB", Font.BOLD, 30),
-            Color.BLACK, Color.ORANGE, Color.RED),
-    /**
-     * The Emoji texture pack.
-     */
-    Emoji(new Font("Comic Sans MS", Font.BOLD, 80),
-            new Font("Comic Sans MS", Font.BOLD, 40),
-            new Font("Comic Sans MS", Font.BOLD, 30),
-            Color.BLACK, Color.ORANGE, Color.RED);
-
+public class TexturePack {
+    private final String texturePackName;
     private final Font titleFont;
     private final Font subtitleFont;
     private final Font textFont;
-    private final Color colorDefault;
+    private final Color colorDefault = Color.BLACK;
     private final Color colorHover;
     private final Color colorSelected;
     private  Color dynamicColor;
 
+
+    public String getName()         {return texturePackName;}
     public Font getTitleFont()      {return titleFont;}
     public Font getSubtitleFont()   {return subtitleFont;}
     public Font getTextFont()       {return textFont;}
@@ -64,14 +36,23 @@ public enum TexturePack{
      * @param colorHover
      * @param colorSelected
      */
-    TexturePack(Font title,Font subtitle, Font text, Color colorDefault, Color colorHover, Color colorSelected){
+    TexturePack(String name,Font title,Font subtitle, Font text, Color colorHover, Color colorSelected){
+        this.texturePackName = name;
         this.titleFont = title;
         this.subtitleFont = subtitle;
         this.textFont = text;
-        this.colorDefault = colorDefault;
         this.colorHover = colorHover;
         this.colorSelected = colorSelected;
         this.dynamicColor = colorDefault;
+    }
+
+    //get image enum
+    public BufferedImage getImage(Tile tile) {
+        return Images.getImage(tile);
+    }
+    //get image from string
+    public BufferedImage getImage(String imgName) {
+        return Images.getImage(imgName);
     }
 
     public enum Images{
@@ -80,7 +61,7 @@ public enum TexturePack{
          * The background image for the game.
          */
         Background("background"),
-
+    
         /**
          * The image for the repeatable pattern background.
          */
@@ -89,7 +70,7 @@ public enum TexturePack{
          * The image for the repeatable pattern background.
          */
         Pattern_2("pattern2"),
-
+    
         /**
          * The image for the floor.
          */
@@ -151,23 +132,6 @@ public enum TexturePack{
          * The image for the exit
          */
         Exit("exitDoor"),
-        //pause , play , speedDown , speedUp
-        /**
-         * The image for the pause button
-         */
-        Pause("pause"),
-        /**
-         * The image for the play button
-         */
-        Play("play"),
-        /**
-         * The image for the speedDown button
-         */
-        SpeedDown("speedDown"),
-        /**
-         * The image for the speedUp button
-         */
-        SpeedUp("speedUp"),
         /**
          * The image for the win screen
          */
@@ -175,7 +139,12 @@ public enum TexturePack{
         /**
          * The image for the lose screen
          */
-        LoseScreen("loseScreen");
+        LoseScreen("loseScreen"),
+    
+        HeroBack("heroBack"),
+        HeroFront("heroFront"),
+        HeroLeft("heroSide"),
+        HeroRight("hero");
         
         //name of the image
         private String name;
@@ -212,7 +181,6 @@ public enum TexturePack{
             return switch(tile.type()){
                 case Floor -> getImage(Empty_tile);
                 case Empty -> Images.Empty_tile.getImg();
-                case Hero -> Images.Hero.getImg();
                 case Enemy -> Images.Enemy.getImg();
                 case Wall -> Images.Wall.getImg();
                 case BlueKey -> Images.BlueKey.getImg();
@@ -227,10 +195,26 @@ public enum TexturePack{
                 case ExitDoorOpen -> Images.Exit.getImg();
                 case Info -> Images.Empty_tile.getImg();
                 case Coin -> Images.Coin.getImg();
+                case Periphery -> Images.Pattern.getImg();
                 default -> Images.loadCustom(tile.info().getImageName());
             };
         }
 
+        /**
+         * get the image for the String provided.
+         * @param String
+         * @return BufferedImage
+         */
+        public static BufferedImage getImage(String imgName){
+            for (Images img : Images.values()) {
+                if (img.getName().equals(imgName)) {
+                    return img.getImg();
+                }
+            }
+            System.out.println("Image not found: " + imgName);
+            return null;
+        }
+    
         public static BufferedImage loadCustom(String path){
             try {
                 return ImageIO.read(new File("res/textures/Custom_Textures/"+path+".png"));
@@ -250,7 +234,7 @@ public enum TexturePack{
             this.name = imageName;
             //System.out.print("Loading " + imageName + "...    -> ");
             try {
-                File file = new File("res/textures/" + MazeRenderer.currentTP + "/" + imageName + ".png");
+                File file = new File("res/textures/" + MazeRenderer.getTexturePack().getName() + "/" + imageName + ".png");
                 BufferedImage img = ImageIO.read(file);
                 //System.out.println("Loaded!");
                 return img;
@@ -268,4 +252,5 @@ public enum TexturePack{
         }
         
     }
+    
 }

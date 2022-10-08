@@ -11,17 +11,19 @@
 
 ------
 ## Integration breakdown from package: Domain
-| Class Name          | Destination | line Number |
-|---------------------|-------------|-------------|
-|DomainController.java| App         | 18          |
-|Domain.java          | Persistency | 27          |
+| Class Name          | Destination | line Number                                                |
+|---------------------|-------------|------------------------------------------------------------|
+|DomainController.java| App         | [18](/src/nz/ac/vuw/ecs/swen225/gp6/Domain/DomainAccess/DomainController.java#L18)|
+|Domain.java          | Persistency | [27](/src/nz/ac/vuw/ecs/swen225/gp6/Domain/Domain.java#L27)|
 
 
 ------
 ## Integration breakdown from package: Persistency
-| Class Name | Destination | line Number |
-|------------|-------------|-------------|
-|            |             |             |
+| Class Name       | Destination | line Number |
+|------------------|-------------|-------------|
+| Persistency.java | Domain      | 396         |
+| Persistency.java | Recorder    | 335         |
+| Persistency.java | App         | 374         |
 
 
 ------
@@ -33,13 +35,17 @@
 
 ------
 ## Integration breakdown from package: Renderer
-| Class Name | Destination | line Number |
-|------------|-------------|-------------|
-|            |             |             |
-
+| Class Name           | SourceDestination | line Number                                                           |
+|----------------------|-------------------|-----------------------------------------------------------------------|
+| MazeRenderer.java    | DomainController  | [47](/src/nz/ac/vuw/ecs/swen225/gp6/renderer/MazeRenderer.java#L47)   |
+| InventtoryPanel.java | DomainController  | [34](/src/nz/ac/vuw/ecs/swen225/gp6/renderer/InventoryPanel.java#L34) |
+| TexturePack.java     | DomainController  | [212](/src/nz/ac/vuw/ecs/swen225/gp6/renderer/TexturePack.java#L212)  |
+| LogPanel.java        | Persistency       | [40](/src/nz/ac/vuw/ecs/swen225/gp6/renderer/LogPanel.java#L40)       |
 
 ------
 ## Integration breakdown from package: Fuzz
-| Class Name | Destination | line Number |
-|------------|-------------|-------------|
-|            |             |             |
+| Class Name | Destination | line Number                                                  |
+|------------|-------------|--------------------------------------------------------------|
+| Fuzz.java  | App         | [39](/src/test/nz/ac/vuw/ecs/swen225/gp6/fuzz/Fuzz.java#L39) |
+| Fuzz.java  | Actions     | [40](/src/test/nz/ac/vuw/ecs/swen225/gp6/fuzz/Fuzz.java#L40) |
+| Fuzz.java  | App         | [46](/src/test/nz/ac/vuw/ecs/swen225/gp6/fuzz/Fuzz.java#L46) |

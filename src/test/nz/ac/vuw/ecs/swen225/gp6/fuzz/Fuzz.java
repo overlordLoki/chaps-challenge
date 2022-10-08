@@ -5,9 +5,13 @@ import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.IntStream;
+
 import static java.awt.event.KeyEvent.*;
+import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.*;
 
 /**
  * This class is used to fuzz test the game.
@@ -27,18 +31,29 @@ public class Fuzz {
      */
     static App app;
     static Robot robot;
-    static List<Runnable> actionsList = List.of();
-
+    static List<Actions> actionsList = List.of();
+    /**
+     * Initialize the test robot
+     */
     static {
         try {robot = new Robot();}
         catch (AWTException e) {throw new RuntimeException(e);}
     }
 
+    /**
+     * This method is used to generate a random action
+     * @Input: int number of actions for test
+     * @return a random action in App we initialized
+     */
     public static void testLevel(int numOfInputs){
         SwingUtilities.invokeLater(()->{
             app = new App();
-            Actions actions = app.getActions();
-            actionsList = List.of(actions::actionUp, actions::actionDown, actions::actionLeft, actions::actionRight);
+            actionsList = List.of(
+                    MOVE_UP,
+                    MOVE_DOWN,
+                    MOVE_LEFT,
+                    MOVE_RIGHT
+            );
         });
         // Start robot automating sequence
         JOptionPane.showMessageDialog(null,"Start Fuzzing");
@@ -46,37 +61,51 @@ public class Fuzz {
         app.transitionToGameScreen();
         for (int i =0; i < numOfInputs; i++){
             int randomIndex = r.nextInt(actionsList.size());
-            actionsList.get(randomIndex).run();
+            actionsList.get(randomIndex).run(app);
             System.out.print("Action: " + i + " >>> " + randomIndex);
             robot.delay(100);
         }
         System.out.println("Testing Level: "+app.getGame().getCurrentLevel() + " Completed");
     }
 
+    /**
+     * This method is used to keep testing in one level
+     * @return loop of random action in App we initialized until the first level is done
+     */
     public static void unlimittest(){
         SwingUtilities.invokeLater(()->{
             app = new App();
-            Actions actions = app.getActions();
             app.startNewGame();
             app.transitionToGameScreen();
-            actionsList = List.of(actions::actionUp, actions::actionDown, actions::actionLeft, actions::actionRight);
+            actionsList = List.of(
+                    MOVE_UP,
+                    MOVE_DOWN,
+                    MOVE_LEFT,
+                    MOVE_RIGHT
+            );
         });
         int move = 0;
         boolean finish = true;
         robot.delay(1000); // wait 1 second before start testing
         while (finish){
             int randomIndex = r.nextInt(actionsList.size());
-            actionsList.get(randomIndex).run();
+            actionsList.get(randomIndex).run(app);
             System.out.print("Action: " + move + " >>> " + randomIndex);
             robot.delay(100);
             move++;
             if(app.getGame().getCurrentLevel() ==2){
                 finish = false;
+                JOptionPane.showMessageDialog(null, "First level test Complete");
+                System.exit(0);
             }
         }
 
     }
 
+    /**
+     * This method is used to test specific key combination
+     * @return robot will press specific key combination
+     */
     public static void keyTest() throws AWTException {
         App app = new App();
         app.startNewGame();
@@ -112,6 +141,10 @@ public class Fuzz {
         robot.keyRelease(KeyEvent.VK_2);
     }
 
+    /**
+     * This method is used to test specific mouse combination
+     * @return robot will do the specific mouse event and return messages
+     */
     public static void mouseTest() throws AWTException {
 //        App app = new App();
 //        app.transitionToGameScreen();
@@ -125,17 +158,116 @@ public class Fuzz {
 //        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
     }
 
+    /**
+     * This method is just hardcode to test level 1 can be passed
+     * @return print out the key event
+     */
+    static List<Actions> test1HC = new ArrayList<>();
+    static Actions actions;
+    public static void hardCode(){
+        SwingUtilities.invokeLater(()->{
+            app = new App();
+            app.startNewGame();
+            app.transitionToGameScreen();
+            actionsList = List.of(
+                    MOVE_UP,
+                    MOVE_DOWN,
+                    MOVE_LEFT,
+                    MOVE_RIGHT
+            );
+        });
+        JOptionPane.showMessageDialog(null,"Start Fuzzing");
+
+        test1HC.add(MOVE_UP);
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_LEFT));
+        IntStream.range(0,3).forEach(i->test1HC.add(MOVE_DOWN));
+
+        IntStream.range(0,7).forEach(i->test1HC.add(MOVE_RIGHT));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_UP));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_LEFT));
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_DOWN));
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_LEFT));
+
+        IntStream.range(0,4).forEach(i->test1HC.add(MOVE_UP));
+        IntStream.range(0,4).forEach(i->test1HC.add(MOVE_RIGHT));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_DOWN));
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_LEFT));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_UP));
+        IntStream.range(0,10).forEach(i->test1HC.add(MOVE_LEFT));
+
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_DOWN));
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_RIGHT));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_UP));
+
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_RIGHT));
+        IntStream.range(0,4).forEach(i->test1HC.add(MOVE_DOWN));
+        IntStream.range(0,3).forEach(i->test1HC.add(MOVE_LEFT));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_UP));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_DOWN));
+
+        IntStream.range(0,4).forEach(i->test1HC.add(MOVE_RIGHT));
+        IntStream.range(0,4).forEach(i->test1HC.add(MOVE_DOWN));
+        IntStream.range(0,4).forEach(i->test1HC.add(MOVE_UP));
+
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_RIGHT));
+        IntStream.range(0,4).forEach(i->test1HC.add(MOVE_DOWN));
+        IntStream.range(0,8).forEach(i->test1HC.add(MOVE_UP));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_RIGHT));
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_UP));
+
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_RIGHT));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_LEFT));
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_DOWN));
+        IntStream.range(0,4).forEach(i->test1HC.add(MOVE_LEFT));
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_UP));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_LEFT));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_RIGHT));
+
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_DOWN));
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_RIGHT));
+
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_UP));
+        test1HC.forEach(a->{
+            a.run(app);
+            robot.delay(100);
+        });
+
+    }
+
+    /**
+     * This method is used to print out the key event message what App get and action done
+     * @return message of key event
+     */
     public static void key_Event_Print(int e){
         System.out.println("Action key pressed: " + KeyEvent.getKeyText(e));
     }
 
+    /**
+     * Main method to run different test
+     */
     public static void main(String[] args) throws AWTException {
-//        keyTest();
-        testLevel( 100);
-//        testLevel( 100);
-//        unlimittest();
+
+        String[] buttons = { "hardCode", "testLevel(1000)", "testLevel(100)", "unlimittest" ,"Cancel" };
+        int rc = JOptionPane.showOptionDialog(null, "Choose a test", "Test",
+                JOptionPane.WARNING_MESSAGE, 0, null, buttons, buttons[4]);
+        if (rc == 0) {
+//            hardCode();
+        } else if (rc == 1) {
+            testLevel(1000);
+        } else if (rc == 2) {
+            testLevel(100);
+        } else if (rc == 3) {
+            unlimittest();
+        } else {
+            System.exit(0);
+        }
+
         System.out.println("All Tests Complete");
         JOptionPane.showMessageDialog(null, "All Tests Complete");
+        String[] buttons2 = { "Exit", "Show the log" };
+        int rc2 = JOptionPane.showOptionDialog(null, "Choose a test", "Test",
+                JOptionPane.WARNING_MESSAGE, 0, null, buttons2, buttons2[0]);
+
         System.exit(0);
     }
 

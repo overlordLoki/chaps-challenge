@@ -13,21 +13,28 @@ import javax.swing.Timer;
  */
 public class GameClock {
     private App app;
-    private boolean inReplayMode = false;
     private Runnable replayObserver = ()->{}; // observer for the replay mode
-    private long time = 0;       // used to store accumulated time from the previous pause
+    private boolean inReplayMode = false;
     private long timeStart = 0;  // starting time of current pause
-    private long playedTime = 0; // total time played in a level
-    private final Timer gameTimer = new Timer(34, unused -> {
+    private long timePlayed = 0; // total time played in a level
+    private float replaySpeed = 1; // speed of replay
+    private final int timeIntervalGame = 34; // time interval for each tick
+    private final int timeIntervalReplay = 34; // time interval for each tick
+
+    private final Timer gameTimer = new Timer(timeIntervalGame, unused -> {
         assert SwingUtilities.isEventDispatchThread();
-        app.getGame().pingAll();
-        playedTime = System.nanoTime() - timeStart + time;
+        app.getGame().pingDomain();
+        long currentTime = System.nanoTime();
+        timePlayed += currentTime - timeStart;
+        timeStart = currentTime;
         app.repaint();
     });
-    private final Timer replayTimer = new Timer(34, unused -> {
+    private final Timer replayTimer = new Timer(timeIntervalReplay, unused -> {
         assert SwingUtilities.isEventDispatchThread();
-        app.getGame().pingAll();
-        playedTime = System.nanoTime() - timeStart + time;
+        app.getGame().pingDomain();
+        long currentTime = System.nanoTime();
+        timePlayed +=( currentTime - timeStart) * replaySpeed;
+        timeStart = currentTime;
         replayObserver.run();
         app.repaint();
     });
@@ -49,7 +56,10 @@ public class GameClock {
     /**
      * Starts the timer.
      */
-    public void start() {timer.start();}
+    public void start() {
+        timeStart = System.nanoTime();
+        timer.start();
+    }
 
     /**
      * Stops the timer.
@@ -63,13 +73,6 @@ public class GameClock {
         timer.stop();
         resetTime();
     }
-
-    /**
-     * Sets the replay mode
-     *
-     * @param useReplay true if the game is in replay mode, false otherwise
-     */
-    public void setReplayMode(boolean useReplay) {inReplayMode = useReplay;}
 
 
     //================================================================================================================//
@@ -86,38 +89,26 @@ public class GameClock {
     /**
      * Sets the delay between pings for the replay timer
      *
-     * @param delay the delay in milliseconds
+     * @param speed the delay in milliseconds
      */
-    public void setReplayDelay(int delay) {this.replayTimer.setDelay(delay);}
+    public void setReplaySpeed(float speed) {
+        this.replayTimer.setDelay((int)(timeIntervalReplay * speed));
+        this.replaySpeed = speed;
+    }
 
-    /**
-     * Sets the timer and its action going to be used for the game loop
-     *
-     * @param timer the timer to use for the main loop
-     */
-    public void setTimer(Timer timer) {this.timer = timer;}
-
-    /**
-     * Sets the starting time for the game loop.
-     *
-     * @param nanoTime the starting time for the game loop
-     */
-    public void setStartingTime(long nanoTime) {this.timeStart = nanoTime;}
-
-    /**
-     * Sets the time left for the current level.
-     *
-     * @param time the time left for the current level
-     */
-    public void setTime(long time) {this.time = time;}
+//    /**
+//     * Sets the time left for the current level.
+//     *
+//     * @param time the time left for the current level
+//     */
+//    public void setTimePlayed(long time) {this.timePlayed = time;}
 
     /**
      * Resets the time left for the current level.
      */
     public void resetTime(){
-        time = 0;
         timeStart = System.nanoTime();
-        playedTime = 0;
+        timePlayed = 0;
     }
 
 
@@ -126,25 +117,28 @@ public class GameClock {
     //================================================================================================================//
 
     /**
-     * Gets the timer for the game loop.
-     *
-     * @return the timer for the game loop
+     * Sets the timer used for the game loop.
      */
-    public Timer getTimer() {return timer;}
+    public void useGameTimer() {this.timer = gameTimer;}
 
     /**
-     * Gets the time when the timer starts
-     *
-     * @return the starting time of the timer
+     * Sets the timer used for the replay loop.
      */
-    public long getTimeStart() {return timeStart;}
+    public void useReplayTimer() {this.timer = replayTimer;}
 
     /**
      * Gets the time elapsed since the start of the game.
      *
      * @return the time elapsed since the start of the game
      */
-    public long getTime() {return time;}
+    public long getTimePlayed() {return timePlayed;}
+
+    /**
+     * Gets the time left for the current level
+     *
+     * @return the time left for the current level in nanoseconds
+     */
+    public long getTimeLeft() {return 60 * 1000000000L - timePlayed;}
 
     /**
      * Gets the time elapsed since the start of the game in Minutes and Seconds.
@@ -152,10 +146,11 @@ public class GameClock {
      * @return the time elapsed since the start of the game
      */
     public String getTimeInMinutes() {
-        long time = this.playedTime;
+        long time = getTimeLeft();
+        long millis = time / 1000000 % 1000 / 10;
         long seconds = time / 1000000000;
         long minutes = seconds / 60;
-        seconds = seconds % 60;
-        return String.format("%02d:%02d", minutes, seconds);
+        seconds %= 60;
+        return String.format("%02d:%02d:%02d", minutes, seconds, millis);
     }
 }
