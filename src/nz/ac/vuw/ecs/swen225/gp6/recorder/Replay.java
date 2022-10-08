@@ -35,7 +35,7 @@ public class Replay implements Runnable {
 
     @Override
     public void run() {
-        time = app.getGameClock().getTime();
+        time = app.getGameClock().getTimePlayed();
         if (!isRunning) {return;}
         autoPlayActions();
     }
@@ -95,7 +95,7 @@ public class Replay implements Runnable {
      */
     public Replay setSpeed(int speed) {
         int delay = 34 / speed;    // default delay is 34ms
-        this.app.getGameClock().setReplayDelay(delay);  
+        this.app.getGameClock().setReplaySpeed(delay);
         return this;
     }
 

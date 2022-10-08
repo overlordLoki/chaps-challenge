@@ -30,12 +30,17 @@ public class InventoryPanel extends JPanel{
                     super.paintComponent(g);
                     g.drawImage(mazeRenderer.getImage("empty_tile"), 0, 0, getWidth(),getHeight(),null);
                     int size = Math.min(getWidth(), getHeight());
+                    if (maze == null) return;
                     List<Tile> inventory = maze.getInventory();
                     if (slotNum >= inventory.size()) return;
                    g.drawImage(mazeRenderer.getImage(inventory.get(slotNum)), (getWidth()-size)/2, (getHeight()-size)/2, size,size,null);
                 }
             });
         }
+    }
+
+    public static InventoryPanel of(MazeRenderer render) {
+        return new InventoryPanel(null, true, render);
     }
     /**
      * set the maze to be rendered

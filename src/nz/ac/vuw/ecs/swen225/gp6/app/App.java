@@ -1,7 +1,6 @@
 package nz.ac.vuw.ecs.swen225.gp6.app;
 
 import nz.ac.vuw.ecs.swen225.gp6.app.gui.GUI;
-import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Configuration;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.GameClock;
@@ -63,7 +62,8 @@ public class App extends JFrame {
     private final Record recorder       = new Record();
     private final Replay replay         = new Replay(this);
     private boolean inResume            = false;
-    private final Domain[] saves        = new Domain[3];
+
+    private final Domain[] saves        = new Domain[3];;
 
     /**
      * Constructor for the App class. Initializes the GUI and the main loop.
@@ -95,7 +95,7 @@ public class App extends JFrame {
         );
         setMinimumSize(new Dimension(WIDTH, HEIGHT));
         setContentPane(gui.getOuterPanel());
-        gui.getRender().addKeyListener(controller);
+        gui.getRenderPanel().addKeyListener(controller);
         transitionToMenuScreen();
         pack();
     }
@@ -122,7 +122,6 @@ public class App extends JFrame {
      */
     public void transitionToGameScreen(){
         System.out.print("Transitioning to game screen... ");
-        gameClock.setReplayMode(false);
         gameClock.start();
         gui.transitionToGameScreen();
         gui.showResumePanel();
@@ -135,7 +134,6 @@ public class App extends JFrame {
      */
     public void transitionToReplayScreen(){
         System.out.print("Transitioning to replay screen... ");
-        gameClock.setReplayMode(true);
         gameClock.start();
         gui.transitionToReplayScreen();
         gui.showResumePanel();
@@ -162,7 +160,8 @@ public class App extends JFrame {
      * Sets the game to a new game and enters game play mode
      */
     public void startNewGame() {
-        updateGameComponents(Persistency.getInitialDomain(), gameClock.getTimer());
+        updateGameComponents(Persistency.getInitialDomain());
+        gameClock.useGameTimer();
         transitionToGameScreen();
     }
 
@@ -172,7 +171,8 @@ public class App extends JFrame {
      * @param slot the save file to load
      */
     public void startSavedGame(int slot) {
-        updateGameComponents(saves[slot-1], gameClock.getTimer());
+        updateGameComponents(saves[slot-1]);
+        gameClock.useGameTimer();
         replay.load("save");
         transitionToGameScreen();
     }
@@ -183,7 +183,8 @@ public class App extends JFrame {
      * @param slot the save file to load
      */
     public void startSavedReplay(int slot) {
-        updateGameComponents(saves[slot], gameClock.getTimer());
+        updateGameComponents(saves[slot-1]);
+        gameClock.useReplayTimer();
         replay.load("save");
         transitionToReplayScreen();
     }
@@ -192,11 +193,10 @@ public class App extends JFrame {
      * Updates the game components to the correct state.
      *
      * @param game the new game to be updated
-     * @param timer the new timer to be updated
      */
-    private void updateGameComponents(Domain game, Timer timer) {
+    private void updateGameComponents(Domain game) {
         this.game = game;
-        this.gui.getRender().setMaze(game);
+        this.gui.getRenderPanel().setMaze(game);
         this.gui.getInventory().setMaze(game);
         this.game.addEventListener(DomainEvent.onWin, ()->{
             inResume = false;
@@ -214,7 +214,6 @@ public class App extends JFrame {
             System.out.println("You lose!");
             this.gui.transitionToLostScreen();
         });
-        this.gameClock.setTimer(timer);
         this.inResume = true;
         this.recorder.startRecording();
     }
@@ -233,6 +232,7 @@ public class App extends JFrame {
             int slot = index + 1;
             try {
                 saves[index] = Persistency.loadSave(slot);
+                gui.updateSaveInventory(index, saves[index]);
             } catch (DocumentException e) {
                 System.out.printf("Failed to load save %d.\n", slot);
                 e.printStackTrace();
