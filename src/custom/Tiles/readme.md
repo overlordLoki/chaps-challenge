@@ -11,7 +11,7 @@ javac -cp ../../ *.java
 ```
 Now, put the entire custom directory into a .jar file. You can do this by running the following command:
 ```
-jar -cf custom.jar ../
+jar -cf custom.jar ../../custom
 ```
 Finally, put the .jar file into the lib directory. Now, when you run the game, it will load the custom tiles from the .jar file.
 
