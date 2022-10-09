@@ -111,7 +111,7 @@ public class Domain {
 
         //copy mazes
         Maze currentMaze = getCurrentMaze();
-        Maze nextMaze = new Maze(currentMaze.getTileArrayCopy(), currentMaze.getDirection());
+        Maze nextMaze = new Maze(currentMaze.getTileArrayCopy(), currentMaze.getDirection()); //shallow copy
         List<Maze> newMazes = new ArrayList<Maze>(mazes);
         newMazes.set(currentLvl - 1, nextMaze);
         

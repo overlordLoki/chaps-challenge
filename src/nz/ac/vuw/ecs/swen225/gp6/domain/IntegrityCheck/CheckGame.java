@@ -49,7 +49,7 @@ public final class CheckGame {
         checkHeroStateChange(preMaze, preInv, afterMaze, afterInv, preDomain);
 
         //ENEMY:
-        checkEnemyStateChange(preMaze, afterMaze, preDomain);
+        //checkEnemyStateChange(preMaze, afterMaze, preDomain);
 
         //COINS:
         //check there is the same amounts of coins in the maze and inventory combined before and after
@@ -111,10 +111,12 @@ public final class CheckGame {
         
     }
 
+    
     //CHECKER HELPERS:
     /*
      * checks the integrity of enemies as the state of game changes
      */
+    /* 
     private static void checkEnemyStateChange(Maze preMaze, Maze afterMaze, Domain preDomain) {
         //check if enemies havent moved on obstructions
         List<Tile> enemies = getAllTiles(afterMaze, TileType.Enemy);
@@ -141,6 +143,8 @@ public final class CheckGame {
             throw new IllegalStateException("Number of enemies has changed");
         }
     }
+    */
+    
 
     /*
      * checks the integrity of hero as the state of game changes

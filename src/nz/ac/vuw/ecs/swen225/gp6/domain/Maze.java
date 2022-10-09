@@ -53,7 +53,6 @@ public class Maze {
      * toString method which creates the board with each tile's given symbol
      */
     public String toString(){
-        Tile[][] tileArray = this.getTileArrayCopy();
         String r = "";
 
         for(int y = 0; y < height; y++){
@@ -68,8 +67,11 @@ public class Maze {
     }
 
     //TILE GETTERS:
-    /*
-     * @return a copy of tile array 
+    /**
+     * returns tile array
+     * 
+     * IMPORTANT NOTE: a deep copy here would have provided more encapsulation of the tile array,
+     * however a shallow copy is chosen to allow for tile types to be added at run time. 
      */
     public Tile[][] getTileArrayCopy() {
         Tile[][] copy = new Tile[width][height];
@@ -78,8 +80,7 @@ public class Maze {
             IntStream.range(0, height)
             .forEach(y->{
                 Tile t = tileArray[x][y];
-                copy[x][y] = TileType.makeTile(t.type(),
-                new TileInfo(new Loc(x, y), t.info().ping(), t.info().getImageName()));
+                copy[x][y] = t;
             }
             )
         );
