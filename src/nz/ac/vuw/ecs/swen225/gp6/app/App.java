@@ -106,6 +106,31 @@ public class App extends JFrame {
     //================================================================================================================//
 
     /**
+     * Function to invoke the winning sequence, it also handles the transition to the next level.
+     */
+    public void runWinEvent(){
+        inResume = false;
+        if (game.nextLvl()){
+            System.out.println("Next level");
+            // TODO: invoke renderer cutscene
+            // TODO: after cutscene, restart game clock with new level
+            inResume = true; // enter game mode
+        }else{
+            System.out.println("You win!");
+            gui.transitionToWinScreen();
+        }
+    }
+
+    /**
+     * Function to invoke the losing sequence.
+     */
+    public void runLoseEvent(){
+//        inResume = false;
+        System.out.println("You lose!");
+        this.gui.transitionToLostScreen();
+    }
+
+    /**
      * Transitions to the menu screen.
      */
     public void transitionToMenuScreen(){
@@ -198,22 +223,8 @@ public class App extends JFrame {
         this.game = game;
         this.gui.getRenderPanel().setMaze(game);
         this.gui.getInventory().setMaze(game);
-        this.game.addEventListener(DomainEvent.onWin, ()->{
-            inResume = false;
-            if (game.nextLvl()){
-                System.out.println("Next level");
-                // TODO: invoke renderer cutscene
-                // TODO: after cutscene, restart game clock with new level
-                inResume = true; // enter game mode
-            }else{
-                System.out.println("You win!");
-                gui.transitionToWinScreen();
-            }});
-        this.game.addEventListener(DomainEvent.onLose, ()->{
-//                inResume = false;
-            System.out.println("You lose!");
-            this.gui.transitionToLostScreen();
-        });
+        this.game.addEventListener(DomainEvent.onWin, this::runWinEvent);
+        this.game.addEventListener(DomainEvent.onLose, this::runLoseEvent);
         this.inResume = true;
         this.recorder.startRecording();
     }
