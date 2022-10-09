@@ -2,6 +2,8 @@ package test.nz.ac.vuw.ecs.swen225.gp6.fuzz;
 import nz.ac.vuw.ecs.swen225.gp6.app.App;
 import nz.ac.vuw.ecs.swen225.gp6.app.Main;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
+import org.junit.Test;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -83,7 +85,9 @@ public class Fuzz {
                     MOVE_LEFT,
                     MOVE_RIGHT,
                     PAUSE_GAME,
-                    RESUME_GAME
+                    RESUME_GAME,
+                    LOAD_GAME,
+                    SAVE_GAME
             );
         });
         int move = 0;
@@ -167,7 +171,6 @@ public class Fuzz {
      * @return print out the key event
      */
     static List<Actions> test1HC = new ArrayList<>();
-    static Actions actions;
     public static void hardCode(){
         SwingUtilities.invokeLater(()->{
             app = new App();
@@ -255,7 +258,7 @@ public class Fuzz {
         int rc = JOptionPane.showOptionDialog(null, "Choose a test", "Test",
                 JOptionPane.WARNING_MESSAGE, 0, null, buttons, buttons[4]);
         if (rc == 0) {
-//            hardCode();
+            hardCode();
         } else if (rc == 1) {
             testLevel(1000);
         } else if (rc == 2) {
@@ -273,6 +276,16 @@ public class Fuzz {
                 JOptionPane.WARNING_MESSAGE, 0, null, buttons2, buttons2[0]);
 
         System.exit(0);
+    }
+
+    @Test
+    public void test_level1() {
+        unlimittest();
+    }
+
+    @Test
+    public void test_level2() {
+        unlimittest();
     }
 
 }
