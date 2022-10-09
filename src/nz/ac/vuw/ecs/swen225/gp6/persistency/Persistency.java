@@ -437,7 +437,13 @@ public class Persistency {
             SAXReader reader = new SAXReader();
             // list files in res/levels
             File dir = new File("res/levels");
-            File[] files = dir.listFiles();
+            List<File> files = Arrays.asList(dir.listFiles());
+            files.sort(new Comparator<File>() {
+                @Override
+                public int compare(File o1, File o2) {
+                    return o1.getName().compareTo(o2.getName());
+                }
+            });
             List<Maze> mazes = new ArrayList<Maze>();
             for (File file : files) {
                 if (file.getName().endsWith(".xml")) {
