@@ -85,9 +85,7 @@ public class Fuzz {
                     MOVE_LEFT,
                     MOVE_RIGHT,
                     PAUSE_GAME,
-                    RESUME_GAME,
-                    LOAD_GAME,
-                    SAVE_GAME
+                    RESUME_GAME
             );
         });
         int move = 0;
@@ -98,7 +96,7 @@ public class Fuzz {
             int randomIndex = r.nextInt(actionsList.size());
 
             actionsList.get(randomIndex).run(app);
-            System.out.print("Action: " + move + " >>> " + randomIndex);
+            System.out.print("Action: " + actionsList.get(randomIndex) + " >>> ");
             robot.delay(100);
             move++;
             if(app.getGame().getCurrentLevel() ==2){
