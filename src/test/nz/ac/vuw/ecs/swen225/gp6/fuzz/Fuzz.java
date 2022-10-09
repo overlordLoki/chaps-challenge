@@ -81,14 +81,18 @@ public class Fuzz {
                     MOVE_UP,
                     MOVE_DOWN,
                     MOVE_LEFT,
-                    MOVE_RIGHT
+                    MOVE_RIGHT,
+                    PAUSE_GAME,
+                    RESUME_GAME
             );
         });
         int move = 0;
         boolean finish = true;
+
         robot.delay(1000); // wait 1 second before start testing
         while (finish){
             int randomIndex = r.nextInt(actionsList.size());
+
             actionsList.get(randomIndex).run(app);
             System.out.print("Action: " + move + " >>> " + randomIndex);
             robot.delay(100);
