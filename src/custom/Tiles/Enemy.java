@@ -18,7 +18,7 @@ public class Enemy extends Actor {
 
     @Override
     public TileType type() {
-        return TileType.Enemy;
+        return TileType.Other;
     }
 
     public Tile tileOn() {

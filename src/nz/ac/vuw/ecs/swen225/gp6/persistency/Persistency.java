@@ -323,7 +323,8 @@ public class Persistency {
                     try {
                         Class<?> clazz = Class.forName("custom.Tiles." + customTile);
                         Constructor<?> ctor = clazz.getConstructor(TileInfo.class);
-                        Tile object = (Tile) ctor.newInstance(new TileInfo(new Loc(x, y)));
+                        Tile object = (Tile) ctor.newInstance(new TileInfo(new Loc(x, y),
+                                Character.toLowerCase(customTile.charAt(0)) + customTile.substring(1)));
                         // Tile object = new Enemy(new TileInfo(new Loc(x, y)));
                         maze.setTileAt(new Loc(x, y), object);
                     } catch (Exception e) {
