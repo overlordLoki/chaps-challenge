@@ -124,15 +124,15 @@ public class DomainTests {
      * separated by space.
      */
     public void doMoves(Domain domain, String sequence){
-        Maze maze = domain.getCurrentMaze();
+        Level level = domain.getCurrentLevelObject();
         // for each char in sequence
         for (char c : sequence.toCharArray()) {
             switch (c) {
-                case 'U' -> maze.makeHeroStep(Direction.Up);
-                case 'D' -> maze.makeHeroStep(Direction.Down);
-                case 'L' -> maze.makeHeroStep(Direction.Left);
-                case 'R' -> maze.makeHeroStep(Direction.Right);
-                case ' ' -> maze.makeHeroStep(Direction.None);
+                case 'U' -> level.makeHeroStep(Direction.Up);
+                case 'D' -> level.makeHeroStep(Direction.Down);
+                case 'L' -> level.makeHeroStep(Direction.Left);
+                case 'R' -> level.makeHeroStep(Direction.Right);
+                case ' ' -> level.makeHeroStep(Direction.None);
                 default -> throw new IllegalArgumentException("Invalid move: " + c);
             }
             domain.pingDomain();
