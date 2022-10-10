@@ -13,7 +13,7 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.*;
 
 
-/*
+/**
  * This class contains a set of static method to check the integrity of 
  * the game:
  *  - before a ping step is successfully completed (by comparing the previous maze and inv to next ones)
@@ -28,6 +28,9 @@ public final class CheckGame {
     /**
      * Checks the integrity of the game after a ping, and the game state is transitioning a step forward.
      * (so the domain have correctly transitioned from before ping state to after ping state)
+     * 
+     * @param preDomain the pre-ping domain that will be changed by one step 
+     * @param postDomain the post-ping domain that will be compared with the pre-ping one
      * 
      */
     public static void checkStateChange(Domain preDomain, Domain afterDomain){
@@ -64,6 +67,8 @@ public final class CheckGame {
 
     /**
      * Checks the integrity of the maze and inventory of a given game.
+     * 
+     * @param domain the game that the maze and inventory will be accessed of
      */
     public static void checkCurrentState(Domain domain){
         Maze maze = domain.getCurrentMaze();
@@ -112,7 +117,7 @@ public final class CheckGame {
     }
 
     //CHECKER HELPERS:
-    /*
+    /* TODO replace with check for moving object or smth
      * checks the integrity of enemies as the state of game changes
      */
     private static void checkEnemyStateChange(Maze preMaze, Maze afterMaze, Domain preDomain) {
@@ -142,8 +147,15 @@ public final class CheckGame {
         }
     }
 
-    /*
+    /**
+     * helper method called by checkStateChange() method,
      * checks the integrity of hero as the state of game changes
+     * 
+     * @param preMaze pre ping maze
+     * @param preInv pre ping inventory
+     * @param afterMaze post ping maze
+     * @param afterInv post ping inventory
+     * @param preDomain pre ping domain
      */
     private static void checkHeroStateChange(Maze preMaze, Inventory preInv, Maze afterMaze, Inventory afterInv,
             Domain preDomain) {
@@ -213,7 +225,10 @@ public final class CheckGame {
     }
 
     /**
+     * helper method called by checkCurrentState() method,
      * checks the integrity of the game if game is claimed to be lost.
+     * 
+     * @param domain domain to check on
      */
     private static void checkLose(Domain domain) {
         Maze maze = domain.getCurrentMaze();
@@ -255,11 +270,13 @@ public final class CheckGame {
     }
 
     /**
-     * checks the integrity of the maze if game is claimed to be won.TODO
+     * helper method called by checkCurrentState() method,
+     * checks the integrity of the maze if game is claimed to be won.
+     * 
+     * @param domain domain to check on
      */
     private static void checkWin(Domain domain) {
         Maze maze = domain.getCurrentMaze();
-        Inventory inv = domain.getInv();
 
         //check all conditions that player need to win is true
         //current conditions are:
@@ -274,18 +291,20 @@ public final class CheckGame {
         }
     }
 
-    //HELPER
-    /*
+    //UTILITY HELPERS:
+    /**
      * returns the first tile with given type in the maze
+     * 
+     * @param maze maze to check for tile
+     * @param type type of tile to find
      */
-    public static Tile getTile(Maze maze, TileType type){
-        return maze.getTileThat(t->t.type() == type);
-    }
+    public static Tile getTile(Maze maze, TileType type){ return maze.getTileThat(t->t.type() == type);}
 
-    /*
+    /**
      * returns the list of all tiles with given type in the maze
+     * 
+     * @param maze maze to check for tiles
+     * @param type type of tile to find
      */
-    public static List<Tile> getAllTiles(Maze maze, TileType type){
-        return maze.getAllTilesThat(t->t.type() == type);
-    }
+    public static List<Tile> getAllTiles(Maze maze, TileType type){return maze.getAllTilesThat(t->t.type() == type);}
 }

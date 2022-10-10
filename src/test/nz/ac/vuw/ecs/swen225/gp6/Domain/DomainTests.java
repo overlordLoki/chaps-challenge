@@ -30,9 +30,9 @@ public class DomainTests {
             {new Wall(new TileInfo(null, null)), new Wall(new TileInfo(null, null)), new Wall(new TileInfo(null, null))}
         });
         assertEquals(
-            "0|||||||\n" + 
-            "1|||_|||\n" +
-            "2|||||||\n" +
+            "0|/|/|/|\n" + 
+            "1|/|_|/|\n" +
+            "2|/|/|/|\n" +
             "  0 1 2" + 
             "",
             maze.toString()
@@ -84,7 +84,6 @@ public class DomainTests {
 
     //HELPER METHODS:
 
-
     //=====================================//
     //========= Testing harnesses =========//
     //=====================================//
@@ -111,7 +110,7 @@ public class DomainTests {
      */
     public Tile makeTile(char c, int x, int y){
         TileType  type = Arrays.stream(TileType.values())
-        .filter(t -> TileType.makeTile(t, null).symbol() == c).findFirst().get();
+        .filter(t -> TileType.makeTile(t, new TileInfo(null)).symbol() == c).findFirst().get();
 
         TileInfo info = new TileInfo(new Loc(x,y));
         return TileType.makeTile(type, info);
