@@ -29,7 +29,7 @@ public class Helper {
             }
         }
         
-        Maze m = new Maze(gameArray, Direction.None);
+        Maze m = new Maze(gameArray);
 
         //display different tile types
         m.setTileAt(new Loc(2, 1), TileType.Hero);

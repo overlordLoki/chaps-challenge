@@ -17,21 +17,14 @@ public class Maze {
     private Tile[][] tileArray;
     private int height; //height of tile array, how many rows (outer array) 
     private int width;  //width of tile array, how many columns (inner arrays)
-
-    private Direction heroNextStep;
     
 
-    public Maze(Tile[][] tileArray, Direction heroNextStep){
+    public Maze(Tile[][] tileArray){
         this.tileArray = tileArray;
         this.height = tileArray.length;
         this.width = tileArray[0].length;
-
-        this.heroNextStep = heroNextStep;
     }
 
-    public Maze(Tile[][] tileArray){
-        this(tileArray, Direction.None);
-    }
 
     //GETTERS:
     /*
@@ -43,11 +36,6 @@ public class Maze {
      * get width of tile array
      */
     public int width(){ return width;}
-
-    /**
-     * @return direction of heros next step
-     */
-    public Direction getDirection(){return heroNextStep;}
     
     /*
      * toString method which creates the board with each tile's given symbol
@@ -191,12 +179,6 @@ public class Maze {
         tile.info().loc(loc);
     }
 
-    /*
-     * sets the movement direction of hero, 
-     * which the hero will try to move towards if possible in NEXT ping.
-     */
-    public void makeHeroStep(Direction d){
-        this.heroNextStep = d;
-    }
+    
 
 }

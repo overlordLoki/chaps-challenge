@@ -36,20 +36,20 @@ public class Enemy extends Actor{
         info.pingStep(); //step the ping counter
         if(info.ping() % 10 != 0) return; //only move every 20 pings
 
-        Maze m = d.getCurrentMaze();
-        Loc l1 = info.loc();
+        Level lvl = d.getCurrentLevelObject();
+        Loc loc1 = info.loc();
         Direction dir = Direction.values()[(int)(Math.random()*4)]; //random direction
-        Loc l2 = dir.transformLoc(l1); //new loc 
-        Tile tileToOccupy = m.getTileAt(l2); //tile enemy is to move on to
+        Loc loc2 = dir.transformLoc(loc1); //new loc 
+        Tile tileToOccupy = lvl.maze.getTileAt(loc2); //tile enemy is to move on to
 
         //if enemy hasnt moved or tile at new location is obstruction return
         if(dir == Direction.None || tileToOccupy.obstructsEnemy(d)) return;
 
-        m.getTileAt(l1).setOn(tileOn, d); //set previous location to tileOn
-        m.getTileAt(l2).setOn(this, d);   //set new location to enemy, NOTE: Order matters here!
+        lvl.maze.getTileAt(loc1).setOn(tileOn, d); //set previous location to tileOn
+        lvl.maze.getTileAt(loc2).setOn(this, d);   //set new location to enemy, NOTE: Order matters here!
 
         this.tileOn = tileToOccupy.replaceWith(); // set tile heros to replace when moving off
-        staticDirection = m.getDirection(); //set heros direction of facing 
+        staticDirection = lvl.getDirection(); //set enemys direction of facing 
     } 
     
     //TODO: figure out how to make ben override/make all this
