@@ -43,6 +43,8 @@ public class App extends JFrame {
 
     // Core components of the game
     private Domain game                 = Persistency.getInitialDomain();
+    private final GameClock gameClock   = new GameClock(this);
+    private final GUI gui               = new GUI(this);
     private final Configuration config  = new Configuration(true,new EnumMap<>(Map.ofEntries(
             Map.entry(MOVE_UP, new Controller.Key(0,VK_UP)),
             Map.entry(MOVE_DOWN, new Controller.Key(0,VK_DOWN)),
@@ -57,8 +59,6 @@ public class App extends JFrame {
             Map.entry(LOAD_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK,VK_R))
     )));
     private final Controller controller = new Controller(this);
-    private final GameClock gameClock   = new GameClock(this);
-    private final GUI gui               = new GUI(this);
     private final Record recorder       = new Record();
     private final Replay replay         = new Replay(this);
     private boolean inResume            = false;
@@ -113,8 +113,8 @@ public class App extends JFrame {
         if (game.nextLvl()){
             System.out.println("Next level");
             // TODO: invoke renderer cutscene
-            // TODO: after cutscene, restart game clock with new level
-            inResume = true; // enter game mode
+            gameClock.reset();
+            RESUME_GAME.run(this);
         }else{
             System.out.println("You win!");
             gui.transitionToWinScreen();
@@ -149,7 +149,6 @@ public class App extends JFrame {
         System.out.print("Transitioning to game screen... ");
         gameClock.start();
         gui.transitionToGameScreen();
-        gui.showResumePanel();
         useGameMusic();
         System.out.println("Complete");
     }
@@ -161,7 +160,6 @@ public class App extends JFrame {
         System.out.print("Transitioning to replay screen... ");
         gameClock.start();
         gui.transitionToReplayScreen();
-        gui.showResumePanel();
         useGameMusic();
         System.out.println("Complete");
     }

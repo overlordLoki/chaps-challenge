@@ -15,29 +15,45 @@ public enum Actions {
     MOVE_UP("Move Up") {{ this.action = (app)->{
         if (!app.isResuming()) return;
         app.getGame().moveUp();
-        app.getRecorder().addActions(app.getGameClock().getTimePlayed(), this);
-    };}},
+        app.getRecorder().addActions(app.getGameClock().getTimePlayed(), this);};
+        }
+        public void replay(App app){
+            app.getGame().moveUp();
+        }
+    },
 
     /** Represents the move player move down. */
     MOVE_DOWN("Move Down"){{ this.action = (app)->{
         if (!app.isResuming()) return;
         app.getGame().moveDown();
-        app.getRecorder().addActions(app.getGameClock().getTimePlayed(), this);
-    };}},
+        app.getRecorder().addActions(app.getGameClock().getTimePlayed(), this);};
+        }
+        public void replay(App app){
+            app.getGame().moveDown();
+        }
+    },
 
     /** Represents the move player move left. */
     MOVE_LEFT("Move Left"){{ this.action = (app)->{
         if (!app.isResuming()) return;
         app.getGame().moveLeft();
-        app.getRecorder().addActions(app.getGameClock().getTimePlayed(),this);
-    };}},
+        app.getRecorder().addActions(app.getGameClock().getTimePlayed(),this);};
+        }
+        public void replay(App app){
+            app.getGame().moveLeft();
+        }
+    },
 
     /** Represents the move player move right. */
     MOVE_RIGHT("Move Right"){{ this.action = (app)->{
         if (!app.isResuming()) return;
         app.getGame().moveRight();
         app.getRecorder().addActions(app.getGameClock().getTimePlayed(), this);
-    };}},
+        };}
+        public void replay(App app){
+            app.getGame().moveRight();
+        }
+    },
 
     /** Represents the action pausing game. */
     PAUSE_GAME("Pause Game"){{ this.action = (app)->{
@@ -95,8 +111,12 @@ public enum Actions {
 
     /** Represents the action quitting without saving game. */
     QUIT_GAME("Quit Game"){{ this.action = (app)->{
-        System.out.println("Quit Game");
-        System.exit(0);
+        System.out.println("Quit Game without saving, returning to menu");
+        app.getGameClock().stop();
+        app.setResuming(false);
+        MusicPlayer.stopGameMusic();
+        MusicPlayer.playMenuMusic();
+        app.getGUI().transitionToMenuScreen();
     };}},
 
     /** Represents no action is being performed. */
@@ -115,6 +135,13 @@ public enum Actions {
      * @param app The app object that the action will be performed on.
      */
     public void run(App app){action.accept(app);}
+
+    /**
+     * Replays the action associated with the enum.
+     *
+     * @param app The app object that the action will be performed on.
+     */
+    public void replay(App app){}
 
     /**
      * Gets the display name of the action.

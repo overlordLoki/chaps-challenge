@@ -19,8 +19,7 @@ public class GameClock {
     private float replaySpeed = 1; // speed of replay
     private final int timeIntervalGame = 34; // time interval for each tick
     private final int timeIntervalReplay = 34; // time interval for each tick
-    // TODO: turn from using hardcoded time to using the time from the level
-    private long timeLimit = 60_000_000_000L; // time limit for the level
+    private long timeLimit = 0; // time limit for the level
 
     private final Timer gameTimer = new Timer(timeIntervalGame, unused -> {
         assert SwingUtilities.isEventDispatchThread();
@@ -75,6 +74,7 @@ public class GameClock {
     public void reset() {
         timer.stop();
         resetTime();
+        timeLimit = app.getGame().getCurrentTimeLimit() * 1_000_000_000L;
     }
 
 
@@ -141,7 +141,7 @@ public class GameClock {
      *
      * @return the time left for the current level in nanoseconds
      */
-    public long getTimeLeft() {return 60 * 1_000_000_000L - timePlayed;}
+    public long getTimeLeft() {return timeLimit - timePlayed;}
 
     /**
      * Gets the time elapsed since the start of the game in Minutes and Seconds.

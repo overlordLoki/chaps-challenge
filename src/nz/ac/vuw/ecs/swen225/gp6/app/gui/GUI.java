@@ -385,7 +385,10 @@ public class GUI {
         addAll(pnOption, Box.createHorizontalGlue(),
                 createActionLabel("No", renderPanel,SUBTITLE, true, ()->menuCardLayout.show(menuPanel, MENU)),
                 Box.createHorizontalGlue(),
-                createActionLabel("Yes", renderPanel,SUBTITLE, true, ()->Actions.QUIT_GAME.run(app)),
+                createActionLabel("Yes", renderPanel,SUBTITLE, true, ()->{
+                    System.out.println("Exiting...");
+                    System.exit(0);
+                }),
                 Box.createHorizontalGlue());
         addAll(pnExit,
                 createLabel("Chaps Challenge!", renderPanel, TITLE, true),
@@ -613,6 +616,7 @@ public class GUI {
      */
     public void transitionToGameScreen(){
         functionCardLayout.show(functionPanel, MODE_NORMAL);
+        pauseCardLayout.show(pausePanel, STATUS_RESUME);
         gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
         renderPanel.grabFocus();
@@ -623,6 +627,7 @@ public class GUI {
      */
     public void transitionToReplayScreen(){
         functionCardLayout.show(functionPanel, MODE_REPLAY);
+        pauseCardLayout.show(pausePanel, STATUS_RESUME);
         gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
     }

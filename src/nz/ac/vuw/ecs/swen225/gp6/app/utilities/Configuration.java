@@ -1,5 +1,7 @@
 package nz.ac.vuw.ecs.swen225.gp6.app.utilities;
 
+import nz.ac.vuw.ecs.swen225.gp6.app.App;
+
 import java.util.EnumMap;
 
 import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller.Key;
@@ -12,6 +14,8 @@ import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller.Key;
 public class Configuration {
     private boolean isMusicOn;
     private final EnumMap<Actions, Key> userKeyBindings;
+    private String texturePack;
+    private int viewDistance;
 
     /**
      * Constructor for the Configuration class
@@ -22,6 +26,34 @@ public class Configuration {
     public Configuration(boolean isMusicOn, EnumMap<Actions, Key> userKeyBindings){
         this.isMusicOn = isMusicOn;
         this.userKeyBindings = userKeyBindings;
+        this.texturePack = "default";
+        this.viewDistance = 7;
+    }
+
+    /**
+     * Constructor for the Configuration class
+     *
+     * @param isMusicOn       Whether the music is on or off.
+     * @param texturePack     The texture pack for the game.
+     * @param viewDistance    The view distance for the game.
+     * @param userKeyBindings The key bindings for the game.
+     */
+    public Configuration(boolean isMusicOn, String texturePack, int viewDistance, EnumMap<Actions, Key> userKeyBindings){
+        this.isMusicOn = isMusicOn;
+        this.texturePack = texturePack;
+        this.viewDistance = viewDistance;
+        this.userKeyBindings = userKeyBindings;
+    }
+
+    /**
+     * Updates the configuration.
+     *
+     * @param app The App object that the configuration will be controlling.
+     */
+    public void update(App app){
+        app.getGUI().getRenderPanel().setRenderSize(viewDistance);
+        // TODO: Update the texture pack.
+//        app.getGUI().getRenderPanel().setTexturePack(texturePack);
     }
 
     //================================================================================================================//
@@ -41,6 +73,20 @@ public class Configuration {
      * @param musicOn true if music is to be played, false otherwise
      */
     public void setMusicOn(boolean musicOn) {this.isMusicOn = musicOn;}
+
+    /**
+     * Sets the texture pack to the given texture pack
+     *
+     * @param texturePack the texture pack to set
+     */
+    public void setTexturePack(String texturePack) {this.texturePack = texturePack;}
+
+    /**
+     * Sets the view distance to the given view distance
+     *
+     * @param viewDistance the view distance to set
+     */
+    public void setViewDistance(int viewDistance) {this.viewDistance = viewDistance;}
 
 
     //================================================================================================================//
@@ -78,4 +124,18 @@ public class Configuration {
      * @return true if the user is playing music, false otherwise
      */
     public boolean isMusicOn() {return isMusicOn;}
+
+    /**
+     * Gets the texture pack
+     *
+     * @return the texture pack
+     */
+    public String getTexturePack() {return texturePack;}
+
+    /**
+     * Gets the view distance
+     *
+     * @return the view distance
+     */
+    public int getViewDistance() {return viewDistance;}
 }
