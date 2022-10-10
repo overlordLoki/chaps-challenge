@@ -1,8 +1,5 @@
 package test.nz.ac.vuw.ecs.swen225.gp6.persistency;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.io.IOException;
 import java.util.EnumMap;
 import java.util.List;
@@ -30,6 +27,7 @@ import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.RecordTimeline;
 
 import static java.awt.event.KeyEvent.*;
 import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class BaseTests {
     @Test
@@ -139,8 +137,15 @@ public class BaseTests {
                 Map.entry(LOAD_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_R)))));
 
         Element el = Persistency.serialiseConfiguration(config);
+        String xml = el.asXML();
         Configuration config2 = Persistency.deserialiseConfiguration(el);
 
         assertEquals(config.toString(), config2.toString());
+    }
+
+    @Test
+    public void testLoadingConfiguration() {
+        Configuration config = Persistency.loadConfiguration();
+        assertNotNull(config);
     }
 }
