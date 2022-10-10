@@ -54,7 +54,7 @@ public class App extends JFrame {
             Map.entry(RESUME_GAME, new Controller.Key(0,VK_ESCAPE)),
             Map.entry(TO_LEVEL_1, new Controller.Key(InputEvent.CTRL_DOWN_MASK,VK_1)),
             Map.entry(TO_LEVEL_2, new Controller.Key(InputEvent.CTRL_DOWN_MASK,VK_2)),
-            Map.entry(QUIT_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK,VK_X)),
+            Map.entry(QUIT_TO_MENU, new Controller.Key(InputEvent.CTRL_DOWN_MASK,VK_X)),
             Map.entry(SAVE_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK,VK_S)),
             Map.entry(LOAD_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK,VK_R))
     )));
@@ -63,7 +63,7 @@ public class App extends JFrame {
     private final Replay replay         = new Replay(this);
     private boolean inResume            = false;
 
-    private final Domain[] saves        = new Domain[3];;
+    private final Domain[] saves        = new Domain[3];
 
     /**
      * Constructor for the App class. Initializes the GUI and the main loop.
@@ -96,7 +96,10 @@ public class App extends JFrame {
         setMinimumSize(new Dimension(WIDTH, HEIGHT));
         setContentPane(gui.getOuterPanel());
         gui.getRenderPanel().addKeyListener(controller);
-        transitionToMenuScreen();
+
+        System.out.print("Transitioning to menu screen... ");
+        QUIT_TO_MENU.run(this);
+        System.out.println("Complete");
         pack();
     }
 
@@ -131,18 +134,6 @@ public class App extends JFrame {
     }
 
     /**
-     * Transitions to the menu screen.
-     */
-    public void transitionToMenuScreen(){
-        System.out.print("Transitioning to menu screen... ");
-        gameClock.stop();
-        gameClock.reset();
-        gui.transitionToMenuScreen();
-        useMenuMusic();
-        System.out.println("Complete");
-    }
-
-    /**
      * Transitions to the game screen.
      */
     public void transitionToGameScreen(){
@@ -153,26 +144,9 @@ public class App extends JFrame {
         System.out.println("Complete");
     }
 
-    /**
-     * Transitions to the game screen.
-     */
-    public void transitionToReplayScreen(){
-        System.out.print("Transitioning to replay screen... ");
-        gameClock.start();
-        gui.transitionToReplayScreen();
-        useGameMusic();
-        System.out.println("Complete");
-    }
-
-
     private void useGameMusic(){
         MusicPlayer.stopMenuMusic();
         if(config.isMusicOn()) MusicPlayer.playGameMusic();
-    }
-
-    private void useMenuMusic(){
-        MusicPlayer.stopGameMusic();
-        if(config.isMusicOn()) MusicPlayer.playMenuMusic();
     }
 
     //================================================================================================================//
@@ -206,10 +180,15 @@ public class App extends JFrame {
      * @param slot the save file to load
      */
     public void startSavedReplay(int slot) {
-        updateGameComponents(saves[slot-1]);
+        updateGameComponents(Persistency.getInitialDomain());
+        // TODO: load replay module
         gameClock.useReplayTimer();
         replay.load("save");
-        transitionToReplayScreen();
+        System.out.print("Transitioning to replay screen... ");
+        gameClock.start();
+        gui.transitionToReplayScreen();
+        useGameMusic();
+        System.out.println("Complete");
     }
 
     /**
@@ -225,6 +204,7 @@ public class App extends JFrame {
         this.game.addEventListener(DomainEvent.onLose, this::runLoseEvent);
         this.inResume = true;
         this.recorder.startRecording();
+        this.gameClock.reset();
     }
 
     /**
@@ -304,6 +284,13 @@ public class App extends JFrame {
      * @return the recorder object
      */
     public Record getRecorder() {return recorder;}
+
+    /**
+     * Gets the current Replay.
+     *
+     * @return the replay object
+     */
+    public Replay getReplay() {return replay;}
 
     /**
      * Gets the gui object.

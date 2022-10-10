@@ -74,7 +74,7 @@ public class GameClock {
     public void reset() {
         timer.stop();
         resetTime();
-        timeLimit = app.getGame().getCurrentTimeLimit() * 1_000_000_000L;
+        timeLimit = app.getGame().getCurrentTimeLimit() * 1_000_000_000L; // converts time limit from seconds to nanoseconds
     }
 
 

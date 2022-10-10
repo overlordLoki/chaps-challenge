@@ -446,8 +446,8 @@ public class GUI {
         addAll(pnModeReplay,
                 createLabel("Replay Mode", renderPanel,SUBTITLE, true),
                 createActionLabel("Pause", renderPanel,SUBTITLE, true, ()->Actions.PAUSE_GAME.run(app)),
-                createActionLabel("Auto", renderPanel,SUBTITLE, true, app::transitionToReplayScreen),
-                createActionLabel("Step", renderPanel,SUBTITLE, true, app::transitionToReplayScreen));
+                createActionLabel("Auto", renderPanel,SUBTITLE, true, ()->app.getReplay().autoPlay()),
+                createActionLabel("Step", renderPanel,SUBTITLE, true, ()->app.getReplay().step()));
 
         addAll(pnStatusTop,
                 createLabel("Level", renderPanel, SUBTITLE, false),
@@ -486,7 +486,7 @@ public class GUI {
                 Box.createVerticalGlue(),
                 createActionLabel("Save and return to menu", renderPanel, TITLE, true, ()->Actions.SAVE_GAME.run(app)),
                 Box.createVerticalGlue(),
-                createActionLabel("Quit to menu", renderPanel, TITLE, true, app::transitionToMenuScreen),
+                createActionLabel("Quit to menu", renderPanel, TITLE, true,()->Actions.QUIT_TO_MENU.run(app)),
                 Box.createVerticalGlue());
         System.out.println("Done!");
         return pausePanel;
