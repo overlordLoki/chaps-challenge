@@ -21,7 +21,6 @@ import java.util.Objects;
 import java.util.Stack;
 import java.util.concurrent.TimeoutException;
 
-import custom.Tiles.Enemy;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Helper;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.Record;
@@ -321,7 +320,7 @@ public class Persistency {
                 } else if (name.equals("custom")) {
                     String customTile = tile.attributeValue("name");
                     try {
-                        Class<?> clazz = Class.forName("custom.Tiles." + customTile);
+                        Class<?> clazz = Class.forName("custom.tiles." + customTile);
                         Constructor<?> ctor = clazz.getConstructor(TileInfo.class);
                         Tile object = (Tile) ctor.newInstance(new TileInfo(new Loc(x, y),
                                 Character.toLowerCase(customTile.charAt(0)) + customTile.substring(1)));
