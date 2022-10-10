@@ -148,4 +148,22 @@ public class BaseTests {
         Configuration config = Persistency.loadConfiguration();
         assertNotNull(config);
     }
+
+    @Test
+    public void testSavingConfiguration() throws IOException {
+        Configuration config = new Configuration(true, new EnumMap<>(Map.ofEntries(
+                Map.entry(MOVE_UP, new Controller.Key(0, VK_UP)),
+                Map.entry(MOVE_DOWN, new Controller.Key(0, VK_DOWN)),
+                Map.entry(MOVE_LEFT, new Controller.Key(0, VK_LEFT)),
+                Map.entry(MOVE_RIGHT, new Controller.Key(0, VK_RIGHT)),
+                Map.entry(PAUSE_GAME, new Controller.Key(0, VK_SPACE)),
+                Map.entry(RESUME_GAME, new Controller.Key(0, VK_ESCAPE)),
+                Map.entry(TO_LEVEL_1, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_1)),
+                Map.entry(TO_LEVEL_2, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_2)),
+                Map.entry(QUIT_TO_MENU, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_X)),
+                Map.entry(SAVE_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_S)),
+                Map.entry(LOAD_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_R)))));
+
+        Persistency.saveConfiguration(config);
+    }
 }

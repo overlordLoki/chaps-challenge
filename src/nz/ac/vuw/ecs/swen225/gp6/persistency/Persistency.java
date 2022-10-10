@@ -33,7 +33,9 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
 
 import nz.ac.vuw.ecs.swen225.gp6.app.*;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
@@ -144,6 +146,28 @@ public class Persistency {
     }
 
     /**
+     * Load configuration from res/config.xml
+     * 
+     * @return Configuration object
+     */
+    public static Configuration loadConfiguration() {
+        SAXReader reader = new SAXReader();
+        try {
+            Document document = reader.read("res/config.xml");
+            return deserialiseConfiguration(document.getRootElement());
+        } catch (Throwable e) {
+            try {
+                log("Failed to load configuration: " + e.getMessage());
+                Document document = reader.read("res/defaultConfig.xml");
+                return deserialiseConfiguration(document.getRootElement());
+            } catch (Throwable f) {
+                f.printStackTrace();
+                return Configuration.getDefaultConfiguration();
+            }
+        }
+    }
+
+    /**
      * Serialise a domain to an XML document
      *
      * @param domain The domain to serialise
@@ -181,28 +205,6 @@ public class Persistency {
         int currentLevel = Integer.parseInt(levels.attributeValue("current"));
         Inventory inv = deserialiseInventory(root.element("inventory"));
         return new Domain(mazes, inv, currentLevel);
-    }
-
-    /**
-     * Load configuration from res/config.xml
-     * 
-     * @return Configuration object
-     */
-    public static Configuration loadConfiguration() {
-        SAXReader reader = new SAXReader();
-        try {
-            Document document = reader.read("res/config.xml");
-            return deserialiseConfiguration(document.getRootElement());
-        } catch (Throwable e) {
-            try {
-                log("Failed to load configuration: " + e.getMessage());
-                Document document = reader.read("res/defaultConfig.xml");
-                return deserialiseConfiguration(document.getRootElement());
-            } catch (Throwable f) {
-                f.printStackTrace();
-                return Configuration.getDefaultConfiguration();
-            }
-        }
     }
 
     /**
@@ -401,6 +403,26 @@ public class Persistency {
         }
 
         FileWriter out = new FileWriter("res/saves/" + slot + ".xml");
+        document.write(out);
+        out.close();
+    }
+
+    /**
+     * Save configuration to res/config.xml
+     * 
+     * @param config The configuration object
+     */
+    public static void saveConfiguration(Configuration config) throws IOException {
+        Element element = serialiseConfiguration(config);
+        Document document = DocumentHelper.createDocument();
+        document.add(element);
+
+        File dir = new File("res");
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        FileWriter out = new FileWriter("res/config.xml");
         document.write(out);
         out.close();
     }
