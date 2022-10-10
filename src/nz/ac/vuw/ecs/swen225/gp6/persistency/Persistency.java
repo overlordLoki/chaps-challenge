@@ -360,15 +360,14 @@ public class Persistency {
      * @param timeline The timeline to serialise
      * @return The serialised timeline
      */
-    public static Document serialiseRecordTimeline(Stack<Pair<Long, Actions>> timeline) {
-        Document document = DocumentHelper.createDocument();
-        Element root = document.addElement("recorder");
+    public static Element serialiseRecordTimeline(Stack<Pair<Long, Actions>> timeline) {
+        Element root = DocumentHelper.createElement("timeline");
         root.addAttribute("size", timeline.size() + "");
         for (Pair<Long, Actions> pair : timeline) {
             Element action = root.addElement(pair.getValue().toString());
             action.addAttribute("time", pair.getKey() + "");
         }
-        return document;
+        return root;
     }
 
     /**
@@ -377,8 +376,7 @@ public class Persistency {
      * @param document The XML document to deserialise
      * @return The deserialised timeline
      */
-    public static Stack<Pair<Long, Actions>> deserialiseRecordTimeline(Document document) {
-        Element root = document.getRootElement();
+    public static Stack<Pair<Long, Actions>> deserialiseRecordTimeline(Element root) {
         Stack<Pair<Long, Actions>> timeline = new Stack<Pair<Long, Actions>>();
         for (Element action : root.elements()) {
             timeline.add(new Pair<Long, Actions>(Long.parseLong(action.attributeValue("time")),
@@ -425,6 +423,39 @@ public class Persistency {
         FileWriter out = new FileWriter("res/config.xml");
         document.write(out);
         out.close();
+    }
+
+    /**
+     * Save a timeline to a file
+     * 
+     * @param timeline The timeline to save
+     * @param slot     The slot to save to
+     */
+    public static void saveRecordTimeline(Stack<Pair<Long, Actions>> timeline, int slot) throws IOException {
+        Element element = serialiseRecordTimeline(timeline);
+        Document document = DocumentHelper.createDocument();
+        document.add(element);
+
+        File dir = new File("res/recordings");
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        FileWriter out = new FileWriter("res/recordings/" + slot + ".xml");
+        document.write(out);
+        out.close();
+    }
+
+    /**
+     * Load a timeline from a file
+     * 
+     * @param slot The slot to load from
+     * @return The loaded timeline
+     */
+    public static Stack<Pair<Long, Actions>> loadRecordTimeline(int slot) throws DocumentException {
+        SAXReader reader = new SAXReader();
+        Document document = reader.read(new File("res/recordings/" + slot + ".xml"));
+        return deserialiseRecordTimeline(document.getRootElement());
     }
 
     /**

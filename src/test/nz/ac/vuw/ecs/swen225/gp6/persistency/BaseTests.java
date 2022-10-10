@@ -8,6 +8,7 @@ import java.util.Stack;
 import java.awt.event.InputEvent;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.junit.jupiter.api.Test;
 
@@ -79,11 +80,10 @@ public class BaseTests {
         timeline.add(10l, Actions.MOVE_DOWN);
         timeline.add(20l, Actions.MOVE_LEFT);
 
-        Document doc = Persistency.serialiseRecordTimeline(timeline.getTimeline());
+        Element element = Persistency.serialiseRecordTimeline(timeline.getTimeline());
 
-        assertEquals(doc.asXML(), """
-                <?xml version="1.0" encoding="UTF-8"?>
-                <recorder size="2"><MOVE_DOWN time="10"/><MOVE_LEFT time="20"/></recorder>""");
+        assertEquals(element.asXML(), """
+                <timeline size="2"><MOVE_DOWN time="10"/><MOVE_LEFT time="20"/></timeline>""");
     }
 
     @Test
@@ -92,8 +92,20 @@ public class BaseTests {
         timeline.add(10l, Actions.MOVE_DOWN);
         timeline.add(20l, Actions.MOVE_LEFT);
 
-        Document doc = Persistency.serialiseRecordTimeline(timeline.getTimeline());
-        Stack<Pair<Long, Actions>> timeline2 = Persistency.deserialiseRecordTimeline(doc);
+        Element element = Persistency.serialiseRecordTimeline(timeline.getTimeline());
+        Stack<Pair<Long, Actions>> timeline2 = Persistency.deserialiseRecordTimeline(element);
+
+        assertEquals(timeline.getTimeline().toString(), timeline2.toString());
+    }
+
+    @Test
+    public void testRecorderTimelineSaving() throws IOException, DocumentException {
+        RecordTimeline<Actions> timeline = new RecordTimeline<Actions>();
+        timeline.add(10l, Actions.MOVE_DOWN);
+        timeline.add(20l, Actions.MOVE_LEFT);
+
+        Persistency.saveRecordTimeline(timeline.getTimeline(), 1);
+        Stack<Pair<Long, Actions>> timeline2 = Persistency.loadRecordTimeline(1);
 
         assertEquals(timeline.getTimeline().toString(), timeline2.toString());
     }
