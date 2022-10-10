@@ -43,27 +43,15 @@ public class App extends JFrame {
 
     // Core components of the game
     private Domain game                 = Persistency.getInitialDomain();
-    private final Configuration config  = new Configuration(true,new EnumMap<>(Map.ofEntries(
-            Map.entry(MOVE_UP, new Controller.Key(0,VK_UP)),
-            Map.entry(MOVE_DOWN, new Controller.Key(0,VK_DOWN)),
-            Map.entry(MOVE_LEFT, new Controller.Key(0,VK_LEFT)),
-            Map.entry(MOVE_RIGHT, new Controller.Key(0,VK_RIGHT)),
-            Map.entry(PAUSE_GAME, new Controller.Key(0,VK_SPACE)),
-            Map.entry(RESUME_GAME, new Controller.Key(0,VK_ESCAPE)),
-            Map.entry(TO_LEVEL_1, new Controller.Key(InputEvent.CTRL_DOWN_MASK,VK_1)),
-            Map.entry(TO_LEVEL_2, new Controller.Key(InputEvent.CTRL_DOWN_MASK,VK_2)),
-            Map.entry(QUIT_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK,VK_X)),
-            Map.entry(SAVE_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK,VK_S)),
-            Map.entry(LOAD_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK,VK_R))
-    )));
-    private final Controller controller = new Controller(this);
     private final GameClock gameClock   = new GameClock(this);
     private final GUI gui               = new GUI(this);
+    private final Configuration config  = Persistency.loadConfiguration();
+    private final Controller controller = new Controller(this);
     private final Record recorder       = new Record();
     private final Replay replay         = new Replay(this);
     private boolean inResume            = false;
 
-    private final Domain[] saves        = new Domain[3];;
+    private final Domain[] saves        = new Domain[3];
 
     /**
      * Constructor for the App class. Initializes the GUI and the main loop.
@@ -96,7 +84,10 @@ public class App extends JFrame {
         setMinimumSize(new Dimension(WIDTH, HEIGHT));
         setContentPane(gui.getOuterPanel());
         gui.getRenderPanel().addKeyListener(controller);
-        transitionToMenuScreen();
+
+        System.out.print("Transitioning to menu screen... ");
+        QUIT_TO_MENU.run(this);
+        System.out.println("Complete");
         pack();
     }
 
@@ -106,15 +97,28 @@ public class App extends JFrame {
     //================================================================================================================//
 
     /**
-     * Transitions to the menu screen.
+     * Function to invoke the winning sequence, it also handles the transition to the next level.
      */
-    public void transitionToMenuScreen(){
-        System.out.print("Transitioning to menu screen... ");
-        gameClock.stop();
-        gameClock.reset();
-        gui.transitionToMenuScreen();
-        useMenuMusic();
-        System.out.println("Complete");
+    public void runWinEvent(){
+        inResume = false;
+        if (game.nextLvl()){
+            System.out.println("Next level");
+            // TODO: invoke renderer cutscene
+            gameClock.reset();
+            RESUME_GAME.run(this);
+        }else{
+            System.out.println("You win!");
+            gui.transitionToWinScreen();
+        }
+    }
+
+    /**
+     * Function to invoke the losing sequence.
+     */
+    public void runLoseEvent(){
+//        inResume = false;
+        System.out.println("You lose!");
+        this.gui.transitionToLostScreen();
     }
 
     /**
@@ -124,32 +128,13 @@ public class App extends JFrame {
         System.out.print("Transitioning to game screen... ");
         gameClock.start();
         gui.transitionToGameScreen();
-        gui.showResumePanel();
         useGameMusic();
         System.out.println("Complete");
     }
-
-    /**
-     * Transitions to the game screen.
-     */
-    public void transitionToReplayScreen(){
-        System.out.print("Transitioning to replay screen... ");
-        gameClock.start();
-        gui.transitionToReplayScreen();
-        gui.showResumePanel();
-        useGameMusic();
-        System.out.println("Complete");
-    }
-
 
     private void useGameMusic(){
         MusicPlayer.stopMenuMusic();
         if(config.isMusicOn()) MusicPlayer.playGameMusic();
-    }
-
-    private void useMenuMusic(){
-        MusicPlayer.stopGameMusic();
-        if(config.isMusicOn()) MusicPlayer.playMenuMusic();
     }
 
     //================================================================================================================//
@@ -183,10 +168,15 @@ public class App extends JFrame {
      * @param slot the save file to load
      */
     public void startSavedReplay(int slot) {
-        updateGameComponents(saves[slot-1]);
+        updateGameComponents(Persistency.getInitialDomain());
+        // TODO: load replay module
         gameClock.useReplayTimer();
         replay.load("save");
-        transitionToReplayScreen();
+        System.out.print("Transitioning to replay screen... ");
+        gameClock.start();
+        gui.transitionToReplayScreen();
+        useGameMusic();
+        System.out.println("Complete");
     }
 
     /**
@@ -198,24 +188,11 @@ public class App extends JFrame {
         this.game = game;
         this.gui.getRenderPanel().setMaze(game);
         this.gui.getInventory().setMaze(game);
-        this.game.addEventListener(DomainEvent.onWin, ()->{
-            inResume = false;
-            if (game.nextLvl()){
-                System.out.println("Next level");
-                // TODO: invoke renderer cutscene
-                // TODO: after cutscene, restart game clock with new level
-                inResume = true; // enter game mode
-            }else{
-                System.out.println("You win!");
-                gui.transitionToWinScreen();
-            }});
-        this.game.addEventListener(DomainEvent.onLose, ()->{
-//                inResume = false;
-            System.out.println("You lose!");
-            this.gui.transitionToLostScreen();
-        });
+        this.game.addEventListener(DomainEvent.onWin, this::runWinEvent);
+        this.game.addEventListener(DomainEvent.onLose, this::runLoseEvent);
         this.inResume = true;
         this.recorder.startRecording();
+        this.gameClock.reset();
     }
 
     /**
@@ -295,6 +272,13 @@ public class App extends JFrame {
      * @return the recorder object
      */
     public Record getRecorder() {return recorder;}
+
+    /**
+     * Gets the current Replay.
+     *
+     * @return the replay object
+     */
+    public Replay getReplay() {return replay;}
 
     /**
      * Gets the gui object.
