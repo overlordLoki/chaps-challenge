@@ -204,6 +204,7 @@ public class App extends JFrame {
         this.game.addEventListener(DomainEvent.onLose, this::runLoseEvent);
         this.inResume = true;
         this.recorder.startRecording();
+        this.gameClock.reset();
     }
 
     /**
