@@ -385,7 +385,10 @@ public class GUI {
         addAll(pnOption, Box.createHorizontalGlue(),
                 createActionLabel("No", renderPanel,SUBTITLE, true, ()->menuCardLayout.show(menuPanel, MENU)),
                 Box.createHorizontalGlue(),
-                createActionLabel("Yes", renderPanel,SUBTITLE, true, ()->Actions.QUIT_GAME.run(app)),
+                createActionLabel("Yes", renderPanel,SUBTITLE, true, ()->{
+                    System.out.println("Exiting...");
+                    System.exit(0);
+                }),
                 Box.createHorizontalGlue());
         addAll(pnExit,
                 createLabel("Chaps Challenge!", renderPanel, TITLE, true),
@@ -443,8 +446,8 @@ public class GUI {
         addAll(pnModeReplay,
                 createLabel("Replay Mode", renderPanel,SUBTITLE, true),
                 createActionLabel("Pause", renderPanel,SUBTITLE, true, ()->Actions.PAUSE_GAME.run(app)),
-                createActionLabel("Auto", renderPanel,SUBTITLE, true, app::transitionToReplayScreen),
-                createActionLabel("Step", renderPanel,SUBTITLE, true, app::transitionToReplayScreen));
+                createActionLabel("Auto", renderPanel,SUBTITLE, true, ()->app.getReplay().autoPlay()),
+                createActionLabel("Step", renderPanel,SUBTITLE, true, ()->app.getReplay().step()));
 
         addAll(pnStatusTop,
                 createLabel("Level", renderPanel, SUBTITLE, false),
@@ -483,7 +486,7 @@ public class GUI {
                 Box.createVerticalGlue(),
                 createActionLabel("Save and return to menu", renderPanel, TITLE, true, ()->Actions.SAVE_GAME.run(app)),
                 Box.createVerticalGlue(),
-                createActionLabel("Quit to menu", renderPanel, TITLE, true, app::transitionToMenuScreen),
+                createActionLabel("Quit to menu", renderPanel, TITLE, true,()->Actions.QUIT_TO_MENU.run(app)),
                 Box.createVerticalGlue());
         System.out.println("Done!");
         return pausePanel;
@@ -613,6 +616,7 @@ public class GUI {
      */
     public void transitionToGameScreen(){
         functionCardLayout.show(functionPanel, MODE_NORMAL);
+        pauseCardLayout.show(pausePanel, STATUS_RESUME);
         gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
         renderPanel.grabFocus();
@@ -623,6 +627,7 @@ public class GUI {
      */
     public void transitionToReplayScreen(){
         functionCardLayout.show(functionPanel, MODE_REPLAY);
+        pauseCardLayout.show(pausePanel, STATUS_RESUME);
         gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
     }
