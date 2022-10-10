@@ -184,6 +184,28 @@ public class Persistency {
     }
 
     /**
+     * Load configuration from res/config.xml
+     * 
+     * @return Configuration object
+     */
+    public static Configuration loadConfiguration() {
+        SAXReader reader = new SAXReader();
+        Document document;
+        try {
+            document = reader.read("res/config.xml");
+            return deserialiseConfiguration(document.getRootElement());
+        } catch (DocumentException e) {
+            try {
+                document = reader.read("res/defaultConfig.xml");
+            } catch (DocumentException f) {
+                f.printStackTrace();
+                return Configuration.getDefaultConfiguration();
+            }
+        }
+        return deserialiseConfiguration(document.getRootElement());
+    }
+
+    /**
      * Serialise a maze to an XML document
      * 
      * Example:
