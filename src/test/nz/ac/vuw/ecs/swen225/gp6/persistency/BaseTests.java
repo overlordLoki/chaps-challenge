@@ -134,7 +134,7 @@ public class BaseTests {
                 Map.entry(RESUME_GAME, new Controller.Key(0, VK_ESCAPE)),
                 Map.entry(TO_LEVEL_1, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_1)),
                 Map.entry(TO_LEVEL_2, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_2)),
-                Map.entry(QUIT_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_X)),
+                Map.entry(QUIT_TO_MENU, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_X)),
                 Map.entry(SAVE_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_S)),
                 Map.entry(LOAD_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_R)))));
 
