@@ -2,6 +2,7 @@ package nz.ac.vuw.ecs.swen225.gp6.recorder;
 
 import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.RecordTimeline;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
+import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
 
 /**
  * Class for recording actions in a game.
@@ -36,17 +37,18 @@ public class Record {
     }
 
     /**
-     * Stops the recording and saves it to a file
+     * Saves the recording to a file
      */
-    public void stopRecording(){
-        if(timeline == null){
-            System.out.println("Recording was not started");
-            return;
-        }
+    public void saveRecording(int slot){
         if(!timeline.hasNext()){
             System.out.println("No events to save");
             return;
         }
-        // Persistency.save(timeline);
+        try{
+            Persistency.saveRecordTimeline(timeline.getTimeline(), slot);
+            System.out.println("Saved recording to file");
+        } catch (Exception e){
+            System.out.println("Error saving recording");
+        }
     }
 }

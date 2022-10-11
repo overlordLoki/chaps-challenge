@@ -1,10 +1,12 @@
 package nz.ac.vuw.ecs.swen225.gp6.recorder;
 
+import org.dom4j.DocumentException;
+
 import nz.ac.vuw.ecs.swen225.gp6.app.App;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.Pair;
-import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.RecordTimeline;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.ReplayTimeline;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
+import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
 
 /**
  * Class for replaying a recorded game.
@@ -44,13 +46,14 @@ public class Replay implements Runnable {
      * Load method will load the game from the given file name
      * @param game the name of the game to load
      * @return this replay object to chain methods
+     * @throws DocumentException
      */
-    public Replay load(String game){
-        if(game == null) {
-            System.out.println("Game cannot be null");
+    public Replay load(int slot) {
+        try {
+            this.timeline = new ReplayTimeline<Actions>(Persistency.loadRecordTimeline(slot));
+        } catch (DocumentException e) {
+            e.printStackTrace();
         }
-        // this.timeline = Persistency.load(game);
-        this.timeline = new ReplayTimeline<Actions>(new RecordTimeline<Actions>());
         return this;
     }
 
