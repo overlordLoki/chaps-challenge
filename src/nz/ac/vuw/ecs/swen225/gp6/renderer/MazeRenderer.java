@@ -2,6 +2,7 @@ package nz.ac.vuw.ecs.swen225.gp6.renderer;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -92,15 +93,15 @@ public class MazeRenderer extends JPanel{
                 }
             }
         }
-        if(changingLevel){
-            // g.setColor(Color.BLACK);
-            // g.fillRect(0, 0, getWidth(), getHeight());
-            // g.setColor(Color.WHITE);
-            // g.setFont(new Font("TimesRoman", Font.PLAIN, 50));
-            // g.drawString("Level " + maze.getLevel(), getWidth()/2 - 100, getHeight()/2);
-            drawBackground(g);
-            changingLevel = false;
-        }
+        // if(changingLevel){
+        //     g.setColor(Color.BLACK);
+        //     g.fillRect(0, 0, getWidth(), getHeight());
+        //     g.setColor(Color.WHITE);
+        //     g.setFont(new Font("TimesRoman", Font.PLAIN, 50));
+        //     g.drawString("Level " + 2, getWidth()/2 - 100, getHeight()/2);
+        //     //drawBackground(g);
+        //     //changingLevel = false;
+        // }
     }
 
     /**
@@ -298,25 +299,28 @@ public class MazeRenderer extends JPanel{
             for(int j = 0; j < backgroundpeaces[i].length; j++) {
                 g.drawImage(backgroundpeaces[i][j], i*this.getWidth(), j*this.getHeight(), null);
                 try{
-                    Thread.sleep(1000);
+                    Thread.sleep(100);
                 }catch(Exception e) {}
             }
         }
-       
     }
 
     public BufferedImage[][] getPeaces(){
         //cut the background img into 4 peaces
-        BufferedImage[][] backgroundpeaces = new BufferedImage[2][2];
-        backgroundpeaces[0][0] = background.getSubimage(0, 0, background.getWidth()/2, background.getHeight()/2);
-        backgroundpeaces[0][1] = background.getSubimage(background.getWidth()/2, 0, background.getWidth()/2, background.getHeight()/2);
-        backgroundpeaces[1][0] = background.getSubimage(0, background.getHeight()/2, background.getWidth()/2, background.getHeight()/2);
-        backgroundpeaces[1][1] = background.getSubimage(background.getWidth()/2, background.getHeight()/2, background.getWidth()/2, background.getHeight()/2);
-        return backgroundpeaces;
+        BufferedImage img = getImage("background");
+        BufferedImage[][] imgs = new BufferedImage[2][2];
+        imgs[0][0] = img.getSubimage(0, 0, img.getWidth()/2, img.getHeight()/2);
+        imgs[0][1] = img.getSubimage(img.getWidth()/2, 0, img.getWidth()/2, img.getHeight()/2);
+        imgs[1][0] = img.getSubimage(0, img.getHeight()/2, img.getWidth()/2, img.getHeight()/2);
+        imgs[1][1] = img.getSubimage(img.getWidth()/2, img.getHeight()/2, img.getWidth()/2, img.getHeight()/2);
+        return imgs;
     }
 
-    public void changeLevel(){
+    public boolean changeLevel(){
         changingLevel = true;
+        JPanel panel = new JPanel();
+
+        return true;
     }
 
     //--------------------------------------getters and setters----------------------------------------------------------//
