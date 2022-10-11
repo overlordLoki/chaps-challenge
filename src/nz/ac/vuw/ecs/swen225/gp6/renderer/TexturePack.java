@@ -181,7 +181,7 @@ public class TexturePack {
             return switch(tile.type()){
                 case Floor -> getImage(Empty_tile);
                 case Empty -> Images.Empty_tile.getImg();
-                case Enemy -> Images.Enemy.getImg();
+                // case Enemy -> Images.Enemy.getImg();
                 case Wall -> Images.Wall.getImg();
                 case BlueKey -> Images.BlueKey.getImg();
                 case GreenKey -> Images.GreenKey.getImg();
