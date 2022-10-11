@@ -214,7 +214,12 @@ public class TexturePack {
             System.out.println("Image not found: " + imgName);
             return null;
         }
-    
+        
+        /**
+         * load the image from the file.
+         * @param path
+         * @return BufferedImage
+         */
         public static BufferedImage loadCustom(String path){
             try {
                 return ImageIO.read(new File("res/textures/Custom_Textures/"+path+".png"));
