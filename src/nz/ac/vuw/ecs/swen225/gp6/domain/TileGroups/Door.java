@@ -4,12 +4,22 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.Key.KeyColor;
 
+/**
+ * An abstract class that all door tiles must inherit.
+ */
 public abstract class Door extends AbstractTile {
     
+    /**
+     * constructor for a Door
+     * 
+     * @param info instance of tileInfo for a Door
+     */
     public Door(TileInfo info) {super(info);}
     
-    /*
-     * return the colour of the door (none if not a coloured door, e.g exit door)
+    /**
+     * gets the colour of the key of the door (none if not a coloured door, e.g exit door)
+     * 
+     * @return the colour of the key of the door (or none)
      */
     public abstract KeyColor color();
 

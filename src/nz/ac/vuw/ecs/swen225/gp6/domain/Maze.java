@@ -12,13 +12,19 @@ import java.util.stream.IntStream;
 
 
 
-
+/**
+ * A class that holds a 2d array of tiles representing the maze in the game.
+ */
 public class Maze {
     private Tile[][] tileArray;
     private int height; //height of tile array, how many rows (outer array) 
     private int width;  //width of tile array, how many columns (inner arrays)
     
-
+    /**
+     * Constructs a new 2d array of tiles based on a given 2d tile array.
+     * 
+     * @param tileArray a 2d array of type Tile
+     */
     public Maze(Tile[][] tileArray){
         this.tileArray = tileArray;
         this.height = tileArray.length;
@@ -27,18 +33,24 @@ public class Maze {
 
 
     //GETTERS:
-    /*
+    /**
      * get height of tile array
+     * 
+     * @return height of maze
      */
     public int height(){return height;}
 
-    /*
+    /**
      * get width of tile array
+     * 
+     * @return width of maze
      */
     public int width(){ return width;}
     
-    /*
-     * toString method which creates the board with each tile's given symbol
+    /**
+     * toString method which creates the board with each tile's given symbol.
+     * 
+     * @return the board in string format
      */
     public String toString(){
         Tile[][] tileArray = this.getTileArrayCopy();
@@ -56,8 +68,9 @@ public class Maze {
     }
 
     //TILE GETTERS:
-    /*
-     * @return a copy of tile array 
+    /**
+     * TODO:change
+     * @return a copy of tile array (SHALLOW COPY)
      */
     public Tile[][] getTileArrayCopy() {
         Tile[][] copy = new Tile[width][height];
@@ -89,8 +102,11 @@ public class Maze {
         return null;
     }
     
-    /*
+    /**
      * finds the number tiles with this tile type on this maze
+     * 
+     * @param type to count
+     * @return number of tiles with give type
      */
     public int getTileCount(TileType type){
         return (int)Arrays
@@ -100,25 +116,35 @@ public class Maze {
         .count();
     }
 
-    /*
+    /**
      * gets the tile at the given x and y co ordinates in the array
      * if location is out of bounds return null typed tile
+     * 
+     * @param x x coord
+     * @param y y coord
+     * @return the tile at the coords or the Null typed tile if its out of bounds.
      */
     public Tile getTileAt(int x, int y){
         if(Loc.checkInBound(new Loc(x, y), this) == false) return new Null(new TileInfo(null));
         return tileArray[x][y];
     }
 
-    /*
+    /**
      * gets the tile at the given location in the array
+     * 
+     * @param l location of tile
+     * @return the tile at the location or the Null typed tile if its out of bounds.
      */
     public Tile getTileAt(Loc l){
         if(Loc.checkInBound(l, this) == false) return new Null(new TileInfo(null));
         return tileArray[l.x()][l.y()];
     }
 
-    /*
-     * gets the first tile that satisfies the given predicate, otherwise a null typed tile
+    /**
+     * gets the first tile that satisfies the given predicate.
+     * 
+     * @param p predicate
+     * @return first tile that satisfies the predicate, or Null typed tile if none exist
      */
     public Tile getTileThat(Predicate<Tile> p){
         return Arrays
@@ -129,8 +155,11 @@ public class Maze {
         .orElse(new Null(new TileInfo(null)));
     }
     
-    /*
-     * get all the tiles that satisfy the given predicate, otherwise an empty list
+    /**
+     * get all the tiles that satisfy the given predicate
+     * 
+     * @param p predicate
+     * @return list of all tiles that satisfy the predicate, otherwise an empty list
      */
     public List<Tile> getAllTilesThat(Predicate<Tile> p){
         return Arrays
@@ -143,6 +172,9 @@ public class Maze {
     //SETTERS and ACTIONS:
     /**
      * pings all tiles in the maze
+     * 
+     * @param d - domain where the ping is taking place in 
+     * (this is since the ping may affect inventory, level index, etc)
      */
     public void pingMaze(Domain d){
         Arrays.stream(d.getCurrentMaze().tileArray).flatMap(Arrays::stream).forEach(t -> t.ping(d));
@@ -152,8 +184,7 @@ public class Maze {
      * place a new tile object of desired tile type at a given location on maze.
      * 
      * 
-     * @param x of tile (0 to max - 1)
-     * @param y of tile (0 to max - 1)
+     * @param loc - location of tile 
      * @param type enum for the tile type to place
      */
     public void setTileAt(Loc loc, TileType type){
@@ -165,8 +196,11 @@ public class Maze {
 
     }
 
-    /*
+    /**
      * set tile at a given location
+     * 
+     * @param loc - location of tile
+     * @param tile new tile to replace old tile
      */
     public void setTileAt(Loc loc, Tile tile){
         //check in bound

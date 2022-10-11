@@ -61,10 +61,9 @@ public class DomainTests {
                 5|/|_|y|Y|_|_|_|_|_|/|
                 6|/|_|b|B|_|_|_|_|_|/|
                 7|/|_|_|_|_|_|_|_|_|/|
-                8|/|_|H|E|_|C|_|_|_|/|
+                8|/|_|H|E|_|$|_|_|_|/|
                 9|/|/|/|/|/|/|/|/|/|/|
-                  0 1 2 3 4 5 6 7 8 9
-                  """;
+                  0 1 2 3 4 5 6 7 8 9""";
         String moves = "";
         String output = """
                 0|/|/|/|/|/|/|/|/|/|/|
@@ -75,11 +74,12 @@ public class DomainTests {
                 5|/|_|y|Y|_|_|_|_|_|/|
                 6|/|_|b|B|_|_|_|_|_|/|
                 7|/|_|_|_|_|_|_|_|_|/|
-                8|/|_|H|E|_|C|_|_|_|/|
+                8|/|_|H|E|_|$|_|_|_|/|
                 9|/|/|/|/|/|/|/|/|/|/|
                   0 1 2 3 4 5 6 7 8 9""";
         testHarnessValid(input, moves, output);
     }
+
 
 
     //HELPER METHODS:
@@ -109,11 +109,15 @@ public class DomainTests {
      * with given info (e.g location x and y)
      */
     public Tile makeTile(char c, int x, int y){
-        TileType  type = Arrays.stream(TileType.values())
-        .filter(t -> TileType.makeTile(t, new TileInfo(null)).symbol() == c).findFirst().get();
-
-        TileInfo info = new TileInfo(new Loc(x,y));
-        return TileType.makeTile(type, info);
+        try{
+            TileType  type = Arrays.stream(TileType.values())
+            .filter(t -> TileType.makeTile(t, new TileInfo(null)).symbol() == c).findFirst().get();
+            TileInfo info = new TileInfo(new Loc(x,y));
+            return TileType.makeTile(type, info);
+        } catch (Exception e){
+            System.out.println(e.getMessage() + c);
+            return new Null(new TileInfo(null));
+        }
     }
 
     /*

@@ -6,6 +6,9 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.*;
 
+/**
+ * A class representing a enemy in the game which can damage/kill a hero.
+ */
 public class Enemy extends Actor{
     Direction staticDirection = Direction.Up; //should never be None
     Tile tileOn; //tile the enemy will replace when moved
@@ -16,7 +19,13 @@ public class Enemy extends Actor{
     }
 
     @Override public TileType type(){ return TileType.Enemy;}
+    /**
+     * @return tile to replace under itself, when enemy moves
+     */
     public Tile tileOn(){return tileOn;} //returns the tile the hero will replace when moved
+    /**
+     * @return direction that enemy is facing(not necessarily will move)
+     */
     public Direction dir(){return staticDirection;} //returns the direction the hero is facing
     
     @Override public boolean damagesHero(Domain d){return true;}
@@ -49,7 +58,7 @@ public class Enemy extends Actor{
         lvl.maze.getTileAt(loc2).setOn(this, d);   //set new location to enemy, NOTE: Order matters here!
 
         this.tileOn = tileToOccupy.replaceWith(); // set tile heros to replace when moving off
-        staticDirection = lvl.getDirection(); //set enemys direction of facing 
+        staticDirection = lvl.getHeroNextStep(); //set enemys direction of facing 
     } 
     
     //TODO: figure out how to make ben override/make all this

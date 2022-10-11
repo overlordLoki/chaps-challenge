@@ -9,12 +9,18 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.IntegrityCheck.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.*;
 
+/**
+ * Represents a complete game state, with levels.
+ * Each level includes an inventory, maze, level number
+ * direction of heros next move, time limit, current time, etc.
+ */
 public class Domain {
     private List<Level> levels; //each corresponds to a level (in order)
-
     private int currentLvlIndex; //Note: first level should be 1
 
-
+    /**
+     * enum for domainEvents that the app will be informed of when triggered.
+     */
     public enum DomainEvent {
         onWin,
         onLose,
@@ -26,6 +32,12 @@ public class Domain {
 
 
     //CONSTRUCTORS:
+    /**
+     * constructor with a list of levels. 
+     * 
+     * @param levels - must be in order.
+     * @param currentLvl - the index of the current level starting at 1
+     */
     public Domain(List<Level> levels, int currentLvl){
         this.levels = levels;
         this.currentLvlIndex = currentLvl;
@@ -34,6 +46,15 @@ public class Domain {
         for(DomainEvent e : DomainEvent.values()){eventListeners.put(e, new ArrayList<Runnable>());}
     }
 
+    /**
+     * constructor with a list of mazes, and an inventory for current level (all other levels get an empty inv).
+     * Levels are created internally from mazes in order. Also timelimits default to 120 seconds, and current 
+     * times to 0 for each level.
+     * 
+     * @param maze - must be in order.
+     * @param inventory - inventory for current level
+     * @param currentLvl - the index of the current level starting at 1
+     */
     public Domain(List<Maze> mazes, Inventory inv, int currentLvl){
         this(new ArrayList<>(), currentLvl);
 
@@ -44,11 +65,22 @@ public class Domain {
         });
     }
 
+    /**
+     * constructor with a list of mazes, inventories, levelTimeLimits, currentTimes (all must be same size and in order).
+     * Levels are created internally from these lists in order.
+     * 
+     * @param mazes - must be in order.
+     * @param invs - must be in order.
+     * @param levelTimeLimits - must be in order.
+     * @param currentTimes - must be in order.
+     * @param currentLvl - the index of the current level starting at 1.
+     */
     public Domain(List<Maze> mazes, List<Inventory> invs,  List<Integer> levelTimeLimits, List<Integer> currentTimes,
      int currentLvl){
         this(new ArrayList<>(), currentLvl);
 
-        if(mazes.size() != invs.size() || invs.size()!= levelTimeLimits.size()){ //ensure there is a 1:1 relationship
+        if(mazes.size() != invs.size() || invs.size()!= levelTimeLimits.size()
+        || levelTimeLimits.size() != currentTimes.size()){ //ensure there is a 1:1 relationship
             throw new IllegalArgumentException("inconsistency in domain inputs");
         }
 
@@ -60,23 +92,31 @@ public class Domain {
 
 
     //GETTERS:
-    /*
-     * returns list of mazes
+    /**
+     * gets a list of mazes in order of the levels they are in.
+     * 
+     * @return - list of mazes 
      */
     public List<Maze> getMazes(){ return levels.stream().map(l -> l.maze).toList();}
 
-    /*
-     * returns current maze
+    /**
+     * gets the maze of current level
+     * 
+     * @return - maze of current level
      */
-    public Maze getCurrentMaze(){ return getMazes().get(currentLvlIndex - 1);}
+    public Maze getCurrentMaze(){ return getCurrentLevelObject().maze;}
 
-    /*
-     * returns the inventory of the current level
+    /**
+     * gets the inventory of the current level
+     * 
+     * @return - inventory of the current level
      */
     public Inventory getInv(){return getCurrentLevelObject().inv;}
 
-    /*
+    /**
      * returns current level object
+     * 
+     * @return - current level object
      */
     public Level getCurrentLevelObject(){return levels.get(currentLvlIndex - 1);}
         
@@ -124,8 +164,8 @@ public class Domain {
      */
     public void moveRight(){getCurrentLevelObject().makeHeroStep(Direction.Right);}
 
-    /*
-     * pings the game one step, and replaces the current maze and inventory with a new one
+    /**
+     * pings the game one step, and replaces the current level object with a new level.
      */
     public void pingDomain(){
         CheckGame.checkCurrentState(this); //check current state integrity
@@ -143,7 +183,7 @@ public class Domain {
         List<Level> nextLevels = new ArrayList<Level>(this.levels);
         nextLevels.set(this.currentLvlIndex - 1, 
         new Level(nextMaze, nextInv, this.currentLvlIndex, currentLvl.timeLimit, 
-        currentLvl.getCurrentTime(), currentLvl.getDirection()));
+        currentLvl.getCurrentTime(), currentLvl.getHeroNextStep()));
 
         //copy domain 
         Domain nextDomain = new Domain(nextLevels, this.currentLvlIndex);
@@ -159,28 +199,36 @@ public class Domain {
     }
     
     //GETTERS:
-    /*
+    /**
      * gets the index of current lvl
+     * 
+     * @return index of current lvl
      */
     public int getCurrentLevel(){return currentLvlIndex;}
 
-    /*
+    /**
      * gets current levels time limit
+     * 
+     * @return time limit of current level
      */
     public int getCurrentTimeLimit(){return getLevelTimeLimits().get(currentLvlIndex - 1);}
 
     /**
-     * gets number of treasures left on current maze
+     * gets number of treasures left on current level's maze
+     * 
+     * @return number of treasures left 
      */
     public int getTreasuresLeft(){return getCurrentMaze().getTileCount(TileType.Coin);}
 
     /**
-     * gets a list of current items in the inventory 
+     * gets a list of current items in the inventory
+     * 
+     * @return list of items in inventory 
      */
     public List<Tile> getInventory(){return getInv().getItems();}
 
     /**
-     * gets a copy of current level's maze's game array
+     * gets a copy of current level's maze's game array (shallow copy)
      * 
      * @return a copy of current level's maze's game array
      */
@@ -189,7 +237,8 @@ public class Domain {
     /**
      * a specific toString method that uses the toString methods in 
      * maze and inventory as well as displaying the current level
-     * TODO check if works
+     * 
+     * @return string representation of the Maze and Inventory at the moment
      */
     public String toString(){
         String s = "Current Level: " + currentLvlIndex + "\n";
@@ -212,8 +261,10 @@ public class Domain {
         eventListeners.put(event, listeners); 
     }
 
-    /*
+    /**
      * sets current level to specified level index
+     * 
+     * @param lvl the level index to switch to
      */
     public void setCurrentLevel(int lvl) {this.currentLvlIndex = lvl;}
     
