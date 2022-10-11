@@ -181,7 +181,7 @@ public class TexturePack {
             return switch(tile.type()){
                 case Floor -> getImage(Empty_tile);
                 case Empty -> Images.Empty_tile.getImg();
-                case Enemy -> Images.Enemy.getImg();
+                // case Enemy -> Images.Enemy.getImg();
                 case Wall -> Images.Wall.getImg();
                 case BlueKey -> Images.BlueKey.getImg();
                 case GreenKey -> Images.GreenKey.getImg();
@@ -222,6 +222,13 @@ public class TexturePack {
          */
         public static BufferedImage loadCustom(String path){
             try {
+                //check if the file exists already as enum
+                for (Images img : Images.values()) {
+                    if (img.getName().equals(path)) {
+                        return img.getImg();
+                    }
+                }
+
                 return ImageIO.read(new File("res/Custom_Textures/"+path+".png"));
             } catch (IOException e) {
                 try{
