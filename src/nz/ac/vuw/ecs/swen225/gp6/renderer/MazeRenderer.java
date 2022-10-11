@@ -32,7 +32,7 @@ public class MazeRenderer extends JPanel{
     private int patternSize = 100; //the size of the pattern
     private int renderSize = 7; //the size of the render
     private int minRenderSize = 1, maxRenderSize = 50; //the min and max render size
-    JPanel backgroundPanel; //the background panel
+
 
 //----------------------------------Constructor----------------------------------------------
     /**
@@ -93,7 +93,21 @@ public class MazeRenderer extends JPanel{
                 }
             }
         }
+        if(changinglvl){
+            g.setColor(Color.BLACK);
+            g.fillRect(0, 0, getWidth(), getHeight());
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("TimesRoman", Font.PLAIN, 50));
+            g.drawString("Level " + 2, getWidth()/2 - 100, getHeight()/2);
+            cutsceneFrams++;
+        }
+        if (cutsceneFrams >= cutsceneFramsMax){
+            changinglvl = false;
+            finishedObserver.run();
+            cutsceneFrams = 0;
+        }
     }
+
 
     /**
      * get the hero image depending on the direction
@@ -306,30 +320,18 @@ public class MazeRenderer extends JPanel{
         imgs[1][1] = img.getSubimage(img.getWidth()/2, img.getHeight()/2, img.getWidth()/2, img.getHeight()/2);
         return imgs;
     }
+    private boolean changinglvl = false;
+    
+    private int cutsceneFrams = 0;
+    private int cutsceneFramsMax = 200;
+    private Runnable finishedObserver = ()->{};
 
-    public boolean changeLevel(){
-        backgroundPanel = new JPanel(){
-            @Override
-            public void paintComponent(Graphics g){
-                super.paintComponent(g);
-                g.setColor(Color.BLACK);
-                g.fillRect(0, 0, getWidth(), getHeight());
-                g.setColor(Color.WHITE);
-                g.setFont(new Font("TimesRoman", Font.PLAIN, 50));
-                g.drawString("Level " + 2, getWidth()/2 - 100, getHeight()/2);
-            }
-        };
-        backgroundPanel.setSize(this.getSize());
-        this.add(backgroundPanel);
-        return true;
-    }
+    public void changeLevel(Runnable observer){
+        this.finishedObserver = observer;
+        changinglvl = true;
+        cutsceneFrams = 0;
+        // run sequence here
 
-    //remove the backgroundPanel
-    /**
-     * remove the backgroundPanel
-     */
-    public void removeBackgroundPanel(){
-        this.remove(backgroundPanel);
     }
 
     //--------------------------------------getters and setters----------------------------------------------------------//
