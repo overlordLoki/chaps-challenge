@@ -222,7 +222,7 @@ public class TexturePack {
          */
         public static BufferedImage loadCustom(String path){
             try {
-                return ImageIO.read(new File("res/textures/Custom_Textures/"+path+".png"));
+                return ImageIO.read(new File("res/Custom_Textures/"+path+".png"));
             } catch (IOException e) {
                 try{
                     return ImageIO.read(new File("res/textures/Custom_Textures/default.png"));
