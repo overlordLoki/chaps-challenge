@@ -74,8 +74,7 @@ public final class Commands {
      */
     public void test(){
         logPanel.println("Running Test");
-        Textures textures = new Textures();
-        logPanel.println(textures.test());
+        mazeRenderer.changeLevel();
     }
 
     //set texure pack to dogs

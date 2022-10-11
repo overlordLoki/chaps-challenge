@@ -31,7 +31,7 @@ public class MazeRenderer extends JPanel{
     private int patternSize = 100; //the size of the pattern
     private int renderSize = 7; //the size of the render
     private int minRenderSize = 1, maxRenderSize = 50; //the min and max render size
-
+    private boolean changingLevel = false; //if the level is changing
 
 //----------------------------------Constructor----------------------------------------------
     /**
@@ -91,6 +91,15 @@ public class MazeRenderer extends JPanel{
                     g.drawImage(texturePack.getImage(tile), i * tileWidth, j * tileHeight, tileWidth, tileHeight, null);
                 }
             }
+        }
+        if(changingLevel){
+            // g.setColor(Color.BLACK);
+            // g.fillRect(0, 0, getWidth(), getHeight());
+            // g.setColor(Color.WHITE);
+            // g.setFont(new Font("TimesRoman", Font.PLAIN, 50));
+            // g.drawString("Level " + maze.getLevel(), getWidth()/2 - 100, getHeight()/2);
+            drawBackground(g);
+            changingLevel = false;
         }
     }
 
@@ -276,8 +285,39 @@ public class MazeRenderer extends JPanel{
         return true;
     }
 
+    //---------------------------------------------------------------------------------------------------//
 
+    //draw the background peace by peace
+    /**
+     * draw the background peace by peace
+     * @param g
+     */
+    public void drawBackground(Graphics g) {
+        BufferedImage[][] backgroundpeaces = getPeaces();
+        for(int i = 0; i < backgroundpeaces.length; i++) {
+            for(int j = 0; j < backgroundpeaces[i].length; j++) {
+                g.drawImage(backgroundpeaces[i][j], i*this.getWidth(), j*this.getHeight(), null);
+                try{
+                    Thread.sleep(1000);
+                }catch(Exception e) {}
+            }
+        }
+       
+    }
 
+    public BufferedImage[][] getPeaces(){
+        //cut the background img into 4 peaces
+        BufferedImage[][] backgroundpeaces = new BufferedImage[2][2];
+        backgroundpeaces[0][0] = background.getSubimage(0, 0, background.getWidth()/2, background.getHeight()/2);
+        backgroundpeaces[0][1] = background.getSubimage(background.getWidth()/2, 0, background.getWidth()/2, background.getHeight()/2);
+        backgroundpeaces[1][0] = background.getSubimage(0, background.getHeight()/2, background.getWidth()/2, background.getHeight()/2);
+        backgroundpeaces[1][1] = background.getSubimage(background.getWidth()/2, background.getHeight()/2, background.getWidth()/2, background.getHeight()/2);
+        return backgroundpeaces;
+    }
+
+    public void changeLevel(){
+        changingLevel = true;
+    }
 
     //--------------------------------------getters and setters----------------------------------------------------------//
     //Basic getters and setters
