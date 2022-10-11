@@ -1,6 +1,10 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.ClassFinder;
+
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -74,6 +78,7 @@ public enum TileType{
      * 
      * @param t tile type to make
      * @param info an instance of the class TileInfo that has all the necessary information that tile needs
+     * @return an instance of the desired tile class
      * 
      * @throws IllegalArgumentException if a file in tiles with same name as tile type given is not found
      * @throws NullPointerException if t or info are null
@@ -81,11 +86,51 @@ public enum TileType{
     public static Tile makeTile(TileType t, TileInfo info){
         if(t == null || info == null) throw new NullPointerException("tile type or tile info cannot be null (TileType.makeTile)");
         try{
-            Class<?> c = Class.forName("nz.ac.vuw.ecs.swen225.gp6.domain.Tiles." + t.name());
+            Class<?> c = ClassFinder.findClass("nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.", t.name());
             return (Tile) c.getDeclaredConstructor(TileInfo.class).newInstance(info);
         }catch(Exception e){
             throw new IllegalArgumentException("There isn't a class for tile type: " + t.name());
         }
+    }
+
+    /**
+     * this method will return a tile type based on its symbol, this will also look into 
+     * custom tile's folder. Therefore it  may be able to create a wider range of tile types 
+     * than makeTile method since all custom tiles have the TileType.Other, but will have different symbols.
+     * 
+     * @param symbol symbol of desired tile class
+     * @param info an instance of the TileInfo object that has all the necessary
+     *  intial information that tile needs
+     * 
+     * @return an instance of the desired tile class
+     * 
+     * @throws IllegalArgumentException if a tile type with same symbol as given is not found
+     */
+    public static Tile makeTileFromSymbol(char symbol, TileInfo info) {
+        //search in preset tile types
+        TileType type = Arrays.stream(TileType.values())
+            .filter(t -> TileType.makeTile(t, new TileInfo(null)).symbol() == symbol).
+            findFirst()
+            .orElse(TileType.Other);
+        
+        if(type != TileType.Other) return TileType.makeTile(type, info);
+        
+        //search in custom tile types
+        try{
+            List<Class<?>> classes = ClassFinder.findAllClassesIn("custom.Tiles");
+            return (Tile)classes.stream()
+            .map(c -> {
+                try{return c.getDeclaredConstructor(TileInfo.class).newInstance(info); }
+                catch(Exception e){ return new Null(new TileInfo(null)); }}
+            )
+            .filter(t -> ((Tile)t).symbol() == symbol)
+            .findFirst()
+            .get();
+        } catch (Exception e){
+            throw new IllegalArgumentException("Tiles class with symbol " + symbol 
+            + " not defined in any tile source(preset tiles or custom ones)");
+        }
+        
     }
     
     /**

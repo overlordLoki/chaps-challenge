@@ -1,6 +1,7 @@
 package test.nz.ac.vuw.ecs.swen225.gp6.Domain;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.AbstractTile;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.Tile;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileInfo;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
@@ -12,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -51,7 +53,7 @@ public class DomainTests {
 
     @Test
     public void testMazeCreation(){
-        // no Moves to check maze initialisation
+        // no Moves to check maze creation from string form
         String input = """
                 0|/|/|/|/|/|/|/|/|/|/|
                 1|/|_|_|_|_|_|_|_|_|/|
@@ -79,8 +81,108 @@ public class DomainTests {
                   0 1 2 3 4 5 6 7 8 9""";
         testHarnessValid(input, moves, output);
     }
+
+    @Test 
+    public void testSimpleMovement(){
+        String input = """
+            0|_|/|/|/|/|/|/|/|/|_|
+            1|/|$|_|/|X|_|_|_|$|/|
+            2|/|_|_|/|_|_|_|_|_|/|
+            3|/|_|_|/|_|_|/|/|/|/|
+            4|/|_|_|_|_|_|_|_|_|/|
+            5|/|_|_|_|_|_|_|_|_|/|
+            6|/|/|/|/|_|_|/|_|_|/|
+            7|/|_|_|_|H|_|/|_|_|/|
+            8|/|$|_|_|_|_|/|_|$|/|
+            9|_|/|/|/|/|/|/|/|/|_|
+              0 1 2 3 4 5 6 7 8 9
+                """;
+        String moves = "DRUUUULL";
+        String output = """
+            0|_|/|/|/|/|/|/|/|/|_|
+            1|/|$|_|/|X|_|_|_|$|/|
+            2|/|_|_|/|_|_|_|_|_|/|
+            3|/|_|_|/|_|_|/|/|/|/|
+            4|/|_|_|H|_|_|_|_|_|/|
+            5|/|_|_|_|_|_|_|_|_|/|
+            6|/|/|/|/|_|_|/|_|_|/|
+            7|/|_|_|_|_|_|/|_|_|/|
+            8|/|$|_|_|_|_|/|_|$|/|
+            9|_|/|/|/|/|/|/|/|/|_|
+              0 1 2 3 4 5 6 7 8 9""";;
+        testHarnessValid(input, moves, output);
+    }
+
+    @Test 
+    public void testSimpleMovingEnemy(){
+        Tile t = new Enemy(new TileInfo(null));
+    }
     
 
+    @Test
+    public void testDirectionTransformLoc(){
+        assertEquals( new Loc(0,2), Direction.Down.transformLoc(new Loc(0, 1)) );
+        assertEquals( new Loc(0, 0), Direction.Up.transformLoc(new Loc(0,1)) );
+        assertEquals( new Loc(0,0), Direction.Left.transformLoc(new Loc(1,0)) );
+        assertEquals( new Loc(1,0), Direction.Right.transformLoc( new Loc(0,0)) );
+    }
+
+    @Test
+    public void testDirectionFromSymbol(){
+        assertEquals(Direction.Down, Direction.getDirFromSymbol('D'));
+        assertEquals(Direction.Left, Direction.getDirFromSymbol('L') );
+        assertEquals(Direction.Right, Direction.getDirFromSymbol('R') );
+        assertEquals(Direction.Up, Direction.getDirFromSymbol('U') );
+    }
+
+    @Test 
+    public void checkAllMethodsInLoc(){
+    
+        Loc loc = new Loc(1,1);
+        Loc loc2 = new Loc(1,1); // the same thing as loc
+        Loc loc3 = new Loc(2,2); // different to loc
+        Loc loc4 = new Loc(1, 2); 
+
+        assertEquals(1, loc.x() );
+        assertEquals(1, loc.y() );
+
+        assertEquals(true, loc.equals(loc2) );
+        assertEquals(false, loc.equals(loc3) );
+        assertEquals(false, loc.equals(loc4) );
+        assertEquals(false, loc.equals(new Wall(new TileInfo(loc)) ) ); // loc is not a wall!
+        assertEquals(true, loc.hashCode() == loc2.hashCode() );
+
+        loc.x(2);
+        loc.y(2);
+        assertEquals(true, loc.equals(loc3));
+
+        assertThrows(IllegalArgumentException.class, ()->{loc.x(-1);});
+        assertThrows(IllegalArgumentException.class, ()->{loc.y(-1);});
+        assertThrows(IllegalArgumentException.class, ()->{Loc l = new Loc(0, -1);});
+        assertThrows(IllegalArgumentException.class, ()->{Loc l = new Loc(-1, 0);});
+
+        assertEquals(false, Loc.checkInBound(new Loc(0, 100), new Maze(new Tile[4][4])));
+        assertEquals(false, Loc.checkInBound(new Loc(100, 0), new Maze(new Tile[4][4])));
+        assertEquals(true, Loc.checkInBound(new Loc(1, 1), new Maze(new Tile[4][4]) ));
+
+
+    }
+
+    @Test 
+    public void checkAllClassesInTileAnatomy(){
+        //Abstract tile
+        assertThrows(NullPointerException.class, () ->{
+        Tile t = new AbstractTile(null) {
+            @Override
+            public TileType type() {
+                return TileType.Other;
+            }
+        };});
+
+        //Tile interface
+
+
+    }
 
 
     //HELPER METHODS:
@@ -104,6 +206,13 @@ public class DomainTests {
         assertEquals(output, maze.toString());
     }
 
+    /**
+     * TODO 
+     * @param input
+     * @param moves
+     * @param output
+     * @param exception
+     */
     public void testHarnessInvalid(String input, String moves, String output, Class<? extends Throwable> exception){
         Maze maze = mazeParser(input);
         assertThrows(exception, ()-> doMoves(new Domain(List.of(maze), new Inventory(8), 1), moves));
@@ -116,7 +225,7 @@ public class DomainTests {
 
     /**
      * makes tile object from given character, 
-     * with given info (e.g location x and y)
+     * with given info (e.g location x and y) 
      * 
      * @param c the character to make a tile from
      * @param x co ord of tile
@@ -148,7 +257,7 @@ public class DomainTests {
         // for each char in sequence
         for (char c : sequence.toCharArray()) {
             level.makeHeroStep(Direction.getDirFromSymbol(c));
-            domain.pingDomain();
+            domain.getCurrentMaze().pingMaze(domain);
         }
     }
 
@@ -170,7 +279,8 @@ public class DomainTests {
         Tile[][] tiles = new Tile[StringTiles.length][StringTiles[0].length-1];
         for(int y = 0; y < StringTiles.length; y++){
             for(int x = 0; x < StringTiles[0].length-1; x++){               
-                tiles[x][y] = makeTile(StringTiles[y][x+1].charAt(0), x, y);
+                tiles[x][y] = TileType.makeTileFromSymbol
+                (StringTiles[y][x+1].charAt(0), new TileInfo(new Loc(x, y)));
             }
         }
 

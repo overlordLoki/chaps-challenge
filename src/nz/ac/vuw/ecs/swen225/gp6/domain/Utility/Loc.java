@@ -23,32 +23,63 @@ public class Loc{
         this.y = y;
     }
 
-    /*
-     * get x co ordinate of location.
+    /**
+     * @return x co ordinate of location
      */
     public int x(){return x;}
-    /*
-     * get y co ordinate of location.
+    /**
+     * @return y co ordinate of location.
      */
     public int y(){return y;}
 
-    /*
+    /**
      * set the x co ordinate of location.
+     * @param x co ordinate
+     * 
+     * @throws IllegalArgumentException when co ordinate argument is < 0
      */
-    public void x(int x){this.x = x;}
+    public void x(int x){
+        if(x < 0) throw new IllegalArgumentException("location cant be negative");
+        this.x = x;
+    }
 
-    /*
+    /**
      * set the y co ordinate of location.
+     * @param y co ordinate
+     * 
+     * @throws IllegalArgumentException when co ordinate argument is < 0
      */
-    public void y(int y){this.y = y;}
+    public void y(int y){
+        if(y < 0) throw new IllegalArgumentException("location cant be negative");
+        this.y = y;
+    }
 
 
-    /*
-     * returns true if a given location is in bounds, else false.
+    /**
+     * @return true if a given location is in bounds, else false.
      */
     public static boolean checkInBound(Loc l, Maze m) {
         if( l.x() < 0 || l.y() < 0 || l.x() > m.width() - 1 || l.y() > m.height() - 1)return false;
         return true;
     }
+
+    /**
+     * if x and y coordinates of this location is equal to a given object that is also a location, 
+     * return true, else false
+     * 
+     * @param o object to compare to.
+     * @return true if o is a location and shares same x and y values as this location
+     */
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof Loc == false) return false; //if not loc object 
+        Loc loc = (Loc)o;
+        if(this.x() != loc.x() ||this.y() != loc.y() ) return false; //if x's or y's dont match
+        return true;
+    }
+
+    @Override
+    public int hashCode(){return x * 31 + y;}
+        
     
 }
