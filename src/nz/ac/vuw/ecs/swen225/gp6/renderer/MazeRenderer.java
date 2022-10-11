@@ -32,7 +32,7 @@ public class MazeRenderer extends JPanel{
     private int patternSize = 100; //the size of the pattern
     private int renderSize = 7; //the size of the render
     private int minRenderSize = 1, maxRenderSize = 50; //the min and max render size
-    private boolean changingLevel = false; //if the level is changing
+    JPanel backgroundPanel; //the background panel
 
 //----------------------------------Constructor----------------------------------------------
     /**
@@ -93,15 +93,6 @@ public class MazeRenderer extends JPanel{
                 }
             }
         }
-        // if(changingLevel){
-        //     g.setColor(Color.BLACK);
-        //     g.fillRect(0, 0, getWidth(), getHeight());
-        //     g.setColor(Color.WHITE);
-        //     g.setFont(new Font("TimesRoman", Font.PLAIN, 50));
-        //     g.drawString("Level " + 2, getWidth()/2 - 100, getHeight()/2);
-        //     //drawBackground(g);
-        //     //changingLevel = false;
-        // }
     }
 
     /**
@@ -317,10 +308,28 @@ public class MazeRenderer extends JPanel{
     }
 
     public boolean changeLevel(){
-        changingLevel = true;
-        JPanel panel = new JPanel();
-
+        backgroundPanel = new JPanel(){
+            @Override
+            public void paintComponent(Graphics g){
+                super.paintComponent(g);
+                g.setColor(Color.BLACK);
+                g.fillRect(0, 0, getWidth(), getHeight());
+                g.setColor(Color.WHITE);
+                g.setFont(new Font("TimesRoman", Font.PLAIN, 50));
+                g.drawString("Level " + 2, getWidth()/2 - 100, getHeight()/2);
+            }
+        };
+        backgroundPanel.setSize(this.getSize());
+        this.add(backgroundPanel);
         return true;
+    }
+
+    //remove the backgroundPanel
+    /**
+     * remove the backgroundPanel
+     */
+    public void removeBackgroundPanel(){
+        this.remove(backgroundPanel);
     }
 
     //--------------------------------------getters and setters----------------------------------------------------------//

@@ -16,6 +16,8 @@ public final class Commands {
         addCommands("test", "test", this::test);
         addCommands("packsNumber", "Displays the number of texture packs", this::numberOfPacks);
         addCommands("setDogs", "Sets the texture pack to dogs", this::setDogs);
+        //remove background panel
+        addCommands("rmLVL", "Removes the background panel", this::rmlvl);
     }
 
     /**
@@ -84,6 +86,10 @@ public final class Commands {
      */
     public void setDogs(){
         mazeRenderer.setTexturePack("Dogs");
+    }
+
+    public void rmlvl(){
+        mazeRenderer.removeBackgroundPanel();
     }
 
 
