@@ -7,7 +7,7 @@ package nz.ac.vuw.ecs.swen225.gp6.app.utilities;
  * 
  * @author Jeff Lin
  */
-record Pair<T,E>(T key, E value) {
+public record Pair<T,E>(T key, E value) {
     @Override
     public String toString() {
         return key + " : " + value;

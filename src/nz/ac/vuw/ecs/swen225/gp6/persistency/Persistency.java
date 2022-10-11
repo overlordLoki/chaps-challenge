@@ -36,10 +36,14 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
 
 import nz.ac.vuw.ecs.swen225.gp6.app.*;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
+import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Configuration;
+import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller.Key;
 
 public class Persistency {
     public record Log(LocalDateTime date, String message) {
@@ -79,32 +83,91 @@ public class Persistency {
         }).filter(Objects::nonNull).toList();
     }
 
-    enum Keys {
-        UP, DOWN, LEFT, RIGHT, PAUSE, RESUME, JUMP1, JUMP2, QUIT, SAVE, RELOAD
-    }
+    /**
+     * Serialise the configuration file
+     * 
+     * @param config The configuration object
+     * @return The xml element
+     */
+    public static Element serialiseConfiguration(Configuration config) {
+        Element root = DocumentHelper.createElement("configuration");
 
-    record Settings(String texturePack, EnumMap<Keys, String> keyBindings, Boolean musicEnabled) {
+        // add texture pack
+        Element texturePack = root.addElement("texturePack");
+        texturePack.setText(config.getTexturePack());
+
+        // add key bindings
+        Element keyBindings = root.addElement("keyBindings");
+        for (Actions action : Actions.values()) {
+            Key key = config.getUserKeyBindings().get(action);
+            if (key == null)
+                continue;
+            Element keyElement = keyBindings.addElement(action.name());
+            keyElement.addAttribute("modifier", Integer.toString(key.modifier()));
+            keyElement.addAttribute("key", Integer.toString(key.key()));
+        }
+
+        // add music enabled
+        Element musicEnabled = root.addElement("musicEnabled");
+        musicEnabled.setText(Boolean.toString(config.isMusicOn()));
+
+        // add view distance
+        Element viewDistance = root.addElement("viewDistance");
+        viewDistance.setText(Integer.toString(config.getViewDistance()));
+
+        return root;
     }
 
     /**
-     * Deserialize the settings xml
+     * Deserialise the configuration file
      * 
-     * @return Settings object
+     * @param element The xml element
+     * @return Configuration object
      */
-    public static Settings deserializeSettings(Element root) {
+    public static Configuration deserialiseConfiguration(Element root) {
         // get texture pack
         String texturePack = root.element("texturePack").getText();
 
         // get key bindings
-        EnumMap<Keys, String> keyBindings = new EnumMap<>(Keys.class);
-        for (Keys key : Keys.values()) {
-            keyBindings.put(key, root.element("keyBindings").element(key.name()).getText());
+        EnumMap<Actions, Key> keyBindings = new EnumMap<>(Actions.class);
+        for (Actions action : Actions.values()) {
+            Element keyElement = root.element("keyBindings").element(action.name());
+            if (keyElement == null)
+                continue;
+            int modifier = Integer.parseInt(keyElement.attributeValue("modifier"));
+            int key = Integer.parseInt(keyElement.attributeValue("key"));
+            keyBindings.put(action, new Key(modifier, key));
         }
 
         // get music enabled
         Boolean musicEnabled = Boolean.parseBoolean(root.element("musicEnabled").getText());
 
-        return new Settings(texturePack, keyBindings, musicEnabled);
+        // get view distance
+        Integer viewDistance = Integer.parseInt(root.element("viewDistance").getText());
+
+        return new Configuration(musicEnabled, texturePack, viewDistance, keyBindings);
+    }
+
+    /**
+     * Load configuration from res/config.xml
+     * 
+     * @return Configuration object
+     */
+    public static Configuration loadConfiguration() {
+        SAXReader reader = new SAXReader();
+        try {
+            Document document = reader.read("res/config.xml");
+            return deserialiseConfiguration(document.getRootElement());
+        } catch (Throwable e) {
+            try {
+                log("Failed to load configuration: " + e.getMessage());
+                Document document = reader.read("res/defaultConfig.xml");
+                return deserialiseConfiguration(document.getRootElement());
+            } catch (Throwable f) {
+                f.printStackTrace();
+                return Configuration.getDefaultConfiguration();
+            }
+        }
     }
 
     /**
@@ -145,17 +208,17 @@ public class Persistency {
      *
      * @return The serialised domain as an XML document
      */
-    public static Document serializeDomain(Domain domain) {
+    public static Document serialiseDomain(Domain domain) {
         Document document = DocumentHelper.createDocument();
         Element root = document.addElement("domain");
         Element levels = root.addElement("levels");
         for (int i = 0; i < domain.getMazes().size(); i++) {
             Maze maze = domain.getMazes().get(i);
-            Document mazeDoc = serializeMaze(maze, i);
+            Document mazeDoc = serialiseMaze(maze, i);
             levels.add(mazeDoc.getRootElement());
         }
         levels.addAttribute("current", Integer.toString(domain.getCurrentLevel()));
-        root.add(serializeInventory(domain.getInv()).getRootElement());
+        root.add(serialiseInventory(domain.getInv()).getRootElement());
 
         return document;
     }
@@ -166,15 +229,15 @@ public class Persistency {
      * @param document The XML document to deserialise
      * @return The deserialised domain
      */
-    public static Domain deserializeDomain(Document document) {
+    public static Domain deserialiseDomain(Document document) {
         Element root = document.getRootElement();
         Element levels = root.element("levels");
         List<Maze> mazes = new ArrayList<>();
         for (Element level : levels.elements()) {
-            mazes.add(deserializeMaze(level));
+            mazes.add(deserialiseMaze(level));
         }
         int currentLevel = Integer.parseInt(levels.attributeValue("current"));
-        Inventory inv = deserializeInventory(root.element("inventory"));
+        Inventory inv = deserialiseInventory(root.element("inventory"));
         return new Domain(mazes, inv, currentLevel);
     }
 
@@ -192,7 +255,7 @@ public class Persistency {
      * 
      * @param maze The maze to serialise
      */
-    public static Document serializeMaze(Maze maze, int i) {
+    public static Document serialiseMaze(Maze maze, int i) {
         Document document = DocumentHelper.createDocument();
         Element level = document.addElement("level");
         level.addAttribute("index", Integer.toString(i));
@@ -207,7 +270,7 @@ public class Persistency {
                     Element cell = grid.addElement("cell");
                     cell.addAttribute("x", Integer.toString(x));
                     cell.addAttribute("y", Integer.toString(y));
-                    cell.add(serializeTile(tile).getRootElement());
+                    cell.add(serialiseTile(tile).getRootElement());
                 }
             }
         }
@@ -222,7 +285,7 @@ public class Persistency {
      * 
      * @return The serialised tile as an XML element
      */
-    public static Document serializeTile(Tile tile) {
+    public static Document serialiseTile(Tile tile) {
         Document document = DocumentHelper.createDocument();
         String name = Helper.typeToString.get(tile.type());
         if (name.contains("Key") || name.contains("Lock") && name.equals("exitLock")) {
@@ -244,11 +307,11 @@ public class Persistency {
      * 
      * @param inventory The inventory to serialise
      */
-    public static Document serializeInventory(Inventory inventory) {
+    public static Document serialiseInventory(Inventory inventory) {
         Document document = DocumentHelper.createDocument();
         Element root = document.addElement("inventory");
         for (Tile item : inventory.getItems()) {
-            root.add(serializeTile(item).getRootElement());
+            root.add(serialiseTile(item).getRootElement());
         }
         root.addAttribute("size", inventory.size() + "");
         return document;
@@ -260,10 +323,10 @@ public class Persistency {
      * @param root The XML element to deserialise
      * @return The deserialised inventory
      */
-    public static Inventory deserializeInventory(Element root) {
+    public static Inventory deserialiseInventory(Element root) {
         Inventory inv = new Inventory(Integer.parseInt(root.attributeValue("size")));
         for (Element item : root.elements()) {
-            inv.addItem(TileType.makeTile(deserializeTileType(item), new TileInfo(new Loc(0, 0))));
+            inv.addItem(TileType.makeTile(deserialiseTileType(item), new TileInfo(new Loc(0, 0))));
         }
         return inv;
     }
@@ -274,7 +337,7 @@ public class Persistency {
      * @param element The XML element to deserialise
      * @return The deserialised tile type
      */
-    private static TileType deserializeTileType(Element element) {
+    private static TileType deserialiseTileType(Element element) {
         String name = element.getName();
         if (name.equals("key")) {
             String color = element.attributeValue("color");
@@ -293,7 +356,7 @@ public class Persistency {
      * @param xml
      * @return The unserialised maze
      */
-    public static Maze deserializeMaze(Element root) {
+    public static Maze deserialiseMaze(Element root) {
         String thing = root.asXML();
         Element grid = root.element("grid");
         int width = Integer.parseInt(grid.attributeValue("width"));
@@ -343,30 +406,28 @@ public class Persistency {
     }
 
     /**
-     * Serialize a record timeline object to an XML document
+     * serialise a record timeline object to an XML document
      * 
-     * @param timeline The timeline to serialize
-     * @return The serialized timeline
+     * @param timeline The timeline to serialise
+     * @return The serialised timeline
      */
-    public static Document serializeRecordTimeline(Stack<Pair<Long, Actions>> timeline) {
-        Document document = DocumentHelper.createDocument();
-        Element root = document.addElement("recorder");
+    public static Element serialiseRecordTimeline(Stack<Pair<Long, Actions>> timeline) {
+        Element root = DocumentHelper.createElement("timeline");
         root.addAttribute("size", timeline.size() + "");
         for (Pair<Long, Actions> pair : timeline) {
             Element action = root.addElement(pair.getValue().toString());
             action.addAttribute("time", pair.getKey() + "");
         }
-        return document;
+        return root;
     }
 
     /**
-     * Deserialize a record timeline object from an XML document
+     * Deserialise a record timeline object from an XML document
      * 
-     * @param document The XML document to deserialize
-     * @return The deserialized timeline
+     * @param document The XML document to deserialise
+     * @return The deserialised timeline
      */
-    public static Stack<Pair<Long, Actions>> deserializeRecordTimeline(Document document) {
-        Element root = document.getRootElement();
+    public static Stack<Pair<Long, Actions>> deserialiseRecordTimeline(Element root) {
         Stack<Pair<Long, Actions>> timeline = new Stack<Pair<Long, Actions>>();
         for (Element action : root.elements()) {
             timeline.add(new Pair<Long, Actions>(Long.parseLong(action.attributeValue("time")),
@@ -383,7 +444,7 @@ public class Persistency {
      * @param path   The file path to save to
      */
     public static void saveDomain(Domain domain, int slot) throws IOException {
-        Document document = serializeDomain(domain);
+        Document document = serialiseDomain(domain);
 
         File dir = new File("res/saves");
         if (!dir.exists()) {
@@ -396,14 +457,56 @@ public class Persistency {
     }
 
     /**
-     * Load settings from file
+     * Save configuration to res/config.xml
      * 
-     * @return The settings
+     * @param config The configuration object
      */
-    public static Settings loadSettings() throws DocumentException {
+    public static void saveConfiguration(Configuration config) throws IOException {
+        Element element = serialiseConfiguration(config);
+        Document document = DocumentHelper.createDocument();
+        document.add(element);
+
+        File dir = new File("res");
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        FileWriter out = new FileWriter("res/config.xml");
+        document.write(out);
+        out.close();
+    }
+
+    /**
+     * Save a timeline to a file
+     * 
+     * @param timeline The timeline to save
+     * @param slot     The slot to save to
+     */
+    public static void saveRecordTimeline(Stack<Pair<Long, Actions>> timeline, int slot) throws IOException {
+        Element element = serialiseRecordTimeline(timeline);
+        Document document = DocumentHelper.createDocument();
+        document.add(element);
+
+        File dir = new File("res/recordings");
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        FileWriter out = new FileWriter("res/recordings/" + slot + ".xml");
+        document.write(out);
+        out.close();
+    }
+
+    /**
+     * Load a timeline from a file
+     * 
+     * @param slot The slot to load from
+     * @return The loaded timeline
+     */
+    public static Stack<Pair<Long, Actions>> loadRecordTimeline(int slot) throws DocumentException {
         SAXReader reader = new SAXReader();
-        Document document = reader.read(new File("res/settings.xml"));
-        return deserializeSettings(document.getRootElement());
+        Document document = reader.read(new File("res/recordings/" + slot + ".xml"));
+        return deserialiseRecordTimeline(document.getRootElement());
     }
 
     /**
@@ -417,7 +520,7 @@ public class Persistency {
         try {
             InputStream in = new FileInputStream("res/saves/" + slot + ".xml");
             Document document = reader.read(in);
-            return deserializeDomain(document);
+            return deserialiseDomain(document);
         } catch (FileNotFoundException e) {
             return getInitialDomain();
         }
@@ -468,7 +571,7 @@ public class Persistency {
             for (File file : files) {
                 if (file.getName().endsWith(".xml")) {
                     Document document = reader.read(file);
-                    mazes.add(deserializeMaze(document.getRootElement()));
+                    mazes.add(deserialiseMaze(document.getRootElement()));
                 }
             }
             return new Domain(mazes, new Inventory(8), 1);
