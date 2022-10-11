@@ -8,6 +8,7 @@ public class Textures {
     
     private File[] listOfFiles;
 
+    
     public Textures() {
         File folder = new File("res/textures");
         listOfFiles = folder.listFiles();

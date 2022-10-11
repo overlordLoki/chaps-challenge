@@ -1,0 +1,5 @@
+title:Arial,BOLD,80,
+subtitle:Arial,BOLD,40,
+text:Arial,BOLD,30,
+colorHover:ORANGE,
+colorSelected:RED
