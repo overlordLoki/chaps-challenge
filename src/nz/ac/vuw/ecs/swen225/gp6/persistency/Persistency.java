@@ -171,31 +171,6 @@ public class Persistency {
     }
 
     /**
-     * Serialize the settings xml
-     * 
-     * @param settings Settings object
-     * @return XML document
-     */
-    public static Document serializeSettings(Settings settings) {
-        Document document = DocumentHelper.createDocument();
-        Element root = document.addElement("settings");
-
-        // add texture pack
-        root.addElement("texturePack").addText(settings.texturePack());
-
-        // add key bindings
-        Element keyBindings = root.addElement("keyBindings");
-        for (Keys key : Keys.values()) {
-            keyBindings.addElement(key.name()).addText(settings.keyBindings().get(key));
-        }
-
-        // add music enabled
-        root.addElement("musicEnabled").addText(settings.musicEnabled().toString());
-
-        return document;
-    }
-
-    /**
      * Save the settings to res/settings.xml
      * 
      * @param settings The settings to save
