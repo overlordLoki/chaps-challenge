@@ -225,7 +225,7 @@ public class TexturePack {
                 return ImageIO.read(new File("res/Custom_Textures/"+path+".png"));
             } catch (IOException e) {
                 try{
-                    return ImageIO.read(new File("res/textures/Custom_Textures/default.png"));
+                    return ImageIO.read(new File("res/Custom_Textures/default.png"));
                 }catch (IOException|IllegalArgumentException ex){
                     System.out.println("Error loading image: " + path); return null;}}
         }
