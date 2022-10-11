@@ -13,19 +13,28 @@ public class TileInfo{
     private Loc loc;
     private int ping; //to be used later perhaps to keep count of ping cycles
 
-    
-
+    /**
+     * Create a tileInfo object, everything can be null if its for testing purposes and
+     * the tile associated does not need the information in this object.
+     * 
+     * @param loc location of tile
+     * @param pingCount ping count recorded by the tile
+     * @param imageName the name of the image file
+     */
     public TileInfo(Loc loc, int pingCount, String imageName){
         this.loc = loc;
         this.ping = pingCount;
         this.imageName = imageName;
     }
 
+    /**
+     * Create a tileInfo object only with loc, 
+     * pingCount defaults to 0, the imageName to ""
+     * 
+     * @param loc location of tile
+     */
     public TileInfo(Loc loc){this(loc, 0, "");}
 
-    public TileInfo(Loc loc, String imageName){ this(loc, 0, imageName);}
-
-    public TileInfo(Loc loc, int pingCount){ this(loc, pingCount, "");}
 
 
 

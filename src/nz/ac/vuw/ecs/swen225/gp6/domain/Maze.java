@@ -92,8 +92,11 @@ public class Maze {
      * 
      * @param t tile object to find
      * @return loc of tile object if found, else null
+     * 
+     * @throws NullPointerException if tile t is null
      */
     public Loc getTileLoc(Tile t){
+        if(t == null) throw new NullPointerException("tile t cannot be null Maze.getTileLoc(Tile)");
         for(int x = 0; x < width - 1; x++){
             for(int y = 0; y < height - 1; y++){
                 if(t == tileArray[x][y]) return new Loc(x, y);
@@ -123,9 +126,11 @@ public class Maze {
      * @param x x coord
      * @param y y coord
      * @return the tile at the coords or the Null typed tile if its out of bounds.
+     *
+     * @throws IndexOutOfBoundsException if loc out of maze
      */
     public Tile getTileAt(int x, int y){
-        if(Loc.checkInBound(new Loc(x, y), this) == false) return new Null(new TileInfo(null));
+        checkLocationIntegrity(new Loc(x, y));
         return tileArray[x][y];
     }
 
@@ -134,9 +139,12 @@ public class Maze {
      * 
      * @param l location of tile
      * @return the tile at the location or the Null typed tile if its out of bounds.
+     * 
+     * @throws NullPointerException if loc or tile is null
+     * @throws IndexOutOfBoundsException if loc out of maze
      */
     public Tile getTileAt(Loc l){
-        if(Loc.checkInBound(l, this) == false) return new Null(new TileInfo(null));
+        checkLocationIntegrity(l);
         return tileArray[l.x()][l.y()];
     }
 
@@ -175,8 +183,12 @@ public class Maze {
      * 
      * @param d - domain where the ping is taking place in 
      * (this is since the ping may affect inventory, level index, etc)
+     * 
+     * @throws NullPointerException if Domain is null
      */
     public void pingMaze(Domain d){
+        if(d == null) throw new NullPointerException("domain cannot be null in maze.pingMaze()");
+
         Arrays.stream(d.getCurrentMaze().tileArray).flatMap(Arrays::stream).forEach(t -> t.ping(d));
     }
 
@@ -186,10 +198,12 @@ public class Maze {
      * 
      * @param loc - location of tile 
      * @param type enum for the tile type to place
+     * 
+     * @throws NullPointerException if loc is null
+     * @throws IndexOutOfBoundsException if loc out of maze
      */
     public void setTileAt(Loc loc, TileType type){
-        //check in bound
-        if(Loc.checkInBound(loc, this) == false) return;
+        checkLocationIntegrity(loc); 
             
         //make tile object from type enum and replace the tile at the location
         tileArray[loc.x()][loc.y()] = TileType.makeTile(type, new TileInfo(loc));
@@ -201,10 +215,14 @@ public class Maze {
      * 
      * @param loc - location of tile
      * @param tile new tile to replace old tile
+     * 
+     * @throws NullPointerException if loc or tile is null
+     * @throws IndexOutOfBoundsException if loc out of maze
      */
     public void setTileAt(Loc loc, Tile tile){
-        //check in bound
-        if(Loc.checkInBound(loc, this) == false) return;
+        //prechecks
+        if(tile == null) throw new IllegalArgumentException("Tile cannot be null (Maze.setTileAt(Loc, Tile))");
+        checkLocationIntegrity(loc);
 
         //replace tile at location
         tileArray[loc.x()][loc.y()] = tile;
@@ -213,6 +231,20 @@ public class Maze {
         tile.info().loc(loc);
     }
 
-    
+    //HELPERS 
+    /**
+     * helper class that throws an exception if the location is out of bounds or null.
+     * 
+     * @param loc - location to check
+     * 
+     * @throws NullPointerException if loc is null;
+     * @throws IndexOutOfBoundsException if loc is not in the bounds of the maze;
+     */
+    public void checkLocationIntegrity(Loc loc){
+        if(loc == null) throw new NullPointerException("location cannot be null in (Maze.checkLocationIntegrity(Loc))");
+        if(Loc.checkInBound(loc, this) == false) 
+            throw new IllegalArgumentException("Location out of bounds: x: " 
+            + loc.x() + " y: " + loc.y() + " (Maze.checkLocationIntegrity(Loc))");
+    }
 
 }

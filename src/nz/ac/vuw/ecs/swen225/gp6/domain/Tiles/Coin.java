@@ -19,11 +19,16 @@ public class Coin extends Item{
     @Override public TileType type(){ return TileType.Coin;}
     
     @Override public void setOn(Tile t, Domain d){ 
-        assert t.type() == TileType.Hero: "only hero can move on coin";
+        if(t.type() != TileType.Hero) throw new IllegalArgumentException("only hero can move on coin");
+        if(d == null) throw new NullPointerException("Domain can not be null (Coin.setOn)");
 
         //add coin to inventory
+        int preNumCoins = d.getInv().coins();
         d.getInv().addCoin();
         d.getCurrentMaze().setTileAt(info.loc(), t);
+
+        assert preNumCoins == d.getInv().coins() - 1: 
+               "the number of coins inside the inventory should be increased by 1 after picking a coin.";
 
         //if all treasures collected replace exitdoor with open exit door
         if(d.getTreasuresLeft() == 0){

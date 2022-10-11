@@ -30,19 +30,16 @@ public class ExitDoorOpen extends Door{
     @Override public boolean obstructsHero(Domain d){  return false;}
 
     @Override public void setOn(Tile t, Domain d){
-        //if the tile is hero, WIN
-        if(t.type() == TileType.Hero){
-            heroOn = true; 
-                                           
-            //let CheckGame know that the the game is won/inbetween levels
-            if(d.getMazes().size() == d.getCurrentLevel()){ 
-                CheckGame.state = CheckGame.GameState.WON;
-            } else{
-                CheckGame.state = CheckGame.GameState.BETWEENLEVELS;
-            }
+        if(t.type() != TileType.Hero){ throw new IllegalArgumentException("Only the hero can move on exit door.");}
+        if(d == null) throw new NullPointerException("Domain can not be null (ExitDoorOpen.setOn).");
+
+        heroOn = true; //record that hero is now on exit door
+                                        
+        //let CheckGame know that the the game is won/inbetween levels
+        if(d.isLastLevel()) CheckGame.state = CheckGame.GameState.WON;
+        else CheckGame.state = CheckGame.GameState.BETWEENLEVELS;
             
-            d.getEventListener(Domain.DomainEvent.onWin).forEach(r -> r.run());
-        } 
-    }
-            
+        d.getEventListener(Domain.DomainEvent.onWin).forEach(r -> r.run()); //NEXT LEVEL/WIN
+    } 
 }
+            

@@ -59,21 +59,23 @@ public interface Tile {
      * 
      * @return tile that is to replace this tile after an actor going over it. If not implemented, defaults to Floor.
      */
-    public default Tile replaceWith(){return TileType.makeTile(TileType.Floor, new TileInfo(info().loc(), info().ping()));} 
+    public default Tile replaceWith(){return TileType.makeTile(TileType.Floor, new TileInfo(info().loc(), info().ping(), ""));} //TODO check if right
     /**
      * Sets the given tile t instead of this tile on maze, changing the domain to do so.
      * NOTE1: may alter domain.
-     * NOTE2: does not check wether it's possible for tile t to move on this tile!
+     * NOTE2: does not check wether it's possible for tile t to move on this tile(thoroughly)! Although often
+     * it has a set of exceptions that will be thrown if a completely unexpected input is given.
      * 
      * if not implemented defaults to replacing this tile with given tile on maze.
      * 
      * @param t tile to replace this tile with, can not be null.
      * @param d domain where this change is happening, can not be null.
      * 
+     * @throws NullPointerException if t or d are null
+     * (may also throw other types of runtime exceptions for unexpected inputs, in overriden classes)
      */
     public default void setOn(Tile t, Domain d){
-        if(t == null){throw new IllegalArgumentException("Replacement tile can not be null");}
-        if(d == null){throw new IllegalArgumentException("Domain can not be null");}
+        if(t == null || d == null){throw new NullPointerException("tile or domain can not be null");}
         d.getCurrentMaze().setTileAt(info().loc(), t);
     }
 

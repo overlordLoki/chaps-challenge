@@ -25,19 +25,25 @@ public abstract class Door extends AbstractTile {
 
     @Override public boolean obstructsEnemy(Domain d){return true;} // doors obstruct enemies
     @Override public boolean obstructsHero(Domain d){
+        if(d == null) throw new NullPointerException("domain cannot be null (Door.obstructsHero)");
+
         return d.getInv().getItems().stream()
         .anyMatch(t -> t instanceof Key && ((Key) t).color() == color()) == false;
     } // if hero has key with correct color, then it does not obstruct
 
     @Override public void setOn(Tile t, Domain d){ 
+        if(t.type() != TileType.Hero) throw new IllegalArgumentException("only hero can move on door");
+        if(d == null) throw new NullPointerException("domain cannot be null (Door.setOn)");
+
         Inventory inv = d.getInv();
 
+        //if item in inventory is a key with the correct color, remove it 
+        //note that this method will move the hero to the tile re
         inv.getItems().stream().filter(tile -> tile instanceof Key && ((Key) tile).color() == color())
         .findFirst().ifPresent(k -> {
             inv.removeItem(k.type());
             d.getCurrentMaze().setTileAt(info.loc(), t);
-        });//if item in inventory is a key with the correct color, remove it 
-           //note that this method will move the hero to the tile re
+        });
         
         d.getCurrentMaze().setTileAt(info.loc(), t);
     }

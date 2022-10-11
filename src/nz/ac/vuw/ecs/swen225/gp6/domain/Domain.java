@@ -37,8 +37,16 @@ public class Domain {
      * 
      * @param levels - must be in order.
      * @param currentLvl - the index of the current level starting at 1
+     * 
+     * @throws IndexOutOfBoundsException if currentLvl is < 1 or > levels.size()
+     * @throws NullPointerException if levels is null or contains null.
      */
     public Domain(List<Level> levels, int currentLvl){
+        if(levels == null || levels.contains(null))throw new NullPointerException("list of levels cannot be null.");
+        if(currentLvl < 1 || currentLvl > levels.size()) 
+            throw new IndexOutOfBoundsException("currentLvl must be greater than 0(Domain), and smaller or equal to levels.size()");
+
+
         this.levels = levels;
         this.currentLvlIndex = currentLvl;
         
@@ -56,8 +64,11 @@ public class Domain {
      * @param currentLvl - the index of the current level starting at 1
      */
     public Domain(List<Maze> mazes, Inventory inv, int currentLvl){
-        this(new ArrayList<>(), currentLvl);
+        //make a mock list of levels to make sure current lvl is in bounds
+        this(IntStream.range(0, mazes.size()).mapToObj(i -> new Level(mazes.get(i), i + 1)).toList(),
+        currentLvl);
 
+        levels = new ArrayList<Level>();
         IntStream.range(0, mazes.size()).forEach(i ->{
             levels.add( currentLvl == i + 1? //initialise all inventories to empty ones except current levels to given one
                 new Level(mazes.get(i), inv, i + 1, 120, 0, Direction.None):
@@ -74,16 +85,25 @@ public class Domain {
      * @param levelTimeLimits - must be in order.
      * @param currentTimes - must be in order.
      * @param currentLvl - the index of the current level starting at 1.
+     * 
+     * @throws IllegalArgumentException if mazes.size() != invs.size() != levelTimeLimits.size() != currentTimes.size() 
+     * @throws NullPointerException if any list is null.
+     * @throws IndexOutOfBoundsException if currentLvl is < 1 or > levels.size()
      */
     public Domain(List<Maze> mazes, List<Inventory> invs,  List<Integer> levelTimeLimits, List<Integer> currentTimes,
      int currentLvl){
+
         this(new ArrayList<>(), currentLvl);
 
+        //check inputs correct:
+        if(mazes == null || invs == null || levelTimeLimits == null || currentTimes == null) 
+            throw new NullPointerException("arguments to Domain cannot be null");
         if(mazes.size() != invs.size() || invs.size()!= levelTimeLimits.size()
         || levelTimeLimits.size() != currentTimes.size()){ //ensure there is a 1:1 relationship
             throw new IllegalArgumentException("inconsistency in domain inputs");
         }
 
+        //create levels from inputs:
         IntStream.range(0, mazes.size()).forEach(i -> {
             levels.add(new Level(mazes.get(i), invs.get(i), i+1, 
             levelTimeLimits.get(i), currentTimes.get(i), Direction.None));
@@ -221,6 +241,11 @@ public class Domain {
     public int getTreasuresLeft(){return getCurrentMaze().getTileCount(TileType.Coin);}
 
     /**
+     * @return true if game is on last level.
+     */
+    public boolean isLastLevel(){return currentLvlIndex == levels.size();}
+
+    /**
      * gets a list of current items in the inventory
      * 
      * @return list of items in inventory 
@@ -254,8 +279,13 @@ public class Domain {
      * 
      * @param event the event to listen for
      * @param listener the listener to add
+     * 
+     * @throws NullPointerException if the event or listener is null
      */
     public void addEventListener(DomainEvent event, Runnable toRun) {
+        if(event == null || toRun == null)
+            throw new NullPointerException("DomainEvent or Runnable associated cannot be null (Domain.addEventListener)");
+
         List<Runnable> listeners = eventListeners.get(event); //get list of listeners
         listeners.add(toRun); //add new listener
         eventListeners.put(event, listeners); 
@@ -265,8 +295,13 @@ public class Domain {
      * sets current level to specified level index
      * 
      * @param lvl the level index to switch to
+     * 
+     * @throws IndexOutOfBoundsException if lvl is not at least 1 or is bigger than the number of levels
      */
-    public void setCurrentLevel(int lvl) {this.currentLvlIndex = lvl;}
+    public void setCurrentLevel(int lvl) {
+        if(lvl < 1 || lvl > levels.size()) 
+            throw new IndexOutOfBoundsException("invalid level index (Domain.setCurrentLevelIndex)");
+        this.currentLvlIndex = lvl;}
     
     /**
      * If there is another level increments the current level and returns true, 
@@ -275,7 +310,7 @@ public class Domain {
      * @return true if there is another level
      */
     public boolean nextLvl(){
-        if(currentLvlIndex < levels.size()){
+        if(isLastLevel() == false){
             setCurrentLevel(currentLvlIndex + 1);
             return true;
         }

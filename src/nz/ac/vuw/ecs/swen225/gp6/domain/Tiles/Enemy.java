@@ -31,6 +31,8 @@ public class Enemy extends Actor{
     @Override public boolean damagesHero(Domain d){return true;}
     @Override public Tile replaceWith(){return this;} 
     @Override public void setOn(Tile t, Domain d){
+        if(t == null || d == null) throw new NullPointerException("Domain d and Tile t must not be null(Enemy.setOn)");
+
         d.getCurrentMaze().setTileAt(info.loc(), t);
 
         //if the tile is hero, LOSE
@@ -42,6 +44,8 @@ public class Enemy extends Actor{
     }
     
     @Override public void ping(Domain d){
+        if(d == null) throw new NullPointerException("Domain d can not be null(Enemy.ping)");
+
         info.pingStep(); //step the ping counter
         if(info.ping() % 10 != 0) return; //only move every 20 pings
 
@@ -59,6 +63,9 @@ public class Enemy extends Actor{
 
         this.tileOn = tileToOccupy.replaceWith(); // set tile heros to replace when moving off
         staticDirection = lvl.getHeroNextStep(); //set enemys direction of facing 
+
+        assert this.info.loc() == null || this.info.loc() != loc2: 
+            "Enemy didn't move properly or location is null";
     } 
     
     //TODO: figure out how to make ben override/make all this

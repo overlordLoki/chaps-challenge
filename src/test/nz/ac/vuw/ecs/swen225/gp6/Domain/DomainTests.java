@@ -25,9 +25,9 @@ public class DomainTests {
     @Test
     public void testMazeToString() {
         Maze maze = new Maze(new Tile[][] {
-            {new Wall(new TileInfo(null, null)), new Wall( new TileInfo(null, null)), new Wall(new TileInfo(null, null))},
-            {new Wall(new TileInfo(null, null)), new Floor(new TileInfo(null, null)), new Wall(new TileInfo(null, null))},
-            {new Wall(new TileInfo(null, null)), new Wall(new TileInfo(null, null)), new Wall(new TileInfo(null, null))}
+            {new Wall(new TileInfo(null)), new Wall( new TileInfo(null)), new Wall(new TileInfo(null))},
+            {new Wall(new TileInfo(null)), new Floor(new TileInfo(null)), new Wall(new TileInfo(null))},
+            {new Wall(new TileInfo(null)), new Wall(new TileInfo(null)), new Wall(new TileInfo(null))}
         });
         assertEquals(
             "0|/|/|/|\n" + 

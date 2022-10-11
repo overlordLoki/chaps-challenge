@@ -20,6 +20,9 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.*;
  *  - after a ping (by looking at the new altered domain, and making sure certain rules are always followed)
  * 
  * this class should be UPDATED REGULARLY to keep up with any new futures the game will have.
+ * 
+ * @throws IllegalStateException in its check methods, to inform if the game is in an invalid state, it must
+ * also include string telling which rule has been broken
  */
 public final class CheckGame {
     public enum GameState{WON, LOST, PLAYING, BETWEENLEVELS};

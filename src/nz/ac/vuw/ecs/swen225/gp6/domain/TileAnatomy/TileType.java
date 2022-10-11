@@ -74,14 +74,17 @@ public enum TileType{
      * 
      * @param t tile type to make
      * @param info an instance of the class TileInfo that has all the necessary information that tile needs
+     * 
+     * @throws IllegalArgumentException if a file in tiles with same name as tile type given is not found
+     * @throws NullPointerException if t or info are null
      */
     public static Tile makeTile(TileType t, TileInfo info){
+        if(t == null || info == null) throw new NullPointerException("tile type or tile info cannot be null (TileType.makeTile)");
         try{
             Class<?> c = Class.forName("nz.ac.vuw.ecs.swen225.gp6.domain.Tiles." + t.name());
             return (Tile) c.getDeclaredConstructor(TileInfo.class).newInstance(info);
         }catch(Exception e){
-            System.out.println("There isn't a class for tile type: " + t.name());
-            return new Null(new TileInfo(null));//return null type tile if no tile is found
+            throw new IllegalArgumentException("There isn't a class for tile type: " + t.name());
         }
     }
     

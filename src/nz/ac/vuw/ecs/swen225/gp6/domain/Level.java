@@ -25,8 +25,16 @@ public class Level {
      * @param timeLimit - in seconds, the limit for how long the player has to finish the level
      * @param timeCurrent - the current time in seconds (should start at 0)
      * @param heroNextStep - the hero's direction of stepping in next ping
+     * 
+     * @throws NullPointerException if maze, inventory, or direction are null
+     * @throws IndexOutOfBoundsException if level is less than 1 or the times are less than 0
      */
     public Level(Maze maze, Inventory inv, int lvl, int timeLimit, long timeCurrent, Direction heroNextStep){
+        //pre production checks
+        if(timeLimit < 0 || timeCurrent < 0)throw new IndexOutOfBoundsException("time limit/current cannot be < 0 (Level)");
+        if(inv == null || maze == null || heroNextStep == null)throw new NullPointerException("inv, maze or heroNextStep cannot be null (Level)");
+        if(lvl < 1)throw new IndexOutOfBoundsException("lvl cannot be < 1 (Level)");
+
         this.maze = maze;
         this.inv = inv;
         this.lvl = lvl;
@@ -61,10 +69,14 @@ public class Level {
     //SETTERS:
     /**
      * sets the current time of the level
-     * 
      * @param timeCurrent - the time to set the level's time to
+     * @throws IllegalArgumentException if timeCurrent is negative
      */
-    public void setCurrentTime(long timeCurrent){this.timeCurrent = timeCurrent;}
+    public void setCurrentTime(long timeCurrent){
+        if(timeCurrent < 0) 
+            throw new IllegalArgumentException("timeCurrent cannot be negative. (Level.setCurrentTime())");
+    
+        this.timeCurrent = timeCurrent;}
     /**
      * sets the movement direction of hero, 
      * which the hero will try to move towards if possible in NEXT ping.

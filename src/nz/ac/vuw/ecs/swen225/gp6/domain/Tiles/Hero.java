@@ -35,6 +35,8 @@ public class Hero extends Actor{
     
     //MOVEMENT AND PING:
     @Override public void setOn(Tile t, Domain d){
+        if(t == null || d == null) throw new NullPointerException("Domain d and Tile t must not be null(Hero.setOn)");
+
         d.getCurrentMaze().setTileAt(info.loc(), t);
 
         //if the tile damages the hero, LOSE
@@ -45,6 +47,8 @@ public class Hero extends Actor{
     }
 
     @Override public void ping(Domain d) {
+        if(d == null) throw new NullPointerException("Domain d can not be null(Hero.ping)");
+        
         Level lvl = d.getCurrentLevelObject();
         Loc loc1 = info.loc();
         Direction dir = lvl.getHeroNextStep();
@@ -64,5 +68,8 @@ public class Hero extends Actor{
         this.tileOn = tileToOccupy.replaceWith(); // set tile heros to replace when moving off
         staticDirection = dir; //set heros direction of facing 
         lvl.makeHeroStep(Direction.None); //make hero stop moving
+
+        assert this.info.loc() == null || this.info.loc() != loc2: 
+            "Hero didn't move properly or location is null";
     }
 }

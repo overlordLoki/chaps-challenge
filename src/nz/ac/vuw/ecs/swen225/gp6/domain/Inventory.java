@@ -26,6 +26,7 @@ public class Inventory {
      */
     public Inventory(int size){
         if(size < 1) {throw new IllegalArgumentException("Inventory must include atleast one item.");}
+
         this.size = size;
         this.items = new Tile[size];
         this.coins = 0;
@@ -40,8 +41,15 @@ public class Inventory {
      * @param size - size of inventory. The number of items the user can carry at once.
      * @param coins - the number of coins the inventory 
      * @param items - the items that are in inventory (all empty spots will be filled with Null type tiles)
+     * 
+     * @throws IllegalArgumentException if size is less than 1, or coins are negative,
+     * or list of items is null or bigger than size
      */
     public Inventory(int size, int coins, List<Tile> items){
+        if(size < 1) {throw new IllegalArgumentException("Inventory must include atleast one item.");}
+        if(coins < 0) {throw new IllegalArgumentException("Inventory's coin number is cannot be negative.");}
+        if(items == null || items.size() > size) {throw new IllegalArgumentException("wrong input for list of items in Inventory");}
+
         this.size = size;
         this.coins = coins;
         this.items = new Tile[size];

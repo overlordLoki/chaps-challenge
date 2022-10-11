@@ -18,7 +18,14 @@ public abstract class Item extends AbstractTile {
     
     @Override public boolean obstructsEnemy(Domain d){return true;}
     @Override public void setOn(Tile t, Domain d){ 
+        if(t.type() != TileType.Hero) throw new IllegalArgumentException("only hero can move on items");
+        if(d == null) throw new NullPointerException("domain cannot be null (Item.setOn)");
+
+        int oldInvSize = d.getInventory().size();
         d.getInv().addItem(this); //put this item in the inventory(doesn't remove from maze)
         d.getCurrentMaze().setTileAt(info.loc(), t);
+
+        assert oldInvSize == d.getInventory().size() - 1: 
+        "Inventory size should have increased by 1 after adding item.";
     }
 }
