@@ -1,338 +1,338 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<level index="0" name="Level 1">
+<level index="1" name="Level 2">
     <grid width="17" height="17">
         <cell x="3" y="1">
-            <wall/>
+            <wall />
         </cell>
         <cell x="4" y="1">
-            <wall/>
+            <wall />
         </cell>
         <cell x="5" y="1">
-            <wall/>
+            <wall />
         </cell>
         <cell x="6" y="1">
-            <wall/>
+            <wall />
         </cell>
         <cell x="7" y="1">
-            <wall/>
+            <wall />
         </cell>
         <cell x="9" y="1">
-            <wall/>
+            <wall />
         </cell>
         <cell x="10" y="1">
-            <wall/>
+            <wall />
         </cell>
         <cell x="11" y="1">
-            <wall/>
+            <wall />
         </cell>
         <cell x="12" y="1">
-            <wall/>
+            <wall />
         </cell>
         <cell x="13" y="1">
-            <wall/>
+            <wall />
         </cell>
         <cell x="3" y="2">
-            <wall/>
+            <wall />
         </cell>
         <cell x="7" y="2">
-            <wall/>
+            <wall />
         </cell>
         <cell x="8" y="2">
-            <wall/>
+            <wall />
         </cell>
         <cell x="9" y="2">
-            <wall/>
+            <wall />
         </cell>
         <cell x="13" y="2">
-            <wall/>
+            <wall />
         </cell>
         <cell x="3" y="3">
-            <wall/>
+            <wall />
         </cell>
         <cell x="5" y="3">
-            <coin/>
+            <coin />
         </cell>
         <cell x="7" y="3">
-            <wall/>
+            <wall />
         </cell>
         <cell x="8" y="3">
-            <exitDoor/>
+            <exitDoor />
         </cell>
         <cell x="9" y="3">
-            <wall/>
+            <wall />
         </cell>
         <cell x="11" y="3">
-            <coin/>
+            <coin />
         </cell>
         <cell x="13" y="3">
-            <wall/>
+            <wall />
         </cell>
         <cell x="1" y="4">
-            <wall/>
+            <wall />
         </cell>
         <cell x="2" y="4">
-            <wall/>
+            <wall />
         </cell>
         <cell x="3" y="4">
-            <wall/>
+            <wall />
         </cell>
         <cell x="4" y="4">
-            <wall/>
+            <wall />
         </cell>
         <cell x="5" y="4">
-            <wall/>
+            <wall />
         </cell>
         <cell x="6" y="4">
-            <lock color="green"/>
+            <lock color="green" />
         </cell>
         <cell x="7" y="4">
-            <wall/>
+            <wall />
         </cell>
         <cell x="9" y="4">
-            <wall/>
+            <wall />
         </cell>
         <cell x="10" y="4">
-            <lock color="green"/>
+            <lock color="green" />
         </cell>
         <cell x="11" y="4">
-            <wall/>
+            <wall />
         </cell>
         <cell x="12" y="4">
-            <wall/>
+            <wall />
         </cell>
         <cell x="13" y="4">
-            <wall/>
+            <wall />
         </cell>
         <cell x="14" y="4">
-            <wall/>
+            <wall />
         </cell>
         <cell x="15" y="4">
-            <wall/>
+            <wall />
         </cell>
         <cell x="1" y="5">
-            <wall/>
+            <wall />
         </cell>
         <cell x="2" y="5">
-            <key color="yellow"/>
+            <key color="yellow" />
         </cell>
         <cell x="5" y="5">
-            <lock color="blue"/>
+            <lock color="blue" />
         </cell>
         <cell x="11" y="5">
-            <lock color="orange"/>
+            <lock color="orange" />
         </cell>
         <cell x="14" y="5">
-            <key color="yellow"/>
+            <key color="yellow" />
         </cell>
         <cell x="15" y="5">
-            <wall/>
+            <wall />
         </cell>
         <cell x="1" y="6">
-            <wall/>
+            <wall />
         </cell>
         <cell x="3" y="6">
-            <coin/>
+            <coin />
         </cell>
         <cell x="5" y="6">
-            <wall/>
+            <wall />
         </cell>
         <cell x="6" y="6">
-            <key color="blue"/>
+            <key color="blue" />
         </cell>
         <cell x="10" y="6">
-            <key color="orange"/>
+            <key color="orange" />
         </cell>
         <cell x="11" y="6">
-            <wall/>
+            <wall />
         </cell>
         <cell x="13" y="6">
-            <coin/>
+            <coin />
         </cell>
         <cell x="15" y="6">
-            <wall/>
+            <wall />
         </cell>
         <cell x="1" y="7">
-            <wall/>
+            <wall />
         </cell>
         <cell x="2" y="7">
-            <wall/>
+            <wall />
         </cell>
         <cell x="3" y="7">
-            <wall/>
+            <wall />
         </cell>
         <cell x="4" y="7">
-            <wall/>
+            <wall />
         </cell>
         <cell x="5" y="7">
-            <wall/>
+            <wall />
         </cell>
         <cell x="6" y="7">
-            <coin/>
+            <coin />
         </cell>
         <cell x="8" y="7">
-            <hero/>
+            <hero />
         </cell>
         <cell x="10" y="7">
-            <coin/>
+            <coin />
         </cell>
         <cell x="11" y="7">
-            <wall/>
+            <wall />
         </cell>
         <cell x="12" y="7">
-            <wall/>
+            <wall />
         </cell>
         <cell x="13" y="7">
-            <wall/>
+            <wall />
         </cell>
         <cell x="14" y="7">
-            <wall/>
+            <wall />
         </cell>
         <cell x="15" y="7">
-            <wall/>
+            <wall />
         </cell>
         <cell x="1" y="8">
-            <wall/>
+            <wall />
         </cell>
         <cell x="3" y="8">
-            <coin/>
+            <coin />
         </cell>
         <cell x="5" y="8">
-            <wall/>
+            <wall />
         </cell>
         <cell x="6" y="8">
-            <key color="blue"/>
+            <key color="blue" />
         </cell>
         <cell x="10" y="8">
-            <key color="orange"/>
+            <key color="orange" />
         </cell>
         <cell x="11" y="8">
-            <wall/>
+            <wall />
         </cell>
         <cell x="13" y="8">
-            <coin/>
+            <coin />
         </cell>
         <cell x="15" y="8">
-            <wall/>
+            <wall />
         </cell>
         <cell x="1" y="9">
-            <wall/>
+            <wall />
         </cell>
         <cell x="5" y="9">
-            <lock color="orange"/>
+            <lock color="orange" />
         </cell>
         <cell x="8" y="9">
-            <coin/>
+            <coin />
         </cell>
         <cell x="11" y="9">
-            <lock color="blue"/>
+            <lock color="blue" />
         </cell>
         <cell x="15" y="9">
-            <wall/>
+            <wall />
         </cell>
         <cell x="1" y="10">
-            <wall/>
+            <wall />
         </cell>
         <cell x="2" y="10">
-            <wall/>
+            <wall />
         </cell>
         <cell x="3" y="10">
-            <wall/>
+            <wall />
         </cell>
         <cell x="4" y="10">
-            <wall/>
+            <wall />
         </cell>
         <cell x="5" y="10">
-            <wall/>
+            <wall />
         </cell>
         <cell x="6" y="10">
-            <wall/>
+            <wall />
         </cell>
         <cell x="7" y="10">
-            <lock color="yellow"/>
+            <lock color="yellow" />
         </cell>
         <cell x="8" y="10">
-            <wall/>
+            <wall />
         </cell>
         <cell x="9" y="10">
-            <lock color="yellow"/>
+            <lock color="yellow" />
         </cell>
         <cell x="10" y="10">
-            <wall/>
+            <wall />
         </cell>
         <cell x="11" y="10">
-            <wall/>
+            <wall />
         </cell>
         <cell x="12" y="10">
-            <wall/>
+            <wall />
         </cell>
         <cell x="13" y="10">
-            <wall/>
+            <wall />
         </cell>
         <cell x="14" y="10">
-            <wall/>
+            <wall />
         </cell>
         <cell x="15" y="10">
-            <wall/>
+            <wall />
         </cell>
         <cell x="5" y="11">
-            <wall/>
+            <wall />
         </cell>
         <cell x="8" y="11">
-            <wall/>
+            <wall />
         </cell>
         <cell x="11" y="11">
-            <wall/>
+            <wall />
         </cell>
         <cell x="5" y="12">
-            <wall/>
+            <wall />
         </cell>
         <cell x="7" y="12">
-            <coin/>
+            <coin />
         </cell>
         <cell x="8" y="12">
-            <wall/>
+            <wall />
         </cell>
         <cell x="9" y="12">
-            <coin/>
+            <coin />
         </cell>
         <cell x="11" y="12">
-            <wall/>
+            <wall />
         </cell>
         <cell x="5" y="13">
-            <wall/>
+            <wall />
         </cell>
         <cell x="7" y="13">
-            <key color="green"/>
+            <key color="green" />
         </cell>
         <cell x="8" y="13">
-            <wall/>
+            <wall />
         </cell>
         <cell x="9" y="13">
-            <key color="green"/>
+            <key color="green" />
         </cell>
         <cell x="11" y="13">
-            <wall/>
+            <wall />
         </cell>
         <cell x="5" y="14">
-            <wall/>
+            <wall />
         </cell>
         <cell x="6" y="14">
-            <wall/>
+            <wall />
         </cell>
         <cell x="7" y="14">
-            <wall/>
+            <wall />
         </cell>
         <cell x="8" y="14">
-            <wall/>
+            <wall />
         </cell>
         <cell x="9" y="14">
-            <wall/>
+            <wall />
         </cell>
         <cell x="10" y="14">
-            <wall/>
+            <wall />
         </cell>
         <cell x="11" y="14">
-            <wall/>
+            <wall />
         </cell>
     </grid>
 </level>
