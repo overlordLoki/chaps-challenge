@@ -18,8 +18,6 @@ public enum TileType{
     //ACTORS:
     Hero('H'),
 
-    Enemy('E'),
-
     //STATIC TERRAINS:
     Floor('_'), 
 
@@ -95,8 +93,9 @@ public enum TileType{
 
     /**
      * this method will return a tile type based on its symbol, this will also look into 
-     * custom tile's folder. Therefore it  may be able to create a wider range of tile types 
+     * custom tile's folder. Therefore(AT RUNTIME) it may be able to create a wider range of tile types 
      * than makeTile method since all custom tiles have the TileType.Other, but will have different symbols.
+     * (MOSTLY USED IN TESTING)
      * 
      * @param symbol symbol of desired tile class
      * @param info an instance of the TileInfo object that has all the necessary
@@ -109,7 +108,10 @@ public enum TileType{
     public static Tile makeTileFromSymbol(char symbol, TileInfo info) {
         //search in preset tile types
         TileType type = Arrays.stream(TileType.values())
-            .filter(t -> TileType.makeTile(t, new TileInfo(null)).symbol() == symbol).
+            .filter(t -> {
+                try{return TileType.makeTile(t, new TileInfo(null)).symbol() == symbol;}
+                catch(Exception e){return false;}
+            }).
             findFirst()
             .orElse(TileType.Other);
         
@@ -117,7 +119,7 @@ public enum TileType{
         
         //search in custom tile types
         try{
-            List<Class<?>> classes = ClassFinder.findAllClassesIn("custom.Tiles");
+            List<Class<?>> classes = ClassFinder.findAllClassesIn("custom.tiles.");
             return (Tile)classes.stream()
             .map(c -> {
                 try{return c.getDeclaredConstructor(TileInfo.class).newInstance(info); }

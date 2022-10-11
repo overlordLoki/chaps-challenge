@@ -35,6 +35,14 @@ public class TileInfo{
      */
     public TileInfo(Loc loc){this(loc, 0, "");}
 
+    /**
+     * Create a tileInfo object only with loc and imageName,
+     * pingCount defaults to 0
+     * 
+     * @param 
+     */
+    public TileInfo(Loc loc, String imageName){this(loc, 0, imageName);}
+
 
 
 
