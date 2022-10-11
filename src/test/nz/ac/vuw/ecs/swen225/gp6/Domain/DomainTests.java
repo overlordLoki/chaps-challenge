@@ -79,6 +79,7 @@ public class DomainTests {
                   0 1 2 3 4 5 6 7 8 9""";
         testHarnessValid(input, moves, output);
     }
+    
 
 
 
@@ -88,6 +89,15 @@ public class DomainTests {
     //========= Testing harnesses =========//
     //=====================================//
 
+    /**
+     * given a maze string as input, and another as output, and a sequence of moves,
+     * it checks wether after applying these moves on the input maze the a maze equivalent to the output maze
+     * is reached.
+     * 
+     * @param input a string representing initial maze
+     * @param moves a string representing sequence of moves
+     * @param output a string representing expected final maze
+     */
     public void testHarnessValid(String input, String moves, String output){
         Maze maze = mazeParser(input);
         doMoves(new Domain(List.of(maze), new Inventory(8), 1), moves);
@@ -104,9 +114,13 @@ public class DomainTests {
     //========= Testing harness Helper Methods =========//
     //==================================================//
 
-    /*
+    /**
      * makes tile object from given character, 
      * with given info (e.g location x and y)
+     * 
+     * @param c the character to make a tile from
+     * @param x co ord of tile
+     * @param y co ord of tile
      */
     public Tile makeTile(char c, int x, int y){
         try{
@@ -120,31 +134,29 @@ public class DomainTests {
         }
     }
 
-    /*
+    /**
      * does a sequece of moves on a given maze
      * 
      * moves are given as a string of characters (U, D, L, R)
      * separated by space.
+     * 
+     * @param domain used to do moves on
+     * @param sequence of string of moves in format (L, U, R, D) separated by space or nothing
      */
     public void doMoves(Domain domain, String sequence){
         Level level = domain.getCurrentLevelObject();
         // for each char in sequence
         for (char c : sequence.toCharArray()) {
-            switch (c) {
-                case 'U' -> level.makeHeroStep(Direction.Up);
-                case 'D' -> level.makeHeroStep(Direction.Down);
-                case 'L' -> level.makeHeroStep(Direction.Left);
-                case 'R' -> level.makeHeroStep(Direction.Right);
-                case ' ' -> level.makeHeroStep(Direction.None);
-                default -> throw new IllegalArgumentException("Invalid move: " + c);
-            }
+            level.makeHeroStep(Direction.getDirFromSymbol(c));
             domain.pingDomain();
-            System.out.println(domain.getCurrentMaze().toString());
         }
     }
 
-    /*
+    /**
      * parses a specifc format of string into a maze object
+     * 
+     * @param string format of the maze
+     * @return maze object extracted from this string
      */
     public Maze mazeParser(String maze){
         //split into lines

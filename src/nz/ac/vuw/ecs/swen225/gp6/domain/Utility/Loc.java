@@ -2,15 +2,23 @@ package nz.ac.vuw.ecs.swen225.gp6.domain.Utility;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
 
-/*
+/**
  * location for maze tiles, index 0 to max - 1
  */
 public class Loc{
     private int x;
     private int y;
 
-    
+    /**
+     * constructs a new loc object
+     * 
+     * @param x co ordinate 0 to max - 1
+     * @param y co ordinate 0 to max - 1
+     * 
+     * @throws IllegalArgumentException when either co ordinate argument is < 0 
+     */
     public Loc(int x, int y){
+        if(x < 0 || y < 0) throw new IllegalArgumentException("location cant be negative");
         this.x = x;
         this.y = y;
     }
