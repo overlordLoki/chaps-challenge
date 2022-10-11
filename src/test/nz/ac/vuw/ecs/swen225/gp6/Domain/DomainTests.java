@@ -115,7 +115,7 @@ public class DomainTests {
 
     @Test 
     public void testSimpleMovingEnemy(){
-        Tile t = new Enemy(new TileInfo(null));
+        //Tile t = new Enemy(new TileInfo(null));
     }
     
 

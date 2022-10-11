@@ -33,7 +33,6 @@ public class Helper {
 
         //display different tile types
         m.setTileAt(new Loc(2, 1), TileType.Hero);
-        m.setTileAt(new Loc(3, 1), TileType.Enemy);
         m.setTileAt(new Loc(2, 5), TileType.GreenKey);
         m.setTileAt(new Loc(3, 5), TileType.GreenLock);
         m.setTileAt(new Loc(2, 4), TileType.YellowKey);
