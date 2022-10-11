@@ -68,21 +68,29 @@ public class Maze {
 
     //TILE GETTERS:
     /**
-     * TODO:change
-     * @return a copy of tile array (SHALLOW COPY)
-     * returns tile array
+     * gets a copy of tile array
      * 
-     * IMPORTANT NOTE: a deep copy here would have provided more encapsulation of the tile array,
-     * however a shallow copy is chosen to allow for tile types to be added at run time. 
+     * IMPORTANT NOTE: some custom added tiles may not be in the preset tiles and unless the game 
+     * is running and persistency has load the tiles onto the game(as java class files to custom.tiles), 
+     * they won't be able to be instantiated by makeTileFromSymbol and an exception will be thrown.
+     * 
+     * @return a copy of tile array (DEEP CLONE)
+     * 
+     * @throws RuntimeException if any tile cannot be instantiated
      */
-    public Tile[][] getTileArrayCopy() {
+    public Tile[][] getTileArrayCopy(){
         Tile[][] copy = new Tile[width][height];
         IntStream.range(0, width)
         .forEach( x ->
             IntStream.range(0, height)
             .forEach(y->{
                 Tile t = tileArray[x][y];
-                copy[x][y] = t;
+                try{
+                    copy[x][y] = t.getClass().getConstructor( TileInfo.class).newInstance(t.info());
+                } catch(Exception e){
+                    throw new RuntimeException("cannot initiate the tile class(with TileInfo()): " 
+                    + t.getClass().getName());
+                }
             }
             )
         );
