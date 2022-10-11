@@ -330,7 +330,12 @@ public class Persistency {
                         e.printStackTrace();
                     }
                 } else {
-                    maze.setTileAt(new Loc(x, y), Helper.stringToType.get(name));
+                    TileType type = Helper.stringToType.get(name);
+                    if (type != null) {
+                        maze.setTileAt(new Loc(x, y), type);
+                    } else {
+                        throw new RuntimeException("Unknown tile type: " + name);
+                    }
                 }
             }
         }
