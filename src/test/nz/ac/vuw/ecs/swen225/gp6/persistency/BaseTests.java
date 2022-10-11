@@ -109,11 +109,8 @@ public class BaseTests {
     }
 
     @Test
-    public void deleteSave() {
-        try {
-            Persistency.deleteSave(1);
-        } catch (Exception e) {
-        }
+    public void deleteSave() throws IOException {
+        Persistency.deleteSave(1);
     }
 
     @Test

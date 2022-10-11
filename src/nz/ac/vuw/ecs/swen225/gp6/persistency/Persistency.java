@@ -7,16 +7,19 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
+import java.util.concurrent.TimeoutException;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Helper;
@@ -114,34 +117,57 @@ public class Persistency {
     }
 
     /**
-     * Deserialise the configuration file
+     * Deserialize the settings xml
      * 
      * @param element The xml element
      * @return Configuration object
      */
-    public static Configuration deserialiseConfiguration(Element root) {
+    public static Settings deserializeSettings(Element root) {
         // get texture pack
         String texturePack = root.element("texturePack").getText();
 
         // get key bindings
-        EnumMap<Actions, Key> keyBindings = new EnumMap<>(Actions.class);
-        for (Actions action : Actions.values()) {
-            Element keyElement = root.element("keyBindings").element(action.name());
-            if (keyElement == null)
-                continue;
-            int modifier = Integer.parseInt(keyElement.attributeValue("modifier"));
-            int key = Integer.parseInt(keyElement.attributeValue("key"));
-            keyBindings.put(action, new Key(modifier, key));
+        EnumMap<Keys, String> keyBindings = new EnumMap<>(Keys.class);
+        for (Keys key : Keys.values()) {
+            keyBindings.put(key, root.element("keyBindings").element(key.name()).getText());
         }
 
         // get music enabled
         Boolean musicEnabled = Boolean.parseBoolean(root.element("musicEnabled").getText());
 
-        // get view distance
-        Integer viewDistance = Integer.parseInt(root.element("viewDistance").getText());
-
-        return new Configuration(musicEnabled, texturePack, viewDistance, keyBindings);
+        return new Settings(texturePack, keyBindings, musicEnabled);
     }
+
+    /**
+     * Serialize the settings xml
+     * 
+     * @param settings Settings object
+     * @return XML document
+     */
+    public static Document serializeSettings(Settings settings) {
+        Document document = DocumentHelper.createDocument();
+        Element root = document.addElement("settings");
+
+        // add texture pack
+        root.addElement("texturePack").addText(settings.texturePack());
+
+        // add key bindings
+        Element keyBindings = root.addElement("keyBindings");
+        for (Keys key : Keys.values()) {
+            keyBindings.addElement(key.name()).addText(settings.keyBindings().get(key));
+        }
+
+        // add music enabled
+        root.addElement("musicEnabled").addText(settings.musicEnabled().toString());
+
+        return document;
+    }
+
+    /**
+     * Save the settings to res/settings.xml
+     * 
+     * @param settings The settings to save
+     */
 
     /**
      * Serialise a domain to an XML document
@@ -284,7 +310,7 @@ public class Persistency {
     /**
      * Deserialise inventory from an XML document
      * 
-     * @param document The XML document to deserialise
+     * @param root The XML element to deserialise
      * @return The deserialised inventory
      */
     public static Inventory deserialiseInventory(Element root) {
@@ -344,8 +370,25 @@ public class Persistency {
                 } else if (name.equals("lock")) {
                     String color = tile.attributeValue("color");
                     maze.setTileAt(new Loc(x, y), Helper.stringToType.get(color + "Lock"));
+                } else if (name.equals("custom")) {
+                    String customTile = tile.attributeValue("name");
+                    try {
+                        Class<?> clazz = Class.forName("custom.tiles." + customTile);
+                        Constructor<?> ctor = clazz.getConstructor(TileInfo.class);
+                        Tile object = (Tile) ctor.newInstance(new TileInfo(new Loc(x, y),
+                                Character.toLowerCase(customTile.charAt(0)) + customTile.substring(1)));
+                        // Tile object = new Enemy(new TileInfo(new Loc(x, y)));
+                        maze.setTileAt(new Loc(x, y), object);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 } else {
-                    maze.setTileAt(new Loc(x, y), Helper.stringToType.get(name));
+                    TileType type = Helper.stringToType.get(name);
+                    if (type != null) {
+                        maze.setTileAt(new Loc(x, y), type);
+                    } else {
+                        throw new RuntimeException("Unknown tile type: " + name);
+                    }
                 }
             }
         }
@@ -406,6 +449,17 @@ public class Persistency {
     }
 
     /**
+     * Load settings from file
+     * 
+     * @return The settings
+     */
+    public static Settings loadSettings() throws DocumentException {
+        SAXReader reader = new SAXReader();
+        Document document = reader.read(new File("res/settings.xml"));
+        return deserializeSettings(document.getRootElement());
+    }
+
+    /**
      * Load a maze from a file
      * 
      * @param path The file path to load from
@@ -456,7 +510,13 @@ public class Persistency {
             SAXReader reader = new SAXReader();
             // list files in res/levels
             File dir = new File("res/levels");
-            File[] files = dir.listFiles();
+            List<File> files = Arrays.asList(dir.listFiles());
+            files.sort(new Comparator<File>() {
+                @Override
+                public int compare(File o1, File o2) {
+                    return o1.getName().compareTo(o2.getName());
+                }
+            });
             List<Maze> mazes = new ArrayList<Maze>();
             for (File file : files) {
                 if (file.getName().endsWith(".xml")) {
