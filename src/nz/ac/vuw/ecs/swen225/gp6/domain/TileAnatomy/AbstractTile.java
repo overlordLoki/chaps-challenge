@@ -7,9 +7,15 @@ package nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy;
 public abstract class AbstractTile implements Tile{
     protected TileInfo info;
 
+    /**
+     * constructor for a tile which takes tile information(currently all tiles take this)
+     * 
+     * @param info tile info
+     * @throws NullPointerException if TileInfo is null
+     */
     public AbstractTile(TileInfo info) { 
         //tile info cannot be null
-        if(info == null)throw new IllegalArgumentException("TileInfo cannot be null");
+        if(info == null)throw new NullPointerException("TileInfo cannot be null");
         
         this.info = info;
     }

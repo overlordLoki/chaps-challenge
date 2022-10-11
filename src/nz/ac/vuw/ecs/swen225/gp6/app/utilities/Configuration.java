@@ -1,7 +1,13 @@
 package nz.ac.vuw.ecs.swen225.gp6.app.utilities;
 
-import java.util.EnumMap;
+import nz.ac.vuw.ecs.swen225.gp6.app.App;
 
+import java.awt.event.InputEvent;
+import java.util.EnumMap;
+import java.util.Map;
+
+import static java.awt.event.KeyEvent.*;
+import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.*;
 import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller.Key;
 
 /**
@@ -12,6 +18,8 @@ import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller.Key;
 public class Configuration {
     private boolean isMusicOn;
     private final EnumMap<Actions, Key> userKeyBindings;
+    private String texturePack;
+    private int viewDistance;
 
     /**
      * Constructor for the Configuration class
@@ -22,6 +30,34 @@ public class Configuration {
     public Configuration(boolean isMusicOn, EnumMap<Actions, Key> userKeyBindings){
         this.isMusicOn = isMusicOn;
         this.userKeyBindings = userKeyBindings;
+        this.texturePack = "default";
+        this.viewDistance = 7;
+    }
+
+    /**
+     * Constructor for the Configuration class
+     *
+     * @param isMusicOn       Whether the music is on or off.
+     * @param texturePack     The texture pack for the game.
+     * @param viewDistance    The view distance for the game.
+     * @param userKeyBindings The key bindings for the game.
+     */
+    public Configuration(boolean isMusicOn, String texturePack, int viewDistance, EnumMap<Actions, Key> userKeyBindings){
+        this.isMusicOn = isMusicOn;
+        this.texturePack = texturePack;
+        this.viewDistance = viewDistance;
+        this.userKeyBindings = userKeyBindings;
+    }
+
+    /**
+     * Updates the configuration.
+     *
+     * @param app The App object that the configuration will be controlling.
+     */
+    public void update(App app){
+        app.getGUI().getRenderPanel().setRenderSize(viewDistance);
+        // TODO: Update the texture pack.
+//        app.getGUI().getRenderPanel().setTexturePack(texturePack);
     }
 
     //================================================================================================================//
@@ -41,6 +77,20 @@ public class Configuration {
      * @param musicOn true if music is to be played, false otherwise
      */
     public void setMusicOn(boolean musicOn) {this.isMusicOn = musicOn;}
+
+    /**
+     * Sets the texture pack to the given texture pack
+     *
+     * @param texturePack the texture pack to set
+     */
+    public void setTexturePack(String texturePack) {this.texturePack = texturePack;}
+
+    /**
+     * Sets the view distance to the given view distance
+     *
+     * @param viewDistance the view distance to set
+     */
+    public void setViewDistance(int viewDistance) {this.viewDistance = viewDistance;}
 
 
     //================================================================================================================//
@@ -78,4 +128,45 @@ public class Configuration {
      * @return true if the user is playing music, false otherwise
      */
     public boolean isMusicOn() {return isMusicOn;}
+
+    /**
+     * Gets the texture pack
+     *
+     * @return the texture pack
+     */
+    public String getTexturePack() {return texturePack;}
+
+    /**
+     * Gets the view distance
+     *
+     * @return the view distance
+     */
+    public int getViewDistance() {return viewDistance;}
+
+
+    /**
+     * Gets the default configuration if it fails to read default config file.
+     *
+     * @return the default configuration
+     */
+    public static Configuration getDefaultConfiguration() {
+        return new Configuration(true, "Dogs", 7, new EnumMap<>(Map.ofEntries(
+                Map.entry(MOVE_UP, new Controller.Key(0, VK_UP)),
+                Map.entry(MOVE_DOWN, new Controller.Key(0, VK_DOWN)),
+                Map.entry(MOVE_LEFT, new Controller.Key(0, VK_LEFT)),
+                Map.entry(MOVE_RIGHT, new Controller.Key(0, VK_RIGHT)),
+                Map.entry(PAUSE_GAME, new Controller.Key(0, VK_SPACE)),
+                Map.entry(RESUME_GAME, new Controller.Key(0, VK_ESCAPE)),
+                Map.entry(TO_LEVEL_1, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_1)),
+                Map.entry(TO_LEVEL_2, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_2)),
+                Map.entry(QUIT_TO_MENU, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_X)),
+                Map.entry(SAVE_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_S)),
+                Map.entry(LOAD_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_R))
+        )));
+    }
+
+    public String toString() {
+        return String.format("Configuration{ isMusicOn=%s, texturePack=%s, viewDistance=%d, userKeyBindings=%s }",
+                isMusicOn, texturePack, viewDistance, userKeyBindings);
+    }
 }

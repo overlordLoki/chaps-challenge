@@ -19,7 +19,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -55,7 +54,7 @@ public class GUI {
     private final JPanel outerPanel = createClearPanel(BoxLayout.Y_AXIS);
     private final JPanel menuPanel  = createClearPanel(BoxLayout.Y_AXIS);
     private final JPanel gamePanel  = createClearPanel(BoxLayout.Y_AXIS);
-    private final JPanel pnPause = createClearPanel(BoxLayout.Y_AXIS);
+    private final JPanel pausePanel = createClearPanel(BoxLayout.Y_AXIS);
     private final JPanel functionPanel = createClearPanel(BoxLayout.Y_AXIS);
 
     private final CardLayout outerCardLayout = new CardLayout();
@@ -64,21 +63,34 @@ public class GUI {
     private final CardLayout functionCardLayout = new CardLayout();
     private final CardLayout pauseCardLayout = new CardLayout();
 
-    private final MazeRenderer render;
-    private final InventoryPanel pnInventory;
+    private final MazeRenderer renderPanel;
+    private final InventoryPanel inventoryPanel;
+    private final InventoryPanel[] saveInventoryPanels, loadInventoryPanels;
 
     /**
+     * Constructor for GUI.
      *
      * @param app The App object that is using this
      */
     public GUI(App app){
-        render = new MazeRenderer(app.getGame());
-        pnInventory = new InventoryPanel(app.getGame(), true, render);
-        logPanel.setRenderer(render);
+        renderPanel = new MazeRenderer(app.getGame());
+        inventoryPanel = new InventoryPanel(app.getGame(), true, renderPanel);
+        logPanel.setRenderer(renderPanel);
+        saveInventoryPanels = new InventoryPanel[]{
+                InventoryPanel.of(renderPanel),
+                InventoryPanel.of(renderPanel),
+                InventoryPanel.of(renderPanel)
+        };
+        loadInventoryPanels = new InventoryPanel[]{
+                InventoryPanel.of(renderPanel),
+                InventoryPanel.of(renderPanel),
+                InventoryPanel.of(renderPanel)
+        };
     }
 
     /**
      * Configures the App GUI to be displayed.
+     *
      * @param app The App to attach the GUI to.
      */
     public void configureGUI(App app) {
@@ -87,8 +99,8 @@ public class GUI {
         menuPanel.setLayout(menuCardLayout);
         gamePanel.setLayout(gameCardLayout);
         functionPanel.setLayout(functionCardLayout);
-        pnPause.setLayout(pauseCardLayout);
-        render.setFocusable(true);
+        pausePanel.setLayout(pauseCardLayout);
+        renderPanel.setFocusable(true);
         configureMenuScreen(app);
         configureGameScreen(app);
         outerPanel.add(menuPanel, MENU);
@@ -101,21 +113,12 @@ public class GUI {
      * @param app The App object.
      */
     void configureMenuScreen(App app){
-        // components to be added to the shell
-        JPanel pnMenu     = configurePanelMenu(menuPanel, menuCardLayout, app);
-        JPanel pnLoad     = configurePanelLoad(app);
-        JPanel pnSave     = configurePanelSave(app);
-        JPanel pnSettings = configurePanelSettings(menuPanel, menuCardLayout, app);
-        JPanel pnCredits  = configurePanelCredits(menuPanel, menuCardLayout, app);
-        JPanel pnExit     = configurePanelExit(menuPanel, menuCardLayout, app);
-
-        // add components to the shell
-        menuPanel.add(pnMenu, MENU);
-        menuPanel.add(pnLoad, LOAD_GAME);
-        menuPanel.add(pnSave, SAVE_GAME);
-        menuPanel.add(pnSettings, SETTINGS);
-        menuPanel.add(pnCredits, CREDITS);
-        menuPanel.add(pnExit, EXIT);
+        menuPanel.add(configurePanelMenu(app), MENU);
+        menuPanel.add(configurePanelLoad(app), LOAD_GAME);
+        menuPanel.add(configurePanelSave(app), SAVE_GAME);
+        menuPanel.add(configurePanelSettings(app), SETTINGS);
+        menuPanel.add(configurePanelCredits(), CREDITS);
+        menuPanel.add(configurePanelExit(app), EXIT);
     }
 
     /**
@@ -124,16 +127,9 @@ public class GUI {
      * @param app The App object.
      */
     void configureGameScreen(App app){
-        // components to be added to the shell
-        JPanel pnGameVictory = configurePanelVictory(app);
-        JPanel pnGameDeath   = configurePanelLost(app);
-        JPanel pnPause       = configurePanelPause(app);
-        JPanel pnGameWindow  = configurePanelGame(pnPause, functionPanel, pnInventory, render, app);
-
-        // add components to the shell
-        gamePanel.add(pnGameWindow, GAME);
-        gamePanel.add(pnGameDeath, LOOSE);
-        gamePanel.add(pnGameVictory, VICTORY);
+        gamePanel.add(configurePanelGame(app), GAME);
+        gamePanel.add(configurePanelLost(app), LOOSE);
+        gamePanel.add(configurePanelVictory(app), VICTORY);
     }
 
 
@@ -141,31 +137,24 @@ public class GUI {
     //============================================= Menu Panels ======================================================//
     //================================================================================================================//
 
-    private JPanel configurePanelMenu(JPanel backPanel, CardLayout cardLayout, App app) {
+    private JPanel configurePanelMenu(App app) {
         System.out.print("Configuring Menu Panel... ");
 
-        MazeRenderer r = render;
         JPanel pnMenu = createBackgroundPanel(Images.Background, BoxLayout.Y_AXIS);
-
-        List<JLabel> labels = List.of(
-                createActionLabel(NEW_GAME, r, SUBTITLE, true, app::startNewGame),
-                createActionLabel(LOAD_GAME, r, SUBTITLE, true, ()->{
-                    app.refreshSaves();
-                    cardLayout.show(backPanel, LOAD_GAME);
-                }),
-                createActionLabel(SETTINGS, r, SUBTITLE, true, ()->cardLayout.show(backPanel, SETTINGS)),
-                createActionLabel(LOGS, r, SUBTITLE, true, ()-> {
+        // assemble the panel
+        pnMenu.add(Box.createVerticalGlue());
+        List.of(createActionLabel(NEW_GAME, renderPanel, SUBTITLE, true, app::startNewGame),
+                createActionLabel(LOAD_GAME, renderPanel, SUBTITLE, true, ()->transitionToLoadScreen(app)),
+                createActionLabel(SETTINGS, renderPanel, SUBTITLE, true, ()->menuCardLayout.show(menuPanel, SETTINGS)),
+                createActionLabel(LOGS, renderPanel, SUBTITLE, true, ()-> {
                     JFrame frame = new JFrame("Logs");
                     setSize(frame, 500,500,500,500,500,500);
                     frame.add(logPanel);
                     frame.setVisible(true);
                 }),
-                createActionLabel(CREDITS, r, SUBTITLE, true, ()->cardLayout.show(backPanel, CREDITS)),
-                createActionLabel(EXIT, r, SUBTITLE, true, ()->cardLayout.show(backPanel, EXIT))
-        );
-        // assemble the panel
-        pnMenu.add(Box.createVerticalGlue());
-        labels.forEach(pnMenu::add);
+                createActionLabel(CREDITS, renderPanel, SUBTITLE, true, ()->menuCardLayout.show(menuPanel, CREDITS)),
+                createActionLabel(EXIT, renderPanel, SUBTITLE, true, ()->menuCardLayout.show(menuPanel, EXIT))
+        ).forEach(pnMenu::add);
 
         System.out.println("Done!");
         return pnMenu;
@@ -174,21 +163,23 @@ public class GUI {
     private JPanel configurePanelLoad(App app) {
         System.out.print("Configuring Load Panel... ");
 
-        JPanel pnLoad = createRepeatableBackgroundPanel(Images.Pattern_2, render, BoxLayout.Y_AXIS);
-        JLabel lbTitle = createLabel("Load and Resume Games", render, TITLE, true);
-        JLabel lbBack = createActionLabel("Return to menu", render,SUBTITLE, true, this::transitionToMenuScreen);
-
+        JPanel pnLoad = createRepeatableBackgroundPanel(Images.Pattern_2, renderPanel, BoxLayout.Y_AXIS);
         JPanel pnLoadGame = createClearPanel(BoxLayout.X_AXIS);
         // assemble this panel
         addAll(pnLoadGame,
                 Box.createHorizontalGlue(),
-                configureSaveLoadGameSubPanel(1, app, false),
+                configureSaveLoadGameSubPanel(app, 1, false),
                 Box.createHorizontalGlue(),
-                configureSaveLoadGameSubPanel(2, app, false),
+                configureSaveLoadGameSubPanel(app, 2, false),
                 Box.createHorizontalGlue(),
-                configureSaveLoadGameSubPanel(3, app, false),
+                configureSaveLoadGameSubPanel(app, 3, false),
                 Box.createHorizontalGlue());
-        addAll(pnLoad, lbTitle, Box.createVerticalGlue(), pnLoadGame, Box.createVerticalGlue(), lbBack);
+        addAll(pnLoad,
+                createLabel("Load and Resume Games", renderPanel, TITLE, true),
+                Box.createVerticalGlue(),
+                pnLoadGame,
+                Box.createVerticalGlue(),
+                createActionLabel("Return to menu", renderPanel,SUBTITLE, true, this::transitionToMenuScreen));
 
         System.out.println("Done!");
         return pnLoad;
@@ -197,70 +188,139 @@ public class GUI {
     private JPanel configurePanelSave(App app) {
         System.out.print("Configuring Save Panel... ");
 
-        JPanel pnSave = createRepeatableBackgroundPanel(Images.Pattern_2, render, BoxLayout.Y_AXIS);
-        JLabel lbTitle = createLabel("Save the current game!", render, TITLE, true);
-        JLabel lbBack = createActionLabel("Return to Menu", render,SUBTITLE, true, this::transitionToMenuScreen);
-
+        JPanel pnSave = createRepeatableBackgroundPanel(Images.Pattern_2, renderPanel, BoxLayout.Y_AXIS);
         JPanel pnSaveGame = createClearPanel(BoxLayout.X_AXIS);
         // assemble this panel
         addAll(pnSaveGame,
                 Box.createHorizontalGlue(),
-                configureSaveLoadGameSubPanel(1, app, true),
+                configureSaveLoadGameSubPanel(app, 1, true),
                 Box.createHorizontalGlue(),
-                configureSaveLoadGameSubPanel(2, app, true),
+                configureSaveLoadGameSubPanel(app, 2, true),
                 Box.createHorizontalGlue(),
-                configureSaveLoadGameSubPanel(3, app, true),
+                configureSaveLoadGameSubPanel(app, 3, true),
                 Box.createHorizontalGlue());
-        addAll(pnSave, lbTitle, Box.createVerticalGlue(), pnSaveGame, Box.createVerticalGlue(), lbBack);
+        addAll(pnSave,
+                createLabel("Save the current game!", renderPanel, TITLE, true),
+                Box.createVerticalGlue(),
+                pnSaveGame,
+                Box.createVerticalGlue(),
+                createActionLabel("Return to Menu", renderPanel,SUBTITLE, true, this::transitionToMenuScreen));
 
         System.out.println("Done!");
         return pnSave;
     }
 
-    private JPanel configurePanelSettings(JPanel backPanel, CardLayout cardLayout, App app) {
+    /**
+     * Creates a load game panel for a single load
+     *
+     * @param app  the app to be used to get the render
+     * @param slot the slot of the load (start at 1)
+     * @return a JPanel with the specified index load game
+     */
+    private JPanel configureSaveLoadGameSubPanel(App app, int slot, boolean isSave) {
+        JPanel pnLoad = createRepeatableBackgroundPanel(TexturePack.Images.Wall, renderPanel, BoxLayout.Y_AXIS);
+        JPanel pnInfo = createClearPanel(BoxLayout.Y_AXIS);
+        JPanel pnStatus = createClearPanel(BoxLayout.Y_AXIS);
+        JPanel pnOptions = createClearPanel(BoxLayout.X_AXIS);
+
+        // assemble this panel
+        addAll(pnLoad,
+                createInfoLabel(()->"Slot "+(slot), renderPanel, SUBTITLE, true),
+                pnInfo,
+                pnOptions);
+        addAll(pnStatus,
+                createInfoLabel(()->"Level: " + app.getSave(slot).getCurrentLevel(), renderPanel, TEXT, true),
+                createInfoLabel(()->"Time Left: " + app.getGameClock().getTimeInMinutes(), renderPanel, TEXT, true),
+                createInfoLabel(()->"Score: " + app.getSave(slot).getTreasuresLeft(), renderPanel, TEXT, true));
+        if (isSave){    // Options for Saving
+            JPanel pnSaveInv = saveInventoryPanels[slot-1];
+            setSize(pnSaveInv, 150,300, 150,300, 150,300);
+            addAll(pnInfo, pnStatus, pnSaveInv);
+            addAll(pnOptions,
+                    Box.createHorizontalGlue(),
+                    createActionLabel("Save here!", renderPanel, SUBTITLE, true, ()->{
+                        try {
+                            Persistency.saveDomain(app.getGame(), slot);
+                            app.refreshSaves();
+                            app.repaint();
+                        }catch (IOException e){
+                            System.out.println("Failed to save game in slot: " + slot);
+                            e.printStackTrace();
+                            JOptionPane.showMessageDialog(null, "There is an error in saving the game slot: " + slot);
+                        }}),
+                    Box.createHorizontalGlue());
+        }else{  // Options for Loading
+            JPanel pnLoadInv = loadInventoryPanels[slot-1];
+            setSize(pnLoadInv, 150,300, 150,300, 150,300);
+            addAll(pnInfo, pnStatus, pnLoadInv);
+            addAll(pnOptions,
+                    Box.createHorizontalGlue(),
+                    createActionLabel("Resume!", renderPanel, TEXT, true, ()->app.startSavedGame(slot)),
+                    Box.createHorizontalGlue(),
+                    createActionLabel("Replay", renderPanel, TEXT, true, ()->app.startSavedReplay(slot)),
+                    Box.createHorizontalGlue(),
+                    createActionLabel("Delete", renderPanel, TEXT, true, ()->{
+                        try {
+                            Persistency.deleteSave(slot);
+                            app.refreshSaves();
+                            app.repaint();
+                        }catch (Exception e){
+                            System.out.println("Failed to delete save file.");
+                            e.printStackTrace();
+                            JOptionPane.showMessageDialog(null, "There is an error in saving the game slot: " + slot);
+                        }}),
+                    Box.createHorizontalGlue());
+        }
+        return pnLoad;
+    }
+
+    private JPanel configurePanelSettings(App app) {
         System.out.print("Configuring Settings Panel... ");
 
-        JPanel pnSettings = createRepeatableBackgroundPanel(Images.Pattern_2, render, BoxLayout.Y_AXIS);
+        JPanel pnSettings = createRepeatableBackgroundPanel(Images.Pattern_2, renderPanel, BoxLayout.Y_AXIS);
         JPanel pnMiddle = createClearPanel(BoxLayout.X_AXIS);
         JPanel pnBindingL = createClearPanel(BoxLayout.Y_AXIS);
         JPanel pnBindingR = createClearPanel(BoxLayout.Y_AXIS);
         JPanel pnTexturePack = createClearPanel(BoxLayout.X_AXIS);
-
-        JLabel lbCurrentTexture = createInfoLabel(()->render.getCurrentTexturePack().getName()+"" , render, TEXT, false);
+        JPanel pnViewDistance = createClearPanel(BoxLayout.X_AXIS);
 
         // setting layout
         pnBindingL.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
         pnBindingR.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
 
         // assemble this panel
+        addAll(pnViewDistance,
+                createActionLabel("<<<  ", renderPanel, TEXT, false,
+                        ()->runAndRepaint(app, renderPanel::decreaseViewDistance).run()),
+                createInfoLabel(()-> renderPanel.getRenderSize()+"", renderPanel, TEXT, true),
+                createActionLabel("  >>>", renderPanel, TEXT, false,
+                        ()->runAndRepaint(app, renderPanel::increaseViewDistance).run()));
         addAll(pnTexturePack,
-                createActionLabel("<<<  ", render,SUBTITLE, false, ()->{
-                    render.usePrevTexturePack();
-                    app.repaint();
-                }),
-                lbCurrentTexture,
-                createActionLabel("  >>>", render,TEXT, false, ()->{
-                    render.useNextTexturePack();
-                    app.repaint();
-                }));
+                createActionLabel("<<<  ", renderPanel,TEXT, false,
+                        ()->runAndRepaint(app, renderPanel::usePrevTexturePack).run()),
+                createInfoLabel(()-> renderPanel.getCurrentTexturePack().getName()+"" , renderPanel, TEXT, false),
+                createActionLabel("  >>>", renderPanel,TEXT, false,
+                        ()->runAndRepaint(app, renderPanel::useNextTexturePack).run()));
         addAll(pnBindingL,
-                createLabel("Play Sound", render, TEXT, false),
-                createLabel("Texture Pack", render, TEXT, false));
+                createLabel("Play Sound", renderPanel, TEXT, false),
+                createLabel("View Distance", renderPanel, TEXT, false),
+                createLabel("Texture Pack", renderPanel, TEXT, false));
         addAll(pnBindingR,
-                createInfoActionLabel(()->app.getConfiguration().isMusicOn()? "On" : "Off", render, TEXT, false, ()->false,
+                createInfoActionLabel(()->app.getConfiguration().isMusicOn()? "On" : "Off", renderPanel, TEXT, false, ()->false,
                         ()->{app.getConfiguration().setMusicOn(!app.getConfiguration().isMusicOn());
                             if (app.getConfiguration().isMusicOn()) {
                                 MusicPlayer.playMenuMusic();
                             } else {
                                 MusicPlayer.stopMenuMusic();
                             }}),
+                pnViewDistance,
                 pnTexturePack);
         AtomicReference<Actions> keyToSet = new AtomicReference<>(Actions.NONE);
         app.getConfiguration().getUserKeyBindings().forEach((action, key) -> {
-            JLabel lbActionName = createLabel(action.getDisplayName(), render, TEXT, false);
+            JLabel lbActionName = createLabel(action.getDisplayName(), renderPanel, TEXT, false);
             JLabel lbKey = createInfoActionLabel(
                             ()->app.getConfiguration().getKeyBinding(action).toString(),
-                            render, TEXT, false,
+                            renderPanel, TEXT, false,
                             ()->!keyToSet.get().equals(Actions.NONE),
                             ()->keyToSet.set(action));
             lbKey.addKeyListener(new KeyAdapter() {
@@ -285,120 +345,61 @@ public class GUI {
         });
         addAll(pnMiddle, Box.createHorizontalGlue(), pnBindingL, pnBindingR, Box.createHorizontalGlue());
         addAll(pnSettings,
-                createLabel("Settings", render, TITLE, true),
+                createLabel("Settings", renderPanel, TITLE, true),
                 Box.createVerticalGlue(),
                 pnMiddle,
                 Box.createVerticalGlue(),
-                createActionLabel("Confirm", render, SUBTITLE, true, ()->cardLayout.show(backPanel, MENU)));
+                createActionLabel("Confirm", renderPanel, SUBTITLE, true, ()->menuCardLayout.show(menuPanel, MENU)));
 
         System.out.println("Done!");
         return pnSettings;
     }
 
-    private JPanel configurePanelCredits(JPanel backPanel, CardLayout cardLayout, App app) {
+    private JPanel configurePanelCredits() {
         System.out.print("Configuring Credits Panel... ");
 
-        JPanel pnCredits = createRepeatableBackgroundPanel(Images.Pattern_2, render, BoxLayout.Y_AXIS);
-        JLabel lbTitle = createLabel("Credits", render, TITLE, true);
-        JLabel lbBack = createActionLabel("Back", render,SUBTITLE, true, ()->cardLayout.show(backPanel, MENU));
-        JLabel[] credits = new JLabel[]{
-                createLabel("App: Jeff", render, SUBTITLE, true),
-                createLabel("Domain: Matty", render, SUBTITLE, true),
-                createLabel("Fuzz: Ray", render, SUBTITLE, true),
-                createLabel("Persistency: Ben", render, SUBTITLE, true),
-                createLabel("Recorder: Jayden", render, SUBTITLE, true),
-                createLabel("Renderer: Loki", render, SUBTITLE, true),
-        };
-
+        JPanel pnCredits = createRepeatableBackgroundPanel(Images.Pattern_2, renderPanel, BoxLayout.Y_AXIS);
         // assemble this panel
-        addAll(pnCredits, lbTitle, Box.createVerticalGlue());
-        addAll(pnCredits, credits);
-        addAll(pnCredits, Box.createVerticalGlue(), lbBack);
+        addAll(pnCredits, createLabel("Credits", renderPanel, TITLE, true), Box.createVerticalGlue());
+        addAll(pnCredits, new JLabel[]{
+                createLabel("App: Jeff", renderPanel, SUBTITLE, true),
+                createLabel("Domain: Matty", renderPanel, SUBTITLE, true),
+                createLabel("Fuzz: Ray", renderPanel, SUBTITLE, true),
+                createLabel("Persistency: Ben", renderPanel, SUBTITLE, true),
+                createLabel("Recorder: Jayden", renderPanel, SUBTITLE, true),
+                createLabel("Renderer: Loki", renderPanel, SUBTITLE, true),
+        });
+        addAll(pnCredits, Box.createVerticalGlue(),
+                createActionLabel("Back", renderPanel,SUBTITLE, true, ()->menuCardLayout.show(menuPanel, MENU)));
 
         System.out.println("Done!");
         return pnCredits;
     }
 
-    private JPanel configurePanelExit(JPanel backPanel, CardLayout cardLayout, App app) {
+    private JPanel configurePanelExit(App app) {
         System.out.print("Configuring Exit Panel... ");
 
-        JPanel pnExit   = createRepeatableBackgroundPanel(Images.Pattern_2, render, BoxLayout.Y_AXIS);
+        JPanel pnExit   = createRepeatableBackgroundPanel(Images.Pattern_2, renderPanel, BoxLayout.Y_AXIS);
         JPanel pnOption = createClearPanel(BoxLayout.X_AXIS);
-        JLabel lbTitle  = createLabel("Chaps Challenge!", render, TITLE, true);
-        JLabel lbMessage = createLabel("Are you sure you want to exit?", render, SUBTITLE, true);
-        JLabel lbYes    = createActionLabel("Yes", render,SUBTITLE, true, ()->{
-                                            System.out.println("Application closed with exit code 0");
-                                            System.exit(0);});
-        JLabel lbNo     = createActionLabel("No", render,SUBTITLE, true, ()->cardLayout.show(backPanel, MENU));
-
         // combine all components
-        addAll(pnOption, Box.createHorizontalGlue(), lbNo, Box.createHorizontalGlue(), lbYes, Box.createHorizontalGlue());
-        addAll(pnExit, lbTitle, Box.createVerticalGlue(), lbMessage, Box.createVerticalGlue(), pnOption, Box.createVerticalGlue());
+        addAll(pnOption, Box.createHorizontalGlue(),
+                createActionLabel("No", renderPanel,SUBTITLE, true, ()->menuCardLayout.show(menuPanel, MENU)),
+                Box.createHorizontalGlue(),
+                createActionLabel("Yes", renderPanel,SUBTITLE, true, ()->{
+                    System.out.println("Exiting...");
+                    System.exit(0);
+                }),
+                Box.createHorizontalGlue());
+        addAll(pnExit,
+                createLabel("Chaps Challenge!", renderPanel, TITLE, true),
+                Box.createVerticalGlue(),
+                createLabel("Are you sure you want to exit?", renderPanel, SUBTITLE, true),
+                Box.createVerticalGlue(),
+                pnOption,
+                Box.createVerticalGlue());
 
         System.out.println("Done!");
         return pnExit;
-    }
-
-    /**
-     * Creates a load game panel for a single load
-     *
-     * @param slot the slot of the load (start at 1)
-     * @param app   the app to be used to get the render
-     * @return a JPanel with the specified index load game
-     */
-    private JPanel configureSaveLoadGameSubPanel(int slot, App app, boolean isSave) {
-        JPanel pnLoad = createRepeatableBackgroundPanel(TexturePack.Images.Wall, render, BoxLayout.Y_AXIS);
-        JPanel pnInfo = createClearPanel(BoxLayout.Y_AXIS);
-        JPanel pnStatus = createClearPanel(BoxLayout.Y_AXIS);
-        JPanel pnInventory = new InventoryPanel(app.getSave(slot), true, render);
-        JPanel pnOptions = createClearPanel(BoxLayout.X_AXIS);
-
-        // assemble this panel
-        setSize(pnInventory, 150,300, 150,300, 150,300);
-        addAll(pnInfo, pnStatus, pnInventory);
-        addAll(pnLoad,
-                createInfoLabel(()->"Slot "+(slot), render, SUBTITLE, true),
-                pnInfo,
-                pnOptions);
-        addAll(pnStatus,
-                createInfoLabel(()->"Level: " + app.getSave(slot).getCurrentLevel(), render, TEXT, true),
-                createInfoLabel(()->"Time Left: " + app.getGameClock().getTimeInMinutes(), render, TEXT, true),
-                createInfoLabel(()->"Score: " + app.getSave(slot).getTreasuresLeft(), render, TEXT, true));
-        if (isSave){    // Options for Saving
-            addAll(pnOptions,
-                    Box.createHorizontalGlue(),
-                    createActionLabel("Save here!", render, SUBTITLE, true, ()->{
-                        try {
-                            // TODO: change to saving current game when domain implement getDomain()
-                            Persistency.saveDomain(app.getSave(slot), slot);
-                            app.refreshSaves();
-                            app.repaint();
-                        }catch (IOException e){
-                            System.out.println("Failed to save game in slot: " + slot);
-                            e.printStackTrace();
-                            JOptionPane.showMessageDialog(null, "There is an error in saving the game slot: " + slot);
-                        }}),
-                    Box.createHorizontalGlue());
-        }else{  // Options for Loading
-            addAll(pnOptions,
-                    Box.createHorizontalGlue(),
-                    createActionLabel("Resume!", render, SUBTITLE, true, ()->app.startSavedGame(slot)),
-                    Box.createHorizontalGlue(),
-                    createActionLabel("Replay", render, SUBTITLE, true, ()->app.startSavedReplay(slot)),
-                    Box.createHorizontalGlue(),
-                    createActionLabel("Delete", render, SUBTITLE, true, ()->{
-                        try {
-                            Persistency.deleteSave(slot);
-                            app.refreshSaves();
-                            app.repaint();
-                        }catch (Exception e){
-                            System.out.println("Failed to delete save file.");
-                            e.printStackTrace();
-                            JOptionPane.showMessageDialog(null, "There is an error in saving the game slot: " + slot);
-                        }}),
-                    Box.createHorizontalGlue());
-        }
-        return pnLoad;
     }
 
 
@@ -406,11 +407,11 @@ public class GUI {
     //============================================= Game Panels ======================================================//
     //================================================================================================================//
 
-    private JPanel configurePanelGame(JPanel pnPause, JPanel functionPanel, JPanel pnInventories, MazeRenderer mazeRender, App app) {
+    private JPanel configurePanelGame(App app) {
         System.out.print("Configuring Game Panel... ");
 
         // outermost panel
-        JPanel pnGame = createRepeatableBackgroundPanel(Images.Pattern, mazeRender, BoxLayout.X_AXIS);
+        JPanel pnGame = createRepeatableBackgroundPanel(Images.Pattern, renderPanel, BoxLayout.X_AXIS);
         // 3 panels on top of outermost panel: left/mid/right
         JPanel pnStatus = createClearPanel(BoxLayout.Y_AXIS);
         JPanel pnMaze   = createClearPanel(new GridBagLayout());
@@ -422,48 +423,47 @@ public class GUI {
         JPanel pnModeNormal = createClearPanel(BoxLayout.Y_AXIS);
         JPanel pnModeReplay = createClearPanel(BoxLayout.Y_AXIS);
         JPanel pnInventory = createClearPanel(BoxLayout.Y_AXIS);
-        // status bars
-        JLabel lbLevelTitle = createLabel("Level", mazeRender, SUBTITLE, false);
-        JLabel lbLevel      = createInfoLabel(()->app.getGame().getCurrentLevel()+"", mazeRender, SUBTITLE, false);
-        JLabel lbTimerTitle = createLabel("Time", mazeRender, SUBTITLE, false);
-        JLabel lbTimer      = createInfoLabel(app.getGameClock()::getTimeInMinutes, mazeRender, SUBTITLE, false);
-        JLabel lbTreasuresTitle = createLabel("Treasures", mazeRender, SUBTITLE, false);
-        JLabel lbTreasures  = createInfoLabel(()->app.getGame().getTreasuresLeft()+"", mazeRender, SUBTITLE, false);
-        JLabel lbPauseNormal = createActionLabel("Pause", render,SUBTITLE, true,()->Actions.PAUSE_GAME.run(app));
-        JLabel lbPauseReplay = createActionLabel("Pause", render,SUBTITLE, true, ()->Actions.PAUSE_GAME.run(app));
-        JLabel lbReplayTitle = createLabel("Replay Mode", render,SUBTITLE, true);
-        JLabel lbReplayAuto = createActionLabel("Auto", render,SUBTITLE, true, app::transitionToReplayScreen);
-        JLabel lbReplayStep = createActionLabel("Step", render,SUBTITLE, true, app::transitionToReplayScreen);
-        JLabel lbInventoryTitle = createLabel("Inventory", mazeRender, SUBTITLE, false);
 
         // setting size
         int width = 75*2, height = 75*4;
         pnStatus.setMaximumSize(new Dimension(200, 1000));
         pnRight.setMaximumSize(new Dimension(200, 1000));
-        setSize(mazeRender, 700, 700, 600, 600, 800, 800);
+        setSize(renderPanel, 700, 700, 600, 600, 800, 800);
         setSize(pnMaze, 700, 700, 600, 600, 800, 800);
         setSize(pnInventory, width, height, width, height, width, height);
         setSize(functionPanel, 200,200,200,200,200,200);
         pnInventory.setAlignmentX(Component.CENTER_ALIGNMENT);
-        mazeRender.setLayout(new GridBagLayout());
+        renderPanel.setLayout(new GridBagLayout());
 
         functionPanel.add(pnModeNormal, MODE_NORMAL);
         functionPanel.add(pnModeReplay, MODE_REPLAY);
-        addAll(pnModeNormal, lbPauseNormal
+        addAll(pnModeNormal,
+                createActionLabel("Pause", renderPanel,SUBTITLE, true,()->Actions.PAUSE_GAME.run(app))
                 // TODO: remove after debugging
-                , createActionLabel("win", render, SUBTITLE, true, this::transitionToWinScreen)
-                , createActionLabel("lost", render, SUBTITLE, true, this::transitionToLostScreen)
+                , createActionLabel("win", renderPanel, SUBTITLE, true, this::transitionToWinScreen)
+                , createActionLabel("lost", renderPanel, SUBTITLE, true, this::transitionToLostScreen)
         );
-        addAll(pnModeReplay, lbReplayTitle, lbPauseReplay, lbReplayAuto, lbReplayStep);
+        addAll(pnModeReplay,
+                createLabel("Replay Mode", renderPanel,SUBTITLE, true),
+                createActionLabel("Pause", renderPanel,SUBTITLE, true, ()->Actions.PAUSE_GAME.run(app)),
+                createActionLabel("Auto", renderPanel,SUBTITLE, true, ()->app.getReplay().autoPlay()),
+                createActionLabel("Step", renderPanel,SUBTITLE, true, ()->app.getReplay().step()));
 
-        addAll(pnStatusTop, lbLevelTitle, lbLevel);
-        addAll(pnStatusMid, lbTimerTitle, lbTimer);
-        addAll(pnStatusBot, lbTreasuresTitle, lbTreasures);
-        addAll(pnInventory, lbInventoryTitle, pnInventories);
+        addAll(pnStatusTop,
+                createLabel("Level", renderPanel, SUBTITLE, false),
+                createInfoLabel(()->app.getGame().getCurrentLevel()+"", renderPanel, SUBTITLE, false));
+        addAll(pnStatusMid,
+                createLabel("Time", renderPanel, SUBTITLE, false),
+                createInfoLabel(app.getGameClock()::getTimeInMinutes, renderPanel, SUBTITLE, false));
+        addAll(pnStatusBot,
+                createLabel("Treasures", renderPanel, SUBTITLE, false),
+                createInfoLabel(()->app.getGame().getTreasuresLeft()+"", renderPanel, SUBTITLE, false));
+        addAll(pnInventory,
+                createLabel("Inventory", renderPanel, SUBTITLE, false), inventoryPanel);
         addAll(pnStatus, Box.createVerticalGlue(), pnStatusTop, Box.createVerticalGlue(), pnStatusMid,
                         Box.createVerticalGlue(), pnStatusBot, Box.createVerticalGlue());
-        mazeRender.add(pnPause);
-        pnMaze.add(mazeRender);
+        renderPanel.add(configurePanelPause(app));
+        pnMaze.add(renderPanel);
         addAll(pnRight, Box.createVerticalGlue(), functionPanel, Box.createVerticalGlue(), pnInventory, Box.createVerticalGlue());
         addAll(pnGame, Box.createHorizontalGlue(), pnStatus, Box.createHorizontalGlue(), pnMaze, Box.createHorizontalGlue(),
                         pnRight, Box.createHorizontalGlue());
@@ -477,19 +477,19 @@ public class GUI {
 
         JPanel pnOnPause = creatTransparentPanel(Images.Empty_tile, 0.8f);
         JPanel pnOnResume = createClearPanel(BoxLayout.Y_AXIS);
-        pnPause.add(pnOnResume, STATUS_RESUME);
-        pnPause.add(pnOnPause, STATUS_PAUSE);
+        pausePanel.add(pnOnResume, STATUS_RESUME);
+        pausePanel.add(pnOnPause, STATUS_PAUSE);
 
         addAll(pnOnPause,
                 Box.createVerticalGlue(),
-                createActionLabel("Resume", render, TITLE, true, ()->Actions.LOAD_GAME.run(app)),
+                createActionLabel("Resume", renderPanel, TITLE, true, ()->Actions.LOAD_GAME.run(app)),
                 Box.createVerticalGlue(),
-                createActionLabel("Save and return to menu", render, TITLE, true, ()->Actions.SAVE_GAME.run(app)),
+                createActionLabel("Save and return to menu", renderPanel, TITLE, true, ()->Actions.SAVE_GAME.run(app)),
                 Box.createVerticalGlue(),
-                createActionLabel("Quit to menu", render, TITLE, true, app::transitionToMenuScreen),
+                createActionLabel("Quit to menu", renderPanel, TITLE, true,()->Actions.QUIT_TO_MENU.run(app)),
                 Box.createVerticalGlue());
         System.out.println("Done!");
-        return pnPause;
+        return pausePanel;
     }
 
     private JPanel configurePanelVictory(App app) {
@@ -522,6 +522,28 @@ public class GUI {
 
 
     //================================================================================================================//
+    //=========================================== Helper Methods =====================================================//
+    //================================================================================================================//
+
+    private Runnable runAndRepaint(App app, Runnable runnable){
+        return () -> {
+            runnable.run();
+            app.repaint();
+        };
+    }
+
+    /**
+     * Updates the current save inventory panel to the correct one
+     *
+     * @param index the index of the inventory to be displayed
+     * @param save the save to be displayed
+     */
+    public void updateSaveInventory(int index, Domain save){
+        saveInventoryPanels[index].setMaze(save);
+        loadInventoryPanels[index].setMaze(save);
+    }
+
+    //================================================================================================================//
     //=========================================== Getter Methods =====================================================//
     //================================================================================================================//
 
@@ -537,14 +559,14 @@ public class GUI {
      *
      * @return the Maze Renderer
      */
-    public MazeRenderer getRender() {return render;}
+    public MazeRenderer getRenderPanel() {return renderPanel;}
 
     /**
      * Gets the Inventory Renderer of this GUI
      *
      * @return the Inventory Renderer
      */
-    public InventoryPanel getInventory() {return pnInventory;}
+    public InventoryPanel getInventory() {return inventoryPanel;}
 
     /**
      * Gets the log panel of this GUI
@@ -569,16 +591,22 @@ public class GUI {
 
     /**
      * Brings up the save game screen.
+     *
+     * @param app the app to be loaded
      */
-    public void transitionToLoadPanel(){
+    public void transitionToLoadScreen(App app){
+        app.refreshSaves();
         menuCardLayout.show(menuPanel, LOAD_GAME);
         outerCardLayout.show(outerPanel, MENU);
     }
 
     /**
      * Brings up the save game screen.
+     *
+     * @param app the app to be saved
      */
-    public void transitionToSavePanel(){
+    public void transitionToSaveScreen(App app){
+        app.refreshSaves();
         menuCardLayout.show(menuPanel, SAVE_GAME);
         outerCardLayout.show(outerPanel, MENU);
     }
@@ -588,9 +616,10 @@ public class GUI {
      */
     public void transitionToGameScreen(){
         functionCardLayout.show(functionPanel, MODE_NORMAL);
+        pauseCardLayout.show(pausePanel, STATUS_RESUME);
         gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
-        render.grabFocus();
+        renderPanel.grabFocus();
     }
 
     /**
@@ -598,6 +627,7 @@ public class GUI {
      */
     public void transitionToReplayScreen(){
         functionCardLayout.show(functionPanel, MODE_REPLAY);
+        pauseCardLayout.show(pausePanel, STATUS_RESUME);
         gameCardLayout.show(gamePanel, GAME);
         outerCardLayout.show(outerPanel, GAME);
     }
@@ -622,16 +652,13 @@ public class GUI {
      * Brings up the pause screen.
      */
     public void showPausePanel(){
-        pauseCardLayout.show(pnPause, STATUS_PAUSE);
+        pauseCardLayout.show(pausePanel, STATUS_PAUSE);
     }
 
     /**
      * Hides the pause screen and continue with resume screen.
      */
     public void showResumePanel(){
-        pauseCardLayout.show(pnPause, STATUS_RESUME);
+        pauseCardLayout.show(pausePanel, STATUS_RESUME);
     }
-
 }
-
-
