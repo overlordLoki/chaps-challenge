@@ -36,7 +36,9 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
 
 import nz.ac.vuw.ecs.swen225.gp6.app.*;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
@@ -117,50 +119,55 @@ public class Persistency {
     }
 
     /**
-     * Deserialize the settings xml
+     * Deserialise the configuration file
      * 
      * @param element The xml element
      * @return Configuration object
      */
-    public static Settings deserializeSettings(Element root) {
+    public static Configuration deserialiseConfiguration(Element root) {
         // get texture pack
         String texturePack = root.element("texturePack").getText();
 
         // get key bindings
-        EnumMap<Keys, String> keyBindings = new EnumMap<>(Keys.class);
-        for (Keys key : Keys.values()) {
-            keyBindings.put(key, root.element("keyBindings").element(key.name()).getText());
+        EnumMap<Actions, Key> keyBindings = new EnumMap<>(Actions.class);
+        for (Actions action : Actions.values()) {
+            Element keyElement = root.element("keyBindings").element(action.name());
+            if (keyElement == null)
+                continue;
+            int modifier = Integer.parseInt(keyElement.attributeValue("modifier"));
+            int key = Integer.parseInt(keyElement.attributeValue("key"));
+            keyBindings.put(action, new Key(modifier, key));
         }
 
         // get music enabled
         Boolean musicEnabled = Boolean.parseBoolean(root.element("musicEnabled").getText());
 
-        return new Settings(texturePack, keyBindings, musicEnabled);
+        // get view distance
+        Integer viewDistance = Integer.parseInt(root.element("viewDistance").getText());
+
+        return new Configuration(musicEnabled, texturePack, viewDistance, keyBindings);
     }
 
     /**
-     * Serialize the settings xml
+     * Load configuration from res/config.xml
      * 
-     * @param settings Settings object
-     * @return XML document
+     * @return Configuration object
      */
-    public static Document serializeSettings(Settings settings) {
-        Document document = DocumentHelper.createDocument();
-        Element root = document.addElement("settings");
-
-        // add texture pack
-        root.addElement("texturePack").addText(settings.texturePack());
-
-        // add key bindings
-        Element keyBindings = root.addElement("keyBindings");
-        for (Keys key : Keys.values()) {
-            keyBindings.addElement(key.name()).addText(settings.keyBindings().get(key));
+    public static Configuration loadConfiguration() {
+        SAXReader reader = new SAXReader();
+        try {
+            Document document = reader.read("res/config.xml");
+            return deserialiseConfiguration(document.getRootElement());
+        } catch (Throwable e) {
+            try {
+                log("Failed to load configuration: " + e.getMessage());
+                Document document = reader.read("res/defaultConfig.xml");
+                return deserialiseConfiguration(document.getRootElement());
+            } catch (Throwable f) {
+                f.printStackTrace();
+                return Configuration.getDefaultConfiguration();
+            }
         }
-
-        // add music enabled
-        root.addElement("musicEnabled").addText(settings.musicEnabled().toString());
-
-        return document;
     }
 
     /**
@@ -207,28 +214,6 @@ public class Persistency {
         int currentLevel = Integer.parseInt(levels.attributeValue("current"));
         Inventory inv = deserialiseInventory(root.element("inventory"));
         return new Domain(mazes, inv, currentLevel);
-    }
-
-    /**
-     * Load configuration from res/config.xml
-     * 
-     * @return Configuration object
-     */
-    public static Configuration loadConfiguration() {
-        SAXReader reader = new SAXReader();
-        try {
-            Document document = reader.read("res/config.xml");
-            return deserialiseConfiguration(document.getRootElement());
-        } catch (Throwable e) {
-            try {
-                log("Failed to load configuration: " + e.getMessage());
-                Document document = reader.read("res/defaultConfig.xml");
-                return deserialiseConfiguration(document.getRootElement());
-            } catch (Throwable f) {
-                f.printStackTrace();
-                return Configuration.getDefaultConfiguration();
-            }
-        }
     }
 
     /**
@@ -401,15 +386,14 @@ public class Persistency {
      * @param timeline The timeline to serialise
      * @return The serialised timeline
      */
-    public static Document serialiseRecordTimeline(Stack<Pair<Long, Actions>> timeline) {
-        Document document = DocumentHelper.createDocument();
-        Element root = document.addElement("recorder");
+    public static Element serialiseRecordTimeline(Stack<Pair<Long, Actions>> timeline) {
+        Element root = DocumentHelper.createElement("timeline");
         root.addAttribute("size", timeline.size() + "");
         for (Pair<Long, Actions> pair : timeline) {
             Element action = root.addElement(pair.getValue().toString());
             action.addAttribute("time", pair.getKey() + "");
         }
-        return document;
+        return root;
     }
 
     /**
@@ -418,8 +402,7 @@ public class Persistency {
      * @param document The XML document to deserialise
      * @return The deserialised timeline
      */
-    public static Stack<Pair<Long, Actions>> deserialiseRecordTimeline(Document document) {
-        Element root = document.getRootElement();
+    public static Stack<Pair<Long, Actions>> deserialiseRecordTimeline(Element root) {
         Stack<Pair<Long, Actions>> timeline = new Stack<Pair<Long, Actions>>();
         for (Element action : root.elements()) {
             timeline.add(new Pair<Long, Actions>(Long.parseLong(action.attributeValue("time")),
@@ -449,14 +432,56 @@ public class Persistency {
     }
 
     /**
-     * Load settings from file
+     * Save configuration to res/config.xml
      * 
-     * @return The settings
+     * @param config The configuration object
      */
-    public static Settings loadSettings() throws DocumentException {
+    public static void saveConfiguration(Configuration config) throws IOException {
+        Element element = serialiseConfiguration(config);
+        Document document = DocumentHelper.createDocument();
+        document.add(element);
+
+        File dir = new File("res");
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        FileWriter out = new FileWriter("res/config.xml");
+        document.write(out);
+        out.close();
+    }
+
+    /**
+     * Save a timeline to a file
+     * 
+     * @param timeline The timeline to save
+     * @param slot     The slot to save to
+     */
+    public static void saveRecordTimeline(Stack<Pair<Long, Actions>> timeline, int slot) throws IOException {
+        Element element = serialiseRecordTimeline(timeline);
+        Document document = DocumentHelper.createDocument();
+        document.add(element);
+
+        File dir = new File("res/recordings");
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        FileWriter out = new FileWriter("res/recordings/" + slot + ".xml");
+        document.write(out);
+        out.close();
+    }
+
+    /**
+     * Load a timeline from a file
+     * 
+     * @param slot The slot to load from
+     * @return The loaded timeline
+     */
+    public static Stack<Pair<Long, Actions>> loadRecordTimeline(int slot) throws DocumentException {
         SAXReader reader = new SAXReader();
-        Document document = reader.read(new File("res/settings.xml"));
-        return deserializeSettings(document.getRootElement());
+        Document document = reader.read(new File("res/recordings/" + slot + ".xml"));
+        return deserialiseRecordTimeline(document.getRootElement());
     }
 
     /**
