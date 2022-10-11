@@ -40,6 +40,11 @@ public class Enemy extends Actor {
     }
 
     @Override
+    public char symbol() {
+        return 'E';
+    }
+
+    @Override
     public void setOn(Tile t, Domain d) {
         d.getCurrentMaze().setTileAt(info.loc(), t);
 
@@ -71,7 +76,7 @@ public class Enemy extends Actor {
         lvl.maze.getTileAt(loc2).setOn(this, d); // set new location to enemy, NOTE: Order matters here!
 
         this.tileOn = tileToOccupy.replaceWith(); // set tile heros to replace when moving off
-        staticDirection = lvl.getDirection(); // set enemys direction of facing
+        staticDirection = lvl.getHeroNextStep(); // set enemys direction of facing
     }
 
     // TODO: figure out how to make ben override/make all this
