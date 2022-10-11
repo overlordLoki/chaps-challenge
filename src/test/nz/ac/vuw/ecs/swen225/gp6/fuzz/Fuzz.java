@@ -96,9 +96,10 @@ public class Fuzz {
             int randomIndex = r.nextInt(actionsList.size());
 
             actionsList.get(randomIndex).run(app);
-            System.out.print("Action: " + actionsList.get(randomIndex) + " >>> ");
+            System.out.print("Action: " + actionsList.get(randomIndex) + " >>> number: " + move + "moves apply.");
             robot.delay(100);
             move++;
+
             if(app.getGame().getCurrentLevel() ==2){
                 finish = false;
             }
@@ -172,6 +173,7 @@ public class Fuzz {
     public static void hardCode(){
         SwingUtilities.invokeLater(()->{
             app = new App();
+
             app.startNewGame();
             app.transitionToGameScreen();
             actionsList = List.of(
@@ -181,6 +183,7 @@ public class Fuzz {
                     MOVE_RIGHT
             );
         });
+
         JOptionPane.showMessageDialog(null,"Start Fuzzing");
 
         test1HC.add(MOVE_UP);
@@ -239,6 +242,79 @@ public class Fuzz {
 
     }
 
+    public static void music_test(){
+        SwingUtilities.invokeLater(()->{
+            app = new App();
+            app.startNewGame();
+            app.transitionToGameScreen();
+            app.getConfiguration().setMusicOn(false);
+            actionsList = List.of(
+                    MOVE_UP,
+                    MOVE_DOWN,
+                    MOVE_LEFT,
+                    MOVE_RIGHT
+            );
+            System.out.println("Music 01: " + app.getConfiguration().isMusicOn());
+        });
+        JOptionPane.showMessageDialog(null,"Start Fuzzing");
+
+        System.out.println("Music 02: " + app.getConfiguration().isMusicOn());
+
+        test1HC.add(MOVE_UP);
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_LEFT));
+        IntStream.range(0,3).forEach(i->test1HC.add(MOVE_DOWN));
+
+        IntStream.range(0,7).forEach(i->test1HC.add(MOVE_RIGHT));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_UP));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_LEFT));
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_DOWN));
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_LEFT));
+
+        IntStream.range(0,4).forEach(i->test1HC.add(MOVE_UP));
+        IntStream.range(0,4).forEach(i->test1HC.add(MOVE_RIGHT));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_DOWN));
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_LEFT));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_UP));
+        IntStream.range(0,10).forEach(i->test1HC.add(MOVE_LEFT));
+
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_DOWN));
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_RIGHT));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_UP));
+
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_RIGHT));
+        IntStream.range(0,4).forEach(i->test1HC.add(MOVE_DOWN));
+        IntStream.range(0,3).forEach(i->test1HC.add(MOVE_LEFT));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_UP));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_DOWN));
+
+        IntStream.range(0,4).forEach(i->test1HC.add(MOVE_RIGHT));
+        IntStream.range(0,4).forEach(i->test1HC.add(MOVE_DOWN));
+        IntStream.range(0,4).forEach(i->test1HC.add(MOVE_UP));
+
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_RIGHT));
+        IntStream.range(0,4).forEach(i->test1HC.add(MOVE_DOWN));
+        IntStream.range(0,8).forEach(i->test1HC.add(MOVE_UP));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_RIGHT));
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_UP));
+
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_RIGHT));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_LEFT));
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_DOWN));
+        IntStream.range(0,4).forEach(i->test1HC.add(MOVE_LEFT));
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_UP));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_LEFT));
+        IntStream.range(0,1).forEach(i->test1HC.add(MOVE_RIGHT));
+
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_DOWN));
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_RIGHT));
+
+        IntStream.range(0,2).forEach(i->test1HC.add(MOVE_UP));
+        test1HC.forEach(a->{
+            a.run(app);
+            robot.delay(100);
+        });
+        System.out.println("Music 03: " + app.getConfiguration().isMusicOn());
+    }
     /**
      * This method is used to print out the key event message what App get and action done
      * @return message of key event
@@ -286,4 +362,8 @@ public class Fuzz {
         unlimittest();
     }
 
+    @Test
+    public void test_level3() {
+        music_test();
+    }
 }
