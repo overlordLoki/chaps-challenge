@@ -23,6 +23,7 @@ public class Helper {
         typeToString.put(TileType.OrangeKey, "orangeKey");
         typeToString.put(TileType.YellowKey, "yellowKey");
         typeToString.put(TileType.Coin, "coin");
+        typeToString.put(TileType.Info, "info");
         typeToString.put(TileType.Null, "null");
     }
 
@@ -43,6 +44,7 @@ public class Helper {
         stringToType.put("orangeKey", TileType.OrangeKey);
         stringToType.put("yellowKey", TileType.YellowKey);
         stringToType.put("coin", TileType.Coin);
+        stringToType.put("info", TileType.Info);
         stringToType.put("null", TileType.Null);
     }
 }

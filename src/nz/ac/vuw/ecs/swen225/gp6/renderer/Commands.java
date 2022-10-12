@@ -16,7 +16,6 @@ public final class Commands {
         addCommands("test", "test", this::test);
         addCommands("packsNumber", "Displays the number of texture packs", this::numberOfPacks);
         addCommands("setDogs", "Sets the texture pack to dogs", this::setDogs);
-        addCommands("drawInfo", "Draws the info text", this::drawInfo);
     }
 
     /**
@@ -88,10 +87,6 @@ public final class Commands {
         mazeRenderer.setTexturePack("Dogs");
     }
 
-    //cheat the get info text drawn.
-    private void drawInfo(){
-        mazeRenderer.setInfoCheat(true);
-    }
 
 
 }
