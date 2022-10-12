@@ -8,6 +8,7 @@ import java.util.stream.IntStream;
 import nz.ac.vuw.ecs.swen225.gp6.domain.IntegrityCheck.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
 
 /**
  * Represents a complete game state, with levels.
@@ -257,6 +258,19 @@ public class Domain {
      */
     public boolean heroIsOnInfo(){
         return getCurrentMaze().getTileThat(t -> t.type() == TileType.Hero).replaceWith().type() == TileType.Info;
+    }
+
+    /** 
+     * gets the message stored in the info tile of this level (note every level can have one info tile at max), 
+     * must ONLY BE CALLED when hero is on tile info.
+     * 
+     * @return the message stored in the info tile of this level
+     * 
+     * @throws RuntimeException if hero is not on the info tile
+     */
+    public String getInfoHint(){
+        if(heroIsOnInfo() == false) throw new RuntimeException("hero is not on info");
+        return ((Info)getCurrentMaze().getTileThat(t -> t.type() == TileType.Hero).replaceWith()).message();
     }
     /**
      * gets a list of current items in the inventory

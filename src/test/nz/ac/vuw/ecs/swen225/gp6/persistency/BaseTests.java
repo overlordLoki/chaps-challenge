@@ -22,9 +22,10 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileInfo;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
-import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
+import nz.ac.vuw.ecs.swen225.gp6.persistency.DomainPersistency;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.Pair;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.RecordTimeline;
+import nz.ac.vuw.ecs.swen225.gp6.persistency.*;
 
 import static java.awt.event.KeyEvent.*;
 import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.*;
@@ -38,7 +39,7 @@ public class BaseTests {
         Maze maze = Helper.makeMaze();
         Domain domain = new Domain(List.of(maze), inventory, 1);
         System.out.println(domain);
-        assertEquals(Persistency.serialiseDomain(domain).asXML(),
+        assertEquals(DomainPersistency.serialiseDomain(domain).asXML(),
                 """
                         <?xml version="1.0" encoding="UTF-8"?>
                         <domain><levels><level index="0" name="Level 1"><grid width="10" height="10"><cell x="0" y="0"><wall/></cell><cell x="0" y="1"><wall/></cell><cell x="0" y="2"><wall/></cell><cell x="0" y="3"><wall/></cell><cell x="0" y="4"><wall/></cell><cell x="0" y="5"><wall/></cell><cell x="0" y="6"><wall/></cell><cell x="0" y="7"><wall/></cell><cell x="0" y="8"><wall/></cell><cell x="0" y="9"><wall/></cell><cell x="1" y="0"><wall/></cell><cell x="1" y="1"><floor/></cell><cell x="1" y="2"><floor/></cell><cell x="1" y="3"><floor/></cell><cell x="1" y="4"><floor/></cell><cell x="1" y="5"><floor/></cell><cell x="1" y="6"><floor/></cell><cell x="1" y="7"><floor/></cell><cell x="1" y="8"><floor/></cell><cell x="1" y="9"><wall/></cell><cell x="2" y="0"><wall/></cell><cell x="2" y="1"><hero/></cell><cell x="2" y="2"><floor/></cell><cell x="2" y="3"><key color="blue"/></cell><cell x="2" y="4"><key color="yellow"/></cell><cell x="2" y="5"><key color="green"/></cell><cell x="2" y="6"><key color="orange"/></cell><cell x="2" y="7"><floor/></cell><cell x="2" y="8"><floor/></cell><cell x="2" y="9"><wall/></cell><cell x="3" y="0"><wall/></cell><cell x="3" y="1"><enemy/></cell><cell x="3" y="2"><floor/></cell><cell x="3" y="3"><blueLock/></cell><cell x="3" y="4"><yellowLock/></cell><cell x="3" y="5"><greenLock/></cell><cell x="3" y="6"><orangeLock/></cell><cell x="3" y="7"><floor/></cell><cell x="3" y="8"><floor/></cell><cell x="3" y="9"><wall/></cell><cell x="4" y="0"><wall/></cell><cell x="4" y="1"><floor/></cell><cell x="4" y="2"><floor/></cell><cell x="4" y="3"><floor/></cell><cell x="4" y="4"><floor/></cell><cell x="4" y="5"><floor/></cell><cell x="4" y="6"><exitDoor/></cell><cell x="4" y="7"><floor/></cell><cell x="4" y="8"><floor/></cell><cell x="4" y="9"><wall/></cell><cell x="5" y="0"><wall/></cell><cell x="5" y="1"><coin/></cell><cell x="5" y="2"><floor/></cell><cell x="5" y="3"><floor/></cell><cell x="5" y="4"><floor/></cell><cell x="5" y="5"><floor/></cell><cell x="5" y="6"><floor/></cell><cell x="5" y="7"><floor/></cell><cell x="5" y="8"><floor/></cell><cell x="5" y="9"><wall/></cell><cell x="6" y="0"><wall/></cell><cell x="6" y="1"><floor/></cell><cell x="6" y="2"><floor/></cell><cell x="6" y="3"><floor/></cell><cell x="6" y="4"><floor/></cell><cell x="6" y="5"><floor/></cell><cell x="6" y="6"><floor/></cell><cell x="6" y="7"><floor/></cell><cell x="6" y="8"><floor/></cell><cell x="6" y="9"><wall/></cell><cell x="7" y="0"><wall/></cell><cell x="7" y="1"><floor/></cell><cell x="7" y="2"><floor/></cell><cell x="7" y="3"><floor/></cell><cell x="7" y="4"><floor/></cell><cell x="7" y="5"><floor/></cell><cell x="7" y="6"><floor/></cell><cell x="7" y="7"><floor/></cell><cell x="7" y="8"><floor/></cell><cell x="7" y="9"><wall/></cell><cell x="8" y="0"><wall/></cell><cell x="8" y="1"><floor/></cell><cell x="8" y="2"><floor/></cell><cell x="8" y="3"><floor/></cell><cell x="8" y="4"><floor/></cell><cell x="8" y="5"><floor/></cell><cell x="8" y="6"><floor/></cell><cell x="8" y="7"><floor/></cell><cell x="8" y="8"><floor/></cell><cell x="8" y="9"><wall/></cell><cell x="9" y="0"><wall/></cell><cell x="9" y="1"><wall/></cell><cell x="9" y="2"><wall/></cell><cell x="9" y="3"><wall/></cell><cell x="9" y="4"><wall/></cell><cell x="9" y="5"><wall/></cell><cell x="9" y="6"><wall/></cell><cell x="9" y="7"><wall/></cell><cell x="9" y="8"><wall/></cell><cell x="9" y="9"><wall/></cell></grid></level></levels><inventory size="1"><key color="green"/></inventory></domain>""");
@@ -46,18 +47,15 @@ public class BaseTests {
 
     @Test
     void testDomainSave() throws IOException {
-        Inventory inventory = new Inventory(1);
-        inventory.addItem(TileType.makeTile(TileType.GreenKey, new TileInfo(new Loc(1, 1))));
-        Maze maze = Helper.makeMaze();
-        Domain domain = new Domain(List.of(maze), inventory, 1);
+        Domain domain = DomainPersistency.getInitial();
         System.out.println(domain);
-        Persistency.saveDomain(domain, 1);
+        DomainPersistency.save(domain, 1);
     }
 
     @Test
     public void testMazeSerialization() {
         Maze maze = Helper.makeMaze();
-        Document doc = Persistency.serialiseMaze(maze, 0);
+        Element doc = DomainPersistency.serialiseMaze(maze);
         System.out.println(doc.asXML());
         assertEquals(doc.asXML(),
                 """
@@ -68,8 +66,8 @@ public class BaseTests {
     @Test
     public void testMazeDeserialization() {
         Maze maze = Helper.makeMaze();
-        Document doc = Persistency.serialiseMaze(maze, 0);
-        Maze maze2 = Persistency.deserialiseMaze(doc.getRootElement());
+        Element doc = DomainPersistency.serialiseMaze(maze);
+        Maze maze2 = DomainPersistency.deserialiseMaze(doc);
         maze2.toString();
         assertEquals(maze.toString(), maze2.toString());
     }
@@ -80,7 +78,7 @@ public class BaseTests {
         timeline.add(10l, Actions.MOVE_DOWN);
         timeline.add(20l, Actions.MOVE_LEFT);
 
-        Element element = Persistency.serialiseRecordTimeline(timeline.getTimeline());
+        Element element = RecorderPersistency.serialiseTimeline(timeline.getTimeline());
 
         assertEquals(element.asXML(), """
                 <timeline size="2"><MOVE_DOWN time="10"/><MOVE_LEFT time="20"/></timeline>""");
@@ -92,8 +90,8 @@ public class BaseTests {
         timeline.add(10l, Actions.MOVE_DOWN);
         timeline.add(20l, Actions.MOVE_LEFT);
 
-        Element element = Persistency.serialiseRecordTimeline(timeline.getTimeline());
-        Stack<Pair<Long, Actions>> timeline2 = Persistency.deserialiseRecordTimeline(element);
+        Element element = RecorderPersistency.serialiseTimeline(timeline.getTimeline());
+        Stack<Pair<Long, Actions>> timeline2 = RecorderPersistency.deserialiseTimeline(element);
 
         assertEquals(timeline.getTimeline().toString(), timeline2.toString());
     }
@@ -104,30 +102,30 @@ public class BaseTests {
         timeline.add(10l, Actions.MOVE_DOWN);
         timeline.add(20l, Actions.MOVE_LEFT);
 
-        Persistency.saveRecordTimeline(timeline.getTimeline(), 1);
-        Stack<Pair<Long, Actions>> timeline2 = Persistency.loadRecordTimeline(1);
+        RecorderPersistency.saveTimeline(timeline.getTimeline(), 1);
+        Stack<Pair<Long, Actions>> timeline2 = RecorderPersistency.loadTimeline(1);
 
         assertEquals(timeline.getTimeline().toString(), timeline2.toString());
     }
 
     @Test
     public void testDomainSerialisation() {
-        Domain domain = Persistency.getInitialDomain();
-        Document doc = Persistency.serialiseDomain(domain);
+        Domain domain = DomainPersistency.getInitial();
+        Element doc = DomainPersistency.serialiseDomain(domain);
         // assertEquals(doc.asXML(), "");
-        Domain domain2 = Persistency.deserialiseDomain(doc);
+        Domain domain2 = DomainPersistency.deserialiseDomain(doc);
 
         assertEquals(domain.toString(), domain2.toString());
     }
 
     @Test
     public void deleteSave() throws IOException {
-        Persistency.deleteSave(1);
+        DomainPersistency.delete(1);
     }
 
     @Test
     public void testLogLine() throws IOException {
-        Persistency.log("test");
+        Logging.log("test");
     }
 
     @Test
@@ -145,16 +143,16 @@ public class BaseTests {
                 Map.entry(SAVE_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_S)),
                 Map.entry(LOAD_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_R)))));
 
-        Element el = Persistency.serialiseConfiguration(config);
+        Element el = AppPersistency.serialise(config);
         String xml = el.asXML();
-        Configuration config2 = Persistency.deserialiseConfiguration(el);
+        Configuration config2 = AppPersistency.deserialise(el);
 
         assertEquals(config.toString(), config2.toString());
     }
 
     @Test
     public void testLoadingConfiguration() {
-        Configuration config = Persistency.loadConfiguration();
+        Configuration config = AppPersistency.load();
         assertNotNull(config);
     }
 
@@ -173,6 +171,6 @@ public class BaseTests {
                 Map.entry(SAVE_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_S)),
                 Map.entry(LOAD_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_R)))));
 
-        Persistency.saveConfiguration(config);
+        AppPersistency.save(config);
     }
 }
