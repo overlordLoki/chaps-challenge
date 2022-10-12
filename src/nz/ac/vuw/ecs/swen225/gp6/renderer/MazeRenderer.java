@@ -2,13 +2,15 @@ package nz.ac.vuw.ecs.swen225.gp6.renderer;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.awt.*;
 import javax.swing.JPanel;
 import java.awt.Graphics;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.swing.Timer;
+
 import nz.ac.vuw.ecs.swen225.gp6.domain.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Hero;
@@ -32,7 +34,7 @@ public class MazeRenderer extends JPanel{
     private int patternSize = 100; //the size of the pattern
     private int renderSize = 7; //the size of the render
     private int minRenderSize = 1, maxRenderSize = 50; //the min and max render size
-    JPanel backgroundPanel; //the background panel
+
 
 //----------------------------------Constructor----------------------------------------------
     /**
@@ -93,7 +95,9 @@ public class MazeRenderer extends JPanel{
                 }
             }
         }
+        if(changinglvl){changeLvl(g);}
     }
+
 
     /**
      * get the hero image depending on the direction
@@ -279,21 +283,12 @@ public class MazeRenderer extends JPanel{
 
     //---------------------------------------------------------------------------------------------------//
 
-    //draw the background peace by peace
-    /**
-     * draw the background peace by peace
-     * @param g
-     */
-    public void drawBackground(Graphics g) {
-        BufferedImage[][] backgroundpeaces = getPeaces();
-        for(int i = 0; i < backgroundpeaces.length; i++) {
-            for(int j = 0; j < backgroundpeaces[i].length; j++) {
-                g.drawImage(backgroundpeaces[i][j], i*this.getWidth(), j*this.getHeight(), null);
-                try{
-                    Thread.sleep(100);
-                }catch(Exception e) {}
-            }
-        }
+    private void changeLvl(Graphics g) {
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0, getWidth(), getHeight());
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("TimesRoman", Font.PLAIN, 50));
+        g.drawString("Level " + 2, getWidth()/2 - 100, getHeight()/2);
     }
 
     public BufferedImage[][] getPeaces(){
@@ -306,30 +301,24 @@ public class MazeRenderer extends JPanel{
         imgs[1][1] = img.getSubimage(img.getWidth()/2, img.getHeight()/2, img.getWidth()/2, img.getHeight()/2);
         return imgs;
     }
-
-    public boolean changeLevel(){
-        backgroundPanel = new JPanel(){
-            @Override
-            public void paintComponent(Graphics g){
-                super.paintComponent(g);
-                g.setColor(Color.BLACK);
-                g.fillRect(0, 0, getWidth(), getHeight());
-                g.setColor(Color.WHITE);
-                g.setFont(new Font("TimesRoman", Font.PLAIN, 50));
-                g.drawString("Level " + 2, getWidth()/2 - 100, getHeight()/2);
-            }
-        };
-        backgroundPanel.setSize(this.getSize());
-        this.add(backgroundPanel);
-        return true;
-    }
-
-    //remove the backgroundPanel
+    private boolean changinglvl = false;
     /**
-     * remove the backgroundPanel
+     * change the level
+     * @param observer
      */
-    public void removeBackgroundPanel(){
-        this.remove(backgroundPanel);
+    public void changeLevel(Runnable observer){
+        changinglvl = true;
+        // run sequence here
+        AtomicInteger cutsceneFrames = new AtomicInteger();
+        Timer timer = new Timer(10, unused->{
+            this.repaint();
+            if (cutsceneFrames.getAndIncrement() >= 50){ // max 50 frames
+                changinglvl = false;
+                observer.run();
+                ((Timer)unused.getSource()).stop();
+            }
+        });
+        timer.start();
     }
 
     //--------------------------------------getters and setters----------------------------------------------------------//

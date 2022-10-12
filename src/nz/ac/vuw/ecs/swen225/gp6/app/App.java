@@ -6,6 +6,7 @@ import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.GameClock;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.DomainEvent;
+import nz.ac.vuw.ecs.swen225.gp6.renderer.LogPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MusicPlayer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Interceptor;
@@ -65,6 +66,7 @@ public class App extends JFrame {
         System.out.println("GUI thread started");
         refreshSaves();
         initialiseGUI();
+        initialiseCommands();
         controller.update();
     }
 
@@ -85,11 +87,15 @@ public class App extends JFrame {
         setMinimumSize(new Dimension(WIDTH, HEIGHT));
         setContentPane(gui.getOuterPanel());
         gui.getRenderPanel().addKeyListener(controller);
-
         System.out.print("Transitioning to menu screen... ");
         QUIT_TO_MENU.run(this);
         System.out.println("Complete");
         pack();
+    }
+
+    private void initialiseCommands(){
+        LogPanel logPanel = GUI.getLogPanel();
+        logPanel.addCommands("nextLevel", "Jump to the next level", this::runWinEvent);
     }
 
 
@@ -102,11 +108,14 @@ public class App extends JFrame {
      */
     public void runWinEvent(){
         inResume = false;
+        gameClock.stop();
         if (game.nextLvl()){
             System.out.println("Next level");
-            // TODO: invoke renderer cutscene
-            gameClock.reset();
-            RESUME_GAME.run(this);
+            gui.getRenderPanel().changeLevel(()->{
+                gameClock.reset();
+                gameClock.start();
+                RESUME_GAME.run(this);
+            } );
         }else{
             System.out.println("You win!");
             gui.transitionToWinScreen();

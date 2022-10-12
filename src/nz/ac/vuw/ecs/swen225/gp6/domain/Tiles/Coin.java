@@ -19,9 +19,9 @@ public class Coin extends Item{
     @Override public TileType type(){ return TileType.Coin;}
     
     @Override public void setOn(Tile t, Domain d){ 
+        if(d == null || t == null) throw new NullPointerException("Domain/Tile can not be null (Coin.setOn)");
         if(t.type() != TileType.Hero) throw new IllegalArgumentException("only hero can move on coin");
-        if(d == null) throw new NullPointerException("Domain can not be null (Coin.setOn)");
-
+        
         //add coin to inventory
         int preNumCoins = d.getInv().coins();
         d.getInv().addCoin();

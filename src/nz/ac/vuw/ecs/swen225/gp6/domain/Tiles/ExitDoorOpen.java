@@ -26,7 +26,8 @@ public class ExitDoorOpen extends Door{
      */
     public boolean heroOn(){return heroOn;}
 
-    @Override public boolean obstructsEnemy(Domain d){  return true;} //only hero can move on it
+    @Override public boolean obstructsEnemy(Domain d){  
+        return true;} //only hero can move on it
     @Override public boolean obstructsHero(Domain d){  return false;}
 
     @Override public void setOn(Tile t, Domain d){
