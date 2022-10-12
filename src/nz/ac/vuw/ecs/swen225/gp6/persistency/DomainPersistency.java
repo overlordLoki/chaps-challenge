@@ -20,10 +20,12 @@ import org.dom4j.io.SAXReader;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Inventory;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Level;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.Tile;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileInfo;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 
 public class DomainPersistency {
@@ -40,13 +42,10 @@ public class DomainPersistency {
         Element root = document.addElement("domain");
         Element levels = root.addElement("levels");
         for (int i = 0; i < domain.getMazes().size(); i++) {
-            Maze maze = domain.getMazes().get(i);
-            Document mazeDoc = serialiseMaze(maze, i);
-            levels.add(mazeDoc.getRootElement());
+            Level level = domain.getLevels().get(i);
+            levels.add(serialise(level));
         }
         levels.addAttribute("current", Integer.toString(domain.getCurrentLevel()));
-        root.add(serialiseInventory(domain.getInv()).getRootElement());
-
         return document;
     }
 
@@ -58,14 +57,53 @@ public class DomainPersistency {
      */
     public static Domain deserialise(Document document) {
         Element root = document.getRootElement();
-        Element levels = root.element("levels");
-        List<Maze> mazes = new ArrayList<>();
-        for (Element level : levels.elements()) {
-            mazes.add(deserialiseMaze(level));
+        Element levelEls = root.element("levels");
+        int currentLevel = Integer.parseInt(levelEls.attributeValue("current"));
+        List<Level> levels = new ArrayList<Level>();
+        for (Element level : levelEls.elements()) {
+            levels.add(deserialiseLevel(level));
         }
-        int currentLevel = Integer.parseInt(levels.attributeValue("current"));
-        Inventory inv = deserialiseInventory(root.element("inventory"));
-        return new Domain(mazes, inv, currentLevel);
+        return new Domain(levels, currentLevel);
+    }
+
+    /**
+     * Serialise a level to an XML element
+     *
+     * @param level The maze to serialise
+     *
+     * @return The serialised level as an XML element
+     */
+    public static Element serialise(Level level) {
+        Element root = DocumentHelper.createElement("level");
+        root.addAttribute("index", Integer.toString(level.lvl));
+        root.addAttribute("name", "Level " + (level.lvl + 1));
+        root.addAttribute("timeLimit", "" + level.timeLimit);
+        root.addAttribute("timeCurrent", "" + level.getCurrentTime());
+        root.addAttribute("direction", "" + level.getHeroNextStep().name());
+        Element maze = serialise(level.maze);
+        root.add(maze);
+        Element inventory = serialise(level.inv);
+        root.add(inventory);
+        return root;
+    }
+
+    /**
+     * Deserialise a level from an XML element
+     * 
+     * @param level The XML element to deserialise
+     * @return The deserialised level
+     */
+    public static Level deserialiseLevel(Element level) {
+        int index = Integer.parseInt(level.attributeValue("index"));
+        int timeLimit = Integer.parseInt(level.attributeValue("timeLimit"));
+        long timeCurrent = Long.parseLong(level.attributeValue("timeCurrent"));
+        String direction = level.attributeValue("direction");
+        Direction dir = Direction.valueOf(direction);
+
+        Element maze = level.element("maze");
+        Element inventory = level.element("inventory");
+
+        return new Level(deserialiseMaze(maze), deserialiseInventory(inventory), index, timeLimit, timeCurrent, dir);
     }
 
     /**
@@ -82,12 +120,8 @@ public class DomainPersistency {
      * 
      * @param maze The maze to serialise
      */
-    public static Document serialiseMaze(Maze maze, int i) {
-        Document document = DocumentHelper.createDocument();
-        Element level = document.addElement("level");
-        level.addAttribute("index", Integer.toString(i));
-        level.addAttribute("name", "Level " + (i + 1));
-        Element grid = level.addElement("grid");
+    public static Element serialise(Maze maze) {
+        Element grid = DocumentHelper.createElement("grid");
         grid.addAttribute("width", Integer.toString(maze.width()));
         grid.addAttribute("height", Integer.toString(maze.height()));
         for (int x = 0; x < maze.width(); x++) {
@@ -97,84 +131,12 @@ public class DomainPersistency {
                     Element cell = grid.addElement("cell");
                     cell.addAttribute("x", Integer.toString(x));
                     cell.addAttribute("y", Integer.toString(y));
-                    cell.add(serialiseTile(tile).getRootElement());
+                    cell.add(serialise(tile).getRootElement());
                 }
             }
         }
 
-        return document;
-    }
-
-    /**
-     * Serialise a tile to an XML element
-     * 
-     * @param tile The tile to serialise
-     * 
-     * @return The serialised tile as an XML element
-     */
-    public static Document serialiseTile(Tile tile) {
-        Document document = DocumentHelper.createDocument();
-        String name = Helper.typeToString.get(tile.type());
-        if (name.contains("Key") || name.contains("Lock") && name.equals("exitLock")) {
-            Element element = document.addElement(name.contains("Key") ? "key" : "lock");
-            element.addAttribute("color", name.replace("Key", "").replace("Lock", "").toLowerCase());
-        } else {
-            document.addElement(name);
-        }
-        return document;
-    }
-
-    /**
-     * Serialise an inventory to an XML document
-     * 
-     * Example:
-     * <inventory>
-     * <key color="green" />
-     * </inventory>
-     * 
-     * @param inventory The inventory to serialise
-     */
-    public static Document serialiseInventory(Inventory inventory) {
-        Document document = DocumentHelper.createDocument();
-        Element root = document.addElement("inventory");
-        for (Tile item : inventory.getItems()) {
-            root.add(serialiseTile(item).getRootElement());
-        }
-        root.addAttribute("size", inventory.size() + "");
-        return document;
-    }
-
-    /**
-     * Deserialise inventory from an XML document
-     * 
-     * @param root The XML element to deserialise
-     * @return The deserialised inventory
-     */
-    public static Inventory deserialiseInventory(Element root) {
-        Inventory inv = new Inventory(Integer.parseInt(root.attributeValue("size")));
-        for (Element item : root.elements()) {
-            inv.addItem(TileType.makeTile(deserialiseTileType(item), new TileInfo(new Loc(0, 0))));
-        }
-        return inv;
-    }
-
-    /**
-     * Deserialise a tile type from an XML element
-     * 
-     * @param element The XML element to deserialise
-     * @return The deserialised tile type
-     */
-    private static TileType deserialiseTileType(Element element) {
-        String name = element.getName();
-        if (name.equals("key")) {
-            String color = element.attributeValue("color");
-            return Helper.stringToType.get(color + "Key");
-        } else if (name.equals("lock")) {
-            String color = element.attributeValue("color");
-            return Helper.stringToType.get(color + "Lock");
-        } else {
-            return Helper.stringToType.get(name);
-        }
+        return grid;
     }
 
     /**
@@ -183,9 +145,7 @@ public class DomainPersistency {
      * @param xml
      * @return The unserialised maze
      */
-    public static Maze deserialiseMaze(Element root) {
-        String thing = root.asXML();
-        Element grid = root.element("grid");
+    public static Maze deserialiseMaze(Element grid) {
         int width = Integer.parseInt(grid.attributeValue("width"));
         int height = Integer.parseInt(grid.attributeValue("height"));
         Maze maze = new Maze(new Tile[width][height]);
@@ -233,9 +193,87 @@ public class DomainPersistency {
     }
 
     /**
-     * Load a maze from a file
+     * Serialise a tile to an XML element
      * 
-     * @param path The file path to load from
+     * @param tile The tile to serialise
+     * 
+     * @return The serialised tile as an XML element
+     */
+    public static Document serialise(Tile tile) {
+        Document document = DocumentHelper.createDocument();
+        String name = Helper.typeToString.get(tile.type());
+        if (name.contains("Key") || name.contains("Lock") && name.equals("exitLock")) {
+            Element element = document.addElement(name.contains("Key") ? "key" : "lock");
+            element.addAttribute("color", name.replace("Key", "").replace("Lock", "").toLowerCase());
+        } else {
+            document.addElement(name);
+        }
+        return document;
+    }
+
+    /**
+     * Deserialise a tile from an XML element
+     * 
+     * @param element The XML element to deserialise
+     * @return The deserialised tile
+     */
+    private static Tile deserialiseTile(Element element, int x, int y) {
+        String name = element.getName();
+
+        TileType type;
+        if (name.equals("key")) {
+            String color = element.attributeValue("color");
+            type = Helper.stringToType.get(color + "Key");
+        } else if (name.equals("lock")) {
+            String color = element.attributeValue("color");
+            type = Helper.stringToType.get(color + "Lock");
+        } else {
+            type = Helper.stringToType.get(name);
+        }
+
+        if (type == null) {
+            throw new RuntimeException("Unknown tile type: " + name);
+        }
+
+        return null;
+    }
+
+    /**
+     * Serialise an inventory to an XML document
+     * 
+     * Example:
+     * <inventory>
+     * <key color="green" />
+     * </inventory>
+     * 
+     * @param inventory The inventory to serialise
+     */
+    public static Element serialise(Inventory inventory) {
+        Element root = DocumentHelper.createElement("inventory");
+        for (Tile item : inventory.getItems()) {
+            root.add(serialise(item).getRootElement());
+        }
+        root.addAttribute("size", inventory.size() + "");
+        return root;
+    }
+
+    /**
+     * Deserialise inventory from an XML document
+     * 
+     * @param root The XML element to deserialise
+     * @return The deserialised inventory
+     */
+    public static Inventory deserialiseInventory(Element root) {
+        Inventory inv = new Inventory(Integer.parseInt(root.attributeValue("size")));
+        for (Element item : root.elements()) {
+            inv.addItem(deserialiseTile(item, 0, 0));
+        }
+        return inv;
+    }
+
+    /**
+     * 
+     * 
      * @return The loaded maze
      */
     public static Domain loadSave(int slot) throws DocumentException {
@@ -290,14 +328,14 @@ public class DomainPersistency {
                     return o1.getName().compareTo(o2.getName());
                 }
             });
-            List<Maze> mazes = new ArrayList<Maze>();
+            List<Level> levels = new ArrayList<Level>();
             for (File file : files) {
                 if (file.getName().endsWith(".xml")) {
                     Document document = reader.read(file);
-                    mazes.add(deserialiseMaze(document.getRootElement()));
+                    levels.add(deserialiseLevel(document.getRootElement()));
                 }
             }
-            return new Domain(mazes, new Inventory(8), 1);
+            return new Domain(levels, 1);
         } catch (DocumentException e) {
             e.printStackTrace();
             return new Domain(List.of(nz.ac.vuw.ecs.swen225.gp6.domain.Helper.makeMaze(),

@@ -58,7 +58,7 @@ public class BaseTests {
     @Test
     public void testMazeSerialization() {
         Maze maze = Helper.makeMaze();
-        Document doc = DomainPersistency.serialiseMaze(maze, 0);
+        Element doc = DomainPersistency.serialise(maze);
         System.out.println(doc.asXML());
         assertEquals(doc.asXML(),
                 """
@@ -69,8 +69,8 @@ public class BaseTests {
     @Test
     public void testMazeDeserialization() {
         Maze maze = Helper.makeMaze();
-        Document doc = DomainPersistency.serialiseMaze(maze, 0);
-        Maze maze2 = DomainPersistency.deserialiseMaze(doc.getRootElement());
+        Element doc = DomainPersistency.serialise(maze);
+        Maze maze2 = DomainPersistency.deserialiseMaze(doc);
         maze2.toString();
         assertEquals(maze.toString(), maze2.toString());
     }
@@ -146,16 +146,16 @@ public class BaseTests {
                 Map.entry(SAVE_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_S)),
                 Map.entry(LOAD_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_R)))));
 
-        Element el = ConfigurationPersistency.serialise(config);
+        Element el = AppPersistency.serialise(config);
         String xml = el.asXML();
-        Configuration config2 = ConfigurationPersistency.deserialise(el);
+        Configuration config2 = AppPersistency.deserialise(el);
 
         assertEquals(config.toString(), config2.toString());
     }
 
     @Test
     public void testLoadingConfiguration() {
-        Configuration config = ConfigurationPersistency.load();
+        Configuration config = AppPersistency.load();
         assertNotNull(config);
     }
 
@@ -174,6 +174,6 @@ public class BaseTests {
                 Map.entry(SAVE_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_S)),
                 Map.entry(LOAD_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_R)))));
 
-        ConfigurationPersistency.save(config);
+        AppPersistency.save(config);
     }
 }
