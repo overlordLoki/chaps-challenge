@@ -44,8 +44,6 @@ public class TileInfo{
     public TileInfo(Loc loc, String imageName){this(loc, 0, imageName);}
 
 
-
-
     //GETTERS:
     /**
      * gets image name

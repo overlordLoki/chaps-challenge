@@ -254,11 +254,12 @@ public class DomainTests {
             8|/|$|_|/|_|_|/|_|$|/|
             9|_|/|/|/|/|/|/|/|/|_|
             0 1 2 3 4 5 6 7 8 9""";
-        String moves = "ULLUUULRDDDRRDDDLLLDURRRRUURRDDDRLUUULLLUUURRRRULDL";
+        String moves = "UUUUUUUUUUUUUUUUUUUUUUUUUUURULLLLLLLLLLLDRRRUUUUUUUUUUUULLLLLLLDLLDDDRR"+
+        "DDDLLLLLLLLLLLLLRLUUULLLDDLLLDUUUUUUUUUUUUUURRRUUULLLLLLLLLLLLLLLRUUULRDDDRRUUU";
         String output = """
             0|_|/|/|/|/|/|/|/|/|_|
             1|/|_|_|/|Z|_|/|_|_|/|
-            2|/|_|_|/|_|_|H|_|_|/|
+            2|/|_|_|/|_|_|_|_|_|/|
             3|/|/|_|/|_|_|/|/|/|/|
             4|/|_|_|_|_|_|_|_|_|/|
             5|/|_|_|_|_|_|_|_|_|/|
