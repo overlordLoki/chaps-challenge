@@ -1,6 +1,7 @@
 package test.nz.ac.vuw.ecs.swen225.gp6.Domain;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.DomainEvent;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.Key.KeyColor;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
@@ -60,17 +61,46 @@ public class DomainTestsIndividualMethods {
     }
 
     @Test
-    public void testExitDoor(){
-
+    public void testExitDoors(){
+        Hero hero = new Hero(new TileInfo(new Loc(0, 0)));
         Wall w = new Wall(new TileInfo(null));
-        ExitDoor d = new ExitDoor(new TileInfo(new Loc(1, 1)));
+        ExitDoor door = new ExitDoor(new TileInfo(new Loc(1, 1)));
         ExitDoorOpen doorOpen = new ExitDoorOpen(new TileInfo(new Loc(1, 1)));
+        ExitDoorOpen doorOpenTwo = new ExitDoorOpen(new TileInfo(new Loc(1, 1)));
 
         assertEquals(true, w.obstructsEnemy(mockDomain));
-        assertEquals(true, d.obstructsEnemy(mockDomain));
+        assertEquals(true, door.obstructsEnemy(mockDomain));
         assertEquals(true, doorOpen.obstructsEnemy(mockDomain));
-        assertEquals(KeyColor.NONE, d.color());
+        assertEquals(KeyColor.NONE, door.color());
         assertEquals(KeyColor.NONE, doorOpen.color());
+
+        assertThrows(NullPointerException.class,()->{doorOpen.setOn(null, mockDomain);});
+        assertThrows(NullPointerException.class,()->{doorOpen.setOn(hero, null);});
+        assertThrows(NullPointerException.class,()->{doorOpen.setOn(null, null);});
+        
+        assertThrows(IllegalArgumentException.class, () ->{doorOpen.setOn(new Wall(new TileInfo(null)), mockDomain);});
+
+        doorOpen.setOn(new Hero(new TileInfo(new Loc(0, 0))), mockDomain);
+        assertEquals(true, doorOpen.heroOn());
+
+        //to test winning with another level left
+        mockDomain = new Domain(List.of(mockMaze, mockMaze), new Inventory(8), 1); 
+        mockDomain.addEventListener(DomainEvent.onWin, ()->{}); //to test calling listeners
+        doorOpenTwo.setOn(hero, mockDomain);
+        assertEquals(true, doorOpenTwo.heroOn());
+        mockDomain = new Domain(List.of(mockMaze), new Inventory(8), 1); //mockDomain back to normal
+    }
+
+    @Test
+    public void testInfoAndPeriphery(){
+        Tile p = new Periphery(new TileInfo(new Loc(0, 0)));
+        Info i = new Info(new TileInfo(new Loc(0, 0)));
+
+        assertEquals(p, p.replaceWith());
+
+        assertEquals(i, i.replaceWith());
+        assertEquals(true, i.obstructsEnemy(mockDomain));
+        assertEquals("", i.message());
     }
 
     @Test
@@ -90,7 +120,7 @@ public class DomainTestsIndividualMethods {
     }
 
     @Test 
-    public void checkAllMethodsInLoc(){
+    public void testMethodsInLoc(){
     
         Loc loc = new Loc(1,1);
         Loc loc2 = new Loc(1,1); // the same thing as loc
@@ -122,8 +152,17 @@ public class DomainTestsIndividualMethods {
 
     }
 
+    @Test
+    public void testMethodsInHero(){
+        Hero hero = new Hero(new TileInfo(new Loc(0, 0)));
+
+        mockDomain.getLevels().get(0).makeHeroStep(Direction.Up);
+        hero.ping(mockDomain);
+        assertEquals(Direction.Up, hero.dir());
+    }
+
     @Test 
-    public void checkAllClassesInTileAnatomy(){
+    public void testClassesInTileAnatomy(){
         //Abstract tile
         assertThrows(NullPointerException.class, () ->{
         Tile t = new AbstractTile(null) {

@@ -34,7 +34,7 @@ public class ExitDoorOpen extends Door{
         if(t.type() != TileType.Hero){ throw new IllegalArgumentException("Only the hero can move on exit door.");}
         if(d == null) throw new NullPointerException("Domain can not be null (ExitDoorOpen.setOn).");
 
-        heroOn = true; //record that hero is now on exit door
+        heroOn = true; //record that hero is now on exit door 
                                         
         //let CheckGame know that the the game is won/inbetween levels
         if(d.isLastLevel()) CheckGame.state = CheckGame.GameState.WON;
