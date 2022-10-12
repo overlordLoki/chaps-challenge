@@ -247,14 +247,19 @@ public class TexturePack {
          */
         public BufferedImage loadImg(String imageName){
             this.name = imageName;
-            //System.out.print("Loading " + imageName + "...    -> ");
             try {
-                File file = new File("res/textures/" + MazeRenderer.getTexturePack().getName() + "/" + imageName + ".png");
+                File file = new File("res/texturesPacks/" + MazeRenderer.getTexturePack().getName() + "/" + imageName + ".png");
                 BufferedImage img = ImageIO.read(file);
-                //System.out.println("Loaded!");
                 return img;
             } catch (IOException e) {
-                throw new RuntimeException(e);}
+                try{
+                    File file = new File("res/defaultTextures/" + imageName + ".png");
+                    BufferedImage img = ImageIO.read(file);
+                    return img;
+                }catch (IOException ex){
+                    System.out.println("Error loading image: " + imageName); return null;}
+            
+            }
         }
         
         /**

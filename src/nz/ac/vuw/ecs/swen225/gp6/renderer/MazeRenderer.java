@@ -126,15 +126,15 @@ public class MazeRenderer extends JPanel{
      * @return
      */
     public List<TexturePack> getTexturePacksList() {
-        File texturePackRoot = new File("res/textures");
+        File texturePackRoot = new File("res/texturesPacks");
         File[] listOfFiles = texturePackRoot.listFiles();
         List<TexturePack> textures1 = new ArrayList<>();
         //for each texture in the folder add it to the list
         for (File file : listOfFiles) {
-            if(!checkFolder(file)){
-                System.out.println("not a folder: " + file.getName());
-                continue;
-            }
+            // if(!checkFolder(file)){
+            //     System.out.println("not a folder: " + file.getName());
+            //     continue;
+            // }
             //check if settings file exists
             if(!checkSettingsFile(file)){
                 TexturePack tp = new TexturePack(file.getName(), 
