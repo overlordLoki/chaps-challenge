@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import junit.framework.AssertionFailedError;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -21,6 +22,20 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 public class DomainTests {
+    //mock maze and domain for testing
+    public static Maze mockMaze = mazeParser("""
+        0|_|/|/|/|/|/|/|/|/|_|
+        1|/|$|_|/|X|_|/|_|$|/|
+        2|/|_|_|/|_|_|O|_|_|/|
+        3|/|/|B|/|_|_|/|/|/|/|
+        4|/|_|_|_|g|b|_|_|_|/|
+        5|/|_|_|_|o|y|_|_|_|/|
+        6|/|/|/|/|_|_|/|G|/|/|
+        7|/|_|_|Y|H|_|/|_|_|/|
+        8|/|$|_|/|_|_|/|_|$|/|
+        9|_|/|/|/|/|/|/|/|/|_|
+          0 1 2 3 4 5 6 7 8 9""");
+    public static Domain mockDomain = new Domain(List.of(mockMaze), new Inventory(8), 1);
 
     //INITIAL TESTS:
 
@@ -95,8 +110,7 @@ public class DomainTests {
             7|/|_|_|_|H|_|/|_|_|/|
             8|/|$|_|_|_|_|/|_|$|/|
             9|_|/|/|/|/|/|/|/|/|_|
-              0 1 2 3 4 5 6 7 8 9
-                """;
+              0 1 2 3 4 5 6 7 8 9""";
         String moves = "DRUUUULL";
         String output = """
             0|_|/|/|/|/|/|/|/|/|_|
@@ -115,7 +129,146 @@ public class DomainTests {
 
     @Test 
     public void testSimpleMovingEnemy(){
-        //Tile t = new Enemy(new TileInfo(null));
+        //Tile t = new Enemy(new TileInfo(null));TODO OOOOOO
+    }
+
+    @Test 
+    public void testAllKeysAndLocks(){
+        String input = """
+            0|_|/|/|/|/|/|/|/|/|_|
+            1|/|$|_|/|X|_|/|_|$|/|
+            2|/|_|_|/|_|_|O|_|_|/|
+            3|/|/|B|/|_|_|/|/|/|/|
+            4|/|_|_|_|g|b|_|_|_|/|
+            5|/|_|_|_|o|y|_|_|_|/|
+            6|/|/|/|/|_|_|/|G|/|/|
+            7|/|_|_|Y|H|_|/|_|_|/|
+            8|/|$|_|/|_|_|/|_|$|/|
+            9|_|/|/|/|/|/|/|/|/|_|
+              0 1 2 3 4 5 6 7 8 9""";
+        String moves = "UUURDDDLLLRRRUURRDDUULLUUURRLLDDLLLUU";
+        String output = """
+            0|_|/|/|/|/|/|/|/|/|_|
+            1|/|$|_|/|X|_|/|_|$|/|
+            2|/|_|H|/|_|_|_|_|_|/|
+            3|/|/|_|/|_|_|/|/|/|/|
+            4|/|_|_|_|_|_|_|_|_|/|
+            5|/|_|_|_|_|_|_|_|_|/|
+            6|/|/|/|/|_|_|/|_|/|/|
+            7|/|_|_|_|_|_|/|_|_|/|
+            8|/|$|_|/|_|_|/|_|$|/|
+            9|_|/|/|/|/|/|/|/|/|_|
+              0 1 2 3 4 5 6 7 8 9""";
+
+        testHarnessValid(input, moves, output);
+    }
+
+    @Test 
+    public void testPickingCoins(){
+        String input = """
+            0|_|/|/|/|/|/|/|/|/|_|
+            1|/|$|_|/|X|_|/|_|$|/|
+            2|/|_|_|/|_|_|_|_|_|/|
+            3|/|/|B|/|H|_|/|/|/|/|
+            4|/|_|_|_|_|b|_|_|_|/|
+            5|/|_|_|_|_|_|_|_|_|/|
+            6|/|/|/|/|_|_|/|G|/|/|
+            7|/|_|_|_|_|_|/|_|_|/|
+            8|/|$|_|/|_|_|/|_|$|/|
+            9|_|/|/|/|/|/|/|/|/|_|
+              0 1 2 3 4 5 6 7 8 9""";
+        String moves = "RURRRULDLLLDDDDDLLLDR";
+        String output = """
+            0|_|/|/|/|/|/|/|/|/|_|
+            1|/|$|_|/|X|_|/|_|_|/|
+            2|/|_|_|/|_|_|_|_|_|/|
+            3|/|/|B|/|_|_|/|/|/|/|
+            4|/|_|_|_|_|b|_|_|_|/|
+            5|/|_|_|_|_|_|_|_|_|/|
+            6|/|/|/|/|_|_|/|G|/|/|
+            7|/|_|_|_|_|_|/|_|_|/|
+            8|/|_|H|/|_|_|/|_|$|/|
+            9|_|/|/|/|/|/|/|/|/|_|
+              0 1 2 3 4 5 6 7 8 9""";
+
+        testHarnessValid(input, moves, output); 
+
+        Coin c = new Coin(new TileInfo(new Loc(0, 0)));
+        assertThrows(IllegalArgumentException.class,
+        ()->{c.setOn(new Wall(new TileInfo(new Loc(0, 0))), this.mockDomain);});
+        assertThrows(NullPointerException.class,
+        ()->{c.setOn(new Hero(new TileInfo(new Loc(0, 0))), null);});
+        assertThrows(NullPointerException.class,
+        ()->{c.setOn(null, this.mockDomain);});
+
+        Inventory invBroken = new Inventory(8){ //doesn't add coin
+            @Override
+            public void addCoin(){}
+        };
+        Domain domainBroken = new Domain(mockDomain.getMazes(), invBroken, 1);
+        assertThrows(AssertionError.class, ()->{c.setOn(new Hero(new TileInfo(new Loc(0, 0))), domainBroken);});
+    }
+
+    @Test
+    public void testCollectAllCoins(){
+        String input = """
+            0|_|/|/|/|/|/|/|/|/|_|
+            1|/|$|_|/|X|_|/|_|$|/|
+            2|/|_|_|/|_|_|_|_|_|/|
+            3|/|/|_|/|_|_|/|/|/|/|
+            4|/|_|_|_|_|_|_|_|_|/|
+            5|/|_|_|_|H|_|_|_|_|/|
+            6|/|/|/|/|_|_|/|_|/|/|
+            7|/|_|_|_|_|_|/|_|_|/|
+            8|/|$|_|/|_|_|/|_|$|/|
+            9|_|/|/|/|/|/|/|/|/|_|
+            0 1 2 3 4 5 6 7 8 9""";
+        String moves = "ULLUUULRDDDRRDDDLLLDURRRRUURRDDDRLUUULLLUUURRRRULDL";
+        String output = """
+            0|_|/|/|/|/|/|/|/|/|_|
+            1|/|_|_|/|Z|_|/|_|_|/|
+            2|/|_|_|/|_|_|H|_|_|/|
+            3|/|/|_|/|_|_|/|/|/|/|
+            4|/|_|_|_|_|_|_|_|_|/|
+            5|/|_|_|_|_|_|_|_|_|/|
+            6|/|/|/|/|_|_|/|_|/|/|
+            7|/|_|_|_|_|_|/|_|_|/|
+            8|/|_|_|/|_|_|/|_|_|/|
+            9|_|/|/|/|/|/|/|/|/|_|
+              0 1 2 3 4 5 6 7 8 9""";
+
+        testHarnessValid(input, moves, output); 
+    }
+
+    @Test
+    public void testExitDoorAndWalls(){
+        String input = """
+            0|_|/|/|/|/|/|/|/|/|_|
+            1|/|$|_|/|X|_|/|_|$|/|
+            2|/|_|_|/|_|_|_|_|_|/|
+            3|/|/|_|/|_|_|/|/|/|/|
+            4|/|_|_|_|_|_|_|_|_|/|
+            5|/|_|_|_|H|_|_|_|_|/|
+            6|/|/|/|/|_|_|/|_|/|/|
+            7|/|_|_|_|_|_|/|_|_|/|
+            8|/|$|_|/|_|_|/|_|$|/|
+            9|_|/|/|/|/|/|/|/|/|_|
+            0 1 2 3 4 5 6 7 8 9""";
+        String moves = "ULLUUULRDDDRRDDDLLLDURRRRUURRDDDRLUUULLLUUURRRRULDL";
+        String output = """
+            0|_|/|/|/|/|/|/|/|/|_|
+            1|/|_|_|/|Z|_|/|_|_|/|
+            2|/|_|_|/|_|_|H|_|_|/|
+            3|/|/|_|/|_|_|/|/|/|/|
+            4|/|_|_|_|_|_|_|_|_|/|
+            5|/|_|_|_|_|_|_|_|_|/|
+            6|/|/|/|/|_|_|/|_|/|/|
+            7|/|_|_|_|_|_|/|_|_|/|
+            8|/|_|_|/|_|_|/|_|_|/|
+            9|_|/|/|/|/|/|/|/|/|_|
+              0 1 2 3 4 5 6 7 8 9""";
+
+        testHarnessValid(input, moves, output); 
     }
     
 
@@ -200,7 +353,7 @@ public class DomainTests {
      * @param moves a string representing sequence of moves
      * @param output a string representing expected final maze
      */
-    public void testHarnessValid(String input, String moves, String output){
+    public static void testHarnessValid(String input, String moves, String output){
         Maze maze = mazeParser(input);
         doMoves(new Domain(List.of(maze), new Inventory(8), 1), moves);
         assertEquals(output, maze.toString());
@@ -213,7 +366,7 @@ public class DomainTests {
      * @param output
      * @param exception
      */
-    public void testHarnessInvalid(String input, String moves, String output, Class<? extends Throwable> exception){
+    public static void testHarnessInvalid(String input, String moves, String output, Class<? extends Throwable> exception){
         Maze maze = mazeParser(input);
         assertThrows(exception, ()-> doMoves(new Domain(List.of(maze), new Inventory(8), 1), moves));
         assertEquals(output, maze.toString());
@@ -231,7 +384,7 @@ public class DomainTests {
      * @param x co ord of tile
      * @param y co ord of tile
      */
-    public Tile makeTile(char c, int x, int y){
+    public static Tile makeTile(char c, int x, int y){
         try{
             TileType  type = Arrays.stream(TileType.values())
             .filter(t -> TileType.makeTile(t, new TileInfo(null)).symbol() == c).findFirst().get();
@@ -252,7 +405,7 @@ public class DomainTests {
      * @param domain used to do moves on
      * @param sequence of string of moves in format (L, U, R, D) separated by space or nothing
      */
-    public void doMoves(Domain domain, String sequence){
+    public static void doMoves(Domain domain, String sequence){
         Level level = domain.getCurrentLevelObject();
         // for each char in sequence
         for (char c : sequence.toCharArray()) {
@@ -267,7 +420,7 @@ public class DomainTests {
      * @param string format of the maze
      * @return maze object extracted from this string
      */
-    public Maze mazeParser(String maze){
+    public static Maze mazeParser(String maze){
         //split into lines
         String[] rows = maze.split("\n");
         String[][] StringTiles = new String[rows.length-1][];

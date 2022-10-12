@@ -220,6 +220,13 @@ public class Domain {
     
     //GETTERS:
     /**
+     * gets the list of levels 
+     * 
+     * @return list of levels 
+     */
+    public List<Level> getLevels(){ return new ArrayList<Level>(this.levels);}
+    
+    /**
      * gets the index of current lvl
      * 
      * @return index of current lvl
@@ -241,10 +248,16 @@ public class Domain {
     public int getTreasuresLeft(){return getCurrentMaze().getTileCount(TileType.Coin);}
 
     /**
-     * @return true if game is on last level.
+     * @return true if game is on last level, else false
      */
     public boolean isLastLevel(){return currentLvlIndex == levels.size();}
 
+    /**
+     * @return true if the hero is on the info tile of the level, else false
+     */
+    public boolean heroIsOnInfo(){
+        return getCurrentMaze().getTileThat(t -> t.type() == TileType.Hero).replaceWith().type() == TileType.Info;
+    }
     /**
      * gets a list of current items in the inventory
      * 
