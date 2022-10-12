@@ -264,7 +264,7 @@ public class Domain {
      * @return true if the hero is on the info tile of the level, else false
      */
     public boolean heroIsOnInfo(){
-        return getCurrentMaze().getTileThat(t -> t.type() == TileType.Hero).replaceWith().type() == TileType.Info;
+        return ((Hero)getCurrentMaze().getTileThat(t -> t.type() == TileType.Hero)).tileOn().type() == TileType.Info;
     }
 
     /** 
@@ -277,7 +277,7 @@ public class Domain {
      */
     public String getInfoHint(){
         if(heroIsOnInfo() == false) throw new RuntimeException("hero is not on info");
-        return ((Info)getCurrentMaze().getTileThat(t -> t.type() == TileType.Hero).replaceWith()).message();
+        return ((Info)(((Hero)getCurrentMaze().getTileThat(t -> t.type() == TileType.Hero)).tileOn())).message();
     }
     /**
      * gets a list of current items in the inventory
