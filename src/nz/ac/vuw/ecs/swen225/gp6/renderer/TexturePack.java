@@ -198,9 +198,9 @@ public class TexturePack {
                 case OrangeLock -> Images.OrangeLock.getImg();
                 case ExitDoor -> Images.Exit.getImg();
                 case ExitDoorOpen -> Images.Exit.getImg();
-                case Info -> Images.Empty_tile.getImg();
                 case Coin -> Images.Coin.getImg();
                 case Periphery -> Images.Pattern.getImg();
+                case Info -> Images.InfoTile.getImg();
                 default -> Images.loadCustom(tile.info().getImageName());
             };
         }
