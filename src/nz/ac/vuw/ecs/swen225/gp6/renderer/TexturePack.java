@@ -149,7 +149,8 @@ public class TexturePack {
         HeroBack("heroBack"),
         HeroFront("heroFront"),
         HeroLeft("heroSide"),
-        HeroRight("hero");
+        HeroRight("hero"),
+        PopUp("popUp");
         
         //name of the image
         private String name;
