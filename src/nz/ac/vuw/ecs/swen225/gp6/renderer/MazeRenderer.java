@@ -280,7 +280,7 @@ public class MazeRenderer extends JPanel{
         return true;
     }
 
-    //----------------------------------------draw change lvl-----------------------------------------------------------//
+//----------------------------------------draw change lvl-----------------------------------------------------------//
 
     /**
      * run the change lvl animation
@@ -314,7 +314,7 @@ public class MazeRenderer extends JPanel{
         timer.start();
     }
 
-    //---------------------------------------drawing info----------------------------------------------------------//
+//---------------------------------------drawing info----------------------------------------------------------//
 
     private boolean infoCheat = false;//if the info cheat is on
     /**
@@ -322,12 +322,11 @@ public class MazeRenderer extends JPanel{
      * @param g
      */
     private void drawInfo(Graphics g) {
-        g.setColor(Color.BLACK);
-        g.setFont(new Font("TimesRoman", Font.BOLD, 50));
-        g.drawString("Level: 9000!", 10, 20);
+        //draw the box
+        g.drawImage(getImage("popUp"), 250, 100, 200, 200, null);
     }
 
-    //--------------------------------------getters and setters----------------------------------------------------------//
+//--------------------------------------getters and setters----------------------------------------------------------//
     //Basic getters and setters
 
     /**
