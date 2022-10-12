@@ -139,7 +139,7 @@ public class App extends JFrame {
         gameClock.start();
         gui.transitionToGameScreen();
         MusicPlayer.useGameMusic();
-        MusicPlayer.playMusic();
+        if (config.isMusicOn()) MusicPlayer.playMusic();
         System.out.println("Complete");
     }
 
@@ -182,7 +182,7 @@ public class App extends JFrame {
         System.out.print("Transitioning to replay screen... ");
         gui.transitionToReplayScreen();
         MusicPlayer.useGameMusic();
-        MusicPlayer.playMusic();
+        if (config.isMusicOn()) MusicPlayer.playMusic();
         System.out.println("Complete");
     }
 
