@@ -12,48 +12,47 @@ import java.util.stream.IntStream;
 
 
 
-
+/**
+ * A class that holds a 2d array of tiles representing the maze in the game.
+ */
 public class Maze {
     private Tile[][] tileArray;
     private int height; //height of tile array, how many rows (outer array) 
     private int width;  //width of tile array, how many columns (inner arrays)
-
-    private Direction heroNextStep;
     
-
-    public Maze(Tile[][] tileArray, Direction heroNextStep){
+    /**
+     * Constructs a new 2d array of tiles based on a given 2d tile array.
+     * 
+     * @param tileArray a 2d array of type Tile
+     */
+    public Maze(Tile[][] tileArray){
         this.tileArray = tileArray;
         this.height = tileArray.length;
         this.width = tileArray[0].length;
-
-        this.heroNextStep = heroNextStep;
     }
 
-    public Maze(Tile[][] tileArray){
-        this(tileArray, Direction.None);
-    }
 
     //GETTERS:
-    /*
+    /**
      * get height of tile array
+     * 
+     * @return height of maze
      */
     public int height(){return height;}
 
-    /*
+    /**
      * get width of tile array
+     * 
+     * @return width of maze
      */
     public int width(){ return width;}
-
-    /**
-     * @return direction of heros next step
-     */
-    public Direction getDirection(){return heroNextStep;}
     
-    /*
-     * toString method which creates the board with each tile's given symbol
+    /**
+     * toString method which creates the board with each tile's given symbol.
+     * 
+     * @return the board in string format
      */
     public String toString(){
-        Tile[][] tileArray = this.getTileArrayCopy();
         String r = "";
 
         for(int y = 0; y < height; y++){
@@ -68,18 +67,30 @@ public class Maze {
     }
 
     //TILE GETTERS:
-    /*
-     * @return a copy of tile array 
+    /**
+     * gets a copy of tile array
+     * 
+     * IMPORTANT NOTE: some custom added tiles may not be in the preset tiles and unless the game 
+     * is running and persistency has load the tiles onto the game(as java class files to custom.tiles), 
+     * they won't be able to be instantiated by makeTileFromSymbol and an exception will be thrown.
+     * 
+     * @return a copy of tile array (DEEP CLONE)
+     * 
+     * @throws RuntimeException if any tile cannot be instantiated
      */
-    public Tile[][] getTileArrayCopy() {
+    public Tile[][] getTileArrayCopy(){
         Tile[][] copy = new Tile[width][height];
         IntStream.range(0, width)
         .forEach( x ->
             IntStream.range(0, height)
             .forEach(y->{
                 Tile t = tileArray[x][y];
-                copy[x][y] = TileType.makeTile(t.type(),
-                new TileInfo(new Loc(x, y), t.info().ping(), t.info().getImageName()));
+                try{
+                    copy[x][y] = t.getClass().getConstructor( TileInfo.class).newInstance(t.info());
+                } catch(Exception e){
+                    throw new RuntimeException("cannot initiate the tile class(with TileInfo()): " 
+                    + t.getClass().getName());
+                }
             }
             )
         );
@@ -91,8 +102,11 @@ public class Maze {
      * 
      * @param t tile object to find
      * @return loc of tile object if found, else null
+     * 
+     * @throws NullPointerException if tile t is null
      */
     public Loc getTileLoc(Tile t){
+        if(t == null) throw new NullPointerException("tile t cannot be null Maze.getTileLoc(Tile)");
         for(int x = 0; x < width - 1; x++){
             for(int y = 0; y < height - 1; y++){
                 if(t == tileArray[x][y]) return new Loc(x, y);
@@ -101,8 +115,11 @@ public class Maze {
         return null;
     }
     
-    /*
+    /**
      * finds the number tiles with this tile type on this maze
+     * 
+     * @param type to count
+     * @return number of tiles with give type
      */
     public int getTileCount(TileType type){
         return (int)Arrays
@@ -112,25 +129,40 @@ public class Maze {
         .count();
     }
 
-    /*
+    /**
      * gets the tile at the given x and y co ordinates in the array
      * if location is out of bounds return null typed tile
+     * 
+     * @param x x coord
+     * @param y y coord
+     * @return the tile at the coords or the Null typed tile if its out of bounds.
+     *
+     * @throws IndexOutOfBoundsException if loc out of maze
      */
     public Tile getTileAt(int x, int y){
-        if(Loc.checkInBound(new Loc(x, y), this) == false) return new Null(new TileInfo(null));
+        checkLocationIntegrity(new Loc(x, y));
         return tileArray[x][y];
     }
 
-    /*
+    /**
      * gets the tile at the given location in the array
+     * 
+     * @param l location of tile
+     * @return the tile at the location or the Null typed tile if its out of bounds.
+     * 
+     * @throws NullPointerException if loc or tile is null
+     * @throws IndexOutOfBoundsException if loc out of maze
      */
     public Tile getTileAt(Loc l){
-        if(Loc.checkInBound(l, this) == false) return new Null(new TileInfo(null));
+        checkLocationIntegrity(l);
         return tileArray[l.x()][l.y()];
     }
 
-    /*
-     * gets the first tile that satisfies the given predicate, otherwise a null typed tile
+    /**
+     * gets the first tile that satisfies the given predicate.
+     * 
+     * @param p predicate
+     * @return first tile that satisfies the predicate, or Null typed tile if none exist
      */
     public Tile getTileThat(Predicate<Tile> p){
         return Arrays
@@ -141,8 +173,11 @@ public class Maze {
         .orElse(new Null(new TileInfo(null)));
     }
     
-    /*
-     * get all the tiles that satisfy the given predicate, otherwise an empty list
+    /**
+     * get all the tiles that satisfy the given predicate
+     * 
+     * @param p predicate
+     * @return list of all tiles that satisfy the predicate, otherwise an empty list
      */
     public List<Tile> getAllTilesThat(Predicate<Tile> p){
         return Arrays
@@ -155,8 +190,15 @@ public class Maze {
     //SETTERS and ACTIONS:
     /**
      * pings all tiles in the maze
+     * 
+     * @param d - domain where the ping is taking place in 
+     * (this is since the ping may affect inventory, level index, etc)
+     * 
+     * @throws NullPointerException if Domain is null
      */
     public void pingMaze(Domain d){
+        if(d == null) throw new NullPointerException("domain cannot be null in maze.pingMaze()");
+
         Arrays.stream(d.getCurrentMaze().tileArray).flatMap(Arrays::stream).forEach(t -> t.ping(d));
     }
 
@@ -164,25 +206,33 @@ public class Maze {
      * place a new tile object of desired tile type at a given location on maze.
      * 
      * 
-     * @param x of tile (0 to max - 1)
-     * @param y of tile (0 to max - 1)
+     * @param loc - location of tile 
      * @param type enum for the tile type to place
+     * 
+     * @throws NullPointerException if loc is null
+     * @throws IndexOutOfBoundsException if loc out of maze
      */
     public void setTileAt(Loc loc, TileType type){
-        //check in bound
-        if(Loc.checkInBound(loc, this) == false) return;
+        checkLocationIntegrity(loc); 
             
         //make tile object from type enum and replace the tile at the location
         tileArray[loc.x()][loc.y()] = TileType.makeTile(type, new TileInfo(loc));
 
     }
 
-    /*
+    /**
      * set tile at a given location
+     * 
+     * @param loc - location of tile
+     * @param tile new tile to replace old tile
+     * 
+     * @throws NullPointerException if loc or tile is null
+     * @throws IndexOutOfBoundsException if loc out of maze
      */
     public void setTileAt(Loc loc, Tile tile){
-        //check in bound
-        if(Loc.checkInBound(loc, this) == false) return;
+        //prechecks
+        if(tile == null) throw new IllegalArgumentException("Tile cannot be null (Maze.setTileAt(Loc, Tile))");
+        checkLocationIntegrity(loc);
 
         //replace tile at location
         tileArray[loc.x()][loc.y()] = tile;
@@ -191,12 +241,20 @@ public class Maze {
         tile.info().loc(loc);
     }
 
-    /*
-     * sets the movement direction of hero, 
-     * which the hero will try to move towards if possible in NEXT ping.
+    //HELPERS 
+    /**
+     * helper class that throws an exception if the location is out of bounds or null.
+     * 
+     * @param loc - location to check
+     * 
+     * @throws NullPointerException if loc is null;
+     * @throws IndexOutOfBoundsException if loc is not in the bounds of the maze;
      */
-    public void makeHeroStep(Direction d){
-        this.heroNextStep = d;
+    public void checkLocationIntegrity(Loc loc){
+        if(loc == null) throw new NullPointerException("location cannot be null in (Maze.checkLocationIntegrity(Loc))");
+        if(Loc.checkInBound(loc, this) == false) 
+            throw new IllegalArgumentException("Location out of bounds: x: " 
+            + loc.x() + " y: " + loc.y() + " (Maze.checkLocationIntegrity(Loc))");
     }
 
 }

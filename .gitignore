@@ -4,5 +4,6 @@
 .DS_Store
 .idea/
 *.iml
+*.class
 res/log.txt
 res/saves/

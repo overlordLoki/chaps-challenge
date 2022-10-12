@@ -13,13 +13,15 @@ public final class Commands {
         this.logPanel = logPanel;
         addCommands("clear", "Clears the text area", this::clear);
         addCommands("help", "Displays the availble commands", this::help);
-        addCommands("loadPack", "Reloads the texturepacks", this::loadPack);
         addCommands("test", "test", this::test);
         addCommands("packsNumber", "Displays the number of texture packs", this::numberOfPacks);
+        addCommands("setDogs", "Sets the texture pack to dogs", this::setDogs);
+        addCommands("drawInfo", "Draws the info text", this::drawInfo);
     }
 
     /**
      * Adds a command to the commands HashMap
+     * 
      * @param command
      * @param discription
      * @param action
@@ -47,37 +49,48 @@ public final class Commands {
     /**
      * clears the textArea
      */
-    public void clear(){
+    private void clear(){
         logPanel.getTextArea().setText("");
     }
 
     /**
      * prints the help menu
      */
-    public void help(){
+    private void help(){
         for(String s : helpCommands){
             logPanel.println(s);
         }
     }
 
-    //will remove this before submission
-    public void loadPack(){
-        Textures textures = new Textures();
-        //print number of textures loaded
-        int num = textures.numberOfTexturePacks().length;
-        logPanel.print("Loaded " + num + " textures");
-    }
-
-    public void numberOfPacks(){
+    /**
+     * gets the number of textures loaded
+     */
+    private void numberOfPacks(){
         int num = mazeRenderer.getTexturePacks().size();
         logPanel.print("Loaded " + num + " textures");
     }
 
     //Testing command
-    public void test(){
+    /**
+     * this is for testing new functionality
+     */
+    private void test(){
         logPanel.println("Running Test");
-        Textures textures = new Textures();
-        logPanel.println(textures.test());
+        
+    }
+
+    //set texure pack to dogs
+    /**
+     * sets the texture pack to dogs
+     *
+     */
+    private void setDogs(){
+        mazeRenderer.setTexturePack("Dogs");
+    }
+
+    //cheat the get info text drawn.
+    private void drawInfo(){
+        mazeRenderer.setInfoCheat(true);
     }
 
 
