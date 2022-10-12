@@ -47,10 +47,7 @@ public class BaseTests {
 
     @Test
     void testDomainSave() throws IOException {
-        Inventory inventory = new Inventory(1);
-        inventory.addItem(TileType.makeTile(TileType.GreenKey, new TileInfo(new Loc(1, 1))));
-        Maze maze = Helper.makeMaze();
-        Domain domain = new Domain(List.of(maze), inventory, 1);
+        Domain domain = DomainPersistency.getInitial();
         System.out.println(domain);
         DomainPersistency.save(domain, 1);
     }

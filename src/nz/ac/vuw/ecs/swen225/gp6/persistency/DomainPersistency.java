@@ -75,8 +75,8 @@ public class DomainPersistency {
      */
     public static Element serialise(Level level) {
         Element root = DocumentHelper.createElement("level");
-        root.addAttribute("index", Integer.toString(level.lvl));
-        root.addAttribute("name", "Level " + (level.lvl + 1));
+        root.addAttribute("index", Integer.toString(level.lvl - 1));
+        root.addAttribute("name", "Level " + (level.lvl));
         root.addAttribute("timeLimit", "" + level.timeLimit);
         root.addAttribute("timeCurrent", "" + level.getCurrentTime());
         root.addAttribute("direction", "" + level.getHeroNextStep().name());
@@ -95,15 +95,24 @@ public class DomainPersistency {
      */
     public static Level deserialiseLevel(Element level) {
         int index = Integer.parseInt(level.attributeValue("index"));
-        int timeLimit = Integer.parseInt(level.attributeValue("timeLimit"));
-        long timeCurrent = Long.parseLong(level.attributeValue("timeCurrent"));
-        String direction = level.attributeValue("direction");
+        int timeLimit = Integer
+                .parseInt(level.attributeValue("timeLimit") == null ? "60" : level.attributeValue("timeLimit"));
+        long timeCurrent = Long
+                .parseLong(level.attributeValue("timeCurrent") == null ? "0" : level.attributeValue("timeCurrent"));
+        String direction = level.attributeValue("direction") == null ? "None" : level.attributeValue("direction");
         Direction dir = Direction.valueOf(direction);
 
-        Element maze = level.element("maze");
+        Maze maze = deserialiseMaze(level.element("grid"));
         Element inventory = level.element("inventory");
+        Inventory inv;
 
-        return new Level(deserialiseMaze(maze), deserialiseInventory(inventory), index, timeLimit, timeCurrent, dir);
+        if (inventory == null) {
+            inv = new Inventory(8);
+        } else {
+            inv = deserialiseInventory(inventory);
+        }
+
+        return new Level(maze, inv, index + 1, timeLimit, timeCurrent, dir);
     }
 
     /**
@@ -131,7 +140,7 @@ public class DomainPersistency {
                     Element cell = grid.addElement("cell");
                     cell.addAttribute("x", Integer.toString(x));
                     cell.addAttribute("y", Integer.toString(y));
-                    cell.add(serialise(tile).getRootElement());
+                    cell.add(serialise(tile));
                 }
             }
         }
@@ -295,11 +304,9 @@ public class DomainPersistency {
     /**
      * Delete a save file
      */
-    public static void delete(int slot) throws IOException {
+    public static boolean delete(int slot) throws IOException {
         File file = new File("res/save/" + slot + ".xml");
-        if (!file.delete()) {
-            throw new IOException("Could not delete file");
-        }
+        return file.delete();
     }
 
     /**
