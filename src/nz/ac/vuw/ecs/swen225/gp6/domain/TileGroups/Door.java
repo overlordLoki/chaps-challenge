@@ -32,18 +32,22 @@ public abstract class Door extends AbstractTile {
     } // if hero has key with correct color, then it does not obstruct
 
     @Override public void setOn(Tile t, Domain d){ 
-        if(t.type() != TileType.Hero) throw new IllegalArgumentException("only hero can move on door");
+        //also throws null pointer exception if t is null, you will see this pattern of checking in few overriden setOn methods
+        if(t.type() != TileType.Hero) throw new IllegalArgumentException("only hero can move on door"); 
         if(d == null) throw new NullPointerException("domain cannot be null (Door.setOn)");
 
         Inventory inv = d.getInv();
+        int prevSize = inv.getItems().size();//to check later if size of inventory changed
 
-        //if item in inventory is a key with the correct color, remove it 
-        //note that this method will move the hero to the tile re
+        //if item in inventory is a key with the correct color, remove it
         inv.getItems().stream().filter(tile -> tile instanceof Key && ((Key) tile).color() == color())
         .findFirst().ifPresent(k -> {
             inv.removeItem(k.type());
             d.getCurrentMaze().setTileAt(info.loc(), t);
         });
+
+        assert inv.getItems().size() == prevSize - 1 : "inventory has not decreased after removing a key";
+
         
         d.getCurrentMaze().setTileAt(info.loc(), t);
     }
