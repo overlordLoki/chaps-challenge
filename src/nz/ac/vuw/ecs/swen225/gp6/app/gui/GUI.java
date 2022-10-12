@@ -241,6 +241,7 @@ public class GUI {
                     createActionLabel("Save here!", renderPanel, SUBTITLE, true, ()->{
                         try {
                             DomainPersistency.save(app.getGame(), slot);
+                            app.getRecorder().saveRecording(slot);
                             app.refreshSaves();
                             app.repaint();
                         }catch (IOException e){
@@ -482,7 +483,7 @@ public class GUI {
 
         addAll(pnOnPause,
                 Box.createVerticalGlue(),
-                createActionLabel("Resume", renderPanel, TITLE, true, ()->Actions.LOAD_GAME.run(app)),
+                createActionLabel("Resume", renderPanel, TITLE, true, ()->Actions.RESUME_GAME.run(app)),
                 Box.createVerticalGlue(),
                 createActionLabel("Save and return to menu", renderPanel, TITLE, true, ()->Actions.SAVE_GAME.run(app)),
                 Box.createVerticalGlue(),
