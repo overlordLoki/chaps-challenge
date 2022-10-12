@@ -249,7 +249,7 @@ public class DomainPersistency {
             throw new RuntimeException("Unknown tile type: " + name);
         }
 
-        return null;
+        return TileType.makeTile(type, new TileInfo(new Loc(x, y)));
     }
 
     /**
