@@ -16,7 +16,6 @@ import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Configuration;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Helper;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Inventory;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileInfo;
@@ -34,10 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class BaseTests {
     @Test
     public void testDomainSerialise() {
-        Inventory inventory = new Inventory(1);
-        inventory.addItem(TileType.makeTile(TileType.GreenKey, new TileInfo(new Loc(1, 1))));
-        Maze maze = Helper.makeMaze();
-        Domain domain = new Domain(List.of(maze), inventory, 1);
+        Domain domain = DomainPersistency.getInitial();
         System.out.println(domain);
         assertEquals(DomainPersistency.serialiseDomain(domain).asXML(),
                 """
@@ -54,7 +50,7 @@ public class BaseTests {
 
     @Test
     public void testMazeSerialization() {
-        Maze maze = Helper.makeMaze();
+        Maze maze = DomainPersistency.getInitial().getCurrentMaze();
         Element doc = DomainPersistency.serialiseMaze(maze);
         System.out.println(doc.asXML());
         assertEquals(doc.asXML(),
@@ -65,7 +61,7 @@ public class BaseTests {
 
     @Test
     public void testMazeDeserialization() {
-        Maze maze = Helper.makeMaze();
+        Maze maze = DomainPersistency.getInitial().getCurrentMaze();
         Element doc = DomainPersistency.serialiseMaze(maze);
         Maze maze2 = DomainPersistency.deserialiseMaze(doc);
         maze2.toString();
