@@ -1,7 +1,6 @@
-package nz.ac.vuw.ecs.swen225.gp6.persistency.logging;
+package nz.ac.vuw.ecs.swen225.gp6.persistency;
 
 import nz.ac.vuw.ecs.swen225.gp6.app.gui.GUI;
-import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
 
 import javax.swing.JOptionPane;
 import java.io.IOException;
@@ -65,7 +64,7 @@ class NonBlockingLog extends Thread {
             while (true) {
                 String msg;
                 while ((msg = queue.poll()) != null) {
-                    Persistency.log(msg);
+                    Logging.log(msg);
                 }
             }
         } catch (IOException e) {
