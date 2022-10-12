@@ -25,6 +25,10 @@ public class Textures {
         return listOfFiles;
     }
 
+    /**
+     * get texture packs loaded
+     * @return texture packs
+     */
     public List<String> getTexturePacks() {
         File folder = new File("res/textures");
         File[] listOfFiles = folder.listFiles();
@@ -38,8 +42,4 @@ public class Textures {
         return textures;
     }
 
-    public String test(){
-        File file = listOfFiles[0];
-        return file.getPath();
-    }
 }

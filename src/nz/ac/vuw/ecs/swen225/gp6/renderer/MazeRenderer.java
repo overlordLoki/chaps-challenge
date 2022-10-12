@@ -29,7 +29,7 @@ public class MazeRenderer extends JPanel{
     private List<TexturePack> textures;
     private static TexturePack texturePack = null; //default texture pack
     private Tile[][] gameArray; //the array of tiles
-    public Domain maze; //the domain controller
+    public Domain domain; //the domain controller
     public BufferedImage background; //the background image
     private int patternSize = 100; //the size of the pattern
     private int renderSize = 7; //the size of the render
@@ -43,7 +43,7 @@ public class MazeRenderer extends JPanel{
      * @param maze Maze to be rendered.
      */
     public MazeRenderer(Domain maze) {
-        this.maze = maze;
+        this.domain = maze;
         this.setOpaque(false);
         textures = getTexturePacksList();
         if(texturePack == null){texturePack = textures.get(0);}
@@ -52,26 +52,26 @@ public class MazeRenderer extends JPanel{
         } catch (Exception e) {System.out.println("Dogs not found, using other texture pack");}
     }
 //------------------------------------------paintComponent---------------------------------------
-    /**
-     * get a image from the image provided
-     * @param String
-     * @return BufferedImage
-     */
-    public BufferedImage getImage(String imgName) {return texturePack.getImage(imgName);}
 
-    /**
-     * get a image from the image provided
-     * @param Tile
-     * @return BufferedImage
-     */
-    public BufferedImage getImage(Tile tile) {return texturePack.getImage(tile);}
    
     @Override
     public void paintComponent(Graphics g) {
         //call superclass to paint background
         super.paintComponent(g);
+        if(changinglvl){
+            changeLvl(g);
+            return;
+        }
+        drawMaze(g);
+        if(domain.heroIsOnInfo()){drawInfo(g);}
+    }
+
+    /**
+     * draws the maze
+     */
+    private void drawMaze(Graphics g) {
         //get the maze array
-        gameArray = maze.getGameArray();
+        gameArray = domain.getGameArray();
         //viewport of the maze
         Tile[][] viewport = Viewport.getViewport(gameArray, renderSize);
         //get the width and height of the maze
@@ -95,7 +95,6 @@ public class MazeRenderer extends JPanel{
                 }
             }
         }
-        if(changinglvl){changeLvl(g);}
     }
 
 
@@ -283,6 +282,10 @@ public class MazeRenderer extends JPanel{
 
     //---------------------------------------------------------------------------------------------------//
 
+    /**
+     * run the change lvl animation
+     * @param g
+     */
     private void changeLvl(Graphics g) {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, getWidth(), getHeight());
@@ -291,16 +294,6 @@ public class MazeRenderer extends JPanel{
         g.drawString("Level " + 2, getWidth()/2 - 100, getHeight()/2);
     }
 
-    public BufferedImage[][] getPeaces(){
-        //cut the background img into 4 peaces
-        BufferedImage img = getImage("background");
-        BufferedImage[][] imgs = new BufferedImage[2][2];
-        imgs[0][0] = img.getSubimage(0, 0, img.getWidth()/2, img.getHeight()/2);
-        imgs[0][1] = img.getSubimage(img.getWidth()/2, 0, img.getWidth()/2, img.getHeight()/2);
-        imgs[1][0] = img.getSubimage(0, img.getHeight()/2, img.getWidth()/2, img.getHeight()/2);
-        imgs[1][1] = img.getSubimage(img.getWidth()/2, img.getHeight()/2, img.getWidth()/2, img.getHeight()/2);
-        return imgs;
-    }
     private boolean changinglvl = false;
     /**
      * change the level
@@ -319,6 +312,18 @@ public class MazeRenderer extends JPanel{
             }
         });
         timer.start();
+    }
+
+    //---------------------------------------drawing info----------------------------------------------------------//
+
+    /**
+     * draw the info of the game
+     * @param g
+     */
+    private void drawInfo(Graphics g) {
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
+        g.drawString("Level: 9000!", 10, 20);
     }
 
     //--------------------------------------getters and setters----------------------------------------------------------//
@@ -369,7 +374,7 @@ public class MazeRenderer extends JPanel{
      * set the maze to be rendered
      * @param maze
      */
-    public void setMaze(Domain maze) {this.maze = maze;}
+    public void setMaze(Domain maze) {this.domain = maze;}
 
     //get list of TexturePacks
     /**
@@ -414,6 +419,20 @@ public class MazeRenderer extends JPanel{
             renderSize--;
         }
     }
+
+    /**
+     * get a image from the image provided
+     * @param String
+     * @return BufferedImage
+     */
+    public BufferedImage getImage(String imgName) {return texturePack.getImage(imgName);}
+
+    /**
+     * get a image from the image provided
+     * @param Tile
+     * @return BufferedImage
+     */
+    public BufferedImage getImage(Tile tile) {return texturePack.getImage(tile);}
 
 
 }

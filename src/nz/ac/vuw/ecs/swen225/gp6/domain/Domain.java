@@ -59,7 +59,7 @@ public class Domain {
      * Levels are created internally from mazes in order. Also timelimits default to 120 seconds, and current 
      * times to 0 for each level.
      * 
-     * @param maze - must be in order.
+     * @param domain - must be in order.
      * @param inventory - inventory for current level
      * @param currentLvl - the index of the current level starting at 1
      */
