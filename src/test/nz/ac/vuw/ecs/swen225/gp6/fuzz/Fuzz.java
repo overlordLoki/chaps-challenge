@@ -47,7 +47,7 @@ public class Fuzz {
      * @Input: int number of actions for test
      * @return a random action in App we initialized
      */
-    public static void testLevel(int numOfInputs){
+    public static void testLevel1(int numOfInputs){
         SwingUtilities.invokeLater(()->{
             app = new App();
             actionsList = List.of(
@@ -70,6 +70,30 @@ public class Fuzz {
         System.out.println("Testing Level: "+app.getGame().getCurrentLevel() + " Completed");
     }
 
+
+    public static void testLevel2(int numOfInputs){
+        SwingUtilities.invokeLater(()->{
+            app = new App();
+            actionsList = List.of(
+                    MOVE_UP,
+                    MOVE_DOWN,
+                    MOVE_LEFT,
+                    MOVE_RIGHT
+            );
+        });
+        // Start robot automating sequence
+        JOptionPane.showMessageDialog(null,"Start Fuzzing");
+        app.startNewGame();
+        app.transitionToGameScreen();
+        TO_LEVEL_2.run(app);
+        for (int i =0; i < numOfInputs; i++){
+            int randomIndex = r.nextInt(actionsList.size());
+            actionsList.get(randomIndex).run(app);
+            System.out.print("Action: " + i + " >>> " + randomIndex);
+            robot.delay(100);
+        }
+        System.out.println("Testing Level: "+app.getGame().getCurrentLevel() + " Completed");
+    }
     /**
      * This method is used to keep testing in one level
      * @return loop of random action in App we initialized until the first level is done
@@ -328,15 +352,15 @@ public class Fuzz {
      */
     public static void main(String[] args) throws AWTException {
 
-        String[] buttons = { "hardCode", "testLevel(1000)", "testLevel(100)", "unlimittest" ,"Cancel" };
+        String[] buttons = { "hardCode", "testLevel2(1000)", "testLevel1(100)", "unlimittest" ,"Cancel" };
         int rc = JOptionPane.showOptionDialog(null, "Choose a test", "Test",
                 JOptionPane.WARNING_MESSAGE, 0, null, buttons, buttons[4]);
         if (rc == 0) {
             hardCode();
         } else if (rc == 1) {
-            testLevel(1000);
+            testLevel2(1000);
         } else if (rc == 2) {
-            testLevel(100);
+            testLevel1(1000);
         } else if (rc == 3) {
             unlimittest();
         } else {
