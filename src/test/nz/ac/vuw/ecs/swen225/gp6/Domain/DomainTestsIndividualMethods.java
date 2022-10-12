@@ -2,6 +2,8 @@ package test.nz.ac.vuw.ecs.swen225.gp6.Domain;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.DomainEvent;
+import nz.ac.vuw.ecs.swen225.gp6.domain.IntegrityCheck.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.IntegrityCheck.CheckGame.GameState;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.Key.KeyColor;
@@ -9,8 +11,6 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.*;
 
 import org.junit.jupiter.api.Test;
-
-import junit.framework.AssertionFailedError;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -204,7 +204,84 @@ public class DomainTestsIndividualMethods {
         ()->{TileType.makeTile(TileType.Other, new TileInfo(null));});
         assertThrows(IllegalArgumentException.class, 
         ()->{TileType.makeTileFromSymbol('E', new TileInfo(null));});
+        assertThrows(NullPointerException.class, 
+        ()->{TileType.makeTile(null, new TileInfo(null));});
+        assertThrows(NullPointerException.class, 
+        ()->{TileType.makeTile(null, new TileInfo(null));});
+        assertThrows(NullPointerException.class, 
+        ()->{TileType.makeTile(TileType.Wall, null);});
 
+    }
+
+    //INTEGRITY CHECK CLASSES:
+    @Test
+    public void testCheckCurrentStateLoseWin(){
+        CheckGame.state = GameState.PLAYING;
+        mockDomain = new Domain(List.of(mockMaze), new Inventory(8), 1);
+        CheckGame.checkCurrentState(mockDomain); //must not throw any exceptions
+        
+        CheckGame.state = GameState.WON;
+        assertThrows(IllegalStateException.class, 
+        ()->{CheckGame.checkCurrentState(mockDomain);});
+
+        Maze mazeNoCoins = DomainTestsThruMoves.mazeParser("""
+        0|_|/|/|/|/|/|/|/|/|_|
+        1|/|_|_|/|Z|_|/|_|_|/|
+        2|/|_|_|/|_|_|O|_|_|/|
+        3|/|/|B|/|_|_|/|/|/|/|
+        4|/|_|_|_|g|b|_|_|_|/|
+        5|/|_|_|_|o|y|_|_|_|/|
+        6|/|/|/|/|_|_|/|G|/|/|
+        7|/|_|_|Y|H|_|/|_|_|/|
+        8|/|_|_|/|_|_|/|_|_|/|
+        9|_|/|/|/|/|/|/|/|/|_|
+          0 1 2 3 4 5 6 7 8 9""");
+
+        CheckGame.state = GameState.WON;
+        Domain domainNoCoins = new Domain(List.of(mazeNoCoins), new Inventory(8), 1);
+        assertThrows(IllegalStateException.class, //all coins collected but not on exit door
+        ()->{CheckGame.checkCurrentState(domainNoCoins);});
+
+        CheckGame.state = GameState.PLAYING;
+        DomainTestsThruMoves.doMoves(domainNoCoins, "UUUUUU");
+        CheckGame.state = GameState.WON;
+
+        CheckGame.checkCurrentState(domainNoCoins); //must not throw any exceptions since hero is on exit door
+                                                    //all coins are collected
+
+        Maze mazeNoHero = DomainTestsThruMoves.mazeParser("""
+        0|_|/|/|/|/|/|/|/|/|_|
+        1|/|_|_|/|Z|_|/|_|_|/|
+        2|/|_|_|/|_|_|O|_|_|/|
+        3|/|/|B|/|_|_|/|/|/|/|
+        4|/|_|_|_|g|b|_|_|_|/|
+        5|/|_|_|_|o|y|_|_|_|/|
+        6|/|/|/|/|_|_|/|G|/|/|
+        7|/|_|_|Y|_|_|/|_|_|/|
+        8|/|_|_|/|_|_|/|_|_|/|
+        9|_|/|/|/|/|/|/|/|/|_|
+          0 1 2 3 4 5 6 7 8 9""");
+
+        Domain domainCheckLose = new Domain(List.of(mazeNoHero), new Inventory(8), 1);
+
+        //make a dangerous wall that has swallowed enemy
+        class dangerousWall extends Wall{
+            public dangerousWall(TileInfo info){
+                super(info);
+            }
+            @Override
+            public boolean damagesHero(Domain d){
+                return true;
+            }
+            public Tile tileOn(){
+                return new Hero(new TileInfo(null));
+            }
+        }
+
+        mazeNoHero.setTileAt(new Loc(0,0), new dangerousWall(new TileInfo(null)));
+
+        CheckGame.state = GameState.LOST;
+        CheckGame.checkCurrentState(domainCheckLose); //must not throw any exceptions since a damaging tile is on hero
 
     }
 
