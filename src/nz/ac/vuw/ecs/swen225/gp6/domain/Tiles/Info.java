@@ -15,6 +15,11 @@ public class Info extends AbstractTile{//future idea: not disappear after once u
     public Info (TileInfo info){super(info);}
 
     @Override public TileType type(){ return TileType.Info;}
+    /**
+     * gets the hint message to be displayed when hero moves on this tile
+     * @return hint message
+     */
+    public String message(){return info().message();}
 
     @Override public boolean obstructsEnemy(Domain d){return true;}
     @Override public Tile replaceWith(){return this;} //the info tile is permanent

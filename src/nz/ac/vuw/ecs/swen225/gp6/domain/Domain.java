@@ -262,12 +262,11 @@ public class Domain {
 
     /** 
      * gets the message stored in the info tile of this level (note every level can have one info tile at max), 
-     * should only be called when hero is on tile info 
+     * must ONLY BE CALLED when hero is on tile info.
      * 
      * @return the message stored in the info tile of this level
      * 
-     * TODO ooooooo
-     * @throws 
+     * @throws RuntimeException if hero is not on the info tile
      */
     public String getInfoHint(){
         if(heroIsOnInfo() == false) throw new RuntimeException("hero is not on info");

@@ -10,6 +10,7 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
  */
 public class TileInfo{
     private String imageName;
+    private String message; //only used for info tile currently but can be used to store messages in tiles
     private Loc loc;
     private int ping; //to be used later perhaps to keep count of ping cycles
 
@@ -20,11 +21,13 @@ public class TileInfo{
      * @param loc location of tile
      * @param pingCount ping count recorded by the tile
      * @param imageName the name of the image file
+     * @param message the message associated with the tile
      */
-    public TileInfo(Loc loc, int pingCount, String imageName){
+    public TileInfo(Loc loc, int pingCount, String imageName, String message){
         this.loc = loc;
         this.ping = pingCount;
         this.imageName = imageName;
+        this.message = message;
     }
 
     /**
@@ -33,7 +36,7 @@ public class TileInfo{
      * 
      * @param loc location of tile
      */
-    public TileInfo(Loc loc){this(loc, 0, "");}
+    public TileInfo(Loc loc){this(loc, 0, "", "");}
 
     /**
      * Create a tileInfo object only with loc and imageName,
@@ -41,7 +44,7 @@ public class TileInfo{
      * 
      * @param 
      */
-    public TileInfo(Loc loc, String imageName){this(loc, 0, imageName);}
+    public TileInfo(Loc loc, String imageName){this(loc, 0, imageName, "");}
 
 
     //GETTERS:
@@ -63,6 +66,12 @@ public class TileInfo{
      * @return number of pings that the tile has recorded
      */
     public int ping(){return ping;}
+    /**
+     * gets message on the tile
+     * 
+     * @return message
+     */
+    public String message(){return message;}
 
     //SETTERS
     /**
