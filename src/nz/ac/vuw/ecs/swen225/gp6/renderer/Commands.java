@@ -86,6 +86,10 @@ public final class Commands {
         mazeRenderer.setTexturePack("Dogs");
     }
 
+    // //cheat the get info text drawn.
+    // private void drawInfo(){
+    //     mazeRenderer.drawInfo();
+    // }
 
 
 }
