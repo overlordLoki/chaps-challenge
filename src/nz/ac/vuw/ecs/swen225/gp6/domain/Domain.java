@@ -242,6 +242,13 @@ public class Domain {
     public int getCurrentTimeLimit(){return getLevelTimeLimits().get(currentLvlIndex - 1);}
 
     /**
+     * gets the current time of the current level.
+     * 
+     * @return current time
+     */
+    public long getCurrentTime(){return levels.get(currentLvlIndex - 1).getCurrentTime();}
+
+    /**
      * gets number of treasures left on current level's maze
      * 
      * @return number of treasures left 
@@ -301,6 +308,13 @@ public class Domain {
     }
 
     //SETTERS:
+    /**
+     * sets current time of current level 
+     * 
+     * @param time to set the current time to
+     */
+    public void setCurrentTime(int time){getCurrentLevelObject().setCurrentTime(time);}
+
     /**
      * add an event listener to the domain
      * 
