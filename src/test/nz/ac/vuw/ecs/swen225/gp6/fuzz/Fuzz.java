@@ -56,15 +56,18 @@ public class Fuzz {
                     MOVE_LEFT,
                     MOVE_RIGHT
             );
+
         });
         // Start robot automating sequence
         JOptionPane.showMessageDialog(null,"Start Fuzzing");
         app.startNewGame();
         app.transitionToGameScreen();
+        app.getGUI().getLogPanel().setVisible(true);
+
         for (int i =0; i < numOfInputs; i++){
             int randomIndex = r.nextInt(actionsList.size());
             actionsList.get(randomIndex).run(app);
-            System.out.print("Action: " + i + " >>> " + randomIndex);
+            System.out.print("Action: " + actionsList.get(randomIndex) + " >>> ");
             robot.delay(100);
         }
         System.out.println("Testing Level: "+app.getGame().getCurrentLevel() + " Completed");
