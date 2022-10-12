@@ -9,8 +9,9 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.DomainEvent;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.LogPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MusicPlayer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
-import nz.ac.vuw.ecs.swen225.gp6.persistency.logging.Interceptor;
-import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
+import nz.ac.vuw.ecs.swen225.gp6.persistency.Interceptor;
+import nz.ac.vuw.ecs.swen225.gp6.persistency.DomainPersistency;
+import nz.ac.vuw.ecs.swen225.gp6.persistency.AppPersistency;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.Replay;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.Record;
 import org.dom4j.DocumentException;
@@ -43,10 +44,10 @@ public class App extends JFrame {
     public static final int HEIGHT = 800;
 
     // Core components of the game
-    private Domain game                 = Persistency.getInitialDomain();
+    private Domain game                 = DomainPersistency.getInitial();
     private final GameClock gameClock   = new GameClock(this);
     private final GUI gui               = new GUI(this);
-    private final Configuration config  = Persistency.loadConfiguration();
+    private final Configuration config  = AppPersistency.load();
     private final Controller controller = new Controller(this);
     private final Record recorder       = new Record();
     private final Replay replay         = new Replay(this);
@@ -154,7 +155,7 @@ public class App extends JFrame {
      * Sets the game to a new game and enters game play mode
      */
     public void startNewGame() {
-        updateGameComponents(Persistency.getInitialDomain());
+        updateGameComponents(DomainPersistency.getInitial());
         gameClock.useGameTimer();
         transitionToGameScreen();
     }
@@ -177,7 +178,7 @@ public class App extends JFrame {
      * @param slot the save file to load
      */
     public void startSavedReplay(int slot) {
-        updateGameComponents(Persistency.getInitialDomain());
+        updateGameComponents(DomainPersistency.getInitial());
         // TODO: load replay module
         gameClock.useReplayTimer();
         replay.load("save");
@@ -217,7 +218,7 @@ public class App extends JFrame {
         IntStream.range(0, 3).forEach(index ->{
             int slot = index + 1;
             try {
-                saves[index] = Persistency.loadSave(slot);
+                saves[index] = DomainPersistency.loadSave(slot);
                 gui.updateSaveInventory(index, saves[index]);
             } catch (DocumentException e) {
                 System.out.printf("Failed to load save %d.\n", slot);
@@ -227,10 +228,10 @@ public class App extends JFrame {
                         "Failed to load save " + slot + ". What would you like to do?",
                         "Save file corrupted",
                         JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
-                if (choice == 0) saves[index] = Persistency.getInitialDomain();
+                if (choice == 0) saves[index] = DomainPersistency.getInitial();
                 else if (choice == 1) {
                     try {
-                        Persistency.deleteSave(slot);
+                        DomainPersistency.delete(slot);
                     } catch (IOException ex) {
                         System.out.println("Error deleting save slot: " + slot);
                         e.printStackTrace();

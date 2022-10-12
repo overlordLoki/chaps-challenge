@@ -140,11 +140,17 @@ public class TexturePack {
          * The image for the lose screen
          */
         LoseScreen("loseScreen"),
+
+        /**
+         * The image for the help tile
+         */
+        InfoTile("help"),
     
         HeroBack("heroBack"),
         HeroFront("heroFront"),
         HeroLeft("heroSide"),
-        HeroRight("hero");
+        HeroRight("hero"),
+        PopUp("popUp");
         
         //name of the image
         private String name;
@@ -181,7 +187,6 @@ public class TexturePack {
             return switch(tile.type()){
                 case Floor -> getImage(Empty_tile);
                 case Empty -> Images.Empty_tile.getImg();
-                // case Enemy -> Images.Enemy.getImg();
                 case Wall -> Images.Wall.getImg();
                 case BlueKey -> Images.BlueKey.getImg();
                 case GreenKey -> Images.GreenKey.getImg();
@@ -221,6 +226,11 @@ public class TexturePack {
          * @return BufferedImage
          */
         public static BufferedImage loadCustom(String path){
+            for (Images img : Images.values()) {
+                if (img.getName().equals(path)) {
+                    return img.getImg();
+                }
+            }
             try {
                 return ImageIO.read(new File("res/customTextures/"+path+".png"));
             } catch (IOException e) {

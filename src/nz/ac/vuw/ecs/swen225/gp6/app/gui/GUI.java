@@ -10,7 +10,7 @@ import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MusicPlayer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack.Images;
-import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
+import nz.ac.vuw.ecs.swen225.gp6.persistency.DomainPersistency;
 
 import javax.swing.*;
 import java.awt.*;
@@ -240,7 +240,7 @@ public class GUI {
                     Box.createHorizontalGlue(),
                     createActionLabel("Save here!", renderPanel, SUBTITLE, true, ()->{
                         try {
-                            Persistency.saveDomain(app.getGame(), slot);
+                            DomainPersistency.save(app.getGame(), slot);
                             app.refreshSaves();
                             app.repaint();
                         }catch (IOException e){
@@ -261,7 +261,7 @@ public class GUI {
                     Box.createHorizontalGlue(),
                     createActionLabel("Delete", renderPanel, TEXT, true, ()->{
                         try {
-                            Persistency.deleteSave(slot);
+                            DomainPersistency.delete(slot);
                             app.refreshSaves();
                             app.repaint();
                         }catch (Exception e){

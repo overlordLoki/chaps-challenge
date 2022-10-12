@@ -16,7 +16,7 @@ public class InventoryPanel extends JPanel{
     private Domain maze;
     /**
      * Constructor. Takes a maze as parameters.
-     * @param maze
+     * @param domain
      */
     public InventoryPanel(Domain Maze, boolean isGamePanel,MazeRenderer mazeRenderer) {
         this.maze = Maze;
@@ -38,7 +38,11 @@ public class InventoryPanel extends JPanel{
             });
         }
     }
-
+    /**
+     * static method to create a new inventoryPanel
+     * @param render
+     * @return inventoryPanel
+     */
     public static InventoryPanel of(MazeRenderer render) {
         return new InventoryPanel(null, true, render);
     }

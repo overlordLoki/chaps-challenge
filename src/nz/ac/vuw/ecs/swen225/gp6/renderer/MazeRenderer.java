@@ -29,21 +29,21 @@ public class MazeRenderer extends JPanel{
     private List<TexturePack> textures;
     private static TexturePack texturePack = null; //default texture pack
     private Tile[][] gameArray; //the array of tiles
-    public Domain maze; //the domain controller
+    public Domain domain; //the domain controller
     public BufferedImage background; //the background image
     private int patternSize = 100; //the size of the pattern
     private int renderSize = 7; //the size of the render
     private int minRenderSize = 1, maxRenderSize = 50; //the min and max render size
 
 
-//----------------------------------Constructor----------------------------------------------
+//----------------------------------Constructor-----------------------------------------------------------//
     /**
      * Constructor. Takes a maze as parameters.
      * 
      * @param maze Maze to be rendered.
      */
     public MazeRenderer(Domain maze) {
-        this.maze = maze;
+        this.domain = maze;
         this.setOpaque(false);
         textures = getTexturePacksList();
         if(texturePack == null){texturePack = textures.get(0);}
@@ -51,27 +51,27 @@ public class MazeRenderer extends JPanel{
             setTexturePack("Dogs");
         } catch (Exception e) {System.out.println("Dogs not found, using other texture pack");}
     }
-//------------------------------------------paintComponent---------------------------------------
-    /**
-     * get a image from the image provided
-     * @param String
-     * @return BufferedImage
-     */
-    public BufferedImage getImage(String imgName) {return texturePack.getImage(imgName);}
+//------------------------------------------paintComponent-------------------------------------------------//
 
-    /**
-     * get a image from the image provided
-     * @param Tile
-     * @return BufferedImage
-     */
-    public BufferedImage getImage(Tile tile) {return texturePack.getImage(tile);}
    
     @Override
     public void paintComponent(Graphics g) {
         //call superclass to paint background
         super.paintComponent(g);
+        //if changing Level draw chaing lvl animation and dont draw anything else
+        if(changinglvl){changeLvl(g);return;}
+        //draw the game as usal
+        drawMaze(g);
+        //if we drawing info draw it
+        if(domain.heroIsOnInfo() || infoCheat){drawInfo(g);}
+    }
+
+    /**
+     * draws the maze
+     */
+    private void drawMaze(Graphics g) {
         //get the maze array
-        gameArray = maze.getGameArray();
+        gameArray = domain.getGameArray();
         //viewport of the maze
         Tile[][] viewport = Viewport.getViewport(gameArray, renderSize);
         //get the width and height of the maze
@@ -95,7 +95,6 @@ public class MazeRenderer extends JPanel{
                 }
             }
         }
-        if(changinglvl){changeLvl(g);}
     }
 
 
@@ -119,7 +118,7 @@ public class MazeRenderer extends JPanel{
     }
 
 
-    //-----------------------------load in texture packs---------------------------------------------//
+//-----------------------------------------load in texture packs----------------------------------------------//
     
 
     /**
@@ -179,7 +178,7 @@ public class MazeRenderer extends JPanel{
         }
         String[] mustContain = {"background","blueKey","blueLock","coin","empty_tile","enemy","exitDoor","floor","greenKey","greenLock",
                         "hero","heroBack","heroFront","heroSide","empty_tile","loseScreen","orangeKey",
-                        "orangeLock","pattern","pattern2","wall_tile","winScreen","yellowKey","yellowLock"};
+                        "orangeLock","pattern","pattern2","wall_tile","winScreen","yellowKey","yellowLock","help"};
         for(String s : mustContain) {
             if(!files.contains(s+".png")) {
                 System.out.println("missing file: " + s + " in " + folder.getName());
@@ -281,8 +280,12 @@ public class MazeRenderer extends JPanel{
         return true;
     }
 
-    //---------------------------------------------------------------------------------------------------//
+//----------------------------------------draw change lvl-----------------------------------------------------------//
 
+    /**
+     * run the change lvl animation
+     * @param g
+     */
     private void changeLvl(Graphics g) {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, getWidth(), getHeight());
@@ -291,17 +294,7 @@ public class MazeRenderer extends JPanel{
         g.drawString("Level " + 2, getWidth()/2 - 100, getHeight()/2);
     }
 
-    public BufferedImage[][] getPeaces(){
-        //cut the background img into 4 peaces
-        BufferedImage img = getImage("background");
-        BufferedImage[][] imgs = new BufferedImage[2][2];
-        imgs[0][0] = img.getSubimage(0, 0, img.getWidth()/2, img.getHeight()/2);
-        imgs[0][1] = img.getSubimage(img.getWidth()/2, 0, img.getWidth()/2, img.getHeight()/2);
-        imgs[1][0] = img.getSubimage(0, img.getHeight()/2, img.getWidth()/2, img.getHeight()/2);
-        imgs[1][1] = img.getSubimage(img.getWidth()/2, img.getHeight()/2, img.getWidth()/2, img.getHeight()/2);
-        return imgs;
-    }
-    private boolean changinglvl = false;
+    private boolean changinglvl = false; //if the level is changing
     /**
      * change the level
      * @param observer
@@ -321,7 +314,19 @@ public class MazeRenderer extends JPanel{
         timer.start();
     }
 
-    //--------------------------------------getters and setters----------------------------------------------------------//
+//---------------------------------------drawing info----------------------------------------------------------//
+
+    private boolean infoCheat = false;//if the info cheat is on
+    /**
+     * draw the info of the game
+     * @param g
+     */
+    private void drawInfo(Graphics g) {
+        //draw the box
+        g.drawImage(getImage("popUp"), 250, 100, 200, 200, null);
+    }
+
+//--------------------------------------getters and setters----------------------------------------------------------//
     //Basic getters and setters
 
     /**
@@ -369,7 +374,7 @@ public class MazeRenderer extends JPanel{
      * set the maze to be rendered
      * @param maze
      */
-    public void setMaze(Domain maze) {this.maze = maze;}
+    public void setMaze(Domain maze) {this.domain = maze;}
 
     //get list of TexturePacks
     /**
@@ -415,5 +420,24 @@ public class MazeRenderer extends JPanel{
         }
     }
 
+    /**
+     * get a image from the image provided
+     * @param String
+     * @return BufferedImage
+     */
+    public BufferedImage getImage(String imgName) {return texturePack.getImage(imgName);}
 
+    /**
+     * get a image from the image provided
+     * @param Tile
+     * @return BufferedImage
+     */
+    public BufferedImage getImage(Tile tile) {return texturePack.getImage(tile);}
+
+    //setter for infoCheat
+    /**
+     * set infoCheat
+     * @param infoCheat
+     */
+    public void setInfoCheat(boolean infoCheat) {this.infoCheat = infoCheat;}
 }
