@@ -37,16 +37,15 @@ public class DomainPersistency {
      *
      * @return The serialised domain as an XML document
      */
-    public static Document serialise(Domain domain) {
-        Document document = DocumentHelper.createDocument();
-        Element root = document.addElement("domain");
+    public static Element serialiseDomain(Domain domain) {
+        Element root = DocumentHelper.createElement("domain");
         Element levels = root.addElement("levels");
         for (int i = 0; i < domain.getMazes().size(); i++) {
             Level level = domain.getLevels().get(i);
-            levels.add(serialise(level));
+            levels.add(serialiseLevel(level));
         }
         levels.addAttribute("current", Integer.toString(domain.getCurrentLevel()));
-        return document;
+        return root;
     }
 
     /**
@@ -55,8 +54,7 @@ public class DomainPersistency {
      * @param document The XML document to deserialise
      * @return The deserialised domain
      */
-    public static Domain deserialise(Document document) {
-        Element root = document.getRootElement();
+    public static Domain deserialiseDomain(Element root) {
         Element levelEls = root.element("levels");
         int currentLevel = Integer.parseInt(levelEls.attributeValue("current"));
         List<Level> levels = new ArrayList<Level>();
@@ -73,16 +71,16 @@ public class DomainPersistency {
      *
      * @return The serialised level as an XML element
      */
-    public static Element serialise(Level level) {
+    public static Element serialiseLevel(Level level) {
         Element root = DocumentHelper.createElement("level");
         root.addAttribute("index", Integer.toString(level.lvl - 1));
         root.addAttribute("name", "Level " + (level.lvl));
         root.addAttribute("timeLimit", "" + level.timeLimit);
         root.addAttribute("timeCurrent", "" + level.getCurrentTime());
         root.addAttribute("direction", "" + level.getHeroNextStep().name());
-        Element maze = serialise(level.maze);
+        Element maze = serialiseMaze(level.maze);
         root.add(maze);
-        Element inventory = serialise(level.inv);
+        Element inventory = serialiseInventory(level.inv);
         root.add(inventory);
         return root;
     }
@@ -129,7 +127,7 @@ public class DomainPersistency {
      * 
      * @param maze The maze to serialise
      */
-    public static Element serialise(Maze maze) {
+    public static Element serialiseMaze(Maze maze) {
         Element grid = DocumentHelper.createElement("grid");
         grid.addAttribute("width", Integer.toString(maze.width()));
         grid.addAttribute("height", Integer.toString(maze.height()));
@@ -140,7 +138,7 @@ public class DomainPersistency {
                     Element cell = grid.addElement("cell");
                     cell.addAttribute("x", Integer.toString(x));
                     cell.addAttribute("y", Integer.toString(y));
-                    cell.add(serialise(tile));
+                    cell.add(serialiseTile(tile));
                 }
             }
         }
@@ -208,7 +206,7 @@ public class DomainPersistency {
      * 
      * @return The serialised tile as an XML element
      */
-    public static Element serialise(Tile tile) {
+    public static Element serialiseTile(Tile tile) {
         String name = Helper.typeToString.get(tile.type());
 
         if (null == name) {
@@ -249,7 +247,7 @@ public class DomainPersistency {
             throw new RuntimeException("Unknown tile type: " + name);
         }
 
-        return null;
+        return TileType.makeTile(type, new TileInfo(new Loc(x, y)));
     }
 
     /**
@@ -262,10 +260,10 @@ public class DomainPersistency {
      * 
      * @param inventory The inventory to serialise
      */
-    public static Element serialise(Inventory inventory) {
+    public static Element serialiseInventory(Inventory inventory) {
         Element root = DocumentHelper.createElement("inventory");
         for (Tile item : inventory.getItems()) {
-            root.add(serialise(item));
+            root.add(serialiseTile(item));
         }
         root.addAttribute("size", inventory.size() + "");
         return root;
@@ -295,7 +293,7 @@ public class DomainPersistency {
         try {
             InputStream in = new FileInputStream("res/saves/" + slot + ".xml");
             Document document = reader.read(in);
-            return deserialise(document);
+            return deserialiseDomain(document.getRootElement());
         } catch (FileNotFoundException e) {
             return getInitial();
         }
@@ -363,7 +361,8 @@ public class DomainPersistency {
      * @param path   The file path to save to
      */
     public static void save(Domain domain, int slot) throws IOException {
-        Document document = serialise(domain);
+        Element root = serialiseDomain(domain);
+        Document document = DocumentHelper.createDocument(root);
 
         File dir = new File("res/saves");
         if (!dir.exists()) {

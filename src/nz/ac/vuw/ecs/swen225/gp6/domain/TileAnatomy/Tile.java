@@ -59,7 +59,7 @@ public interface Tile {
      * 
      * @return tile that is to replace this tile after an actor going over it. If not implemented, defaults to Floor.
      */
-    public default Tile replaceWith(){return TileType.makeTile(TileType.Floor, new TileInfo(info().loc(), info().ping(), ""));} //TODO check if right
+    public default Tile replaceWith(){return TileType.makeTile(TileType.Floor, new TileInfo(info().loc(), info().ping(), "", ""));} //TODO check if right
     /**
      * Sets the given tile t instead of this tile on maze, changing the domain to do so.
      * NOTE1: may alter domain.
