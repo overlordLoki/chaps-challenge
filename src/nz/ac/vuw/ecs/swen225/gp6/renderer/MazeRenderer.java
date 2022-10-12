@@ -95,13 +95,7 @@ public class MazeRenderer extends JPanel{
                 }
             }
         }
-        if(changinglvl){
-            g.setColor(Color.BLACK);
-            g.fillRect(0, 0, getWidth(), getHeight());
-            g.setColor(Color.WHITE);
-            g.setFont(new Font("TimesRoman", Font.PLAIN, 50));
-            g.drawString("Level " + 2, getWidth()/2 - 100, getHeight()/2);
-        }
+        if(changinglvl){changeLvl(g);}
     }
 
 
@@ -289,21 +283,12 @@ public class MazeRenderer extends JPanel{
 
     //---------------------------------------------------------------------------------------------------//
 
-    //draw the background peace by peace
-    /**
-     * draw the background peace by peace
-     * @param g
-     */
-    public void drawBackground(Graphics g) {
-        BufferedImage[][] backgroundpeaces = getPeaces();
-        for(int i = 0; i < backgroundpeaces.length; i++) {
-            for(int j = 0; j < backgroundpeaces[i].length; j++) {
-                g.drawImage(backgroundpeaces[i][j], i*this.getWidth(), j*this.getHeight(), null);
-                try{
-                    Thread.sleep(100);
-                }catch(Exception e) {}
-            }
-        }
+    private void changeLvl(Graphics g) {
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0, getWidth(), getHeight());
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("TimesRoman", Font.PLAIN, 50));
+        g.drawString("Level " + 2, getWidth()/2 - 100, getHeight()/2);
     }
 
     public BufferedImage[][] getPeaces(){
@@ -317,6 +302,10 @@ public class MazeRenderer extends JPanel{
         return imgs;
     }
     private boolean changinglvl = false;
+    /**
+     * change the level
+     * @param observer
+     */
     public void changeLevel(Runnable observer){
         changinglvl = true;
         // run sequence here
