@@ -3,28 +3,22 @@ package nz.ac.vuw.ecs.swen225.gp6.persistency;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Objects;
-import java.util.Stack;
-import java.util.concurrent.TimeoutException;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
-import nz.ac.vuw.ecs.swen225.gp6.persistency.Helper;
-import nz.ac.vuw.ecs.swen225.gp6.recorder.Record;
-import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.Pair;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Inventory;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.Tile;
@@ -32,149 +26,7 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileInfo;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.SAXReader;
-import org.dom4j.io.XMLWriter;
-
-import nz.ac.vuw.ecs.swen225.gp6.app.*;
-import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
-import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Configuration;
-import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller.Key;
-
-public class Persistency {
-    public record Log(LocalDateTime date, String message) {
-    }
-
-    /**
-     * Log the string to the log file
-     * 
-     * @param string The string to log
-     */
-    public static void log(String message) throws IOException {
-        // get time and date string
-        String time = LocalDateTime.now().toString();
-        // write to file
-        FileWriter out = null;
-        out = new FileWriter("res/log.txt", true);
-        out.write(time + ": " + message + "\n");
-        out.close();
-    }
-
-    /**
-     * Get the log file
-     * 
-     * @return List of log entries
-     */
-    public static List<Log> getLogs() throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get("res/log.txt"));
-
-        return lines.stream().map(line -> {
-            if (!line.contains(": ")) {
-                return null;
-            }
-            String dateString = line.substring(0, line.indexOf(": "));
-            LocalDateTime date = LocalDateTime.parse(dateString);
-            String message = line.substring(line.indexOf(": ") + 1).strip();
-            return new Log(date, message);
-        }).filter(Objects::nonNull).toList();
-    }
-
-    /**
-     * Serialise the configuration file
-     * 
-     * @param config The configuration object
-     * @return The xml element
-     */
-    public static Element serialiseConfiguration(Configuration config) {
-        Element root = DocumentHelper.createElement("configuration");
-
-        // add texture pack
-        Element texturePack = root.addElement("texturePack");
-        texturePack.setText(config.getTexturePack());
-
-        // add key bindings
-        Element keyBindings = root.addElement("keyBindings");
-        for (Actions action : Actions.values()) {
-            Key key = config.getUserKeyBindings().get(action);
-            if (key == null)
-                continue;
-            Element keyElement = keyBindings.addElement(action.name());
-            keyElement.addAttribute("modifier", Integer.toString(key.modifier()));
-            keyElement.addAttribute("key", Integer.toString(key.key()));
-        }
-
-        // add music enabled
-        Element musicEnabled = root.addElement("musicEnabled");
-        musicEnabled.setText(Boolean.toString(config.isMusicOn()));
-
-        // add view distance
-        Element viewDistance = root.addElement("viewDistance");
-        viewDistance.setText(Integer.toString(config.getViewDistance()));
-
-        return root;
-    }
-
-    /**
-     * Deserialise the configuration file
-     * 
-     * @param element The xml element
-     * @return Configuration object
-     */
-    public static Configuration deserialiseConfiguration(Element root) {
-        // get texture pack
-        String texturePack = root.element("texturePack").getText();
-
-        // get key bindings
-        EnumMap<Actions, Key> keyBindings = new EnumMap<>(Actions.class);
-        for (Actions action : Actions.values()) {
-            Element keyElement = root.element("keyBindings").element(action.name());
-            if (keyElement == null)
-                continue;
-            int modifier = Integer.parseInt(keyElement.attributeValue("modifier"));
-            int key = Integer.parseInt(keyElement.attributeValue("key"));
-            keyBindings.put(action, new Key(modifier, key));
-        }
-
-        // get music enabled
-        Boolean musicEnabled = Boolean.parseBoolean(root.element("musicEnabled").getText());
-
-        // get view distance
-        Integer viewDistance = Integer.parseInt(root.element("viewDistance").getText());
-
-        return new Configuration(musicEnabled, texturePack, viewDistance, keyBindings);
-    }
-
-    /**
-     * Load configuration from res/config.xml
-     * 
-     * @return Configuration object
-     */
-    public static Configuration loadConfiguration() {
-        SAXReader reader = new SAXReader();
-        try {
-            Document document = reader.read("res/config.xml");
-            return deserialiseConfiguration(document.getRootElement());
-        } catch (Throwable e) {
-            try {
-                log("Failed to load configuration: " + e.getMessage());
-                Document document = reader.read("res/defaultConfig.xml");
-                return deserialiseConfiguration(document.getRootElement());
-            } catch (Throwable f) {
-                f.printStackTrace();
-                return Configuration.getDefaultConfiguration();
-            }
-        }
-    }
-
-    /**
-     * Save the settings to res/settings.xml
-     * 
-     * @param settings The settings to save
-     */
+public class DomainPersistency {
 
     /**
      * Serialise a domain to an XML document
@@ -183,7 +35,7 @@ public class Persistency {
      *
      * @return The serialised domain as an XML document
      */
-    public static Document serialiseDomain(Domain domain) {
+    public static Document serialise(Domain domain) {
         Document document = DocumentHelper.createDocument();
         Element root = document.addElement("domain");
         Element levels = root.addElement("levels");
@@ -204,7 +56,7 @@ public class Persistency {
      * @param document The XML document to deserialise
      * @return The deserialised domain
      */
-    public static Domain deserialiseDomain(Document document) {
+    public static Domain deserialise(Document document) {
         Element root = document.getRootElement();
         Element levels = root.element("levels");
         List<Maze> mazes = new ArrayList<>();
@@ -381,110 +233,6 @@ public class Persistency {
     }
 
     /**
-     * serialise a record timeline object to an XML document
-     * 
-     * @param timeline The timeline to serialise
-     * @return The serialised timeline
-     */
-    public static Element serialiseRecordTimeline(Stack<Pair<Long, Actions>> timeline) {
-        Element root = DocumentHelper.createElement("timeline");
-        root.addAttribute("size", timeline.size() + "");
-        for (Pair<Long, Actions> pair : timeline) {
-            Element action = root.addElement(pair.getValue().toString());
-            action.addAttribute("time", pair.getKey() + "");
-        }
-        return root;
-    }
-
-    /**
-     * Deserialise a record timeline object from an XML document
-     * 
-     * @param document The XML document to deserialise
-     * @return The deserialised timeline
-     */
-    public static Stack<Pair<Long, Actions>> deserialiseRecordTimeline(Element root) {
-        Stack<Pair<Long, Actions>> timeline = new Stack<Pair<Long, Actions>>();
-        for (Element action : root.elements()) {
-            timeline.add(new Pair<Long, Actions>(Long.parseLong(action.attributeValue("time")),
-                    Actions.valueOf(action.getName())));
-        }
-        return timeline;
-    }
-
-    /**
-     * Save a domain to a file
-     *
-     * @param domain The domain to save
-     *
-     * @param path   The file path to save to
-     */
-    public static void saveDomain(Domain domain, int slot) throws IOException {
-        Document document = serialiseDomain(domain);
-
-        File dir = new File("res/saves");
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-
-        FileWriter out = new FileWriter("res/saves/" + slot + ".xml");
-        document.write(out);
-        out.close();
-    }
-
-    /**
-     * Save configuration to res/config.xml
-     * 
-     * @param config The configuration object
-     */
-    public static void saveConfiguration(Configuration config) throws IOException {
-        Element element = serialiseConfiguration(config);
-        Document document = DocumentHelper.createDocument();
-        document.add(element);
-
-        File dir = new File("res");
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-
-        FileWriter out = new FileWriter("res/config.xml");
-        document.write(out);
-        out.close();
-    }
-
-    /**
-     * Save a timeline to a file
-     * 
-     * @param timeline The timeline to save
-     * @param slot     The slot to save to
-     */
-    public static void saveRecordTimeline(Stack<Pair<Long, Actions>> timeline, int slot) throws IOException {
-        Element element = serialiseRecordTimeline(timeline);
-        Document document = DocumentHelper.createDocument();
-        document.add(element);
-
-        File dir = new File("res/recordings");
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-
-        FileWriter out = new FileWriter("res/recordings/" + slot + ".xml");
-        document.write(out);
-        out.close();
-    }
-
-    /**
-     * Load a timeline from a file
-     * 
-     * @param slot The slot to load from
-     * @return The loaded timeline
-     */
-    public static Stack<Pair<Long, Actions>> loadRecordTimeline(int slot) throws DocumentException {
-        SAXReader reader = new SAXReader();
-        Document document = reader.read(new File("res/recordings/" + slot + ".xml"));
-        return deserialiseRecordTimeline(document.getRootElement());
-    }
-
-    /**
      * Load a maze from a file
      * 
      * @param path The file path to load from
@@ -495,16 +243,16 @@ public class Persistency {
         try {
             InputStream in = new FileInputStream("res/saves/" + slot + ".xml");
             Document document = reader.read(in);
-            return deserialiseDomain(document);
+            return deserialise(document);
         } catch (FileNotFoundException e) {
-            return getInitialDomain();
+            return getInitial();
         }
     }
 
     /**
      * Delete a save file
      */
-    public static void deleteSave(int slot) throws IOException {
+    public static void delete(int slot) throws IOException {
         File file = new File("res/save/" + slot + ".xml");
         if (!file.delete()) {
             throw new IOException("Could not delete file");
@@ -530,7 +278,7 @@ public class Persistency {
      * 
      * @return The initial domain
      */
-    public static Domain getInitialDomain() {
+    public static Domain getInitial() {
         try {
             SAXReader reader = new SAXReader();
             // list files in res/levels
@@ -555,6 +303,26 @@ public class Persistency {
             return new Domain(List.of(nz.ac.vuw.ecs.swen225.gp6.domain.Helper.makeMaze(),
                     nz.ac.vuw.ecs.swen225.gp6.domain.Helper.makeMaze()), new Inventory(8), 1);
         }
+    }
+
+    /**
+     * Save a domain to a file
+     *
+     * @param domain The domain to save
+     *
+     * @param path   The file path to save to
+     */
+    public static void save(Domain domain, int slot) throws IOException {
+        Document document = serialise(domain);
+
+        File dir = new File("res/saves");
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        FileWriter out = new FileWriter("res/saves/" + slot + ".xml");
+        document.write(out);
+        out.close();
     }
 
 }
