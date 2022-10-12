@@ -138,14 +138,11 @@ public class App extends JFrame {
         System.out.print("Transitioning to game screen... ");
         gameClock.start();
         gui.transitionToGameScreen();
-        useGameMusic();
+        MusicPlayer.useGameMusic();
+        MusicPlayer.playMusic();
         System.out.println("Complete");
     }
 
-    private void useGameMusic(){
-        MusicPlayer.stopMenuMusic();
-        if(config.isMusicOn()) MusicPlayer.playGameMusic();
-    }
 
     //================================================================================================================//
     //============================================ Setter Method =====================================================//
@@ -184,7 +181,8 @@ public class App extends JFrame {
         replay.load(slot);
         System.out.print("Transitioning to replay screen... ");
         gui.transitionToReplayScreen();
-        useGameMusic();
+        MusicPlayer.useGameMusic();
+        MusicPlayer.playMusic();
         System.out.println("Complete");
     }
 

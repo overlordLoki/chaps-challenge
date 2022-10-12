@@ -310,9 +310,9 @@ public class GUI {
                 createInfoActionLabel(()->app.getConfiguration().isMusicOn()? "On" : "Off", renderPanel, TEXT, false, ()->false,
                         ()->{app.getConfiguration().setMusicOn(!app.getConfiguration().isMusicOn());
                             if (app.getConfiguration().isMusicOn()) {
-                                MusicPlayer.playMenuMusic();
+                                MusicPlayer.playMusic();
                             } else {
-                                MusicPlayer.stopMenuMusic();
+                                MusicPlayer.stopMusic();
                             }}),
                 pnViewDistance,
                 pnTexturePack);
