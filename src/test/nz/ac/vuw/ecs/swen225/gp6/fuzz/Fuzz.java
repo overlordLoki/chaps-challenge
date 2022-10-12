@@ -387,7 +387,7 @@ public class Fuzz {
     }
 
     @Test
-    public void test_level3() {
+    public void test_music_setting() {
         music_test();
     }
 }
