@@ -12,7 +12,7 @@ public class LogPanel extends JPanel{
     //textArea
     private JTextArea textArea;
     private Commands commands;
-    private MazeRenderer mazeRenderer;
+    public MazeRenderer mazeRenderer;
 
     /**
      * Constructor for logPanel

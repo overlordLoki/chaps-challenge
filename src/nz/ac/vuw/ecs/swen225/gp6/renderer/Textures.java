@@ -8,17 +8,27 @@ public class Textures {
     
     private File[] listOfFiles;
 
+    /**
+     * Constructor.
+     */
     public Textures() {
         File folder = new File("res/textures");
         listOfFiles = folder.listFiles();
     }
-
+    //get list of files. gets the number of texture packs 
+    /**
+     * get the number of texture packs loaded
+     * @return the number of texture packs
+     */
     public File[] numberOfTexturePacks() {
         //return number of folders in the directory
         return listOfFiles;
     }
 
-    //make a texture pack from folder.
+    /**
+     * get texture packs loaded
+     * @return texture packs
+     */
     public List<String> getTexturePacks() {
         File folder = new File("res/textures");
         File[] listOfFiles = folder.listFiles();
@@ -32,8 +42,4 @@ public class Textures {
         return textures;
     }
 
-    public String test(){
-        File file = listOfFiles[0];
-        return file.getPath();
-    }
 }

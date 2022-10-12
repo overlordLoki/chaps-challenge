@@ -8,6 +8,7 @@ import java.util.Stack;
 import java.awt.event.InputEvent;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.junit.jupiter.api.Test;
 
@@ -79,11 +80,10 @@ public class BaseTests {
         timeline.add(10l, Actions.MOVE_DOWN);
         timeline.add(20l, Actions.MOVE_LEFT);
 
-        Document doc = Persistency.serialiseRecordTimeline(timeline.getTimeline());
+        Element element = Persistency.serialiseRecordTimeline(timeline.getTimeline());
 
-        assertEquals(doc.asXML(), """
-                <?xml version="1.0" encoding="UTF-8"?>
-                <recorder size="2"><MOVE_DOWN time="10"/><MOVE_LEFT time="20"/></recorder>""");
+        assertEquals(element.asXML(), """
+                <timeline size="2"><MOVE_DOWN time="10"/><MOVE_LEFT time="20"/></timeline>""");
     }
 
     @Test
@@ -92,8 +92,20 @@ public class BaseTests {
         timeline.add(10l, Actions.MOVE_DOWN);
         timeline.add(20l, Actions.MOVE_LEFT);
 
-        Document doc = Persistency.serialiseRecordTimeline(timeline.getTimeline());
-        Stack<Pair<Long, Actions>> timeline2 = Persistency.deserialiseRecordTimeline(doc);
+        Element element = Persistency.serialiseRecordTimeline(timeline.getTimeline());
+        Stack<Pair<Long, Actions>> timeline2 = Persistency.deserialiseRecordTimeline(element);
+
+        assertEquals(timeline.getTimeline().toString(), timeline2.toString());
+    }
+
+    @Test
+    public void testRecorderTimelineSaving() throws IOException, DocumentException {
+        RecordTimeline<Actions> timeline = new RecordTimeline<Actions>();
+        timeline.add(10l, Actions.MOVE_DOWN);
+        timeline.add(20l, Actions.MOVE_LEFT);
+
+        Persistency.saveRecordTimeline(timeline.getTimeline(), 1);
+        Stack<Pair<Long, Actions>> timeline2 = Persistency.loadRecordTimeline(1);
 
         assertEquals(timeline.getTimeline().toString(), timeline2.toString());
     }
@@ -109,11 +121,8 @@ public class BaseTests {
     }
 
     @Test
-    public void deleteSave() {
-        try {
-            Persistency.deleteSave(1);
-        } catch (Exception e) {
-        }
+    public void deleteSave() throws IOException {
+        Persistency.deleteSave(1);
     }
 
     @Test
@@ -147,5 +156,23 @@ public class BaseTests {
     public void testLoadingConfiguration() {
         Configuration config = Persistency.loadConfiguration();
         assertNotNull(config);
+    }
+
+    @Test
+    public void testSavingConfiguration() throws IOException {
+        Configuration config = new Configuration(true, new EnumMap<>(Map.ofEntries(
+                Map.entry(MOVE_UP, new Controller.Key(0, VK_UP)),
+                Map.entry(MOVE_DOWN, new Controller.Key(0, VK_DOWN)),
+                Map.entry(MOVE_LEFT, new Controller.Key(0, VK_LEFT)),
+                Map.entry(MOVE_RIGHT, new Controller.Key(0, VK_RIGHT)),
+                Map.entry(PAUSE_GAME, new Controller.Key(0, VK_SPACE)),
+                Map.entry(RESUME_GAME, new Controller.Key(0, VK_ESCAPE)),
+                Map.entry(TO_LEVEL_1, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_1)),
+                Map.entry(TO_LEVEL_2, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_2)),
+                Map.entry(QUIT_TO_MENU, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_X)),
+                Map.entry(SAVE_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_S)),
+                Map.entry(LOAD_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_R)))));
+
+        Persistency.saveConfiguration(config);
     }
 }

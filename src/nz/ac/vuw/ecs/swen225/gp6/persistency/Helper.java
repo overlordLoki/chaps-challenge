@@ -9,7 +9,6 @@ public class Helper {
     public static EnumMap<TileType, String> typeToString = new EnumMap<>(TileType.class);
     static {
         typeToString.put(TileType.Hero, "hero");
-        typeToString.put(TileType.Enemy, "enemy");
         typeToString.put(TileType.Empty, "empty");
         typeToString.put(TileType.Floor, "floor");
         typeToString.put(TileType.Wall, "wall");
@@ -30,7 +29,6 @@ public class Helper {
     public static HashMap<String, TileType> stringToType = new HashMap<>();
     static {
         stringToType.put("hero", TileType.Hero);
-        stringToType.put("enemy", TileType.Enemy);
         stringToType.put("empty", TileType.Empty);
         stringToType.put("floor", TileType.Floor);
         stringToType.put("wall", TileType.Wall);

@@ -7,16 +7,19 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
+import java.util.concurrent.TimeoutException;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Helper;
@@ -33,7 +36,9 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
 
 import nz.ac.vuw.ecs.swen225.gp6.app.*;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
@@ -144,6 +149,34 @@ public class Persistency {
     }
 
     /**
+     * Load configuration from res/config.xml
+     * 
+     * @return Configuration object
+     */
+    public static Configuration loadConfiguration() {
+        SAXReader reader = new SAXReader();
+        try {
+            Document document = reader.read("res/config.xml");
+            return deserialiseConfiguration(document.getRootElement());
+        } catch (Throwable e) {
+            try {
+                log("Failed to load configuration: " + e.getMessage());
+                Document document = reader.read("res/defaultConfig.xml");
+                return deserialiseConfiguration(document.getRootElement());
+            } catch (Throwable f) {
+                f.printStackTrace();
+                return Configuration.getDefaultConfiguration();
+            }
+        }
+    }
+
+    /**
+     * Save the settings to res/settings.xml
+     * 
+     * @param settings The settings to save
+     */
+
+    /**
      * Serialise a domain to an XML document
      *
      * @param domain The domain to serialise
@@ -181,28 +214,6 @@ public class Persistency {
         int currentLevel = Integer.parseInt(levels.attributeValue("current"));
         Inventory inv = deserialiseInventory(root.element("inventory"));
         return new Domain(mazes, inv, currentLevel);
-    }
-
-    /**
-     * Load configuration from res/config.xml
-     * 
-     * @return Configuration object
-     */
-    public static Configuration loadConfiguration() {
-        SAXReader reader = new SAXReader();
-        try {
-            Document document = reader.read("res/config.xml");
-            return deserialiseConfiguration(document.getRootElement());
-        } catch (Throwable e) {
-            try {
-                log("Failed to load configuration: " + e.getMessage());
-                Document document = reader.read("res/defaultConfig.xml");
-                return deserialiseConfiguration(document.getRootElement());
-            } catch (Throwable f) {
-                f.printStackTrace();
-                return Configuration.getDefaultConfiguration();
-            }
-        }
     }
 
     /**
@@ -284,7 +295,7 @@ public class Persistency {
     /**
      * Deserialise inventory from an XML document
      * 
-     * @param document The XML document to deserialise
+     * @param root The XML element to deserialise
      * @return The deserialised inventory
      */
     public static Inventory deserialiseInventory(Element root) {
@@ -344,8 +355,25 @@ public class Persistency {
                 } else if (name.equals("lock")) {
                     String color = tile.attributeValue("color");
                     maze.setTileAt(new Loc(x, y), Helper.stringToType.get(color + "Lock"));
+                } else if (name.equals("custom")) {
+                    String customTile = tile.attributeValue("name");
+                    try {
+                        Class<?> clazz = Class.forName("custom.tiles." + customTile);
+                        Constructor<?> ctor = clazz.getConstructor(TileInfo.class);
+                        Tile object = (Tile) ctor.newInstance(new TileInfo(new Loc(x, y),
+                                Character.toLowerCase(customTile.charAt(0)) + customTile.substring(1)));
+                        // Tile object = new Enemy(new TileInfo(new Loc(x, y)));
+                        maze.setTileAt(new Loc(x, y), object);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 } else {
-                    maze.setTileAt(new Loc(x, y), Helper.stringToType.get(name));
+                    TileType type = Helper.stringToType.get(name);
+                    if (type != null) {
+                        maze.setTileAt(new Loc(x, y), type);
+                    } else {
+                        throw new RuntimeException("Unknown tile type: " + name);
+                    }
                 }
             }
         }
@@ -358,15 +386,14 @@ public class Persistency {
      * @param timeline The timeline to serialise
      * @return The serialised timeline
      */
-    public static Document serialiseRecordTimeline(Stack<Pair<Long, Actions>> timeline) {
-        Document document = DocumentHelper.createDocument();
-        Element root = document.addElement("recorder");
+    public static Element serialiseRecordTimeline(Stack<Pair<Long, Actions>> timeline) {
+        Element root = DocumentHelper.createElement("timeline");
         root.addAttribute("size", timeline.size() + "");
         for (Pair<Long, Actions> pair : timeline) {
             Element action = root.addElement(pair.getValue().toString());
             action.addAttribute("time", pair.getKey() + "");
         }
-        return document;
+        return root;
     }
 
     /**
@@ -375,8 +402,7 @@ public class Persistency {
      * @param document The XML document to deserialise
      * @return The deserialised timeline
      */
-    public static Stack<Pair<Long, Actions>> deserialiseRecordTimeline(Document document) {
-        Element root = document.getRootElement();
+    public static Stack<Pair<Long, Actions>> deserialiseRecordTimeline(Element root) {
         Stack<Pair<Long, Actions>> timeline = new Stack<Pair<Long, Actions>>();
         for (Element action : root.elements()) {
             timeline.add(new Pair<Long, Actions>(Long.parseLong(action.attributeValue("time")),
@@ -403,6 +429,59 @@ public class Persistency {
         FileWriter out = new FileWriter("res/saves/" + slot + ".xml");
         document.write(out);
         out.close();
+    }
+
+    /**
+     * Save configuration to res/config.xml
+     * 
+     * @param config The configuration object
+     */
+    public static void saveConfiguration(Configuration config) throws IOException {
+        Element element = serialiseConfiguration(config);
+        Document document = DocumentHelper.createDocument();
+        document.add(element);
+
+        File dir = new File("res");
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        FileWriter out = new FileWriter("res/config.xml");
+        document.write(out);
+        out.close();
+    }
+
+    /**
+     * Save a timeline to a file
+     * 
+     * @param timeline The timeline to save
+     * @param slot     The slot to save to
+     */
+    public static void saveRecordTimeline(Stack<Pair<Long, Actions>> timeline, int slot) throws IOException {
+        Element element = serialiseRecordTimeline(timeline);
+        Document document = DocumentHelper.createDocument();
+        document.add(element);
+
+        File dir = new File("res/recordings");
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        FileWriter out = new FileWriter("res/recordings/" + slot + ".xml");
+        document.write(out);
+        out.close();
+    }
+
+    /**
+     * Load a timeline from a file
+     * 
+     * @param slot The slot to load from
+     * @return The loaded timeline
+     */
+    public static Stack<Pair<Long, Actions>> loadRecordTimeline(int slot) throws DocumentException {
+        SAXReader reader = new SAXReader();
+        Document document = reader.read(new File("res/recordings/" + slot + ".xml"));
+        return deserialiseRecordTimeline(document.getRootElement());
     }
 
     /**
@@ -456,7 +535,13 @@ public class Persistency {
             SAXReader reader = new SAXReader();
             // list files in res/levels
             File dir = new File("res/levels");
-            File[] files = dir.listFiles();
+            List<File> files = Arrays.asList(dir.listFiles());
+            files.sort(new Comparator<File>() {
+                @Override
+                public int compare(File o1, File o2) {
+                    return o1.getName().compareTo(o2.getName());
+                }
+            });
             List<Maze> mazes = new ArrayList<Maze>();
             for (File file : files) {
                 if (file.getName().endsWith(".xml")) {

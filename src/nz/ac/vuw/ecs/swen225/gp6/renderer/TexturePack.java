@@ -181,7 +181,7 @@ public class TexturePack {
             return switch(tile.type()){
                 case Floor -> getImage(Empty_tile);
                 case Empty -> Images.Empty_tile.getImg();
-                case Enemy -> Images.Enemy.getImg();
+                // case Enemy -> Images.Enemy.getImg();
                 case Wall -> Images.Wall.getImg();
                 case BlueKey -> Images.BlueKey.getImg();
                 case GreenKey -> Images.GreenKey.getImg();
@@ -214,13 +214,18 @@ public class TexturePack {
             System.out.println("Image not found: " + imgName);
             return null;
         }
-    
+        
+        /**
+         * load the image from the file.
+         * @param path
+         * @return BufferedImage
+         */
         public static BufferedImage loadCustom(String path){
             try {
-                return ImageIO.read(new File("res/textures/Custom_Textures/"+path+".png"));
+                return ImageIO.read(new File("res/customTextures/"+path+".png"));
             } catch (IOException e) {
                 try{
-                    return ImageIO.read(new File("res/textures/Custom_Textures/default.png"));
+                    return ImageIO.read(new File("res/customTextures/default.png"));
                 }catch (IOException|IllegalArgumentException ex){
                     System.out.println("Error loading image: " + path); return null;}}
         }

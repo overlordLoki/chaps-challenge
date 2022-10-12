@@ -13,9 +13,9 @@ public final class Commands {
         this.logPanel = logPanel;
         addCommands("clear", "Clears the text area", this::clear);
         addCommands("help", "Displays the availble commands", this::help);
-        addCommands("loadPack", "Reloads the texturepacks", this::loadPack);
         addCommands("test", "test", this::test);
         addCommands("packsNumber", "Displays the number of texture packs", this::numberOfPacks);
+        addCommands("setDogs", "Sets the texture pack to dogs", this::setDogs);
     }
 
     /**
@@ -60,25 +60,36 @@ public final class Commands {
         }
     }
 
-    //will remove this before submission
-    public void loadPack(){
-        Textures textures = new Textures();
-        //print number of textures loaded
-        int num = textures.numberOfTexturePacks().length;
-        logPanel.print("Loaded " + num + " textures");
-    }
-
+    /**
+     * gets the number of textures loaded
+     */
     public void numberOfPacks(){
         int num = mazeRenderer.getTexturePacks().size();
         logPanel.print("Loaded " + num + " textures");
     }
 
     //Testing command
+    /**
+     * this is for testing new functionality
+     */
     public void test(){
         logPanel.println("Running Test");
-        Textures textures = new Textures();
-        logPanel.println(textures.test());
+        
     }
+
+    //set texure pack to dogs
+    /**
+     * sets the texture pack to dogs
+     *
+     */
+    public void setDogs(){
+        mazeRenderer.setTexturePack("Dogs");
+    }
+
+    // //cheat the get info text drawn.
+    // private void drawInfo(){
+    //     mazeRenderer.drawInfo();
+    // }
 
 
 }
