@@ -328,7 +328,7 @@ public class MazeRenderer extends JPanel{
         String message = domain.getInfoHint();
         g.setColor(Color.BLACK);
         g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
-        g.drawString("message", 260, 200);
+        g.drawString(message, 260, 200);
     }
 
 //--------------------------------------getters and setters----------------------------------------------------------//
