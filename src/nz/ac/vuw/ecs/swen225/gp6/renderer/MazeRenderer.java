@@ -36,7 +36,7 @@ public class MazeRenderer extends JPanel{
     private int minRenderSize = 1, maxRenderSize = 50; //the min and max render size
 
 
-//----------------------------------Constructor----------------------------------------------
+//----------------------------------Constructor-----------------------------------------------------------//
     /**
      * Constructor. Takes a maze as parameters.
      * 
@@ -51,19 +51,19 @@ public class MazeRenderer extends JPanel{
             setTexturePack("Dogs");
         } catch (Exception e) {System.out.println("Dogs not found, using other texture pack");}
     }
-//------------------------------------------paintComponent---------------------------------------
+//------------------------------------------paintComponent-------------------------------------------------//
 
    
     @Override
     public void paintComponent(Graphics g) {
         //call superclass to paint background
         super.paintComponent(g);
-        if(changinglvl){
-            changeLvl(g);
-            return;
-        }
+        //if changing Level draw chaing lvl animation and dont draw anything else
+        if(changinglvl){changeLvl(g);return;}
+        //draw the game as usal
         drawMaze(g);
-        if(domain.heroIsOnInfo()){drawInfo(g);}
+        //if we drawing info draw it
+        if(domain.heroIsOnInfo() || infoCheat){drawInfo(g);}
     }
 
     /**
@@ -118,7 +118,7 @@ public class MazeRenderer extends JPanel{
     }
 
 
-    //-----------------------------load in texture packs---------------------------------------------//
+//-----------------------------------------load in texture packs----------------------------------------------//
     
 
     /**
@@ -178,7 +178,7 @@ public class MazeRenderer extends JPanel{
         }
         String[] mustContain = {"background","blueKey","blueLock","coin","empty_tile","enemy","exitDoor","floor","greenKey","greenLock",
                         "hero","heroBack","heroFront","heroSide","empty_tile","loseScreen","orangeKey",
-                        "orangeLock","pattern","pattern2","wall_tile","winScreen","yellowKey","yellowLock"};
+                        "orangeLock","pattern","pattern2","wall_tile","winScreen","yellowKey","yellowLock","help"};
         for(String s : mustContain) {
             if(!files.contains(s+".png")) {
                 System.out.println("missing file: " + s + " in " + folder.getName());
@@ -294,7 +294,7 @@ public class MazeRenderer extends JPanel{
         g.drawString("Level " + 2, getWidth()/2 - 100, getHeight()/2);
     }
 
-    private boolean changinglvl = false;
+    private boolean changinglvl = false; //if the level is changing
     /**
      * change the level
      * @param observer
@@ -316,14 +316,14 @@ public class MazeRenderer extends JPanel{
 
     //---------------------------------------drawing info----------------------------------------------------------//
 
-
+    private boolean infoCheat = false;//if the info cheat is on
     /**
      * draw the info of the game
      * @param g
      */
     private void drawInfo(Graphics g) {
-        g.setColor(Color.WHITE);
-        g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("TimesRoman", Font.BOLD, 50));
         g.drawString("Level: 9000!", 10, 20);
     }
 
@@ -435,5 +435,10 @@ public class MazeRenderer extends JPanel{
      */
     public BufferedImage getImage(Tile tile) {return texturePack.getImage(tile);}
 
-
+    //setter for infoCheat
+    /**
+     * set infoCheat
+     * @param infoCheat
+     */
+    public void setInfoCheat(boolean infoCheat) {this.infoCheat = infoCheat;}
 }

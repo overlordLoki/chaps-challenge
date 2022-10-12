@@ -16,10 +16,12 @@ public final class Commands {
         addCommands("test", "test", this::test);
         addCommands("packsNumber", "Displays the number of texture packs", this::numberOfPacks);
         addCommands("setDogs", "Sets the texture pack to dogs", this::setDogs);
+        addCommands("drawInfo", "Draws the info text", this::drawInfo);
     }
 
     /**
      * Adds a command to the commands HashMap
+     * 
      * @param command
      * @param discription
      * @param action
@@ -47,14 +49,14 @@ public final class Commands {
     /**
      * clears the textArea
      */
-    public void clear(){
+    private void clear(){
         logPanel.getTextArea().setText("");
     }
 
     /**
      * prints the help menu
      */
-    public void help(){
+    private void help(){
         for(String s : helpCommands){
             logPanel.println(s);
         }
@@ -63,7 +65,7 @@ public final class Commands {
     /**
      * gets the number of textures loaded
      */
-    public void numberOfPacks(){
+    private void numberOfPacks(){
         int num = mazeRenderer.getTexturePacks().size();
         logPanel.print("Loaded " + num + " textures");
     }
@@ -72,7 +74,7 @@ public final class Commands {
     /**
      * this is for testing new functionality
      */
-    public void test(){
+    private void test(){
         logPanel.println("Running Test");
         
     }
@@ -82,14 +84,14 @@ public final class Commands {
      * sets the texture pack to dogs
      *
      */
-    public void setDogs(){
+    private void setDogs(){
         mazeRenderer.setTexturePack("Dogs");
     }
 
-    // //cheat the get info text drawn.
-    // private void drawInfo(){
-    //     mazeRenderer.drawInfo();
-    // }
+    //cheat the get info text drawn.
+    private void drawInfo(){
+        mazeRenderer.setInfoCheat(true);
+    }
 
 
 }
