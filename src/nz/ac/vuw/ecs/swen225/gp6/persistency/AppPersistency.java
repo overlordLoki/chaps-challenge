@@ -14,7 +14,7 @@ import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Configuration;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller.Key;
 
-public class ConfigurationPersistency {
+public class AppPersistency {
 
     /**
      * Serialise the configuration file
