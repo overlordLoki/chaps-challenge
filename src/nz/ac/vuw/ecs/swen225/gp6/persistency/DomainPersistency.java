@@ -199,16 +199,21 @@ public class DomainPersistency {
      * 
      * @return The serialised tile as an XML element
      */
-    public static Document serialise(Tile tile) {
-        Document document = DocumentHelper.createDocument();
+    public static Element serialise(Tile tile) {
         String name = Helper.typeToString.get(tile.type());
-        if (name.contains("Key") || name.contains("Lock") && name.equals("exitLock")) {
-            Element element = document.addElement(name.contains("Key") ? "key" : "lock");
+
+        if (null == name) {
+            // it's a custom tile
+            Element custom = DocumentHelper.createElement("custom");
+            custom.addAttribute("name", tile.getClass().getSimpleName());
+            return custom;
+        } else if (name.contains("Key") || name.contains("Lock") && name.equals("exitLock")) {
+            Element element = DocumentHelper.createElement(name.contains("Key") ? "key" : "lock");
             element.addAttribute("color", name.replace("Key", "").replace("Lock", "").toLowerCase());
+            return element;
         } else {
-            document.addElement(name);
+            return DocumentHelper.createElement(name);
         }
-        return document;
     }
 
     /**
@@ -251,7 +256,7 @@ public class DomainPersistency {
     public static Element serialise(Inventory inventory) {
         Element root = DocumentHelper.createElement("inventory");
         for (Tile item : inventory.getItems()) {
-            root.add(serialise(item).getRootElement());
+            root.add(serialise(item));
         }
         root.addAttribute("size", inventory.size() + "");
         return root;
