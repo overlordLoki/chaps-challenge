@@ -25,6 +25,7 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.Tile;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileInfo;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Info;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 
@@ -134,7 +135,7 @@ public class DomainPersistency {
         for (int x = 0; x < maze.width(); x++) {
             for (int y = 0; y < maze.height(); y++) {
                 Tile tile = maze.getTileAt(x, y);
-                if (tile != null && tile.type() != TileType.Null) {
+                if (tile != null && tile.type() != TileType.Null && tile.type() != TileType.Floor) {
                     Element cell = grid.addElement("cell");
                     cell.addAttribute("x", Integer.toString(x));
                     cell.addAttribute("y", Integer.toString(y));
@@ -167,33 +168,8 @@ public class DomainPersistency {
             int y = Integer.parseInt(cell.attributeValue("y"));
             Element tile = cell.elements().get(0);
             if (tile != null) {
-                String name = tile.getName();
-                if (name.equals("key")) {
-                    String color = tile.attributeValue("color");
-                    maze.setTileAt(new Loc(x, y), Helper.stringToType.get(color + "Key"));
-                } else if (name.equals("lock")) {
-                    String color = tile.attributeValue("color");
-                    maze.setTileAt(new Loc(x, y), Helper.stringToType.get(color + "Lock"));
-                } else if (name.equals("custom")) {
-                    String customTile = tile.attributeValue("name");
-                    try {
-                        Class<?> clazz = Class.forName("custom.tiles." + customTile);
-                        Constructor<?> ctor = clazz.getConstructor(TileInfo.class);
-                        Tile object = (Tile) ctor.newInstance(new TileInfo(new Loc(x, y),
-                                Character.toLowerCase(customTile.charAt(0)) + customTile.substring(1)));
-                        // Tile object = new Enemy(new TileInfo(new Loc(x, y)));
-                        maze.setTileAt(new Loc(x, y), object);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    TileType type = Helper.stringToType.get(name);
-                    if (type != null) {
-                        maze.setTileAt(new Loc(x, y), type);
-                    } else {
-                        throw new RuntimeException("Unknown tile type: " + name);
-                    }
-                }
+                Tile t = deserialiseTile(tile, x, y);
+                maze.setTileAt(new Loc(x, y), t);
             }
         }
         return maze;
@@ -218,6 +194,10 @@ public class DomainPersistency {
             Element element = DocumentHelper.createElement(name.contains("Key") ? "key" : "lock");
             element.addAttribute("color", name.replace("Key", "").replace("Lock", "").toLowerCase());
             return element;
+        } else if (name.equals("info")) {
+            Element element = DocumentHelper.createElement("info");
+            element.addAttribute("message", ((Info) tile).message());
+            return element;
         } else {
             return DocumentHelper.createElement(name);
         }
@@ -239,6 +219,22 @@ public class DomainPersistency {
         } else if (name.equals("lock")) {
             String color = element.attributeValue("color");
             type = Helper.stringToType.get(color + "Lock");
+        } else if (name.equals("info")) {
+            String message = element.attributeValue("message");
+            return TileType.makeTile(TileType.Info, new TileInfo(new Loc(x, y), 0, "", message));
+        } else if (name.equals("custom")) {
+            String customTile = element.attributeValue("name");
+            try {
+                Class<?> clazz = Class.forName("custom.tiles." + customTile);
+                Constructor<?> ctor = clazz.getConstructor(TileInfo.class);
+                Tile object = (Tile) ctor.newInstance(new TileInfo(new Loc(x, y),
+                        Character.toLowerCase(customTile.charAt(0)) + customTile.substring(1)));
+                // Tile object = new Enemy(new TileInfo(new Loc(x, y)));
+                return object;
+            } catch (Exception e) {
+                type = TileType.Null;
+            }
+
         } else {
             type = Helper.stringToType.get(name);
         }
