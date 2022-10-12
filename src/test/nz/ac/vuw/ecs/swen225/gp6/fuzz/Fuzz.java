@@ -378,12 +378,12 @@ public class Fuzz {
 
     @Test
     public void test_level1() {
-        unlimittest();
+        testLevel1(1000);
     }
 
     @Test
     public void test_level2() {
-        unlimittest();
+        testLevel2(1000);
     }
 
     @Test
