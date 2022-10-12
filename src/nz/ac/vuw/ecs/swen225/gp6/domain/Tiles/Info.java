@@ -24,5 +24,5 @@ public class Info extends AbstractTile{//future idea: not disappear after once u
     @Override public boolean obstructsEnemy(Domain d){return true;}
     @Override public Tile replaceWith(){return this;} //the info tile is permanent
     
-    @Override public void ping(Domain d){}//TODO: display info if heros on it
+    //TODO: display info if heros on it
 }
