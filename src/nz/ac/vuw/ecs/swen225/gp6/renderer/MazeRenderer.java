@@ -2,13 +2,15 @@ package nz.ac.vuw.ecs.swen225.gp6.renderer;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.awt.*;
 import javax.swing.JPanel;
 import java.awt.Graphics;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.swing.Timer;
+
 import nz.ac.vuw.ecs.swen225.gp6.domain.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Hero;
@@ -99,12 +101,6 @@ public class MazeRenderer extends JPanel{
             g.setColor(Color.WHITE);
             g.setFont(new Font("TimesRoman", Font.PLAIN, 50));
             g.drawString("Level " + 2, getWidth()/2 - 100, getHeight()/2);
-            cutsceneFrams++;
-        }
-        if (cutsceneFrams >= cutsceneFramsMax){
-            changinglvl = false;
-            finishedObserver.run();
-            cutsceneFrams = 0;
         }
     }
 
@@ -321,17 +317,19 @@ public class MazeRenderer extends JPanel{
         return imgs;
     }
     private boolean changinglvl = false;
-    
-    private int cutsceneFrams = 0;
-    private int cutsceneFramsMax = 200;
-    private Runnable finishedObserver = ()->{};
-
     public void changeLevel(Runnable observer){
-        this.finishedObserver = observer;
         changinglvl = true;
-        cutsceneFrams = 0;
         // run sequence here
-
+        AtomicInteger cutsceneFrames = new AtomicInteger();
+        Timer timer = new Timer(10, unused->{
+            this.repaint();
+            if (cutsceneFrames.getAndIncrement() >= 50){ // max 50 frames
+                changinglvl = false;
+                observer.run();
+                ((Timer)unused.getSource()).stop();
+            }
+        });
+        timer.start();
     }
 
     //--------------------------------------getters and setters----------------------------------------------------------//
