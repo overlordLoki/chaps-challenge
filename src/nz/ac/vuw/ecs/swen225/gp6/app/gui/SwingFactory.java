@@ -2,7 +2,7 @@ package nz.ac.vuw.ecs.swen225.gp6.app.gui;
 
 import nz.ac.vuw.ecs.swen225.gp6.app.App;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
-import nz.ac.vuw.ecs.swen225.gp6.persistency.Persistency;
+import nz.ac.vuw.ecs.swen225.gp6.persistency.DomainPersistency;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.InventoryPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
