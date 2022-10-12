@@ -35,14 +35,16 @@ public class Replay implements Runnable {
             throw new IllegalArgumentException("App cannot be null");
         }
         this.app = app;
+        app.getGameClock().setObserver(this);
+        app.getGameClock().stop();
         
     }
 
     @Override
     public void run() {
-        app.getGameClock().stop();
-        time = app.getGameClock().getTimePlayed();
-        System.out.println(time);
+        // app.getGameClock().stop();
+        // time = app.getGameClock().getTimePlayed();
+        // System.out.println(time);
         if (!isRunning) {return;}
         autoPlayActions();
     }
@@ -74,7 +76,6 @@ public class Replay implements Runnable {
      */
     public Replay step(){
         // System.out.println("Stepping");
-        Actions.PAUSE_GAME.run(app);
         if (checkInvalid()) {
             return this;
         }
