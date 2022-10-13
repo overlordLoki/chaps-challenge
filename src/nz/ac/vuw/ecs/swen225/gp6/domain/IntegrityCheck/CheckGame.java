@@ -54,8 +54,7 @@ public final class CheckGame {
         //HERO:
         checkHeroStateChange(preMaze, preInv, afterMaze, afterInv, preDomain);
 
-        //ENEMY:
-        //checkEnemyStateChange(preMaze, afterMaze, preDomain);
+        //Perhaps extend in future by having a way to identify all moving things and collectively check them
 
         //COINS:
         //check there is the same amounts of coins in the maze and inventory combined before and after
@@ -118,40 +117,6 @@ public final class CheckGame {
         }
         
     }
-
-    
-    //CHECKER HELPERS:
-    /* TODO replace with check for moving object or smth
-     * checks the integrity of enemies as the state of game changes
-     */
-    /* 
-    private static void checkEnemyStateChange(Maze preMaze, Maze afterMaze, Domain preDomain) {
-        //check if enemies havent moved on obstructions
-        List<Tile> enemies = getAllTiles(afterMaze, TileType.Enemy);
-        for(Tile e : enemies){
-            Loc enemyNewLoc = e.info().loc();
-            Tile tileToOccupyEnemy = preMaze.getTileAt(enemyNewLoc);
-            if(tileToOccupyEnemy.obstructsEnemy(preDomain)){
-                throw new IllegalStateException("Enemy has moved on an obstruction: " 
-                + tileToOccupyEnemy.type().name());
-            }
-        }
-
-        //check if enemies arent out of bounds
-        for(Tile e : enemies){
-            if( Loc.checkInBound(e.info().loc(), afterMaze) == false ||
-                ((Enemy)e).tileOn().type() == TileType.Periphery){
-                throw new IllegalStateException("Enemy has moved out of bounds");
-            }
-        }
-
-        //check number of enemies is the same (NOTE: unless they can die, then this check must change- future feature perhaps)
-        if(getAllTiles(preMaze,TileType.Enemy).size() != 
-        getAllTiles(afterMaze, TileType.Enemy).size()){
-            throw new IllegalStateException("Number of enemies has changed");
-        }
-    }
-    */
     
 
     /**
