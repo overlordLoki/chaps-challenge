@@ -1,13 +1,36 @@
 package test.nz.ac.vuw.ecs.swen225.gp6.persistency;
 
+import static java.awt.event.KeyEvent.VK_1;
+import static java.awt.event.KeyEvent.VK_2;
+import static java.awt.event.KeyEvent.VK_DOWN;
+import static java.awt.event.KeyEvent.VK_ESCAPE;
+import static java.awt.event.KeyEvent.VK_LEFT;
+import static java.awt.event.KeyEvent.VK_R;
+import static java.awt.event.KeyEvent.VK_RIGHT;
+import static java.awt.event.KeyEvent.VK_S;
+import static java.awt.event.KeyEvent.VK_SPACE;
+import static java.awt.event.KeyEvent.VK_UP;
+import static java.awt.event.KeyEvent.VK_X;
+import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.LOAD_GAME;
+import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.MOVE_DOWN;
+import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.MOVE_LEFT;
+import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.MOVE_RIGHT;
+import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.MOVE_UP;
+import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.PAUSE_GAME;
+import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.QUIT_TO_MENU;
+import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.RESUME_GAME;
+import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.SAVE_GAME;
+import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.TO_LEVEL_1;
+import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.TO_LEVEL_2;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.awt.event.InputEvent;
 import java.io.IOException;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.awt.event.InputEvent;
 
-import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.junit.jupiter.api.Test;
@@ -16,19 +39,13 @@ import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Configuration;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Inventory;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileInfo;
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
+import nz.ac.vuw.ecs.swen225.gp6.persistency.AppPersistency;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.DomainPersistency;
+import nz.ac.vuw.ecs.swen225.gp6.persistency.Logging;
+import nz.ac.vuw.ecs.swen225.gp6.persistency.RecorderPersistency;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.Pair;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.RecordTimeline;
-import nz.ac.vuw.ecs.swen225.gp6.persistency.*;
-
-import static java.awt.event.KeyEvent.*;
-import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class BaseTests {
     @Test
