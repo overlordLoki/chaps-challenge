@@ -25,7 +25,7 @@ public final class Replay implements Runnable {
     private Replay(){}
 
     /** Sets the Replay object up with an App. */
-    public void setReplay(App app){
+    public void setReplay(App app){ 
         if(app == null) {
             throw new IllegalArgumentException("App cannot be null");
         }
@@ -62,9 +62,10 @@ public final class Replay implements Runnable {
      * @return this replay object to chain methods
      */
     public Replay step(){
-        if(checkNextIsValid()) {
-            app.getGameClock().start();
+        if(!checkNextIsValid()) {
+            return this;   
         }
+        app.getGameClock().start();
         this.step = true;
         return this;
     }
@@ -94,9 +95,8 @@ public final class Replay implements Runnable {
      * @param speed the speed to set the replay to
      * @return this replay object to chain methods
      */
-    public Replay speedMultiplier(int speed) {
-        int delay = 34 / speed;    // default delay is 34ms
-        this.app.getGameClock().setReplaySpeed(delay);
+    public Replay speedMultiplier(float speed) {
+        this.app.getGameClock().setReplaySpeed(speed);
         return this;
     }
 
@@ -114,9 +114,7 @@ public final class Replay implements Runnable {
     //=========================================== Helper Methods =====================================================//
     //================================================================================================================//
 
-    /**
-     * Method checks if the next action is valid.
-     */
+    /** Method checks if the next action is valid. */
     private boolean actionReady(){
         if(!checkNextIsValid()){
             app.getGameClock().stop();
@@ -126,14 +124,8 @@ public final class Replay implements Runnable {
         return timeline.peek().key() <= time;
     }
 
-    /**
-     * Method checks if the timeline is valid
-     */
+    /** Method checks if the timeline is valid */
     private boolean checkNextIsValid(){
-        if (timeline == null){
-            System.out.println("No game loaded");
-            return false;
-        }
         if (!timeline.hasNext()){
             System.out.println("Replay finished"); 
             return false;
@@ -149,7 +141,6 @@ public final class Replay implements Runnable {
     private void executeAction(Actions action) throws IllegalArgumentException {
         if(action == null) {throw new IllegalArgumentException("Null action encountered");}
         action.replay(app);
-        System.out.println("action executed");
         if(step) {
             app.getGame().pingDomain();
             app.getGameClock().stop();
