@@ -4,16 +4,11 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.IntegrityCheck.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.*;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Floor;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.*;
 
 public class Enemy extends Actor {
-    Direction staticDirection = Direction.Up; // should never be None
-    Tile tileOn; // tile the enemy will replace when moved
-
     public Enemy(TileInfo info) {
         super(info);
-        tileOn = new Floor((new TileInfo(info.loc()))); // set the tile initially is on to a floor
     }
 
     @Override
@@ -21,12 +16,13 @@ public class Enemy extends Actor {
         return TileType.Other;
     }
 
+    @Override
     public Tile tileOn() {
-        return tileOn;
+        return info.tileOn();
     } // returns the tile the hero will replace when moved
 
     public Direction dir() {
-        return staticDirection;
+        return info.facing();
     } // returns the direction the hero is facing
 
     @Override
@@ -64,21 +60,25 @@ public class Enemy extends Actor {
 
         Level lvl = d.getCurrentLevelObject();
         Loc loc1 = info.loc();
-        Direction dir = Direction.values()[(int) (Math.random() * 4)]; // random direction
+        Direction dir = info.facing(); // previous direction
         Loc loc2 = dir.transformLoc(loc1); // new loc
         Tile tileToOccupy = lvl.maze.getTileAt(loc2); // tile enemy is to move on to
 
-        // if enemy hasnt moved or tile at new location is obstruction return
-        if (dir == Direction.None || tileToOccupy.obstructsEnemy(d))
+        // if enemy hasnt moved return
+        if (dir == Direction.None)
             return;
 
-        lvl.maze.getTileAt(loc1).setOn(tileOn, d); // set previous location to tileOn
+        // if tile at new location is obstruction change direction, in a determinisitic
+        // way, then return
+        if (tileToOccupy.obstructsEnemy(d)) {
+            info.facing(Direction.values()[(info.ping() / 10) % 4]);
+            return;
+        }
+
+        lvl.maze.getTileAt(loc1).setOn(info.tileOn(), d); // set previous location to tileOn
         lvl.maze.getTileAt(loc2).setOn(this, d); // set new location to enemy, NOTE: Order matters here!
 
-        this.tileOn = tileToOccupy.replaceWith(); // set tile heros to replace when moving off
-        staticDirection = lvl.getHeroNextStep(); // set enemys direction of facing
+        info.tileOn(tileToOccupy.replaceWith()); // set tile heros to replace when moving off
     }
-
-    // TODO: figure out how to make ben override/make all this
 
 }

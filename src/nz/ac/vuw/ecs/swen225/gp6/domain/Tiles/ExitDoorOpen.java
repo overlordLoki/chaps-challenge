@@ -1,7 +1,7 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain.Tiles;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
-import nz.ac.vuw.ecs.swen225.gp6.domain.IntegrityCheck.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.GameState;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.Key.KeyColor;
@@ -37,8 +37,8 @@ public class ExitDoorOpen extends Door{
         heroOn = true; //record that hero is now on exit door 
                                         
         //let CheckGame know that the the game is won/inbetween levels
-        if(d.isLastLevel()) CheckGame.state = CheckGame.GameState.WON;
-        else CheckGame.state = CheckGame.GameState.BETWEENLEVELS;
+        if(d.isLastLevel()) d.setGameState(GameState.WON);
+        else d.setGameState(GameState.BETWEENLEVELS);
             
         d.getEventListener(Domain.DomainEvent.onWin).forEach(r -> r.run()); //NEXT LEVEL/WIN
     } 
