@@ -7,7 +7,7 @@ import javax.swing.SwingUtilities;
  *
  * @author Jeff Lin
  */
-public class Main {
+public class Main extends App {
     /**
      * Main method of the application.
      *

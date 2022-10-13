@@ -19,7 +19,7 @@ import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller.Key;
  *
  * @author Jeff Lin
  */
-public class Configuration {
+public class Configuration{
     private boolean isMusicOn;
     private final EnumMap<Actions, Key> userKeyBindings;
     private String texturePack;
