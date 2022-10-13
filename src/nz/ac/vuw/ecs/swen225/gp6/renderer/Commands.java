@@ -55,7 +55,7 @@ public final class Commands {
      * clears the textArea
      */
     private void clear(){
-        logPanel.getTextDisplay().setText("");
+        logPanel.clear();
     }
 
     /**
