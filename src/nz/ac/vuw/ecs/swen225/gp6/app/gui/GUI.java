@@ -3,7 +3,9 @@ package nz.ac.vuw.ecs.swen225.gp6.app.gui;
 import nz.ac.vuw.ecs.swen225.gp6.app.App;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller;
+import nz.ac.vuw.ecs.swen225.gp6.app.utilities.GameClock;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.Record;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.InventoryPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.LogPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
@@ -11,6 +13,7 @@ import nz.ac.vuw.ecs.swen225.gp6.renderer.MusicPlayer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack.Images;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.DomainPersistency;
+import nz.ac.vuw.ecs.swen225.gp6.persistency.AppPersistency;
 
 import javax.swing.*;
 import java.awt.*;
@@ -230,8 +233,7 @@ public class GUI {
                 pnOptions);
         addAll(pnStatus,
                 createInfoLabel(()->"Level: " + app.getSave(slot).getCurrentLevel(), renderPanel, TEXT, true),
-                createInfoLabel(()->"Time Left: " + app.getGameClock().getTimeInMinutes(), renderPanel, TEXT, true),
-                createInfoLabel(()->"Score: " + app.getSave(slot).getTreasuresLeft(), renderPanel, TEXT, true));
+                createInfoLabel(()->"Treasures Left: " + app.getSave(slot).getTreasuresLeft(), renderPanel, TEXT, true));
         if (isSave){    // Options for Saving
             JPanel pnSaveInv = saveInventoryPanels[slot-1];
             setSize(pnSaveInv, 150,300, 150,300, 150,300);
@@ -240,13 +242,16 @@ public class GUI {
                     Box.createHorizontalGlue(),
                     createActionLabel("Save here!", renderPanel, SUBTITLE, true, ()->{
                         try {
+                            app.getGame().setCurrentTime(app.getGameClock().getTimePlayed());
                             DomainPersistency.save(app.getGame(), slot);
+                            app.getRecorder().saveRecording(slot);
                             app.refreshSaves();
                             app.repaint();
                         }catch (IOException e){
                             System.out.println("Failed to save game in slot: " + slot);
                             e.printStackTrace();
-                            JOptionPane.showMessageDialog(null, "There is an error in saving the game slot: " + slot);
+                            JOptionPane.showMessageDialog(null,
+                                    "There is an error in saving the game slot: " + slot);
                         }}),
                     Box.createHorizontalGlue());
         }else{  // Options for Loading
@@ -309,9 +314,9 @@ public class GUI {
                 createInfoActionLabel(()->app.getConfiguration().isMusicOn()? "On" : "Off", renderPanel, TEXT, false, ()->false,
                         ()->{app.getConfiguration().setMusicOn(!app.getConfiguration().isMusicOn());
                             if (app.getConfiguration().isMusicOn()) {
-                                MusicPlayer.playMenuMusic();
+                                MusicPlayer.playMusic();
                             } else {
-                                MusicPlayer.stopMenuMusic();
+                                MusicPlayer.stopMusic();
                             }}),
                 pnViewDistance,
                 pnTexturePack);
@@ -349,7 +354,10 @@ public class GUI {
                 Box.createVerticalGlue(),
                 pnMiddle,
                 Box.createVerticalGlue(),
-                createActionLabel("Confirm", renderPanel, SUBTITLE, true, ()->menuCardLayout.show(menuPanel, MENU)));
+                createActionLabel("Confirm", renderPanel, SUBTITLE, true, ()->{
+                    app.getConfiguration().save(app);
+                    menuCardLayout.show(menuPanel, MENU);
+                }));
 
         System.out.println("Done!");
         return pnSettings;
@@ -482,7 +490,7 @@ public class GUI {
 
         addAll(pnOnPause,
                 Box.createVerticalGlue(),
-                createActionLabel("Resume", renderPanel, TITLE, true, ()->Actions.LOAD_GAME.run(app)),
+                createActionLabel("Resume", renderPanel, TITLE, true, ()->Actions.RESUME_GAME.run(app)),
                 Box.createVerticalGlue(),
                 createActionLabel("Save and return to menu", renderPanel, TITLE, true, ()->Actions.SAVE_GAME.run(app)),
                 Box.createVerticalGlue(),

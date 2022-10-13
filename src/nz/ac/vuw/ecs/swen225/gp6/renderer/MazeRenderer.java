@@ -1,7 +1,6 @@
 package nz.ac.vuw.ecs.swen225.gp6.renderer;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -24,10 +23,10 @@ import static nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack.Images.reloadAllTex
  * @author Loki
  */
 public class MazeRenderer extends JPanel{
-    //----------------------------fields-----------------------------------------------
+//----------------------------fields------------------------------------------------------------------------------//
     static final long serialVersionUID = 1L; //serialVersionUID
     private List<TexturePack> textures;
-    private static TexturePack texturePack = null; //default texture pack
+    private static TexturePack texturePack = null;//this is not a bug it is a feature. see report
     private Tile[][] gameArray; //the array of tiles
     public Domain domain; //the domain controller
     public BufferedImage background; //the background image
@@ -46,7 +45,7 @@ public class MazeRenderer extends JPanel{
         this.domain = maze;
         this.setOpaque(false);
         textures = getTexturePacksList();
-        if(texturePack == null){texturePack = textures.get(0);}
+        if(texturePack == null){texturePack = textures.get(0);}//this is not a bug it is a feature. see report
         try {
             setTexturePack("Dogs");
         } catch (Exception e) {System.out.println("Dogs not found, using other texture pack");}
@@ -63,14 +62,14 @@ public class MazeRenderer extends JPanel{
         //draw the game as usal
         drawMaze(g);
         //if we drawing info draw it
-        if(domain.heroIsOnInfo() || infoCheat){drawInfo(g);}
+        if(domain.heroIsOnInfo()){drawInfo(g);}
     }
 
     /**
      * draws the maze
      */
     private void drawMaze(Graphics g) {
-        //get the maze array
+        //get the maze arrayk
         gameArray = domain.getGameArray();
         //viewport of the maze
         Tile[][] viewport = Viewport.getViewport(gameArray, renderSize);
@@ -126,16 +125,12 @@ public class MazeRenderer extends JPanel{
      * @return
      */
     public List<TexturePack> getTexturePacksList() {
-        File texturePackRoot = new File("res/textures");
+        File texturePackRoot = new File("res/texturesPacks");
         File[] listOfFiles = texturePackRoot.listFiles();
         List<TexturePack> textures1 = new ArrayList<>();
         //for each texture in the folder add it to the list
+        assert listOfFiles != null;
         for (File file : listOfFiles) {
-            if(!checkFolder(file)){
-                System.out.println("not a folder: " + file.getName());
-                continue;
-            }
-            //check if settings file exists
             if(!checkSettingsFile(file)){
                 TexturePack tp = new TexturePack(file.getName(), 
                                                 new Font("Arial", Font.BOLD, 80),
@@ -156,36 +151,7 @@ public class MazeRenderer extends JPanel{
                 }catch(Exception e) {System.out.println("reading setting failed!");}
             }
         }
-        //exit safely if no texture packs found. 
-        if(textures1.size() == 0) {
-            System.out.println("no texture packs found");
-            System.exit(0);
-        }
         return textures1;
-    }
-
-    //check if folder has all png files required for a texture pack
-    /**
-     * check if folder has all png files required for a texture pack
-     * @param folder
-     * @return
-     */
-    private boolean checkFolder(File folder) {
-        File[] listOfFiles = folder.listFiles();
-        List<String> files = new ArrayList<>();
-        for (File file : listOfFiles) {
-            files.add(file.getName());
-        }
-        String[] mustContain = {"background","blueKey","blueLock","coin","empty_tile","enemy","exitDoor","floor","greenKey","greenLock",
-                        "hero","heroBack","heroFront","heroSide","empty_tile","loseScreen","orangeKey",
-                        "orangeLock","pattern","pattern2","wall_tile","winScreen","yellowKey","yellowLock","help"};
-        for(String s : mustContain) {
-            if(!files.contains(s+".png")) {
-                System.out.println("missing file: " + s + " in " + folder.getName());
-                return false;
-            }
-        }
-        return true;
     }
 
     
@@ -195,7 +161,7 @@ public class MazeRenderer extends JPanel{
      * @param texturePack
      */
     public void setTexturePack(TexturePack texturePack) {
-        MazeRenderer.texturePack = texturePack;
+        MazeRenderer.texturePack = texturePack;//this is not a bug it is a feature. see report
         patternSize = 100;
         reloadAllTexturepack();
     }
@@ -209,7 +175,7 @@ public class MazeRenderer extends JPanel{
     public void setTexturePack(String texturePack) {
         for(TexturePack tp : textures) {
             if(tp.getName().equals(texturePack)) {
-                MazeRenderer.texturePack = tp;
+                MazeRenderer.texturePack = tp;//this is not a bug it is a feature. see report
                 patternSize = 100;
                 reloadAllTexturepack();
                 return;
@@ -225,7 +191,7 @@ public class MazeRenderer extends JPanel{
      * @return
      */
     private String readSettings(File texturePackFile) {
-        String inputs = "";
+        StringBuilder inputs = new StringBuilder();
         try {
             File settingFile = new File(texturePackFile.getPath() + "/settings.txt");
             Scanner sc = new Scanner(settingFile);
@@ -234,32 +200,16 @@ public class MazeRenderer extends JPanel{
                 String[] split = line.split(":");   
                 String key = split[0].trim();
                 String value = split[1].trim();
-                switch(key) {
-                    case "title":
-                        inputs += value;
-                        break;
-                    case "subtitle":
-                        inputs += value;
-                        break;
-                    case "text":
-                        inputs += value;
-                        break;
-                    case "colorHover":
-                        inputs += value;
-                        break;
-                    case "colorSelected":
-                        inputs += value;
-                        break;  
-                    default:
-                        System.out.println("invalid setting: " + key);
-                        break;
+                switch (key) {
+                    case "title", "subtitle", "text", "colorHover", "colorSelected" -> inputs.append(value);
+                    default -> System.out.println("invalid setting: " + key);
                 }
             }
             sc.close();
         } catch (FileNotFoundException e) {
             System.out.println("settings.txt not found");
         }
-        return inputs;
+        return inputs.toString();
     }
 
     //checkSettingsFile
@@ -271,6 +221,7 @@ public class MazeRenderer extends JPanel{
     private boolean checkSettingsFile(File folder) {
         File[] listOfFiles = folder.listFiles();
         List<String> files = new ArrayList<>();
+        assert listOfFiles != null;
         for (File file : listOfFiles) {
             files.add(file.getName());
         }
@@ -316,14 +267,21 @@ public class MazeRenderer extends JPanel{
 
 //---------------------------------------drawing info----------------------------------------------------------//
 
-    private boolean infoCheat = false;//if the info cheat is on
     /**
      * draw the info of the game
      * @param g
      */
     private void drawInfo(Graphics g) {
         //draw the box
-        g.drawImage(getImage("popUp"), 250, 100, 200, 200, null);
+        BufferedImage box = getImage("popUp");
+        g.drawImage(box, 250, 100, 200, 200, null);
+        //draw the message in the box
+        String message1 = "find the keys and dont";
+        String message2 = "let the time run out";
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
+        g.drawString(message1, 260, 200);
+        g.drawString(message2, 280, 230);
     }
 
 //--------------------------------------getters and setters----------------------------------------------------------//
@@ -381,7 +339,7 @@ public class MazeRenderer extends JPanel{
      * get list of TexturePacks
      * @return textures
      */
-    public List<TexturePack> getTexturePacks() {return textures;}
+    public List<TexturePack> getTexturePacks() {return textures.stream().toList();}
 
     /**
      * use next texture pack
@@ -434,10 +392,4 @@ public class MazeRenderer extends JPanel{
      */
     public BufferedImage getImage(Tile tile) {return texturePack.getImage(tile);}
 
-    //setter for infoCheat
-    /**
-     * set infoCheat
-     * @param infoCheat
-     */
-    public void setInfoCheat(boolean infoCheat) {this.infoCheat = infoCheat;}
 }

@@ -1,42 +1,41 @@
 package nz.ac.vuw.ecs.swen225.gp6.app;
 
+import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.util.stream.IntStream;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import nz.ac.vuw.ecs.swen225.gp6.app.gui.GUI;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Configuration;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.GameClock;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.DomainEvent;
+import nz.ac.vuw.ecs.swen225.gp6.persistency.AppPersistency;
+import nz.ac.vuw.ecs.swen225.gp6.persistency.DomainPersistency;
+import nz.ac.vuw.ecs.swen225.gp6.persistency.Interceptor;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.Record;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.Replay;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.LogPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MusicPlayer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
-import nz.ac.vuw.ecs.swen225.gp6.persistency.Interceptor;
-import nz.ac.vuw.ecs.swen225.gp6.persistency.DomainPersistency;
-import nz.ac.vuw.ecs.swen225.gp6.persistency.AppPersistency;
-import nz.ac.vuw.ecs.swen225.gp6.recorder.Replay;
-import nz.ac.vuw.ecs.swen225.gp6.recorder.Record;
 import org.dom4j.DocumentException;
 
-import javax.swing.*;
-import java.awt.Dimension;
-import java.awt.event.InputEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.IOException;
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.stream.IntStream;
-
-import static java.awt.event.KeyEvent.*;
-import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.*;
+import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.QUIT_TO_MENU;
+import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.RESUME_GAME;
 
 
 /**
- * Main class of the application. Includes the main method, GUI, and the main loop.
+ * Main class of the application.
+ * Includes the main method, GUI, and the main loop.
  *
  * @author Jeff Lin
  */
 public class App extends JFrame {
-    /** The serial version UID for this update */
+    /** The serial version UID for this update. */
     public static final long serialVersionUID = 1L;
     /** Minimum Width of the window. */
     public static final int WIDTH = 1200;
@@ -45,35 +44,37 @@ public class App extends JFrame {
 
     // Core components of the game
     private Domain game                 = DomainPersistency.getInitial();
+    private final Domain[] saves        = new Domain[3];
     private final GameClock gameClock   = new GameClock(this);
     private final GUI gui               = new GUI(this);
     private final Configuration config  = AppPersistency.load();
     private final Controller controller = new Controller(this);
-    private final Record recorder       = new Record();
-    private final Replay replay         = new Replay(this);
+    private final Record recorder       = Record.INSTANCE;
+    private final Replay replay         = Replay.INSTANCE;
     private boolean inResume            = false;
 
-    private final Domain[] saves        = new Domain[3];
 
     /**
      * Constructor for the App class. Initializes the GUI and the main loop.
      */
-    public App(){
-        System.setOut(new Interceptor(System.out)); // intercepts the output of System.out.print/println
-        System.setErr(new Interceptor(System.err)); // intercepts the output of System.err.print/println
-        System.out.print( "Application boot... ");
-        assert SwingUtilities.isEventDispatchThread(): "boot failed: Not in EDT";
+    public App() {
+        System.setOut(new Interceptor(System.out)); // intercepts the output of print/println
+        System.setErr(new Interceptor(System.err));
+        System.out.print("Application boot... ");
+        assert SwingUtilities.isEventDispatchThread() : "boot failed: Not in EDT";
         System.out.println("GUI thread started");
         refreshSaves();
-        initialiseGUI();
+        initialiseGui();
         initialiseCommands();
+        replay.setReplay(this);
+        config.update(this);
         controller.update();
     }
 
     /**
      * Initializes the GUI and displays menu screen.
      */
-    public void initialiseGUI(){
+    public void initialiseGui() {
         gui.configureGUI(this);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setIconImage(TexturePack.Images.Hero.getImg());
@@ -82,8 +83,8 @@ public class App extends JFrame {
             public void windowClosed(WindowEvent e) {
                 System.out.println("Application closed with exit code 0");
                 System.exit(0);
-            }}
-        );
+            }
+        });
         setMinimumSize(new Dimension(WIDTH, HEIGHT));
         setContentPane(gui.getOuterPanel());
         gui.getRenderPanel().addKeyListener(controller);
@@ -93,9 +94,9 @@ public class App extends JFrame {
         pack();
     }
 
-    private void initialiseCommands(){
+    private void initialiseCommands() {
         LogPanel logPanel = GUI.getLogPanel();
-        logPanel.addCommands("nextLevel", "Jump to the next level", this::runWinEvent);
+        logPanel.addCommands("nextLvl", "Jump to the next level", this::runWinEvent);
     }
 
 
@@ -106,17 +107,17 @@ public class App extends JFrame {
     /**
      * Function to invoke the winning sequence, it also handles the transition to the next level.
      */
-    public void runWinEvent(){
-        inResume = false;
+    public void runWinEvent() {
         gameClock.stop();
-        if (game.nextLvl()){
+        inResume = false;
+        if (game.nextLvl()) {
             System.out.println("Next level");
-            gui.getRenderPanel().changeLevel(()->{
+            gui.getRenderPanel().changeLevel(() -> {
                 gameClock.reset();
                 gameClock.start();
                 RESUME_GAME.run(this);
-            } );
-        }else{
+            });
+        } else {
             System.out.println("You win!");
             gui.transitionToWinScreen();
         }
@@ -125,8 +126,9 @@ public class App extends JFrame {
     /**
      * Function to invoke the losing sequence.
      */
-    public void runLoseEvent(){
-//        inResume = false;
+    public void runLoseEvent() {
+        gameClock.stop();
+        inResume = false;
         System.out.println("You lose!");
         this.gui.transitionToLostScreen();
     }
@@ -138,14 +140,11 @@ public class App extends JFrame {
         System.out.print("Transitioning to game screen... ");
         gameClock.start();
         gui.transitionToGameScreen();
-        useGameMusic();
+        MusicPlayer.useGameMusic();
+        if (config.isMusicOn()) MusicPlayer.playMusic();
         System.out.println("Complete");
     }
 
-    private void useGameMusic(){
-        MusicPlayer.stopMenuMusic();
-        if(config.isMusicOn()) MusicPlayer.playGameMusic();
-    }
 
     //================================================================================================================//
     //============================================ Setter Method =====================================================//
@@ -167,8 +166,9 @@ public class App extends JFrame {
      */
     public void startSavedGame(int slot) {
         updateGameComponents(saves[slot-1]);
-        gameClock.useGameTimer();
-        replay.load("save");
+        gameClock.reset();
+        gameClock.setTimePlayed(game.getCurrentTime());
+        replay.load(slot);
         transitionToGameScreen();
     }
 
@@ -181,11 +181,11 @@ public class App extends JFrame {
         updateGameComponents(DomainPersistency.getInitial());
         // TODO: load replay module
         gameClock.useReplayTimer();
-        replay.load("save");
+        replay.load(slot);
         System.out.print("Transitioning to replay screen... ");
-        gameClock.start();
         gui.transitionToReplayScreen();
-        useGameMusic();
+        MusicPlayer.useGameMusic();
+        if (config.isMusicOn()) MusicPlayer.playMusic();
         System.out.println("Complete");
     }
 
@@ -221,7 +221,7 @@ public class App extends JFrame {
                 saves[index] = DomainPersistency.loadSave(slot);
                 gui.updateSaveInventory(index, saves[index]);
             } catch (DocumentException e) {
-                System.out.printf("Failed to load save %d.\n", slot);
+                System.out.printf("Failed to load save %d.%n", slot);
                 e.printStackTrace();
                 String[] options = {"Reset", "Delete"};
                 int choice = JOptionPane.showOptionDialog(null,

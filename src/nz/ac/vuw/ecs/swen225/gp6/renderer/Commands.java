@@ -3,22 +3,30 @@ package nz.ac.vuw.ecs.swen225.gp6.renderer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+/**
+ * This class is used to store the commands that the user can input into the log panel.
+ * @author loki
+ */
 public final class Commands {
+//--------------------------------------------------fields-------------------------------------------------------//
     private final LogPanel logPanel;
     private MazeRenderer mazeRenderer;
     private HashMap<String, Runnable> commands = new HashMap<String, Runnable>();
     private List<String> helpCommands = new ArrayList<>();
-    
+//--------------------------------------------------constructor-------------------------------------------------------//
+    /**
+     * Constructor for Commands
+     * @param logPanel
+     */
     public Commands(LogPanel logPanel) {
         this.logPanel = logPanel;
-        addCommands("clear", "Clears the text area", this::clear);
         addCommands("help", "Displays the availble commands", this::help);
         addCommands("test", "test", this::test);
+        addCommands("clear", "Clears the text area", this::clear);
         addCommands("packsNumber", "Displays the number of texture packs", this::numberOfPacks);
         addCommands("setDogs", "Sets the texture pack to dogs", this::setDogs);
-        addCommands("drawInfo", "Draws the info text", this::drawInfo);
     }
-
+//------------------------------
     /**
      * Adds a command to the commands HashMap
      * 
@@ -36,30 +44,28 @@ public final class Commands {
      * @param command
      */
     public void invoke(String s){
-        if(commands.containsKey(s)){
-            logPanel.println("");
-            commands.get(s).run();
-        }
+        commands.getOrDefault(s, () -> logPanel.println("Command not found")).run();
     }
     //set themazeRenderer
     public void setRenderer(MazeRenderer mazeRenderer){
         this.mazeRenderer = mazeRenderer;
     }
-  //-----------------------------------------------COMANDS------------------------------------//
+//-----------------------------------------------COMANDS-----------------------------------------------------------//
     /**
      * clears the textArea
      */
     private void clear(){
-        logPanel.getTextArea().setText("");
+        logPanel.clear();
     }
 
     /**
      * prints the help menu
      */
     private void help(){
-        for(String s : helpCommands){
-            logPanel.println(s);
-        }
+        logPanel.println("//=======================================//");
+        logPanel.println("Available commands:");
+        helpCommands.forEach(logPanel::println);
+        logPanel.println("//=======================================//");
     }
 
     /**
@@ -88,10 +94,6 @@ public final class Commands {
         mazeRenderer.setTexturePack("Dogs");
     }
 
-    //cheat the get info text drawn.
-    private void drawInfo(){
-        mazeRenderer.setInfoCheat(true);
-    }
 
 
 }

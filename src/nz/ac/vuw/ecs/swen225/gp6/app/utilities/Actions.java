@@ -63,7 +63,7 @@ public enum Actions {
             if (!app.isResuming()) return;
             app.getGameClock().stop();
             app.getGUI().showPausePanel();
-            MusicPlayer.stopGameMusic();
+            MusicPlayer.stopMusic();
             app.setResuming(false);
         }
     },
@@ -74,7 +74,7 @@ public enum Actions {
             if (app.isResuming()) return;
             app.getGameClock().start();
             app.getGUI().showResumePanel();
-            MusicPlayer.playGameMusic();
+            if (app.getConfiguration().isMusicOn()) MusicPlayer.playMusic();
             app.setResuming(true);
         }
     },
@@ -118,11 +118,10 @@ public enum Actions {
     /** Represents the action quitting without saving game. */
     QUIT_TO_MENU("Quit To Menu"){
         public void run(App app){
-            System.out.println("Quit Game without saving, returning to menu");
             app.getGameClock().stop();
             app.setResuming(false);
-            MusicPlayer.stopGameMusic();
-            if(app.getConfiguration().isMusicOn()) MusicPlayer.playMenuMusic();
+            MusicPlayer.useMenuMusic();
+            if(app.getConfiguration().isMusicOn()) MusicPlayer.playMusic();
             app.getGUI().transitionToMenuScreen();
         }
     },

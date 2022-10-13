@@ -2,6 +2,7 @@ package nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures;
 
 
 import java.util.Stack;
+import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Pair;
 
 /**
  * A generic timeline class that replays a series of events in chronological order.
@@ -71,6 +72,14 @@ public class ReplayTimeline<E> {
      */
     public boolean hasNext() { 
         return !this.forward.isEmpty();
+    }
+
+    /**
+     * Returns the next action in the timeline without removing it.
+     * @return returns the time and event of the next action.
+     */
+    public Pair<Long, E> peek(){
+        return forward.peek();
     }
 
     /**
