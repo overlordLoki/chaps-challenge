@@ -19,4 +19,4 @@ Finally, put the .jar file into the levels directory and specify the custom tile
     <custom class="Enemy" source="level2.jar" />
 </cell>
 ```
-Now, when you run the game, it will load the custom tiles from the .jar file.
+Now, when you run the game, it will load the custom tiles from the .jar file, and work even if the custom folder is deleted.

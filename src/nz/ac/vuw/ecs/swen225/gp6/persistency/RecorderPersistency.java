@@ -26,8 +26,8 @@ public class RecorderPersistency {
         Element root = DocumentHelper.createElement("timeline");
         root.addAttribute("size", timeline.size() + "");
         for (Pair<Long, Actions> pair : timeline) {
-            Element action = root.addElement(pair.getValue().toString());
-            action.addAttribute("time", pair.getKey() + "");
+            Element action = root.addElement(pair.value().toString());
+            action.addAttribute("time", pair.key() + "");
         }
         return root;
     }
