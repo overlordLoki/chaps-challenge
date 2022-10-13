@@ -95,9 +95,8 @@ public final class Replay implements Runnable {
      * @param speed the speed to set the replay to
      * @return this replay object to chain methods
      */
-    public Replay setSpeed(double speed) {
-        int delay = (int) (34 / speed);    // default delay is 34ms
-        this.app.getGameClock().setReplaySpeed(delay);
+    public Replay speedMultiplier(float speed) {
+        this.app.getGameClock().setReplaySpeed(speed);
         return this;
     }
 
@@ -131,10 +130,6 @@ public final class Replay implements Runnable {
      * Method checks if the timeline is valid
      */
     private boolean checkNextIsValid(){
-        if (timeline == null){
-            System.out.println("No game loaded");
-            return false;
-        }
         if (!timeline.hasNext()){
             System.out.println("Replay finished"); 
             return false;
