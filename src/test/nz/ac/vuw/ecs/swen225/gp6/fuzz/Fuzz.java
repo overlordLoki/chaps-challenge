@@ -106,7 +106,6 @@ public class Fuzz {
 
     }
 
-
     public static void testLevel2(){
         //initialize the app environment, set all the actions into a list
         SwingUtilities.invokeLater(()->{
