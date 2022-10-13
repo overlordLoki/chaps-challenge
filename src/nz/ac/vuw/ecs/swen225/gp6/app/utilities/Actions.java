@@ -74,7 +74,7 @@ public enum Actions {
             if (app.isResuming()) return;
             app.getGameClock().start();
             app.getGUI().showResumePanel();
-            MusicPlayer.playMusic();
+            if (app.getConfiguration().isMusicOn()) MusicPlayer.playMusic();
             app.setResuming(true);
         }
     },
