@@ -1,6 +1,7 @@
 package nz.ac.vuw.ecs.swen225.gp6.recorder;
 
 import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.RecordTimeline;
+import org.dom4j.DocumentException;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.RecorderPersistency;
 
@@ -21,6 +22,18 @@ public final class Record {
     /**  Starts a new recording. */
     public void startRecording(){
         this.timeline = new RecordTimeline<>();
+    }
+
+    /** 
+     * Stitches a recording to the start of this recording. 
+     * @param slot the slot to load the recording from
+     **/
+    public void stitchRecording(int slot){
+        try {
+            this.timeline = new RecordTimeline<Actions>(RecorderPersistency.loadTimeline(slot));
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

@@ -114,9 +114,7 @@ public final class Replay implements Runnable {
     //=========================================== Helper Methods =====================================================//
     //================================================================================================================//
 
-    /**
-     * Method checks if the next action is valid.
-     */
+    /** Method checks if the next action is valid. */
     private boolean actionReady(){
         if(!checkNextIsValid()){
             app.getGameClock().stop();
@@ -126,9 +124,7 @@ public final class Replay implements Runnable {
         return timeline.peek().key() <= time;
     }
 
-    /**
-     * Method checks if the timeline is valid
-     */
+    /** Method checks if the timeline is valid */
     private boolean checkNextIsValid(){
         if (!timeline.hasNext()){
             System.out.println("Replay finished"); 
