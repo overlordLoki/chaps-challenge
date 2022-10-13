@@ -114,7 +114,10 @@ public final class Replay implements Runnable {
     //=========================================== Helper Methods =====================================================//
     //================================================================================================================//
 
-    /** Method checks if the next action is valid. */
+    /** 
+     * Method checks if the next action is valid. 
+     * @return true if the next action is ready to be executed, false otherwise.
+     **/
     private boolean actionReady(){
         if(!checkNextIsValid()){
             app.getGameClock().stop();
