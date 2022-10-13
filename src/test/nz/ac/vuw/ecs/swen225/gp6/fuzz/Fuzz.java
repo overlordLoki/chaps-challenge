@@ -1,10 +1,7 @@
 package test.nz.ac.vuw.ecs.swen225.gp6.fuzz;
 import nz.ac.vuw.ecs.swen225.gp6.app.App;
-import nz.ac.vuw.ecs.swen225.gp6.app.Main;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
-import nz.ac.vuw.ecs.swen225.gp6.renderer.LogPanel;
 import org.junit.Test;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -44,6 +41,20 @@ public class Fuzz {
         catch (AWTException e) {throw new RuntimeException(e);}
     }
 
+    public static void pasuseStrategy(App app) {
+        SAVE_GAME.run(app);
+
+        int s = r.nextInt(2);
+        app.getRecorder().saveRecording(s);
+        robot.delay(2000);
+        QUIT_TO_MENU.run(app);
+        robot.delay(2000);
+        LOAD_GAME.run(app);
+        app.startSavedGame(s);
+        robot.delay(2000);
+
+    }
+
     /**
      * This method is used to generate a random action
      * @Input: int number of actions for test
@@ -61,7 +72,6 @@ public class Fuzz {
                     PAUSE_GAME,
                     RESUME_GAME
             );
-
         });
         // Start robot automating sequence
         JOptionPane.showMessageDialog(null,"Start Fuzzing");
@@ -81,21 +91,27 @@ public class Fuzz {
             try {
                 //get a random action from the action list
                 int randomIndex = r.nextInt(actionsList.size());
-                actionsList.get(randomIndex).run(app);
+                Actions action = actionsList.get(randomIndex);
+                action.run(app);
                 System.out.print("Action: " + actionsList.get(randomIndex) + " >>> \n");
                 robot.delay(100);
+
+                if(action == PAUSE_GAME) {
+                    pasuseStrategy(app);
+                }
+
                 Field[] appF = app.getClass().getDeclaredFields();
 
                 //check if the game is finished or not, also catch the exception
-                for (Field f : appF){
-                    if(f.getName().equals("inResume")
-                            && actionsList.get(randomIndex) != PAUSE_GAME
-                            && actionsList.get(randomIndex) == RESUME_GAME){
-                        robot.delay(100);
-                        f.setAccessible(true);
-                        isRunning = (boolean) f.get(app);
-                    }
-                }
+//                for (Field f : appF){
+//                    if(f.getName().equals("inResume")
+//                            && actionsList.get(randomIndex) != PAUSE_GAME
+//                            && actionsList.get(randomIndex) == RESUME_GAME){
+//                        robot.delay(100);
+//                        f.setAccessible(true);
+//                        isRunning = (boolean) f.get(app);
+//                    }
+//                }
 
             } catch (Exception e) {
                 isRunning = false;
