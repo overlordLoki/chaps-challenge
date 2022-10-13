@@ -7,10 +7,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.BiFunction;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -32,7 +38,6 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 
 public class DomainPersistency {
-
     /**
      * Serialise a domain to an XML document
      *
@@ -170,7 +175,7 @@ public class DomainPersistency {
             int y = Integer.parseInt(cell.attributeValue("y"));
             Element tile = cell.elements().get(0);
             if (tile != null) {
-                Tile t = deserialiseTile(tile, x, y);
+                Tile t = deserialiseTile(tile, new Loc(x, y));
                 maze.setTileAt(new Loc(x, y), t);
             }
         }
@@ -190,7 +195,8 @@ public class DomainPersistency {
         if (null == name) {
             // it's a custom tile
             Element custom = DocumentHelper.createElement("custom");
-            custom.addAttribute("name", tile.getClass().getSimpleName());
+            custom.addAttribute("class", tile.getClass().getSimpleName());
+            custom.addAttribute("source", tile.info().message());
             return custom;
         } else if (name.contains("Key") || name.contains("Lock") && name.equals("exitLock")) {
             Element element = DocumentHelper.createElement(name.contains("Key") ? "key" : "lock");
@@ -211,41 +217,14 @@ public class DomainPersistency {
      * @param element The XML element to deserialise
      * @return The deserialised tile
      */
-    private static Tile deserialiseTile(Element element, int x, int y) {
-        String name = element.getName();
+    private static Tile deserialiseTile(Element element, Loc loc) {
+        BiFunction<Element, Loc, Tile> tiler = Helper.tagToTiler.get(element.getName());
 
-        TileType type;
-        if (name.equals("key")) {
-            String color = element.attributeValue("color");
-            type = Helper.stringToType.get(color + "Key");
-        } else if (name.equals("lock")) {
-            String color = element.attributeValue("color");
-            type = Helper.stringToType.get(color + "Lock");
-        } else if (name.equals("info")) {
-            String message = element.attributeValue("message");
-            return TileType.makeTile(TileType.Info, new TileInfo(new Loc(x, y), 0, "", message));
-        } else if (name.equals("custom")) {
-            String customTile = element.attributeValue("name");
-            try {
-                Class<?> clazz = Class.forName("custom.tiles." + customTile);
-                Constructor<?> ctor = clazz.getConstructor(TileInfo.class);
-                Tile object = (Tile) ctor.newInstance(new TileInfo(new Loc(x, y),
-                        Character.toLowerCase(customTile.charAt(0)) + customTile.substring(1)));
-                // Tile object = new Enemy(new TileInfo(new Loc(x, y)));
-                return object;
-            } catch (Exception e) {
-                type = TileType.Null;
-            }
-
-        } else {
-            type = Helper.stringToType.get(name);
+        if (tiler == null) {
+            tiler = Helper::defaultTiler;
         }
 
-        if (type == null) {
-            throw new RuntimeException("Unknown tile type: " + name);
-        }
-
-        return TileType.makeTile(type, new TileInfo(new Loc(x, y)));
+        return tiler.apply(element, loc);
     }
 
     /**
@@ -276,7 +255,7 @@ public class DomainPersistency {
     public static Inventory deserialiseInventory(Element root) {
         Inventory inv = new Inventory(Integer.parseInt(root.attributeValue("size")));
         for (Element item : root.elements()) {
-            inv.addItem(deserialiseTile(item, 0, 0));
+            inv.addItem(deserialiseTile(item, new Loc(0, 0)));
         }
         return inv;
     }

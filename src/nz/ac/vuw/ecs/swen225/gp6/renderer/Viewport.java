@@ -8,26 +8,7 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Hero;
  * @Author Loki
  */
 public class Viewport {
-
-    //find the Hero in the Tile[][] and return its position
-    /**
-     * find the Hero in the Tile[][] and return its position
-     * @param gameArray
-     * @return int[]
-     */
-    public static int[] findHero(Tile[][] gameArray) {
-        int[] heroPos = new int[2];
-        for(int i = 0; i < gameArray.length; i++) {
-            for(int j = 0; j < gameArray[i].length; j++) {
-                if(gameArray[i][j] instanceof Hero) {
-                    heroPos[0] = i;
-                    heroPos[1] = j;
-                    return heroPos;
-                }
-            }
-        }
-        return heroPos;
-    }
+//-----------------------------------------------constructor---------------------------------------------------------------//
     
     /**
      * get a viewport for the current game array
@@ -53,6 +34,27 @@ public class Viewport {
             }
         }
         return viewport;
+    }
+
+//-----------------------------------------------helper methods---------------------------------------------------------------//
+
+    /**
+     * find the Hero in the Tile[][] and return its position
+     * @param gameArray
+     * @return int[]
+     */
+    public static int[] findHero(Tile[][] gameArray) {
+        int[] heroPos = new int[2];
+        for(int i = 0; i < gameArray.length; i++) {
+            for(int j = 0; j < gameArray[i].length; j++) {
+                if(gameArray[i][j] instanceof Hero) {
+                    heroPos[0] = i;
+                    heroPos[1] = j;
+                    return heroPos;
+                }
+            }
+        }
+        return heroPos;
     }
 
 }

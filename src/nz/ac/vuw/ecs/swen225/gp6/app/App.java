@@ -67,6 +67,7 @@ public class App extends JFrame {
         refreshSaves();
         initialiseGUI();
         initialiseCommands();
+        config.update(this);
         controller.update();
     }
 

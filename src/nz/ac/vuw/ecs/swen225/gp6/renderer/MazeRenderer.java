@@ -70,7 +70,7 @@ public class MazeRenderer extends JPanel{
      * draws the maze
      */
     private void drawMaze(Graphics g) {
-        //get the maze array
+        //get the maze arrayk
         gameArray = domain.getGameArray();
         //viewport of the maze
         Tile[][] viewport = Viewport.getViewport(gameArray, renderSize);
@@ -126,16 +126,11 @@ public class MazeRenderer extends JPanel{
      * @return
      */
     public List<TexturePack> getTexturePacksList() {
-        File texturePackRoot = new File("res/textures");
+        File texturePackRoot = new File("res/texturesPacks");
         File[] listOfFiles = texturePackRoot.listFiles();
         List<TexturePack> textures1 = new ArrayList<>();
         //for each texture in the folder add it to the list
         for (File file : listOfFiles) {
-            if(!checkFolder(file)){
-                System.out.println("not a folder: " + file.getName());
-                continue;
-            }
-            //check if settings file exists
             if(!checkSettingsFile(file)){
                 TexturePack tp = new TexturePack(file.getName(), 
                                                 new Font("Arial", Font.BOLD, 80),
@@ -162,30 +157,6 @@ public class MazeRenderer extends JPanel{
             System.exit(0);
         }
         return textures1;
-    }
-
-    //check if folder has all png files required for a texture pack
-    /**
-     * check if folder has all png files required for a texture pack
-     * @param folder
-     * @return
-     */
-    private boolean checkFolder(File folder) {
-        File[] listOfFiles = folder.listFiles();
-        List<String> files = new ArrayList<>();
-        for (File file : listOfFiles) {
-            files.add(file.getName());
-        }
-        String[] mustContain = {"background","blueKey","blueLock","coin","empty_tile","enemy","exitDoor","floor","greenKey","greenLock",
-                        "hero","heroBack","heroFront","heroSide","empty_tile","loseScreen","orangeKey",
-                        "orangeLock","pattern","pattern2","wall_tile","winScreen","yellowKey","yellowLock","help"};
-        for(String s : mustContain) {
-            if(!files.contains(s+".png")) {
-                System.out.println("missing file: " + s + " in " + folder.getName());
-                return false;
-            }
-        }
-        return true;
     }
 
     
@@ -325,10 +296,12 @@ public class MazeRenderer extends JPanel{
         BufferedImage box = getImage("popUp");
         g.drawImage(box, 250, 100, 200, 200, null);
         //draw the message in the box
-        String message = domain.getInfoHint();
+        String message1 = "find the keys and dont";
+        String message2 = "let the time run out";
         g.setColor(Color.BLACK);
         g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
-        g.drawString(message, 260, 200);
+        g.drawString(message1, 260, 200);
+        g.drawString(message2, 280, 230);
     }
 
 //--------------------------------------getters and setters----------------------------------------------------------//
