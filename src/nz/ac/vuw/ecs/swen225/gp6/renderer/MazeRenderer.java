@@ -1,17 +1,13 @@
 package nz.ac.vuw.ecs.swen225.gp6.renderer;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.awt.*;
-import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import java.awt.Graphics;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import javax.swing.Timer;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.*;
@@ -212,8 +208,6 @@ public class MazeRenderer extends JPanel{
             sc.close();
         } catch (FileNotFoundException e) {
             System.out.println("settings.txt not found");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
         return inputs.toString();
     }
