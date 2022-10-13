@@ -96,7 +96,7 @@ public class App extends JFrame {
 
     private void initialiseCommands() {
         LogPanel logPanel = GUI.getLogPanel();
-        logPanel.addCommands("nextLevel", "Jump to the next level", this::runWinEvent);
+        logPanel.addCommands("nextLvl", "Jump to the next level", this::runWinEvent);
     }
 
 
@@ -108,8 +108,8 @@ public class App extends JFrame {
      * Function to invoke the winning sequence, it also handles the transition to the next level.
      */
     public void runWinEvent() {
-        inResume = false;
         gameClock.stop();
+        inResume = false;
         if (game.nextLvl()) {
             System.out.println("Next level");
             gui.getRenderPanel().changeLevel(() -> {
@@ -127,6 +127,7 @@ public class App extends JFrame {
      * Function to invoke the losing sequence.
      */
     public void runLoseEvent() {
+        gameClock.stop();
         inResume = false;
         System.out.println("You lose!");
         this.gui.transitionToLostScreen();
