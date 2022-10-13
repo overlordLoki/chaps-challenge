@@ -3,18 +3,20 @@ package nz.ac.vuw.ecs.swen225.gp6.renderer;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Hero;
 
-/*
+/**
  * change the array to be centered on the player
- * @Author Loki
+ *
+ * @author Loki
  */
 public class Viewport {
 //-----------------------------------------------constructor---------------------------------------------------------------//
     
     /**
      * get a viewport for the current game array
-     * @param gameArray
-     * @param renderSize
-     * @return
+     *
+     * @param gameArray the game array
+     * @param renderSize the size of the viewport
+     * @return the viewport
      */
     public static Tile[][] getViewport(Tile[][] gameArray, int renderSize) {
         int[] heroPos = findHero(gameArray);
@@ -40,7 +42,8 @@ public class Viewport {
 
     /**
      * find the Hero in the Tile[][] and return its position
-     * @param gameArray
+     *
+     * @param gameArray the game array
      * @return int[]
      */
     public static int[] findHero(Tile[][] gameArray) {
