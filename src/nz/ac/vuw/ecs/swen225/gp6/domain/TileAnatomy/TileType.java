@@ -1,17 +1,13 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy;
 
-import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
-
 import java.util.Arrays;
-import java.util.List;
 
 
 /**
  * Each tile object will have a type field, which helps to determine what the tile is.
- * 
  * Note1: Any tile class that to be implemented in game(in compile time), must be in tiles folder 
- * and the class file must have the same name as the its enum type.
- * Note2: Any tiles that are added to the game at run time will have the the type "Other".
+ * and the class file must have the same name as its enum type.
+ * Note2: Any tiles that are added to the game at run time will have the type "Other".
  */
 public enum TileType{
     //ACTORS:
@@ -59,13 +55,13 @@ public enum TileType{
     Null(Character.MIN_VALUE); //used to represent null tiles
 
     //FIELDS:
-    private char symbol;
+    private final char symbol;
 
     //CONSTRUCTOR:
     /**
-     * Each tile will have a char symbol for debugging.
+     * Each tile will have a char symbol for debugging and testing.
      * 
-     * @param symbol
+     * @param symbol - the char symbol for the tile
      */
     TileType(char symbol){this.symbol = symbol;}
 
@@ -97,7 +93,7 @@ public enum TileType{
      * 
      * @param symbol symbol of desired tile class
      * @param info an instance of the TileInfo object that has all the necessary
-     *  intial information that tile needs
+     *  initial information that tile needs
      * 
      * @return an instance of the desired tile class
      * 
