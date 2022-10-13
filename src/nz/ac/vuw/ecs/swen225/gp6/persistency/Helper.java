@@ -1,6 +1,10 @@
 package nz.ac.vuw.ecs.swen225.gp6.persistency;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -83,13 +87,22 @@ public class Helper {
             put("coin", Helper::defaultTiler);
             put("info", Helper::defaultTiler);
             put("custom", (element, loc) -> {
-                String customTile = element.attributeValue("name");
+                String customTile = element.attributeValue("class");
+                String source = element.attributeValue("source");
+
                 try {
-                    Class<?> clazz = Class.forName("custom.tiles." + customTile);
+                    File jar = new File("res/levels/" + source);
+
+                    URLClassLoader child = new URLClassLoader(
+                            new URL[] { jar.toURI().toURL() },
+                            DomainPersistency.class.getClassLoader());
+
+                    Class<?> clazz = Class.forName("custom.tiles." + customTile, true, child);
                     Constructor<?> ctor = clazz.getConstructor(TileInfo.class);
-                    return (Tile) ctor.newInstance(new TileInfo(loc,
-                            Character.toLowerCase(customTile.charAt(0)) + customTile.substring(1)));
+                    return (Tile) ctor.newInstance(new TileInfo(loc, 0,
+                            Character.toLowerCase(customTile.charAt(0)) + customTile.substring(1), source));
                 } catch (Exception e) {
+                    e.printStackTrace();
                     return TileType.makeTile(TileType.Null, new TileInfo(loc));
                 }
             });

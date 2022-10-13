@@ -7,6 +7,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -191,6 +196,7 @@ public class DomainPersistency {
             // it's a custom tile
             Element custom = DocumentHelper.createElement("custom");
             custom.addAttribute("name", tile.getClass().getSimpleName());
+            custom.addAttribute("source", tile.info().message());
             return custom;
         } else if (name.contains("Key") || name.contains("Lock") && name.equals("exitLock")) {
             Element element = DocumentHelper.createElement(name.contains("Key") ? "key" : "lock");

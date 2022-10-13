@@ -13,6 +13,10 @@ Now, put the entire custom directory into a .jar file. You can do this by runnin
 ```
 jar -cf custom.jar ../../custom
 ```
-Finally, put the .jar file into the lib directory. Now, when you run the game, it will load the custom tiles from the .jar file.
-
-Note: if you use IntelliJ, you might need to right-click the jar file and select "Add as Library" in order for the game to load the custom tiles.
+Finally, put the .jar file into the levels directory and specify the custom tile in the level XML like below. 
+```
+<cell x="9" y="7">
+    <custom class="Enemy" source="level2.jar" />
+</cell>
+```
+Now, when you run the game, it will load the custom tiles from the .jar file.

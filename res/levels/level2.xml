@@ -173,7 +173,7 @@
             <hero />
         </cell>
         <cell x="9" y="7">
-            <custom name="Enemy" />
+            <custom class="Enemy" source="level2.jar" />
         </cell>
         <cell x="10" y="7">
             <coin />
