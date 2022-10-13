@@ -2,6 +2,7 @@ package test.nz.ac.vuw.ecs.swen225.gp6.fuzz;
 import nz.ac.vuw.ecs.swen225.gp6.app.App;
 import nz.ac.vuw.ecs.swen225.gp6.app.Main;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
+import nz.ac.vuw.ecs.swen225.gp6.renderer.LogPanel;
 import org.junit.Test;
 
 import javax.swing.*;
@@ -55,6 +56,8 @@ public class Fuzz {
                     MOVE_DOWN,
                     MOVE_LEFT,
                     MOVE_RIGHT
+//                    TO_LEVEL_1,
+//                    TO_LEVEL_2
             );
 
         });
@@ -62,7 +65,10 @@ public class Fuzz {
         JOptionPane.showMessageDialog(null,"Start Fuzzing");
         app.startNewGame();
         app.transitionToGameScreen();
-        app.getGUI().getLogPanel().setVisible(true);
+
+        LogPanel l = new LogPanel();
+        l = app.getGUI().getLogPanel();
+
 
         for (int i =0; i < numOfInputs; i++){
             int randomIndex = r.nextInt(actionsList.size());
