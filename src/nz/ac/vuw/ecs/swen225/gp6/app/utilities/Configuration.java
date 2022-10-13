@@ -82,20 +82,6 @@ public class Configuration{
      */
     public void setMusicOn(boolean musicOn) {this.isMusicOn = musicOn;}
 
-    /**
-     * Sets the texture pack to the given texture pack
-     *
-     * @param texturePack the texture pack to set
-     */
-    public void setTexturePack(String texturePack) {this.texturePack = texturePack;}
-
-    /**
-     * Sets the view distance to the given view distance
-     *
-     * @param viewDistance the view distance to set
-     */
-    public void setViewDistance(int viewDistance) {this.viewDistance = viewDistance;}
-
 
     //================================================================================================================//
     //============================================ Getter Method =====================================================//
@@ -174,6 +160,11 @@ public class Configuration{
                 isMusicOn, texturePack, viewDistance, userKeyBindings);
     }
 
+    /**
+     * saves the configuration to a file
+     *
+     * @param app the app object
+     */
     public void save(App app) {
         this.viewDistance = app.getGUI().getRenderPanel().getRenderSize();
         this.texturePack = MazeRenderer.getTexturePack().getName();
