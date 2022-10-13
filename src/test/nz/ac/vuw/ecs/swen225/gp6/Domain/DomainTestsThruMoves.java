@@ -91,11 +91,6 @@ public class DomainTestsThruMoves {
         testHarnessValid(input, moves, output);
     }
 
-    @Test 
-    public void testSimpleMovingEnemy(){
-        //Tile t = new Enemy(new TileInfo(null));TODO OOOOOO
-    }
-
     //TEST TILES:
     @Test 
     public void testAllKeysAndLocks(){
@@ -223,11 +218,6 @@ public class DomainTestsThruMoves {
     }
     
 
-    
-
-
-    //HELPER METHODS:
-
     //=====================================//
     //========= Testing harnesses =========//
     //=====================================//
@@ -248,11 +238,13 @@ public class DomainTestsThruMoves {
     }
 
     /**
-     * TODO 
-     * @param input
-     * @param moves
-     * @param output
-     * @param exception
+     * tests if a given input and a given sequence of moves results
+     * in a generic exception, and a final maze equivalent to the
+     * input.(CURRENTLY NOT USED but kept due to intense usefulness)
+     * @param input a string representing initial maze
+     * @param moves a string representing sequence of moves
+     * @param output a string representing expected final maze
+     * @param exception type of expected exception
      */
     public static void testHarnessInvalid(String input, String moves, String output, Class<? extends Throwable> exception){
         Maze maze = mazeParser(input);
