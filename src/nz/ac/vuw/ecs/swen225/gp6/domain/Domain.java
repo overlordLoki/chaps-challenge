@@ -242,6 +242,13 @@ public class Domain {
     public int getCurrentTimeLimit(){return getLevelTimeLimits().get(currentLvlIndex - 1);}
 
     /**
+     * gets the current time of the current level.
+     * 
+     * @return current time
+     */
+    public long getCurrentTime(){return levels.get(currentLvlIndex - 1).getCurrentTime();}
+
+    /**
      * gets number of treasures left on current level's maze
      * 
      * @return number of treasures left 
@@ -257,7 +264,7 @@ public class Domain {
      * @return true if the hero is on the info tile of the level, else false
      */
     public boolean heroIsOnInfo(){
-        return getCurrentMaze().getTileThat(t -> t.type() == TileType.Hero).replaceWith().type() == TileType.Info;
+        return ((Hero)getCurrentMaze().getTileThat(t -> t.type() == TileType.Hero)).tileOn().type() == TileType.Info;
     }
 
     /** 
@@ -270,7 +277,7 @@ public class Domain {
      */
     public String getInfoHint(){
         if(heroIsOnInfo() == false) throw new RuntimeException("hero is not on info");
-        return ((Info)getCurrentMaze().getTileThat(t -> t.type() == TileType.Hero).replaceWith()).message();
+        return ((Info)(((Hero)getCurrentMaze().getTileThat(t -> t.type() == TileType.Hero)).tileOn())).message();
     }
     /**
      * gets a list of current items in the inventory
@@ -301,6 +308,13 @@ public class Domain {
     }
 
     //SETTERS:
+    /**
+     * sets current time of current level 
+     * 
+     * @param time to set the current time to
+     */
+    public void setCurrentTime(int time){getCurrentLevelObject().setCurrentTime(time);}
+
     /**
      * add an event listener to the domain
      * 

@@ -45,6 +45,7 @@ public class App extends JFrame {
 
     // Core components of the game
     private Domain game                 = DomainPersistency.getInitial();
+    private final Domain[] saves        = new Domain[3];
     private final GameClock gameClock   = new GameClock(this);
     private final GUI gui               = new GUI(this);
     private final Configuration config  = AppPersistency.load();
@@ -53,7 +54,6 @@ public class App extends JFrame {
     private final Replay replay         = new Replay(this);
     private boolean inResume            = false;
 
-    private final Domain[] saves        = new Domain[3];
 
     /**
      * Constructor for the App class. Initializes the GUI and the main loop.
@@ -126,7 +126,7 @@ public class App extends JFrame {
      * Function to invoke the losing sequence.
      */
     public void runLoseEvent(){
-//        inResume = false;
+        inResume = false;
         System.out.println("You lose!");
         this.gui.transitionToLostScreen();
     }
@@ -138,14 +138,11 @@ public class App extends JFrame {
         System.out.print("Transitioning to game screen... ");
         gameClock.start();
         gui.transitionToGameScreen();
-        useGameMusic();
+        MusicPlayer.useGameMusic();
+        if (config.isMusicOn()) MusicPlayer.playMusic();
         System.out.println("Complete");
     }
 
-    private void useGameMusic(){
-        MusicPlayer.stopMenuMusic();
-        if(config.isMusicOn()) MusicPlayer.playGameMusic();
-    }
 
     //================================================================================================================//
     //============================================ Setter Method =====================================================//
@@ -168,7 +165,7 @@ public class App extends JFrame {
     public void startSavedGame(int slot) {
         updateGameComponents(saves[slot-1]);
         gameClock.useGameTimer();
-        replay.load("save");
+        replay.load(slot);
         transitionToGameScreen();
     }
 
@@ -181,11 +178,11 @@ public class App extends JFrame {
         updateGameComponents(DomainPersistency.getInitial());
         // TODO: load replay module
         gameClock.useReplayTimer();
-        replay.load("save");
+        replay.load(slot);
         System.out.print("Transitioning to replay screen... ");
-        gameClock.start();
         gui.transitionToReplayScreen();
-        useGameMusic();
+        MusicPlayer.useGameMusic();
+        if (config.isMusicOn()) MusicPlayer.playMusic();
         System.out.println("Complete");
     }
 

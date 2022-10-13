@@ -11,7 +11,7 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.Key.KeyColor;
  * are collected an the player can pass through it to pass the level.
  */
 public class ExitDoorOpen extends Door{
-    private static boolean heroOn = false;
+    private boolean heroOn = false;
 
     /**
      * Create an open exit door open tile
