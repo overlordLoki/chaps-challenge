@@ -86,7 +86,8 @@ public enum TileType{
         try{
             Class<?> c = Class.forName("nz.ac.vuw.ecs.swen225.gp6.domain.Tiles." + t.name());
             return (Tile) c.getDeclaredConstructor(TileInfo.class).newInstance(info);
-        }catch(Exception e){
+        }catch(NoSuchMethodException | SecurityException | ClassNotFoundException | InstantiationException | IllegalAccessException
+               | IllegalArgumentException | java.lang.reflect.InvocationTargetException e){
             throw new IllegalArgumentException("There isn't a class for tile type: " + t.name());
         }
     }
