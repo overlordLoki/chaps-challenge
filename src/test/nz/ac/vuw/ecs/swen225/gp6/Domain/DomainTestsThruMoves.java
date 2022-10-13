@@ -241,6 +241,7 @@ public class DomainTestsThruMoves {
      * tests if a given input and a given sequence of moves results
      * in a generic exception, and a final maze equivalent to the
      * input.(CURRENTLY NOT USED but kept due to intense usefulness)
+     * 
      * @param input a string representing initial maze
      * @param moves a string representing sequence of moves
      * @param output a string representing expected final maze
