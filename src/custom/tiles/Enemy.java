@@ -1,7 +1,7 @@
 package custom.tiles;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.*;
-import nz.ac.vuw.ecs.swen225.gp6.domain.IntegrityCheck.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.GameState;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.*;
@@ -47,7 +47,7 @@ public class Enemy extends Actor {
         // if the tile is hero, LOSE
         if (t.type() == TileType.Hero) {
             d.getEventListener(Domain.DomainEvent.onLose).forEach(r -> r.run());
-            CheckGame.state = CheckGame.GameState.LOST; // let the integrity checker know the game is LOST
+            d.setGameState(GameState.LOST); // let the integrity checker know the game is LOST
 
         }
     }
@@ -55,7 +55,7 @@ public class Enemy extends Actor {
     @Override
     public void ping(Domain d) {
         info.pingStep(); // step the ping counter
-        if (info.ping() % 10 != 0)
+        if(info.ping() % 10 != 0)
             return; // only move every 20 pings
 
         Level lvl = d.getCurrentLevelObject();
@@ -64,14 +64,12 @@ public class Enemy extends Actor {
         Loc loc2 = dir.transformLoc(loc1); // new loc
         Tile tileToOccupy = lvl.maze.getTileAt(loc2); // tile enemy is to move on to
 
-        // if enemy hasnt moved return
-        if (dir == Direction.None)
-            return;
-
-        // if tile at new location is obstruction change direction, in a determinisitic
-        // way, then return
-        if (tileToOccupy.obstructsEnemy(d)) {
-            info.facing(Direction.values()[(info.ping() / 10) % 4]);
+        // if enemy hasnt moved return 
+        if (dir == Direction.None)return;
+            
+        //if tile at new location is obstruction change direction, in a determinisitic way, then return
+        if(tileToOccupy.obstructsEnemy(d)){
+            info.facing(Direction.values()[(info.ping()/10)% 4]);
             return;
         }
 
