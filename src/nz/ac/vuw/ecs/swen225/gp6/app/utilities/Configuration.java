@@ -1,8 +1,12 @@
 package nz.ac.vuw.ecs.swen225.gp6.app.utilities;
 
 import nz.ac.vuw.ecs.swen225.gp6.app.App;
+import nz.ac.vuw.ecs.swen225.gp6.persistency.AppPersistency;
+import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
 
+import javax.swing.*;
 import java.awt.event.InputEvent;
+import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -55,9 +59,9 @@ public class Configuration {
      * @param app The App object that the configuration will be controlling.
      */
     public void update(App app){
-        app.getGUI().getRenderPanel().setRenderSize(viewDistance);
-        // TODO: Update the texture pack.
-//        app.getGUI().getRenderPanel().setTexturePack(texturePack);
+        MazeRenderer renderer = app.getGUI().getRenderPanel();
+        renderer.setRenderSize(viewDistance);
+        renderer.setTexturePack(texturePack);
     }
 
     //================================================================================================================//
@@ -168,5 +172,17 @@ public class Configuration {
     public String toString() {
         return String.format("Configuration{ isMusicOn=%s, texturePack=%s, viewDistance=%d, userKeyBindings=%s }",
                 isMusicOn, texturePack, viewDistance, userKeyBindings);
+    }
+
+    public void save(App app) {
+        this.viewDistance = app.getGUI().getRenderPanel().getRenderSize();
+        this.texturePack = MazeRenderer.getTexturePack().getName();
+        try {
+            AppPersistency.save(this);
+        } catch (IOException e) {
+            System.err.println("Failed to save configuration.");
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Failed to save configuration.");
+        }
     }
 }

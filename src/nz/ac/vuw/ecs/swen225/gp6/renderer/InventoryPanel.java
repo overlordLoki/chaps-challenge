@@ -12,8 +12,9 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.Tile;
  *  @author Loki
  */
 public class InventoryPanel extends JPanel{
-    //maze
+//----------------------------------------------Fields------------------------------------------------------------------//
     private Domain maze;
+//-----------------------------------------------constructor---------------------------------------------------------------//
     /**
      * Constructor. Takes a maze as parameters.
      * @param domain
@@ -38,6 +39,7 @@ public class InventoryPanel extends JPanel{
             });
         }
     }
+//-------------------------------------------setters and getters methods----------------------------------//
     /**
      * static method to create a new inventoryPanel
      * @param render
