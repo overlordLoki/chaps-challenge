@@ -43,8 +43,8 @@ public class Domain {
      * @throws NullPointerException if levels is null or contains null.
      */
     public Domain(List<Level> levels, int currentLvl){
-        if(levels == null || levels.contains(null))throw new NullPointerException("list of levels cannot be null.");
-        if(currentLvl < 1 || currentLvl > levels.size()) 
+        if(levels == null)throw new NullPointerException("list of levels cannot be null.");
+        if(currentLvl < 1 || currentLvl > levels.size())
             throw new IndexOutOfBoundsException("currentLvl must be greater than 0(Domain), and smaller or equal to levels.size()");
 
 
@@ -76,41 +76,6 @@ public class Domain {
                 new Level(mazes.get(i), i + 1));
         });
     }
-
-    /**
-     * constructor with a list of mazes, inventories, levelTimeLimits, currentTimes (all must be same size and in order).
-     * Levels are created internally from these lists in order.
-     * 
-     * @param mazes - must be in order.
-     * @param invs - must be in order.
-     * @param levelTimeLimits - must be in order.
-     * @param currentTimes - must be in order.
-     * @param currentLvl - the index of the current level starting at 1.
-     * 
-     * @throws IllegalArgumentException if mazes.size() != invs.size() != levelTimeLimits.size() != currentTimes.size() 
-     * @throws NullPointerException if any list is null.
-     * @throws IndexOutOfBoundsException if currentLvl is < 1 or > levels.size()
-     */
-    public Domain(List<Maze> mazes, List<Inventory> invs,  List<Integer> levelTimeLimits, List<Integer> currentTimes,
-     int currentLvl){
-
-        this(new ArrayList<>(), currentLvl);
-
-        //check inputs correct:
-        if(mazes == null || invs == null || levelTimeLimits == null || currentTimes == null) 
-            throw new NullPointerException("arguments to Domain cannot be null");
-        if(mazes.size() != invs.size() || invs.size()!= levelTimeLimits.size()
-        || levelTimeLimits.size() != currentTimes.size()){ //ensure there is a 1:1 relationship
-            throw new IllegalArgumentException("inconsistency in domain inputs");
-        }
-
-        //create levels from inputs:
-        IntStream.range(0, mazes.size()).forEach(i -> {
-            levels.add(new Level(mazes.get(i), invs.get(i), i+1, 
-            levelTimeLimits.get(i), currentTimes.get(i), Direction.None));
-        });
-    }
-
 
     //GETTERS:
     /**
@@ -264,9 +229,8 @@ public class Domain {
      * @return true if the hero is on the info tile of the level, else false
      */
     public boolean heroIsOnInfo(){
-        return ((Hero)getCurrentMaze().getTileThat(t -> t.type() == TileType.Hero)).tileOn().type() == TileType.Info;
+        return ((Hero)(getCurrentMaze().getTileThat(t -> t.type() == TileType.Hero))).tileOn().type() == TileType.Info;
     }
-
     /** 
      * gets the message stored in the info tile of this level (note every level can have one info tile at max), 
      * must ONLY BE CALLED when hero is on tile info.
@@ -279,6 +243,7 @@ public class Domain {
         if(heroIsOnInfo() == false) throw new RuntimeException("hero is not on info");
         return ((Info)(((Hero)getCurrentMaze().getTileThat(t -> t.type() == TileType.Hero)).tileOn())).message();
     }
+    
     /**
      * gets a list of current items in the inventory
      * 
@@ -313,7 +278,7 @@ public class Domain {
      * 
      * @param time to set the current time to
      */
-    public void setCurrentTime(int time){getCurrentLevelObject().setCurrentTime(time);}
+    public void setCurrentTime(long time){getCurrentLevelObject().setCurrentTime(time);}
 
     /**
      * add an event listener to the domain
