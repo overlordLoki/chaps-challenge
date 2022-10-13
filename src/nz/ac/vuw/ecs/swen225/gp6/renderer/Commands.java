@@ -99,13 +99,7 @@ public final class Commands {
         mazeRenderer.setTexturePack("Cats");
     }
 
-    /**
-     * auto win
-     *
-     */
-    private void autoWin(){
-        mazeRenderer.domain.getEventListener(DomainEvent.onWin).forEach(r -> r.run());
-    }
+
     /**
      * auto lose
      *
