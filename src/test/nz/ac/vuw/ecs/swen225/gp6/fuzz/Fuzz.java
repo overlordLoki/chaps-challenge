@@ -43,14 +43,16 @@ public class Fuzz {
 
     public static void pasuseStrategy(App app) {
         SAVE_GAME.run(app);
-
         int s = r.nextInt(2);
+        System.out.println("s = " + s);
         app.getRecorder().saveRecording(s);
+        System.out.println("Saved game: " + s);
         robot.delay(2000);
         QUIT_TO_MENU.run(app);
         robot.delay(2000);
         LOAD_GAME.run(app);
         app.startSavedGame(s);
+        System.out.println("Loaded game: " + s);
         robot.delay(2000);
 
     }
