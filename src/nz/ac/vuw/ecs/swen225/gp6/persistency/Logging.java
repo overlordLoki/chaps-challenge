@@ -1,7 +1,6 @@
 package nz.ac.vuw.ecs.swen225.gp6.persistency;
 
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -21,7 +20,8 @@ public class Logging {
         // get time and date string
         String time = LocalDateTime.now().toString();
         // write to file
-        FileWriter out = new FileWriter("res/log.txt", true);
+        FileOutputStream fileStream = new FileOutputStream("res/log.txt", true);
+        OutputStreamWriter out = new OutputStreamWriter(fileStream, "UTF-8");
         out.write(time + ": " + message + "\n");
         out.close();
     }
@@ -48,10 +48,9 @@ public class Logging {
     /**
      * Clear the log file
      */
-    public static void clearLogs() throws IOException {
-        FileWriter out = new FileWriter("res/log.txt", false);
-        out.write("");
-        out.close();
+    public static boolean clearLogs() throws IOException {
+        File file = new File("res/log.txt");
+       return file.delete();
     }
 
 }

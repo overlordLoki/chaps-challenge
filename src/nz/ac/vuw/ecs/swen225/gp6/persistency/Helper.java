@@ -1,5 +1,11 @@
 package nz.ac.vuw.ecs.swen225.gp6.persistency;
 
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.Tile;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileInfo;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
+import org.dom4j.Element;
+
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.net.URL;
@@ -9,15 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 
-import org.dom4j.Element;
-
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.Tile;
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileInfo;
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
-
 public class Helper {
-    public static Map<TileType, String> typeToString = new EnumMap<TileType, String>(TileType.class) {
+    public final static Map<TileType, String> typeToString = new EnumMap<TileType, String>(TileType.class) {
         {
             put(TileType.Hero, "hero");
             put(TileType.Empty, "empty");
@@ -39,38 +38,8 @@ public class Helper {
         }
     };
 
-    public static Map<String, TileType> stringToType = new HashMap<String, TileType>() {
-        {
-            put("hero", TileType.Hero);
-            put("empty", TileType.Empty);
-            put("floor", TileType.Floor);
-            put("wall", TileType.Wall);
-            put("exitDoor", TileType.ExitDoor);
-            put("exitDoorOpen", TileType.ExitDoorOpen);
-            put("blueLock", TileType.BlueLock);
-            put("greenLock", TileType.GreenLock);
-            put("orangeLock", TileType.OrangeLock);
-            put("yellowLock", TileType.YellowLock);
-            put("blueKey", TileType.BlueKey);
-            put("greenKey", TileType.GreenKey);
-            put("orangeKey", TileType.OrangeKey);
-            put("yellowKey", TileType.YellowKey);
-            put("coin", TileType.Coin);
-            put("info", TileType.Info);
-            put("null", TileType.Null);
-        }
-    };
-
-    protected static Tile defaultTiler(Element element, Loc loc) {
-        String name = element.getName();
-        return TileType.makeTile(stringToType.get(name), new TileInfo(loc));
-    }
-
-    private static Tile makeTile(String name, Loc loc) {
-        return TileType.makeTile(stringToType.get(name), new TileInfo(loc));
-    }
-
-    public static HashMap<String, BiFunction<Element, Loc, Tile>> tagToTiler = new HashMap<>() {
+    public final static Map<String, TileType> stringToType = Map.ofEntries(Map.entry("hero", TileType.Hero), Map.entry("empty", TileType.Empty), Map.entry("floor", TileType.Floor), Map.entry("wall", TileType.Wall), Map.entry("exitDoor", TileType.ExitDoor), Map.entry("exitDoorOpen", TileType.ExitDoorOpen), Map.entry("blueLock", TileType.BlueLock), Map.entry("greenLock", TileType.GreenLock), Map.entry("orangeLock", TileType.OrangeLock), Map.entry("yellowLock", TileType.YellowLock), Map.entry("blueKey", TileType.BlueKey), Map.entry("greenKey", TileType.GreenKey), Map.entry("orangeKey", TileType.OrangeKey), Map.entry("yellowKey", TileType.YellowKey), Map.entry("coin", TileType.Coin), Map.entry("info", TileType.Info), Map.entry("null", TileType.Null));
+    public final static HashMap<String, BiFunction<Element, Loc, Tile>> tagToTiler = new HashMap<>() {
         {
             put("hero", Helper::defaultTiler);
             put("empty", Helper::defaultTiler);
@@ -93,7 +62,7 @@ public class Helper {
                     File jar = new File("res/levels/" + source);
 
                     URLClassLoader child = new URLClassLoader(
-                            new URL[] { jar.toURI().toURL() },
+                            new URL[]{jar.toURI().toURL()},
                             DomainPersistency.class.getClassLoader());
 
                     Class<?> clazz = Class.forName("custom.tiles." + customTile, true, child);
@@ -112,4 +81,13 @@ public class Helper {
             put("null", Helper::defaultTiler);
         }
     };
+
+    protected static Tile defaultTiler(Element element, Loc loc) {
+        String name = element.getName();
+        return TileType.makeTile(stringToType.get(name), new TileInfo(loc));
+    }
+
+    private static Tile makeTile(String name, Loc loc) {
+        return TileType.makeTile(stringToType.get(name), new TileInfo(loc));
+    }
 }

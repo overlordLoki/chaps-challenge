@@ -1,11 +1,6 @@
 package nz.ac.vuw.ecs.swen225.gp6.persistency;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -331,7 +326,11 @@ public class DomainPersistency {
             SAXReader reader = new SAXReader();
             // list files in res/levels
             File dir = new File("res/levels");
-            List<File> files = Arrays.asList(dir.listFiles());
+            File[] filesArr = dir.listFiles();
+            if (filesArr == null) {
+                throw new DocumentException("No levels found");
+            }
+            List<File> files = Arrays.asList(filesArr);
             files.sort(new Comparator<File>() {
                 @Override
                 public int compare(File o1, File o2) {
@@ -365,10 +364,13 @@ public class DomainPersistency {
 
         File dir = new File("res/saves");
         if (!dir.exists()) {
-            dir.mkdirs();
+            if (!dir.mkdirs()) {
+                throw new IOException("Could not create save directory");
+            }
         }
 
-        FileWriter out = new FileWriter("res/saves/" + slot + ".xml");
+        FileOutputStream fileStream = new FileOutputStream("res/saves/" + slot + ".xml");
+        OutputStreamWriter out = new OutputStreamWriter(fileStream, "UTF-8");
         document.write(out);
         out.close();
     }
