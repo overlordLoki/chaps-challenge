@@ -12,7 +12,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
-import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.Pair;
+import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Pair;
 
 public class RecorderPersistency {
 
