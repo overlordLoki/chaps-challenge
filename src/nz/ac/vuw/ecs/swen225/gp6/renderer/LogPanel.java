@@ -1,65 +1,85 @@
 package nz.ac.vuw.ecs.swen225.gp6.renderer;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Utilities;
+import javax.swing.*;
 import java.awt.*;
-
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.List;
+import java.util.ArrayList;
+/**
+ * This class is used to create a log panel that the user can input commands into.
+ * @author loki
+ */
 public class LogPanel extends JPanel{
-    
-    //textArea
-    private JTextArea textArea;
-    private Commands commands;
-    public MazeRenderer mazeRenderer;
-
+//-----------------------------------------------------fields-------------------------------------------------------//
+    private final JTextArea textDisplay;
+    private final Commands commands;
+//-----------------------------------------------------constructor-------------------------------------------------------//
     /**
      * Constructor for logPanel
      */
     public LogPanel() {
-
-        this.setLayout(new GridLayout(1,1)); //so it fills the whole panel
-        // make the text Area panel and set property's
-		textArea = new JTextArea(); 
-		textArea.setLineWrap(true); 
-		textArea.setWrapStyleWord(true); // pretty line wrap.
-		textArea.setBackground(Color.black);
-		Font font = new Font("Verdana", Font.BOLD, 12);
-		textArea.setFont(font); // set font
-		textArea.setForeground(Color.green); // set color
-        textArea.setEditable(true); // set editable to false
-        //add textArea to scrollPane
-        JScrollPane scrollPane = new JScrollPane(textArea);
-        this.add(scrollPane);
         commands = new Commands(this);
-
-        //add key listeners to textArea
-        textArea.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                if(evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER){
-                    //get the previous line of text
-                    String previousLine = getLastLine();
-                    checkCommand(previousLine);
+        textDisplay = new JTextArea();
+        JTextField inputField = new JTextField();
+        Font font = new Font("Verdana", Font.BOLD, 12);
+        List<String> history = new ArrayList<>();
+        List<String> historyTemp = new ArrayList<>();
+        //settings for textDisplay
+        textDisplay.setEditable(false);
+        textDisplay.setLineWrap(true);
+        textDisplay.setWrapStyleWord(true); // pretty line wrap.
+        textDisplay.setBackground(Color.black);
+        textDisplay.setForeground(Color.green);
+        textDisplay.setFont(font);
+        //settings for inputField
+        inputField.setPreferredSize(new Dimension(500, 30));
+        inputField.setMaximumSize(new Dimension(500, 30));
+        inputField.setBackground(Color.green);
+        inputField.setForeground(Color.black);
+        inputField.setFont(font);
+        inputField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_UP){
+                    if (history.size() == 0) {return;}
+                    String lastCommand = history.get(history.size() - 1);
+                    inputField.setText(lastCommand);
+                    historyTemp.add(lastCommand);
+                    history.remove(history.size() - 1);
+                } else if (e.getKeyCode() == KeyEvent.VK_DOWN){
+                    if (historyTemp.size() == 0) return;
+                    String lastCommand = historyTemp.get(historyTemp.size() - 1);
+                    inputField.setText(lastCommand);
+                    history.add(lastCommand);
+                    historyTemp.remove(historyTemp.size() - 1);
+                } else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    historyTemp.clear();
+                    String input = inputField.getText();
+                    if (input.isBlank()) return;
+                    history.add(input);
+                    commands.invoke(input);
+                    inputField.setText("");
                 }
             }
         });
-        //add a cursor to the textArea
-        textArea.getCaret().setVisible(true);
+        // attach the components into this panel
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.add(new JScrollPane(textDisplay)); // add textArea to scrollPane
+        this.add(inputField);
     }
-
+//-----------------------------------------------------methods-------------------------------------------------------//
     /**
      * appends String to textArea
      * @param s
      * @return
      */
     public String print(String s) {
-        textArea.append(s);
+        textDisplay.append(s);
         this.repaint();
         return s;
     }
 
-    //println
     /**
      * appends String to textArea with a new line
      */
@@ -67,39 +87,12 @@ public class LogPanel extends JPanel{
         return print(s + "\n");
     }
 
-    //every time user enter text check if is command.
-    /**
-     * checks if the previous line is a command
-     * @param s
-     */
-    public void checkCommand(String s) {
-       commands.invoke(s);
-    }
-
-    	
-	/**
-	 * gets the last line of text from textArea
-	 */
-	public String getLastLine() {
-		//stackoverflow? like the run time error? never heard of that Website
-		try {
-			int end = textArea.getDocument().getLength();
-			int start = Utilities.getRowStart(textArea, end);
-		while (start == end){
-		    end--;
-		    start = Utilities.getRowStart(textArea, end);
-		}
-		return textArea.getText(start, end - start);
-		} catch (BadLocationException e) {e.printStackTrace();}
-		return "";
-	}
-
     /**
      * return the text area
      * @return textArea
      */
-    public JTextArea getTextArea() {
-        return textArea;
+    public void clear() {
+        textDisplay.setText("");
     }
 
     /**
@@ -114,7 +107,6 @@ public class LogPanel extends JPanel{
      * @param mazeRenderer
      */
     public void setRenderer(MazeRenderer mazeRenderer) {
-        this.mazeRenderer = mazeRenderer;
         commands.setRenderer(mazeRenderer);
     }
 }

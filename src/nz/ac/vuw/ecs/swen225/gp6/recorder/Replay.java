@@ -1,14 +1,10 @@
 package nz.ac.vuw.ecs.swen225.gp6.recorder;
 
-import java.util.Stack;
-
 import org.dom4j.DocumentException;
-
 import nz.ac.vuw.ecs.swen225.gp6.app.App;
-import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.Pair;
-import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.RecordTimeline;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.ReplayTimeline;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
+import nz.ac.vuw.ecs.swen225.gp6.persistency.RecorderPersistency;
 
 /**
  * Class for replaying a recorded game.
@@ -18,35 +14,31 @@ import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
  *
  * @author: Jayden Hooper
  */
-public class Replay implements Runnable {
+public final class Replay implements Runnable {
+    public static final Replay INSTANCE = new Replay();
     private ReplayTimeline<Actions> timeline;
-    private Pair<Long, Actions> queuedAction;
     private App app;
     private long time;
     private boolean step = false;
-    private boolean isRunning = false;
 
-    /**
-     * Constructor takes in an app to observe
-     * @param app the app to observe
-     */
-    public Replay(App app){
+    /** Constructor takes in an app to observe */
+    private Replay(){}
+
+    /** Sets the Replay object up with an App. */
+    public void setReplay(App app){
         if(app == null) {
             throw new IllegalArgumentException("App cannot be null");
         }
         this.app = app;
         app.getGameClock().setObserver(this);
-        app.getGameClock().stop();
-        
     }
 
     @Override
     public void run() {
-        // app.getGameClock().stop();
-        // time = app.getGameClock().getTimePlayed();
-        // System.out.println(time);
-        if (!isRunning) {return;}
-        autoPlayActions();
+        this.time = app.getGameClock().getTimePlayed();
+        if(actionReady()) {
+            executeAction(timeline.next().value());
+        }
     }
 
     /**
@@ -56,16 +48,11 @@ public class Replay implements Runnable {
      * @throws DocumentException
      */
     public Replay load(int slot) {
-        // try {
-        //     this.timeline = new ReplayTimeline<Actions>(Persistency.loadRecordTimeline(slot));
-        // } catch (DocumentException e) {
-        //     e.printStackTrace();
-        // }
-        return this;
-    }
-
-    @Deprecated
-    public Replay load(String game) {
+        try {
+            this.timeline = new ReplayTimeline<Actions>(RecorderPersistency.loadTimeline(slot));
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
         return this;
     }
 
@@ -75,12 +62,10 @@ public class Replay implements Runnable {
      * @return this replay object to chain methods
      */
     public Replay step(){
-        // System.out.println("Stepping");
-        if (checkInvalid()) {
-            return this;
+        if(checkNextIsValid()) {
+            app.getGameClock().start();
         }
-        this.queuedAction = timeline.next();
-        isRunning = true;
+        this.step = true;
         return this;
     }
 
@@ -89,12 +74,9 @@ public class Replay implements Runnable {
      * @return this replay object to chain methods
      */
     public Replay autoPlay(){
-        if (checkInvalid()) {
-            System.out.println("Auto Replay failed");
-            return this;
+        if(checkNextIsValid()) {
+            app.getGameClock().start();
         }
-        System.out.println("Auto Replay tured on");
-        isRunning = true;
         return this;
     }
 
@@ -103,8 +85,7 @@ public class Replay implements Runnable {
      * @return this replay object to chain methods
      */
     public Replay pauseReplay(){
-        Actions.PAUSE_GAME.run(app);
-        isRunning = false;
+        app.getGameClock().stop();
         return this;
     }
 
@@ -113,7 +94,7 @@ public class Replay implements Runnable {
      * @param speed the speed to set the replay to
      * @return this replay object to chain methods
      */
-    public Replay setSpeed(int speed) {
+    public Replay speedMultiplier(int speed) {
         int delay = 34 / speed;    // default delay is 34ms
         this.app.getGameClock().setReplaySpeed(delay);
         return this;
@@ -124,7 +105,7 @@ public class Replay implements Runnable {
      * @return this replay object to chain methods
      */
     public Replay stopReplay(){
-        System.out.println("Replay stopped");
+        this.app.getGameClock().stop();
         return this;
     }
     
@@ -134,38 +115,30 @@ public class Replay implements Runnable {
     //================================================================================================================//
 
     /**
-     * Method checks if a timeline has been initialized.
-     * If not, it will display a popup message.
+     * Method checks if the next action is valid.
      */
-    private boolean checkInvalid(){
+    private boolean actionReady(){
+        if(!checkNextIsValid()){
+            app.getGameClock().stop();
+            System.out.println("Replay finished");
+            return false;
+        }
+        return timeline.peek().key() <= time;
+    }
+
+    /**
+     * Method checks if the timeline is valid
+     */
+    private boolean checkNextIsValid(){
         if (timeline == null){
             System.out.println("No game loaded");
-            return true;
-        }
-        if (!timeline.hasNext()){
-            System.out.println("Please reload a game.");
-            return true;
-        }
-        return false;
-    }
-    
-    /**
-     * Method checks if the next action in the timeline is ready to be executed.
-     * If it is, it calls the executeAction method.
-     */
-    private void autoPlayActions() { 
-        if(queuedAction != null && queuedAction.getKey() <= this.time){
-            executeAction(queuedAction.getValue());
-        }
-        if(step) {
-            isRunning = false;
-            step = false;
+            return false;
         }
         if (!timeline.hasNext()){
             System.out.println("Replay finished"); 
-            return; 
+            return false;
         }
-        queuedAction = timeline.next();
+        return true;
     }
 
     /**
@@ -175,7 +148,12 @@ public class Replay implements Runnable {
      */
     private void executeAction(Actions action) throws IllegalArgumentException {
         if(action == null) {throw new IllegalArgumentException("Null action encountered");}
-        action.run(app);
-        throw new IllegalArgumentException("No such action: " + action);
+        action.replay(app);
+        System.out.println("action executed");
+        if(step) {
+            app.getGame().pingDomain();
+            app.getGameClock().stop();
+            this.step = false;
+        }
     }
 }

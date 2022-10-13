@@ -1,8 +1,6 @@
 package nz.ac.vuw.ecs.swen225.gp6.persistency;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.EnumMap;
 
 import org.dom4j.Document;
@@ -115,10 +113,13 @@ public class AppPersistency {
 
         File dir = new File("res");
         if (!dir.exists()) {
-            dir.mkdirs();
+            if (!dir.mkdirs()) {
+                throw new IOException("Failed to create directory: " + dir.getAbsolutePath());
+            }
         }
 
-        FileWriter out = new FileWriter("res/config.xml");
+        FileOutputStream fileStream = new FileOutputStream("res/config.xml");
+        OutputStreamWriter out = new OutputStreamWriter(fileStream, "UTF-8");
         document.write(out);
         out.close();
     }

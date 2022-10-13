@@ -7,3 +7,6 @@
 *.class
 res/log.txt
 res/saves/
+res/recordings/
+res/config.xml
+res/recordings/*

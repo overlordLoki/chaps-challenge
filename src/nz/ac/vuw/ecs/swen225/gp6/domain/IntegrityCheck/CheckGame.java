@@ -99,7 +99,7 @@ public final class CheckGame {
 
         //COIN:
         //check that there is atleast 1 coin in total in game
-        if(getAllTiles(maze,TileType.Coin).size() + inv.coins() <= 1){
+        if(getAllTiles(maze,TileType.Coin).size() + inv.coins() < 1){
             throw new IllegalStateException("There are no(or negative) coins in game");
         }
 
@@ -166,8 +166,14 @@ public final class CheckGame {
      */
     private static void checkHeroStateChange(Maze preMaze, Inventory preInv, Maze afterMaze, Inventory afterInv,
             Domain preDomain) {
+
+         Hero h = (Hero) getTile(afterMaze, TileType.Hero);
+        //check hero isn't out of bounds(not on a periphery tile or its memory of location is in bound)
+        if(Loc.checkInBound(h.info().loc(), afterMaze) == false ||
+            h.tileOn().type() == TileType.Periphery){
+            throw new IllegalStateException("Hero has moved out of bounds");
+        }
         
-        Hero h = (Hero) getTile(afterMaze, TileType.Hero);
         Loc heroNewLoc = h.info().loc();
         Tile tileToOccupy = preMaze.getTileAt(heroNewLoc);
         if(tileToOccupy instanceof Hero)return; //if hero hasn't moved then no need to check
@@ -178,11 +184,6 @@ public final class CheckGame {
             + tileToOccupy.type().name());
         }
 
-        //check hero isn't out of bounds
-        if( Loc.checkInBound(h.info().loc(), afterMaze) == false ||
-            h.tileOn().type() == TileType.Periphery){
-            throw new IllegalStateException("Hero has moved out of bounds");
-        }
 
         //check onTile field is replaced with tile's replaceWith method that hero is on
         if(tileToOccupy.replaceWith().type() !=  h.tileOn().type()){
@@ -204,7 +205,7 @@ public final class CheckGame {
             }
         }
         //check if hero moved on an item(not a coin), it has been added to the inventory(if inventory is not full)
-        if(tileToOccupy instanceof Item && !(tileToOccupy instanceof Coin)){
+        if(tileToOccupy instanceof Item && !(tileToOccupy instanceof Coin) && preInv.isFull() == false){
             if(preInv.countItem(i -> i.type() == tileToOccupy.type()) != 
             afterInv.countItem(i -> i.type() == tileToOccupy.type()) - 1){
                 throw new IllegalStateException("The item has not been added to the inventory");

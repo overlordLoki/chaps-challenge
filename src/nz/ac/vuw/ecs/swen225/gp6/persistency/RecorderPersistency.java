@@ -1,8 +1,6 @@
 package nz.ac.vuw.ecs.swen225.gp6.persistency;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Stack;
 
 import org.dom4j.Document;
@@ -12,7 +10,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
-import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.Pair;
+import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Pair;
 
 public class RecorderPersistency {
 
@@ -26,8 +24,8 @@ public class RecorderPersistency {
         Element root = DocumentHelper.createElement("timeline");
         root.addAttribute("size", timeline.size() + "");
         for (Pair<Long, Actions> pair : timeline) {
-            Element action = root.addElement(pair.getValue().toString());
-            action.addAttribute("time", pair.getKey() + "");
+            Element action = root.addElement(pair.value().toString());
+            action.addAttribute("time", pair.key() + "");
         }
         return root;
     }
@@ -60,10 +58,13 @@ public class RecorderPersistency {
 
         File dir = new File("res/recordings");
         if (!dir.exists()) {
-            dir.mkdirs();
+            if (!dir.mkdirs()) {
+                throw new IOException("Could not create directory");
+            }
         }
 
-        FileWriter out = new FileWriter("res/recordings/" + slot + ".xml");
+        FileOutputStream fileStream = new FileOutputStream("res/recordings/" + slot + ".xml");
+        OutputStreamWriter out = new OutputStreamWriter(fileStream, "UTF-8");
         document.write(out);
         out.close();
     }
