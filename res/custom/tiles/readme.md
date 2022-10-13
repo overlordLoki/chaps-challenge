@@ -7,11 +7,11 @@ The Enemy.java file is an example of a custom tile that implements the Tile inte
 ## Adding the custom tile to the game
 First, we compile the custom tiles. In the src/custom/Tiles directory, run the following command:
 ```
-javac -cp ../../ *.java
+javac -cp ../../../src *.java
 ```
 Now, put the entire custom directory into a .jar file. You can do this by running the following command:
 ```
-jar -cf custom.jar ../../custom
+jar -cf level2.jar ../../custom
 ```
 Finally, put the .jar file into the levels directory and specify the custom tile in the level XML like below. 
 ```
