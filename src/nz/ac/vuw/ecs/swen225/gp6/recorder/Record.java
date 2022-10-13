@@ -10,18 +10,15 @@ import nz.ac.vuw.ecs.swen225.gp6.persistency.RecorderPersistency;
  * @author: Jayden Hooper
  */
 public class Record {
+    public static final Record INSTANCE = new Record();
     private RecordTimeline<Actions> timeline;
 
-    /**
-     * Create a new Record object.
-     */
-    public Record() {
+    /** Create a new Record object. */
+    private Record() {
         this.timeline = new RecordTimeline<>();
     }
 
-    /**
-     * Starts a new recording.
-     */
+    /**  Starts a new recording. */
     public void startRecording(){
         this.timeline = new RecordTimeline<>();
     }

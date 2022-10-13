@@ -2,6 +2,7 @@ package nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures;
 
 
 import java.util.Stack;
+import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Pair;
 
 /**
  * A generic timeline class that replays a series of events in chronological order.
