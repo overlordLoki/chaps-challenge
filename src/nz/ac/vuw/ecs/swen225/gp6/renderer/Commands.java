@@ -27,7 +27,6 @@ public final class Commands {
         addCommands("packsNumber", "Displays the number of texture packs", this::numberOfPacks);
         addCommands("setDogs", "Sets the texture pack to dogs", this::setDogs);
         addCommands("setCats", "Sets the texture pack to cats", this::setCats);
-        addCommands("autoWin", "Sets the game to auto win", this::autoWin);
         addCommands("autoLose", "Sets the game to auto lose", this::autoLose);
     }
 //--------------------------------------------------methods-------------------------------------------------------//
