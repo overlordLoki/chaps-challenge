@@ -19,7 +19,7 @@ import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller.Key;
  *
  * @author Jeff Lin
  */
-public class Configuration {
+public class Configuration{
     private boolean isMusicOn;
     private final EnumMap<Actions, Key> userKeyBindings;
     private String texturePack;
@@ -114,7 +114,7 @@ public class Configuration {
      *
      * @return the list of action key bindings
      */
-    public EnumMap<Actions, Key> getUserKeyBindings() {return userKeyBindings;}
+    public EnumMap<Actions, Key> getUserKeyBindings() {return userKeyBindings.clone();}
 
     /**
      *  Check if this key combo is already bound to an action.

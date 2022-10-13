@@ -23,10 +23,10 @@ import static nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack.Images.reloadAllTex
  * @author Loki
  */
 public class MazeRenderer extends JPanel{
-    //----------------------------fields-----------------------------------------------
+//----------------------------fields------------------------------------------------------------------------------//
     static final long serialVersionUID = 1L; //serialVersionUID
     private List<TexturePack> textures;
-    private static TexturePack texturePack = null; //default texture pack
+    private static TexturePack texturePack = null;//this is not a bug it is a feature. see report
     private Tile[][] gameArray; //the array of tiles
     public Domain domain; //the domain controller
     public BufferedImage background; //the background image
@@ -45,7 +45,7 @@ public class MazeRenderer extends JPanel{
         this.domain = maze;
         this.setOpaque(false);
         textures = getTexturePacksList();
-        if(texturePack == null){texturePack = textures.get(0);}
+        if(texturePack == null){texturePack = textures.get(0);}//this is not a bug it is a feature. see report
         try {
             setTexturePack("Dogs");
         } catch (Exception e) {System.out.println("Dogs not found, using other texture pack");}
@@ -161,7 +161,7 @@ public class MazeRenderer extends JPanel{
      * @param texturePack
      */
     public void setTexturePack(TexturePack texturePack) {
-        MazeRenderer.texturePack = texturePack;
+        MazeRenderer.texturePack = texturePack;//this is not a bug it is a feature. see report
         patternSize = 100;
         reloadAllTexturepack();
     }
@@ -175,7 +175,7 @@ public class MazeRenderer extends JPanel{
     public void setTexturePack(String texturePack) {
         for(TexturePack tp : textures) {
             if(tp.getName().equals(texturePack)) {
-                MazeRenderer.texturePack = tp;
+                MazeRenderer.texturePack = tp;//this is not a bug it is a feature. see report
                 patternSize = 100;
                 reloadAllTexturepack();
                 return;

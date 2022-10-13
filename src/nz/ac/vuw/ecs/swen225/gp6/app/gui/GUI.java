@@ -3,7 +3,9 @@ package nz.ac.vuw.ecs.swen225.gp6.app.gui;
 import nz.ac.vuw.ecs.swen225.gp6.app.App;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller;
+import nz.ac.vuw.ecs.swen225.gp6.app.utilities.GameClock;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.Record;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.InventoryPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.LogPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
@@ -231,8 +233,7 @@ public class GUI {
                 pnOptions);
         addAll(pnStatus,
                 createInfoLabel(()->"Level: " + app.getSave(slot).getCurrentLevel(), renderPanel, TEXT, true),
-                createInfoLabel(()->"Time Left: " + app.getGameClock().getTimeInMinutes(), renderPanel, TEXT, true),
-                createInfoLabel(()->"Score: " + app.getSave(slot).getTreasuresLeft(), renderPanel, TEXT, true));
+                createInfoLabel(()->"Treasures Left: " + app.getSave(slot).getTreasuresLeft(), renderPanel, TEXT, true));
         if (isSave){    // Options for Saving
             JPanel pnSaveInv = saveInventoryPanels[slot-1];
             setSize(pnSaveInv, 150,300, 150,300, 150,300);
@@ -241,6 +242,7 @@ public class GUI {
                     Box.createHorizontalGlue(),
                     createActionLabel("Save here!", renderPanel, SUBTITLE, true, ()->{
                         try {
+                            app.getGame().setCurrentTime(app.getGameClock().getTimePlayed());
                             DomainPersistency.save(app.getGame(), slot);
                             app.getRecorder().saveRecording(slot);
                             app.refreshSaves();
@@ -248,7 +250,8 @@ public class GUI {
                         }catch (IOException e){
                             System.out.println("Failed to save game in slot: " + slot);
                             e.printStackTrace();
-                            JOptionPane.showMessageDialog(null, "There is an error in saving the game slot: " + slot);
+                            JOptionPane.showMessageDialog(null,
+                                    "There is an error in saving the game slot: " + slot);
                         }}),
                     Box.createHorizontalGlue());
         }else{  // Options for Loading

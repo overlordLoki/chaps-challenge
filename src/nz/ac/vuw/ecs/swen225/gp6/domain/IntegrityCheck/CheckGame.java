@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.GameState;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.Key.KeyColor;
@@ -25,8 +26,6 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.*;
  * also include string telling which rule has been broken
  */
 public final class CheckGame {
-    public enum GameState{WON, LOST, PLAYING, BETWEENLEVELS};//TODO a method to get state for app
-    public static GameState state = GameState.PLAYING;
     
     /**
      * Checks the integrity of the game after a ping, and the game state is transitioning a step forward.
@@ -43,19 +42,18 @@ public final class CheckGame {
         Inventory afterInv = afterDomain.getInv();
 
          //if the game is won, lost or in between levels, behave appropriately
-        if(state == GameState.WON || state == GameState.LOST){
+        if(afterDomain.getGameState() == GameState.WON ||afterDomain.getGameState() == GameState.LOST){
             return;
         } 
-        if(state == GameState.BETWEENLEVELS){
-            state = GameState.PLAYING;
+        if(afterDomain.getGameState() == GameState.BETWEENLEVELS){
+            afterDomain.setGameState(GameState.PLAYING);
             return;
         }
 
         //HERO:
         checkHeroStateChange(preMaze, preInv, afterMaze, afterInv, preDomain);
 
-        //ENEMY:
-        //checkEnemyStateChange(preMaze, afterMaze, preDomain);
+        //Perhaps extend in future by having a way to identify all moving things and collectively check them
 
         //COINS:
         //check there is the same amounts of coins in the maze and inventory combined before and after
@@ -78,16 +76,16 @@ public final class CheckGame {
         Inventory inv = domain.getInv();
 
         //if the game is won, lost or in between levels, behave appropriately
-        if(state == GameState.WON){
+        if(domain.getGameState() == GameState.WON){
             checkWin(domain);
             return;
         }
-        if(state == GameState.LOST){
+        if(domain.getGameState() == GameState.LOST){
             checkLose(domain);
             return;
         }
-        if(state == GameState.BETWEENLEVELS){
-            state = GameState.PLAYING;
+        if(domain.getGameState() == GameState.BETWEENLEVELS){
+            domain.setGameState(GameState.PLAYING);
             return;
         }
 
@@ -99,7 +97,7 @@ public final class CheckGame {
 
         //COIN:
         //check that there is atleast 1 coin in total in game
-        if(getAllTiles(maze,TileType.Coin).size() + inv.coins() <= 1){
+        if(getAllTiles(maze,TileType.Coin).size() + inv.coins() < 1){
             throw new IllegalStateException("There are no(or negative) coins in game");
         }
 
@@ -118,40 +116,6 @@ public final class CheckGame {
         }
         
     }
-
-    
-    //CHECKER HELPERS:
-    /* TODO replace with check for moving object or smth
-     * checks the integrity of enemies as the state of game changes
-     */
-    /* 
-    private static void checkEnemyStateChange(Maze preMaze, Maze afterMaze, Domain preDomain) {
-        //check if enemies havent moved on obstructions
-        List<Tile> enemies = getAllTiles(afterMaze, TileType.Enemy);
-        for(Tile e : enemies){
-            Loc enemyNewLoc = e.info().loc();
-            Tile tileToOccupyEnemy = preMaze.getTileAt(enemyNewLoc);
-            if(tileToOccupyEnemy.obstructsEnemy(preDomain)){
-                throw new IllegalStateException("Enemy has moved on an obstruction: " 
-                + tileToOccupyEnemy.type().name());
-            }
-        }
-
-        //check if enemies arent out of bounds
-        for(Tile e : enemies){
-            if( Loc.checkInBound(e.info().loc(), afterMaze) == false ||
-                ((Enemy)e).tileOn().type() == TileType.Periphery){
-                throw new IllegalStateException("Enemy has moved out of bounds");
-            }
-        }
-
-        //check number of enemies is the same (NOTE: unless they can die, then this check must change- future feature perhaps)
-        if(getAllTiles(preMaze,TileType.Enemy).size() != 
-        getAllTiles(afterMaze, TileType.Enemy).size()){
-            throw new IllegalStateException("Number of enemies has changed");
-        }
-    }
-    */
     
 
     /**
@@ -166,8 +130,14 @@ public final class CheckGame {
      */
     private static void checkHeroStateChange(Maze preMaze, Inventory preInv, Maze afterMaze, Inventory afterInv,
             Domain preDomain) {
+
+         Hero h = (Hero) getTile(afterMaze, TileType.Hero);
+        //check hero isn't out of bounds(not on a periphery tile or its memory of location is in bound)
+        if(Loc.checkInBound(h.info().loc(), afterMaze) == false ||
+            h.tileOn().type() == TileType.Periphery){
+            throw new IllegalStateException("Hero has moved out of bounds");
+        }
         
-        Hero h = (Hero) getTile(afterMaze, TileType.Hero);
         Loc heroNewLoc = h.info().loc();
         Tile tileToOccupy = preMaze.getTileAt(heroNewLoc);
         if(tileToOccupy instanceof Hero)return; //if hero hasn't moved then no need to check
@@ -178,11 +148,6 @@ public final class CheckGame {
             + tileToOccupy.type().name());
         }
 
-        //check hero isn't out of bounds
-        if( Loc.checkInBound(h.info().loc(), afterMaze) == false ||
-            h.tileOn().type() == TileType.Periphery){
-            throw new IllegalStateException("Hero has moved out of bounds");
-        }
 
         //check onTile field is replaced with tile's replaceWith method that hero is on
         if(tileToOccupy.replaceWith().type() !=  h.tileOn().type()){
@@ -204,7 +169,7 @@ public final class CheckGame {
             }
         }
         //check if hero moved on an item(not a coin), it has been added to the inventory(if inventory is not full)
-        if(tileToOccupy instanceof Item && !(tileToOccupy instanceof Coin)){
+        if(tileToOccupy instanceof Item && !(tileToOccupy instanceof Coin) && preInv.isFull() == false){
             if(preInv.countItem(i -> i.type() == tileToOccupy.type()) != 
             afterInv.countItem(i -> i.type() == tileToOccupy.type()) - 1){
                 throw new IllegalStateException("The item has not been added to the inventory");

@@ -7,13 +7,13 @@ import javax.swing.SwingUtilities;
  *
  * @author Jeff Lin
  */
-public class Main {
+public class Main extends App {
     /**
      * Main method of the application.
      *
      * @param args No arguments required for this application
      */
-    public static void main(String... args){
+    public static void main(String... args) {
         ClassLoader.getSystemClassLoader().setDefaultAssertionStatus(true);
         SwingUtilities.invokeLater(App::new);
     }
