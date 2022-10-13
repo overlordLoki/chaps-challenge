@@ -87,7 +87,8 @@ public class Maze {
                 Tile t = tileArray[x][y];
                 try{
                     copy[x][y] = t.getClass().getConstructor( TileInfo.class).newInstance(t.info());
-                } catch(Exception e){
+                } catch(NoSuchMethodException | InstantiationException 
+                | IllegalAccessException | java.lang.reflect.InvocationTargetException e){
                     throw new RuntimeException("cannot initiate the tile class(with TileInfo()): " 
                     + t.getClass().getName());
                 }
