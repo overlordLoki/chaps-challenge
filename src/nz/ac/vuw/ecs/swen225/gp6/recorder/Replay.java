@@ -123,10 +123,7 @@ public final class Replay implements Runnable {
             System.out.println("Replay finished");
             return false;
         }
-        if(timeline.peek().key() <= time){
-            return true;
-        }
-        return false;
+        return timeline.peek().key() <= time;
     }
 
     /**
