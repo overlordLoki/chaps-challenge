@@ -195,7 +195,7 @@ public class DomainPersistency {
         if (null == name) {
             // it's a custom tile
             Element custom = DocumentHelper.createElement("custom");
-            custom.addAttribute("name", tile.getClass().getSimpleName());
+            custom.addAttribute("class", tile.getClass().getSimpleName());
             custom.addAttribute("source", tile.info().message());
             return custom;
         } else if (name.contains("Key") || name.contains("Lock") && name.equals("exitLock")) {
