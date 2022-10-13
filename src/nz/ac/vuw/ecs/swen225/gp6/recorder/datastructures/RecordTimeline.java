@@ -22,6 +22,7 @@ public class RecordTimeline<E> {
 
     /** 
      * Creates a new timeline from an existing timeline.
+     * @param timeline the timeline to start from.
      */
     public RecordTimeline(Stack<Pair<Long, E>> timeline){
         this.timeline = timeline;
@@ -35,15 +36,15 @@ public class RecordTimeline<E> {
     }
 
     /**
-     * Checks if there are any more actions in the timeline
-     * @return boolean if there are more actions
+     * Checks if there are any more actions in the timeline.
+     * @return boolean if there are more actions.
      */
     public boolean hasNext(){
         return !this.timeline.isEmpty();
     }
 
     /**
-     * @return the timeline stack
+     * @return the timeline stack.
      */
     public Stack<Pair<Long, E>> getTimeline() {
         return timeline;
