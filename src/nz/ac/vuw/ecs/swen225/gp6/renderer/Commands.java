@@ -25,6 +25,7 @@ public final class Commands {
         addCommands("clear", "Clears the text area", this::clear);
         addCommands("packsNumber", "Displays the number of texture packs", this::numberOfPacks);
         addCommands("setDogs", "Sets the texture pack to dogs", this::setDogs);
+        addCommands("setCats", "Sets the texture pack to cats", this::setCats);
     }
 //------------------------------
     /**
@@ -92,6 +93,15 @@ public final class Commands {
      */
     private void setDogs(){
         mazeRenderer.setTexturePack("Dogs");
+    }
+
+    //set texure pack to cats
+    /**
+     * sets the texture pack to cats
+     *
+     */
+    private void setCats(){
+        mazeRenderer.setTexturePack("Cats");
     }
 
 
