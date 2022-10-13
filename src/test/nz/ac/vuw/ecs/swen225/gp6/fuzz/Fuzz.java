@@ -41,20 +41,30 @@ public class Fuzz {
         catch (AWTException e) {throw new RuntimeException(e);}
     }
 
+    public static void showLog(){
+        //set the log panel visible during the test
+        JFrame frame = new JFrame("Logs");
+        frame.setPreferredSize(new Dimension(500, 500));
+        frame.setMinimumSize(new Dimension(500, 500));
+        frame.setMaximumSize(new Dimension(500, 500));
+        frame.add(app.getGUI().getLogPanel());
+        frame.setVisible(true);
+    }
+
     public static void pasuseStrategy(App app) {
         SAVE_GAME.run(app);
-        int s = r.nextInt(2);
+        int s = r.nextInt(2) + 1;
         System.out.println("s = " + s);
         app.getRecorder().saveRecording(s);
         System.out.println("Saved game: " + s);
         robot.delay(2000);
         QUIT_TO_MENU.run(app);
+        System.out.println("Quit to menu");
         robot.delay(2000);
         LOAD_GAME.run(app);
         app.startSavedGame(s);
         System.out.println("Loaded game: " + s);
         robot.delay(2000);
-
     }
 
     /**
@@ -79,50 +89,40 @@ public class Fuzz {
         JOptionPane.showMessageDialog(null,"Start Fuzzing");
         app.startNewGame();
         app.transitionToGameScreen();
+//        showLog();
 
-        //set the log panel visible during the test
-        JFrame frame = new JFrame("Logs");
-        frame.setPreferredSize(new Dimension(500, 500));
-        frame.setMinimumSize(new Dimension(500, 500));
-        frame.setMaximumSize(new Dimension(500, 500));
-        frame.add(app.getGUI().getLogPanel());
-        frame.setVisible(true);
-        //initialize the game running status
-        boolean isRunning = true;
-        while (isRunning) {
-            try {
-                //get a random action from the action list
-                int randomIndex = r.nextInt(actionsList.size());
-                Actions action = actionsList.get(randomIndex);
-                action.run(app);
-                System.out.print("Action: " + actionsList.get(randomIndex) + " >>> \n");
-                robot.delay(100);
+        while (true) {
+            //get a random action from the action list
+            int randomIndex = r.nextInt(actionsList.size());
+            Actions action = actionsList.get(randomIndex);
 
-                if(action == PAUSE_GAME) {
+            if(action == PAUSE_GAME) {
+                if(r.nextInt(2) != 0) {
+                    PAUSE_GAME.run(app);
+                    System.out.println("Paused game");
+                    robot.delay(2000);
+                    RESUME_GAME.run(app);
+                    System.out.println("Resume game");
+                    robot.delay(2000);
+                }else{
+                    PAUSE_GAME.run(app);
+                    robot.delay(2000);
+                    System.out.println("Paused game");
                     pasuseStrategy(app);
                 }
 
-                Field[] appF = app.getClass().getDeclaredFields();
-
-                //check if the game is finished or not, also catch the exception
-//                for (Field f : appF){
-//                    if(f.getName().equals("inResume")
-//                            && actionsList.get(randomIndex) != PAUSE_GAME
-//                            && actionsList.get(randomIndex) == RESUME_GAME){
-//                        robot.delay(100);
-//                        f.setAccessible(true);
-//                        isRunning = (boolean) f.get(app);
-//                    }
-//                }
-
-            } catch (Exception e) {
-                isRunning = false;
-                System.out.println("Testing Level: "+app.getGame().getCurrentLevel() + " Completed");
+            }else{
+                action.run(app);
             }
+            System.out.print("Action: " + actionsList.get(randomIndex) + " >>> \n");
+            robot.delay(100);
 
         }
 
+
     }
+
+
 
     public static void testLevel2(){
         //initialize the app environment, set all the actions into a list
@@ -142,14 +142,7 @@ public class Fuzz {
         app.startNewGame();
         app.transitionToGameScreen();
         TO_LEVEL_2.run(app);
-
-        //set the log panel visible during the test
-        JFrame frame = new JFrame("Logs");
-        frame.setPreferredSize(new Dimension(500, 500));
-        frame.setMinimumSize(new Dimension(500, 500));
-        frame.setMaximumSize(new Dimension(500, 500));
-        frame.add(app.getGUI().getLogPanel());
-        frame.setVisible(true);
+        showLog();
 
         //initialize the game running status
         boolean isRunning = true;
@@ -454,9 +447,9 @@ public class Fuzz {
         }
 
         //exit the game after test complete
-        System.out.println("All Tests Complete");
-        JOptionPane.showMessageDialog(null, "All Tests Complete");
-        System.exit(0);
+//        System.out.println("All Tests Complete");
+//        JOptionPane.showMessageDialog(null, "All Tests Complete");
+//        System.exit(0);
     }
 
     @Test
