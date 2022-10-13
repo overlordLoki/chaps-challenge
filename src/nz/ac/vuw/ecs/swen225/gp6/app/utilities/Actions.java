@@ -118,7 +118,6 @@ public enum Actions {
     /** Represents the action quitting without saving game. */
     QUIT_TO_MENU("Quit To Menu"){
         public void run(App app){
-            System.out.println("Quit Game without saving, returning to menu");
             app.getGameClock().stop();
             app.setResuming(false);
             MusicPlayer.useMenuMusic();
