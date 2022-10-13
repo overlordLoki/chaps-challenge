@@ -53,7 +53,7 @@ public class Level {
      * @param lvl
      */
     public Level(Maze maze, int lvl){
-        this(maze, new Inventory(8), lvl, 120, 0, Direction.None);
+        this(maze, new Inventory(8), lvl, 60, 0, Direction.None);
     }
 
     //GETTERS:
