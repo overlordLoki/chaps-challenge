@@ -53,7 +53,7 @@ public class DomainPersistency {
     /**
      * Deserialise a domain from an XML document
      * 
-     * @param document The XML document to deserialise
+     * @param root The XML element to deserialise
      * @return The deserialised domain
      */
     public static Domain deserialiseDomain(Element root) {
@@ -151,7 +151,7 @@ public class DomainPersistency {
     /**
      * Deserialise a maze from an XML document
      * 
-     * @param xml
+     * @param grid The XML element to deserialise
      * @return The unserialised maze
      */
     public static Maze deserialiseMaze(Element grid) {
@@ -274,22 +274,8 @@ public class DomainPersistency {
      * Delete a save file
      */
     public static boolean delete(int slot) throws IOException {
-        File file = new File("res/save/" + slot + ".xml");
+        File file = new File("res/saves/" + slot + ".xml");
         return file.delete();
-    }
-
-    /**
-     * Load saves 1, 2, 3 to a list
-     * 
-     * @return The list of saves
-     */
-    @Deprecated
-    public static List<Domain> loadSaves() throws DocumentException {
-        List<Domain> saves = new ArrayList<Domain>();
-        for (int i = 1; i <= 3; ++i) {
-            saves.add(loadSave(i));
-        }
-        return saves;
     }
 
     /**
@@ -371,7 +357,7 @@ public class DomainPersistency {
      *
      * @param domain The domain to save
      *
-     * @param path   The file path to save to
+     * @param slot   The save slot to save to
      */
     public static void save(Domain domain, int slot) throws IOException {
         Element root = serialiseDomain(domain);

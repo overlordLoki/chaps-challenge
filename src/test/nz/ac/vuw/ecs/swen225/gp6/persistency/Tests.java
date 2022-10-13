@@ -27,12 +27,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.awt.event.InputEvent;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileInfo;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.Key;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
+
+import nz.ac.vuw.ecs.swen225.gp6.persistency.*;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.junit.jupiter.api.Test;
@@ -43,24 +52,24 @@ import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Pair;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
-import nz.ac.vuw.ecs.swen225.gp6.persistency.AppPersistency;
-import nz.ac.vuw.ecs.swen225.gp6.persistency.DomainPersistency;
-import nz.ac.vuw.ecs.swen225.gp6.persistency.Logging;
-import nz.ac.vuw.ecs.swen225.gp6.persistency.RecorderPersistency;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Logging.Log;
 
 public class Tests {
     @Test
     void testDomainSaveAndOpen() throws IOException, DocumentException {
+        File saves = new File("res/saves");
+        saves.delete();
         Domain domain = DomainPersistency.getInitial();
         DomainPersistency.save(domain, 1);
         Domain domain2 = DomainPersistency.loadSave(1);
-        assertEquals(domain, domain2);
+        assertEquals(domain.toString(), domain2.toString());
     }
 
     @Test
     public void testDomainSerialisation() {
         Domain domain = DomainPersistency.getInitial();
+        domain.getInv().addItem(TileType.makeTile(TileType.BlueKey, new TileInfo(new Loc(0, 0))));
+
         Element doc = DomainPersistency.serialiseDomain(domain);
         Domain domain2 = DomainPersistency.deserialiseDomain(doc);
 
@@ -70,6 +79,33 @@ public class Tests {
     @Test
     public void deleteSave() throws IOException {
         DomainPersistency.delete(1);
+    }
+
+    @Test
+    public void testMissingSave() throws IOException, DocumentException {
+        Domain domain = DomainPersistency.getInitial();
+        DomainPersistency.delete(1);
+        Domain domain2 = DomainPersistency.loadSave(1);
+        assertEquals(domain.toString(), domain2.toString());
+    }
+
+    @Test
+    public void testCorruptLevel() throws IOException, DocumentException {
+        try {
+            FileWriter fw = new FileWriter("res/levels/level1.xml", true);
+            fw.write("corrupt adfhiufhoiwjlr");
+            fw.close();
+
+            // try to load the level
+            Domain domain = DomainPersistency.getInitial();
+            assertEquals(domain.getCurrentMaze().toString(), DomainPersistency.fallbackMaze().toString());
+        } finally {
+            String data = Files.readString(new File("res/levels/level1.xml").toPath());
+            data = data.replace("corrupt adfhiufhoiwjlr", "");
+            FileWriter fw = new FileWriter(new File("res/levels/level1.xml"));
+            fw.write(data);
+            fw.close();
+        }
     }
 
     // @Test
@@ -122,11 +158,15 @@ public class Tests {
     @Test
     public void testLogging() throws IOException {
         Logging.clearLogs();
-        Logging.log("test");
+        Interceptor interceptor = new Interceptor(System.out);
+        interceptor.println("test");
+        interceptor.println("test2");
+
         List<Log> logs = Logging.getLogs();
 
-        assertTrue(logs.size() == 1);
+        assertTrue(logs.size() == 2);
         assertTrue(logs.get(0).message().equals("test"));
+        assertTrue(logs.get(1).message().equals("test2"));
     }
 
     @Test
@@ -170,5 +210,49 @@ public class Tests {
         Configuration config2 = AppPersistency.load();
 
         assertEquals(config.toString(), config2.toString());
+    }
+
+    @Test
+    public void testCorruptConfiguration() throws IOException, DocumentException {
+        try {
+            FileWriter fw = new FileWriter("res/config.xml", true);
+            fw.write("corrupt adfhiufhoiwjlr");
+            fw.close();
+
+            Configuration config = AppPersistency.load();
+        } finally {
+            String data = Files.readString(new File("res/config.xml").toPath());
+            data = data.replace("corrupt adfhiufhoiwjlr", "");
+            FileWriter fw = new FileWriter(new File("res/config.xml"));
+            fw.write(data);
+            fw.close();
+        }
+    }
+    @Test
+    public void testCorruptFallbackConfiguration() throws IOException, DocumentException {
+        try {
+            FileWriter fw = new FileWriter("res/config.xml", true);
+            fw.write("corrupt adfhiufhoiwjlr");
+            fw.close();
+
+            File fileD = new File("res/defaultConfig.xml");
+            FileWriter fwD = new FileWriter(fileD, true);
+            fwD.write("corrupt adfhiufhoiwjlr");
+            fwD.close();
+
+            AppPersistency.load();
+        } finally {
+            String data = Files.readString(new File("res/config.xml").toPath());
+            data = data.replace("corrupt adfhiufhoiwjlr", "");
+            FileWriter fw = new FileWriter("res/config.xml");
+            fw.write(data);
+            fw.close();
+
+            String datad = Files.readString(new File("res/defaultConfig.xml").toPath());
+            datad = datad.replace("corrupt adfhiufhoiwjlr", "");
+            FileWriter fwd = new FileWriter("res/defaultConfig.xml");
+            fwd.write(datad);
+            fwd.close();
+        }
     }
 }
