@@ -87,7 +87,6 @@ public class LogPanel extends JPanel{
         return print(s + "\n");
     }
 
-
     /**
      * return the text area
      * @return textArea

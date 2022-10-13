@@ -6,7 +6,12 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
+/**
+ * This class is for holding all the images used in the game.
+ * @author loki
+ */
 public class TexturePack {
+//--------------------------------------------------------fields------------------------------------------------------//
     private final String texturePackName;
     private final Font titleFont;
     private final Font subtitleFont;
@@ -16,17 +21,49 @@ public class TexturePack {
     private final Color colorSelected;
     private  Color dynamicColor;
 
-
+//----------------------------------------------------------getters---------------------------------------------//
+    /**
+     * get name 
+     * @return String
+     */
     public String getName()         {return texturePackName;}
+    /**
+     * get titleFont
+     * @return font
+     */
     public Font getTitleFont()      {return titleFont;}
+    /**
+     * get subtitleFont
+     * @return font
+     */
     public Font getSubtitleFont()   {return subtitleFont;}
+    /**
+     * get textFont
+     * @return font
+     */
     public Font getTextFont()       {return textFont;}
+    /**
+     * get colorDefault
+     * @return color
+     */
     public Color getColorDefault()  {return colorDefault;}
+    /**
+     * get colorHover
+     * @return color
+     */
     public Color getColorHover()    {return colorHover;}
+    /**
+     * get colorSelected
+     * @return color
+     */
     public Color getColorSelected() {return colorSelected;}
+    /**
+     * get dynamicColor
+     * @return color
+     */
     public Color getDynamicColor() {return dynamicColor;}
-    public void setDynamicColor(Color color) {dynamicColor = color;}
 
+//------------------------------------------------constructor---------------------------------------------------//
     /**
      * Constructor for texture packs
      * @param tile
@@ -45,7 +82,7 @@ public class TexturePack {
         this.colorSelected = colorSelected;
         this.dynamicColor = colorDefault;
     }
-
+//--------------------------------------------------methods------------------------------------------------------//
     //get image enum
     public BufferedImage getImage(Tile tile) {
         return Images.getImage(tile);
@@ -54,7 +91,7 @@ public class TexturePack {
     public BufferedImage getImage(String imgName) {
         return Images.getImage(imgName);
     }
-
+//--------------------------------------------------Images enum---------------------------------------------------------//
     public enum Images{
 
         /**
@@ -145,11 +182,26 @@ public class TexturePack {
          * The image for the help tile
          */
         InfoTile("help"),
-    
+        //hero back, hero frount, hero left, hero right, PopUp
+        /**
+         * The image for the hero back
+         */
         HeroBack("heroBack"),
+        /**
+         * The image for the hero front
+         */
         HeroFront("heroFront"),
+        /**
+         * The image for the hero left
+         */
         HeroLeft("heroSide"),
+        /**
+         * The image for the hero right
+         */
         HeroRight("hero"),
+        /**
+         * The image for the pop up
+         */
         PopUp("popUp");
         
         //name of the image
