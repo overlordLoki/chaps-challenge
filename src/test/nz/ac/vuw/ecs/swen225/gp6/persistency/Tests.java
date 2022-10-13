@@ -27,9 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.awt.event.InputEvent;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.EnumMap;
 import java.util.List;
@@ -58,7 +56,7 @@ public class Tests {
     @Test
     void testDomainSaveAndOpen() throws IOException, DocumentException {
         File saves = new File("res/saves");
-        saves.delete();
+        System.out.println(saves.delete() ? "Deleted saves" : "Not deleted saves");
         Domain domain = DomainPersistency.getInitial();
         DomainPersistency.save(domain, 1);
         Domain domain2 = DomainPersistency.loadSave(1);
@@ -92,7 +90,8 @@ public class Tests {
     @Test
     public void testCorruptLevel() throws IOException, DocumentException {
         try {
-            FileWriter fw = new FileWriter("res/levels/level1.xml", true);
+            FileOutputStream fileStream = new FileOutputStream("res/levels/level1.xml", true);
+            OutputStreamWriter fw = new OutputStreamWriter(fileStream, "UTF-8");
             fw.write("corrupt adfhiufhoiwjlr");
             fw.close();
 
@@ -102,7 +101,8 @@ public class Tests {
         } finally {
             String data = Files.readString(new File("res/levels/level1.xml").toPath());
             data = data.replace("corrupt adfhiufhoiwjlr", "");
-            FileWriter fw = new FileWriter(new File("res/levels/level1.xml"));
+            FileOutputStream fileStream = new FileOutputStream("res/levels/level1.xml");
+            OutputStreamWriter fw = new OutputStreamWriter(fileStream, "UTF-8");
             fw.write(data);
             fw.close();
         }
@@ -185,7 +185,6 @@ public class Tests {
                 Map.entry(LOAD_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_R)))));
 
         Element el = AppPersistency.serialise(config);
-        String xml = el.asXML();
         Configuration config2 = AppPersistency.deserialise(el);
 
         assertEquals(config.toString(), config2.toString());
@@ -215,7 +214,8 @@ public class Tests {
     @Test
     public void testCorruptConfiguration() throws IOException, DocumentException {
         try {
-            FileWriter fw = new FileWriter("res/config.xml", true);
+            FileOutputStream fileStream = new FileOutputStream("res/config.xml", true);
+            OutputStreamWriter fw = new OutputStreamWriter(fileStream, "UTF-8");
             fw.write("corrupt adfhiufhoiwjlr");
             fw.close();
 
@@ -223,7 +223,8 @@ public class Tests {
         } finally {
             String data = Files.readString(new File("res/config.xml").toPath());
             data = data.replace("corrupt adfhiufhoiwjlr", "");
-            FileWriter fw = new FileWriter(new File("res/config.xml"));
+            FileOutputStream fileStream = new FileOutputStream("res/config.xml");
+            OutputStreamWriter fw = new OutputStreamWriter(fileStream, "UTF-8");
             fw.write(data);
             fw.close();
         }
@@ -231,12 +232,13 @@ public class Tests {
     @Test
     public void testCorruptFallbackConfiguration() throws IOException, DocumentException {
         try {
-            FileWriter fw = new FileWriter("res/config.xml", true);
+            FileOutputStream fileStream = new FileOutputStream("res/config.xml", true);
+            OutputStreamWriter fw = new OutputStreamWriter(fileStream, "UTF-8");
             fw.write("corrupt adfhiufhoiwjlr");
             fw.close();
 
-            File fileD = new File("res/defaultConfig.xml");
-            FileWriter fwD = new FileWriter(fileD, true);
+            FileOutputStream fileStreamD = new FileOutputStream("res/defaultConfig.xml", true);
+            OutputStreamWriter fwD = new OutputStreamWriter(fileStreamD, "UTF-8");
             fwD.write("corrupt adfhiufhoiwjlr");
             fwD.close();
 
@@ -244,13 +246,15 @@ public class Tests {
         } finally {
             String data = Files.readString(new File("res/config.xml").toPath());
             data = data.replace("corrupt adfhiufhoiwjlr", "");
-            FileWriter fw = new FileWriter("res/config.xml");
+            FileOutputStream fileStream = new FileOutputStream("res/config.xml");
+            OutputStreamWriter fw = new OutputStreamWriter(fileStream, "UTF-8");
             fw.write(data);
             fw.close();
 
             String datad = Files.readString(new File("res/defaultConfig.xml").toPath());
             datad = datad.replace("corrupt adfhiufhoiwjlr", "");
-            FileWriter fwd = new FileWriter("res/defaultConfig.xml");
+            FileOutputStream fileStreamd = new FileOutputStream("res/defaultConfig.xml");
+            OutputStreamWriter fwd = new OutputStreamWriter(fileStreamd, "UTF-8");
             fwd.write(datad);
             fwd.close();
         }

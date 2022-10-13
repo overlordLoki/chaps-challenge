@@ -1,8 +1,6 @@
 package nz.ac.vuw.ecs.swen225.gp6.persistency;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Stack;
 
 import org.dom4j.Document;
@@ -60,10 +58,13 @@ public class RecorderPersistency {
 
         File dir = new File("res/recordings");
         if (!dir.exists()) {
-            dir.mkdirs();
+            if (!dir.mkdirs()) {
+                throw new IOException("Could not create directory");
+            }
         }
 
-        FileWriter out = new FileWriter("res/recordings/" + slot + ".xml");
+        FileOutputStream fileStream = new FileOutputStream("res/recordings/" + slot + ".xml");
+        OutputStreamWriter out = new OutputStreamWriter(fileStream, "UTF-8");
         document.write(out);
         out.close();
     }
