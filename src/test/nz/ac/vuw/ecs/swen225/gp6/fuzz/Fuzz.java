@@ -8,6 +8,7 @@ import org.junit.Test;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -48,16 +49,17 @@ public class Fuzz {
      * @Input: int number of actions for test
      * @return a random action in App we initialized
      */
-    public static void testLevel1(int numOfInputs){
+    public static void testLevel1(){
+        //initialize the app environment, set all the actions into a list
         SwingUtilities.invokeLater(()->{
             app = new App();
             actionsList = List.of(
                     MOVE_UP,
                     MOVE_DOWN,
                     MOVE_LEFT,
-                    MOVE_RIGHT
-//                    TO_LEVEL_1,
-//                    TO_LEVEL_2
+                    MOVE_RIGHT,
+                    PAUSE_GAME,
+                    RESUME_GAME
             );
 
         });
@@ -66,28 +68,56 @@ public class Fuzz {
         app.startNewGame();
         app.transitionToGameScreen();
 
-        LogPanel l = new LogPanel();
-        l = app.getGUI().getLogPanel();
+        //set the log panel visible during the test
+        JFrame frame = new JFrame("Logs");
+        frame.setPreferredSize(new Dimension(500, 500));
+        frame.setMinimumSize(new Dimension(500, 500));
+        frame.setMaximumSize(new Dimension(500, 500));
+        frame.add(app.getGUI().getLogPanel());
+        frame.setVisible(true);
+        //initialize the game running status
+        boolean isRunning = true;
+        while (isRunning) {
+            try {
+                //get a random action from the action list
+                int randomIndex = r.nextInt(actionsList.size());
+                actionsList.get(randomIndex).run(app);
+                System.out.print("Action: " + actionsList.get(randomIndex) + " >>> \n");
+                robot.delay(100);
+                Field[] appF = app.getClass().getDeclaredFields();
 
+                //check if the game is finished or not, also catch the exception
+                for (Field f : appF){
+                    if(f.getName().equals("inResume")
+                            && actionsList.get(randomIndex) != PAUSE_GAME
+                            && actionsList.get(randomIndex) == RESUME_GAME){
+                        robot.delay(100);
+                        f.setAccessible(true);
+                        isRunning = (boolean) f.get(app);
+                    }
+                }
 
-        for (int i =0; i < numOfInputs; i++){
-            int randomIndex = r.nextInt(actionsList.size());
-            actionsList.get(randomIndex).run(app);
-            System.out.print("Action: " + actionsList.get(randomIndex) + " >>> ");
-            robot.delay(100);
+            } catch (Exception e) {
+                isRunning = false;
+                System.out.println("Testing Level: "+app.getGame().getCurrentLevel() + " Completed");
+            }
+
         }
-        System.out.println("Testing Level: "+app.getGame().getCurrentLevel() + " Completed");
+
     }
 
 
-    public static void testLevel2(int numOfInputs){
+    public static void testLevel2(){
+        //initialize the app environment, set all the actions into a list
         SwingUtilities.invokeLater(()->{
             app = new App();
             actionsList = List.of(
                     MOVE_UP,
                     MOVE_DOWN,
                     MOVE_LEFT,
-                    MOVE_RIGHT
+                    MOVE_RIGHT,
+                    PAUSE_GAME,
+                    RESUME_GAME
             );
         });
         // Start robot automating sequence
@@ -95,13 +125,42 @@ public class Fuzz {
         app.startNewGame();
         app.transitionToGameScreen();
         TO_LEVEL_2.run(app);
-        for (int i =0; i < numOfInputs; i++){
-            int randomIndex = r.nextInt(actionsList.size());
-            actionsList.get(randomIndex).run(app);
-            System.out.print("Action: " + i + " >>> " + randomIndex);
-            robot.delay(100);
+
+        //set the log panel visible during the test
+        JFrame frame = new JFrame("Logs");
+        frame.setPreferredSize(new Dimension(500, 500));
+        frame.setMinimumSize(new Dimension(500, 500));
+        frame.setMaximumSize(new Dimension(500, 500));
+        frame.add(app.getGUI().getLogPanel());
+        frame.setVisible(true);
+
+        //initialize the game running status
+        boolean isRunning = true;
+        while (isRunning) {
+            try {
+                //get a random action from the action list
+                int randomIndex = r.nextInt(actionsList.size());
+                actionsList.get(randomIndex).run(app);
+                System.out.print("Action: " + actionsList.get(randomIndex) + " >>> \n");
+                robot.delay(100);
+                Field[] appF = app.getClass().getDeclaredFields();
+
+                //check if the game is finished or not, also catch the exception
+                for (Field f : appF){
+                    if(f.getName().equals("inResume")
+                            && actionsList.get(randomIndex) != PAUSE_GAME
+                            && actionsList.get(randomIndex) == RESUME_GAME){
+                        f.setAccessible(true);
+                        isRunning = (boolean) f.get(app);
+                    }
+                }
+            } catch (Exception e) {
+                isRunning = false;
+                System.out.println("Testing Level: "+app.getGame().getCurrentLevel() + " Completed");
+            }
+
         }
-        System.out.println("Testing Level: "+app.getGame().getCurrentLevel() + " Completed");
+
     }
     /**
      * This method is used to keep testing in one level
@@ -361,38 +420,36 @@ public class Fuzz {
      */
     public static void main(String[] args) throws AWTException {
 
-        String[] buttons = { "hardCode", "testLevel2(1000)", "testLevel1(100)", "unlimittest" ,"Cancel" };
+        //this panel is used to show the fuzz test method
+        String[] buttons = { "hardCode", "testLevel2", "testLevel1", "unlimittest" ,"Cancel" };
         int rc = JOptionPane.showOptionDialog(null, "Choose a test", "Test",
                 JOptionPane.WARNING_MESSAGE, 0, null, buttons, buttons[4]);
         if (rc == 0) {
             hardCode();
         } else if (rc == 1) {
-            testLevel2(1000);
+            testLevel2();
         } else if (rc == 2) {
-            testLevel1(1000);
+            testLevel1();
         } else if (rc == 3) {
             unlimittest();
         } else {
             System.exit(0);
         }
 
+        //exit the game after test complete
         System.out.println("All Tests Complete");
         JOptionPane.showMessageDialog(null, "All Tests Complete");
-        String[] buttons2 = { "Exit", "Show the log" };
-        int rc2 = JOptionPane.showOptionDialog(null, "Choose a test", "Test",
-                JOptionPane.WARNING_MESSAGE, 0, null, buttons2, buttons2[0]);
-
         System.exit(0);
     }
 
     @Test
     public void test_level1() {
-        testLevel1(1000);
+        testLevel1();
     }
 
     @Test
     public void test_level2() {
-        testLevel2(1000);
+        testLevel2();
     }
 
     @Test
