@@ -91,8 +91,8 @@ public class LogPanel extends JPanel{
      * return the text area
      * @return textArea
      */
-    public JTextArea getTextDisplay() {
-        return textDisplay;
+    public void clear() {
+        textDisplay.setText("");
     }
 
     /**
