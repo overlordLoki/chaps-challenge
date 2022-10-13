@@ -1,10 +1,7 @@
 package nz.ac.vuw.ecs.swen225.gp6.recorder;
 
-import static org.junit.jupiter.api.DynamicTest.stream;
-
 import org.dom4j.DocumentException;
 import nz.ac.vuw.ecs.swen225.gp6.app.App;
-import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.Pair;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.ReplayTimeline;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.RecorderPersistency;
@@ -18,29 +15,29 @@ import nz.ac.vuw.ecs.swen225.gp6.persistency.RecorderPersistency;
  * @author: Jayden Hooper
  */
 public class Replay implements Runnable {
+    public static final Replay INSTANCE = new Replay();
     private ReplayTimeline<Actions> timeline;
     private App app;
     private long time;
     private boolean step = false;
 
-    /**
-     * Constructor takes in an app to observe
-     * @param app the app to observe
-     */
-    public Replay(App app){
+    /** Constructor takes in an app to observe */
+    private Replay(){}
+
+    /** Sets the Replay object up with an App. */
+    public void setReplay(App app){
         if(app == null) {
             throw new IllegalArgumentException("App cannot be null");
         }
         this.app = app;
         app.getGameClock().setObserver(this);
-        
     }
 
     @Override
     public void run() {
         this.time = app.getGameClock().getTimePlayed();
         if(actionReady()) {
-            executeAction(timeline.next().getValue());
+            executeAction(timeline.next().value());
         }
     }
 
@@ -117,13 +114,16 @@ public class Replay implements Runnable {
     //=========================================== Helper Methods =====================================================//
     //================================================================================================================//
 
+    /**
+     * Method checks if the next action is valid.
+     */
     private boolean actionReady(){
         if(!checkNextIsValid()){
             app.getGameClock().stop();
             System.out.println("Replay finished");
             return false;
         }
-        if(timeline.peek().getKey() <= time){
+        if(timeline.peek().key() <= time){
             return true;
         }
         return false;
