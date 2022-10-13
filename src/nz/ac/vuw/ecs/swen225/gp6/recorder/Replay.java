@@ -25,7 +25,7 @@ public final class Replay implements Runnable {
     private Replay(){}
 
     /** Sets the Replay object up with an App. */
-    public void setReplay(App app){
+    public void setReplay(App app){ 
         if(app == null) {
             throw new IllegalArgumentException("App cannot be null");
         }
@@ -42,9 +42,9 @@ public final class Replay implements Runnable {
     }
 
     /**
-     * Load method will load the game from the given file name
-     * @param game the name of the game to load
-     * @return this replay object to chain methods
+     * Load method will load the game from the given file name.
+     * @param slot the slot number to load the game from.
+     * @return this replay object to chain methods.
      * @throws DocumentException
      */
     public Replay load(int slot) {
@@ -59,19 +59,20 @@ public final class Replay implements Runnable {
     /**
      * Method queues the next action in the timeline if available.
      * If there is no next action, the method will popup a message.
-     * @return this replay object to chain methods
+     * @return this replay object to chain methods.
      */
     public Replay step(){
-        if(checkNextIsValid()) {
-            app.getGameClock().start();
+        if(!checkNextIsValid()) {
+            return this;   
         }
+        app.getGameClock().start();
         this.step = true;
         return this;
     }
 
     /**
      * Method enables the autoPlay functionality.
-     * @return this replay object to chain methods
+     * @return this replay object to chain methods.
      */
     public Replay autoPlay(){
         if(checkNextIsValid()) {
@@ -82,7 +83,7 @@ public final class Replay implements Runnable {
 
     /**
      * Method to pause the autoplay feature.
-     * @return this replay object to chain methods
+     * @return this replay object to chain methods.
      */
     public Replay pauseReplay(){
         app.getGameClock().stop();
@@ -91,12 +92,11 @@ public final class Replay implements Runnable {
 
     /**
      * Method sets the speed of the autoplay.
-     * @param speed the speed to set the replay to
-     * @return this replay object to chain methods
+     * @param speed the speed to set the replay to.
+     * @return this replay object to chain methods.
      */
-    public Replay speedMultiplier(int speed) {
-        int delay = 34 / speed;    // default delay is 34ms
-        this.app.getGameClock().setReplaySpeed(delay);
+    public Replay speedMultiplier(float speed) {
+        this.app.getGameClock().setReplaySpeed(speed);
         return this;
     }
 
@@ -114,9 +114,7 @@ public final class Replay implements Runnable {
     //=========================================== Helper Methods =====================================================//
     //================================================================================================================//
 
-    /**
-     * Method checks if the next action is valid.
-     */
+    /** Method checks if the next action is valid. */
     private boolean actionReady(){
         if(!checkNextIsValid()){
             app.getGameClock().stop();
@@ -126,14 +124,11 @@ public final class Replay implements Runnable {
         return timeline.peek().key() <= time;
     }
 
-    /**
-     * Method checks if the timeline is valid
-     */
+    /** 
+     * Method checks if the timeline is valid. 
+     * @return true if the timeline is valid, false otherwise.
+     **/
     private boolean checkNextIsValid(){
-        if (timeline == null){
-            System.out.println("No game loaded");
-            return false;
-        }
         if (!timeline.hasNext()){
             System.out.println("Replay finished"); 
             return false;
@@ -149,7 +144,6 @@ public final class Replay implements Runnable {
     private void executeAction(Actions action) throws IllegalArgumentException {
         if(action == null) {throw new IllegalArgumentException("Null action encountered");}
         action.replay(app);
-        System.out.println("action executed");
         if(step) {
             app.getGame().pingDomain();
             app.getGameClock().stop();

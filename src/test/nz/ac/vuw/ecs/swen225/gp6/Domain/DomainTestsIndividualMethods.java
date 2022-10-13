@@ -2,8 +2,8 @@ package test.nz.ac.vuw.ecs.swen225.gp6.Domain;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.DomainEvent;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.GameState;
 import nz.ac.vuw.ecs.swen225.gp6.domain.IntegrityCheck.*;
-import nz.ac.vuw.ecs.swen225.gp6.domain.IntegrityCheck.CheckGame.GameState;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.Key.KeyColor;
@@ -218,11 +218,10 @@ public class DomainTestsIndividualMethods {
     //INTEGRITY CHECK CLASSES:
     @Test
     public void testCheckCurrentStateWin(){
-        CheckGame.state = GameState.PLAYING;
         mockDomain = new Domain(List.of(mockMaze), new Inventory(8), 1);
         CheckGame.checkCurrentState(mockDomain); //must not throw any exceptions
         
-        CheckGame.state = GameState.WON;
+        mockDomain.setGameState(GameState.WON);
         assertThrows(IllegalStateException.class, 
         ()->{CheckGame.checkCurrentState(mockDomain);});
 
@@ -240,13 +239,13 @@ public class DomainTestsIndividualMethods {
           0 1 2 3 4 5 6 7 8 9""");
         Domain domainNoCoins = new Domain(List.of(mazeNoCoins), new Inventory(8), 1);
 
-        CheckGame.state = GameState.WON;
+        domainNoCoins.setGameState(GameState.WON);
         assertThrows(IllegalStateException.class, //all coins collected but not on exit door
         ()->{CheckGame.checkCurrentState(domainNoCoins);});
 
-        CheckGame.state = GameState.PLAYING;
+        domainNoCoins.setGameState(GameState.PLAYING);
         DomainTestsThruMoves.doMoves(domainNoCoins, "UUUUUU");
-        CheckGame.state = GameState.WON;
+        domainNoCoins.setGameState(GameState.WON);
 
         CheckGame.checkCurrentState(domainNoCoins); //must not throw any exceptions since hero is on exit door
                                                     //all coins are collected
@@ -255,7 +254,7 @@ public class DomainTestsIndividualMethods {
     @Test
     public void testCheckCurrentStateLose(){
         //CHECK LOSE:
-        CheckGame.state = GameState.LOST;
+        mockDomain.setGameState(GameState.LOST);
         assertThrows(IllegalStateException.class, 
         ()->{CheckGame.checkCurrentState(mockDomain);});
 
@@ -273,6 +272,7 @@ public class DomainTestsIndividualMethods {
           0 1 2 3 4 5 6 7 8 9""");
 
         Domain domainCheckLose = new Domain(List.of(mazeNoHero), new Inventory(8), 1);
+        domainCheckLose.setGameState(GameState.LOST);
 
         //make a dangerous wall that has swallowed enemy
         class dangerousWall extends Wall{
@@ -301,7 +301,7 @@ public class DomainTestsIndividualMethods {
 
         mazeNoHero.setTileAt(new Loc(0,0), new dangerousWall(new TileInfo(null)));
 
-        CheckGame.state = GameState.LOST;
+        domainCheckLose.setGameState(GameState.LOST);
         CheckGame.checkCurrentState(domainCheckLose); //must not throw any exceptions since a damaging tile is on hero
 
         mazeNoHero.setTileAt(new Loc(0,0), new dangerousWallBroken(new TileInfo(null)));
@@ -310,9 +310,9 @@ public class DomainTestsIndividualMethods {
             () -> {CheckGame.checkCurrentState(domainCheckLose);} //damaging tile but hero isn't on
         );
 
-        CheckGame.state = GameState.BETWEENLEVELS;
+        mockDomain.setGameState(GameState.BETWEENLEVELS);
         CheckGame.checkCurrentState(mockDomain); //should change state to playing
-        CheckGame.state = GameState.PLAYING;
+        mockDomain.setGameState(GameState.PLAYING);
     }
 
     @Test 
@@ -331,7 +331,7 @@ public class DomainTestsIndividualMethods {
           0 1 2 3 4 5 6 7 8 9""");
           Domain domainNoHero = new Domain(List.of(mazeNoHero), new Inventory(8), 1);
         
-        CheckGame.state = GameState.PLAYING; 
+        domainNoHero.setGameState(GameState.PLAYING);
         assertThrows(IllegalStateException.class,
         () -> {CheckGame.checkCurrentState(domainNoHero);} ); //damaging tile but hero isn't on
     }
@@ -350,9 +350,9 @@ public class DomainTestsIndividualMethods {
         8|/|_|_|/|_|_|/|_|_|/|
         9|_|/|/|/|/|/|/|/|/|_|
           0 1 2 3 4 5 6 7 8 9""");
-          Domain domainNoCoin = new Domain(List.of(mazeNoCoin), new Inventory(8), 1);
+        Domain domainNoCoin = new Domain(List.of(mazeNoCoin), new Inventory(8), 1);
         
-        CheckGame.state = GameState.PLAYING; 
+        domainNoCoin.setGameState(GameState.PLAYING);
         assertThrows(IllegalStateException.class,
         () -> {CheckGame.checkCurrentState(domainNoCoin);} ); //damaging tile but hero isn't on
     }
@@ -375,7 +375,7 @@ public class DomainTestsIndividualMethods {
         invOneCoin.addCoin();
         Domain domainOpenDoor = new Domain(List.of(mazeNoCoin), invOneCoin, 1);
         
-        CheckGame.state = GameState.PLAYING; 
+        domainOpenDoor.setGameState(GameState.PLAYING);
         CheckGame.checkCurrentState(domainOpenDoor);//should not throw exception
     }
 
@@ -398,7 +398,7 @@ public class DomainTestsIndividualMethods {
         invOneCoin.addCoin();
         Domain domainDoorClosedBroken = new Domain(List.of(mazeNoCoinDoorClosed), invOneCoin, 1);
 
-        CheckGame.state = GameState.PLAYING; 
+        domainDoorClosedBroken.setGameState(GameState.PLAYING);
         assertThrows(IllegalStateException.class,
         () -> {CheckGame.checkCurrentState(domainDoorClosedBroken);} ); //all coins collected but door still close
     }
@@ -422,7 +422,7 @@ public class DomainTestsIndividualMethods {
         invOneCoin.addCoin();
         Domain domainDoorOpenBroken = new Domain(List.of(mazeCoinDoorOpen), invOneCoin, 1);
 
-        CheckGame.state = GameState.PLAYING; 
+        domainDoorOpenBroken.setGameState(GameState.PLAYING);
         assertThrows(IllegalStateException.class,
         () -> {CheckGame.checkCurrentState(domainDoorOpenBroken);} ); //coins left but door is open
     }
@@ -446,7 +446,7 @@ public class DomainTestsIndividualMethods {
         invOneCoin.addCoin();
         Domain domainCoinNoDoor = new Domain(List.of(mazeCoinNoDoor), invOneCoin, 1);
 
-        CheckGame.state = GameState.PLAYING; 
+        domainCoinNoDoor.setGameState(GameState.PLAYING);
         assertThrows(IllegalStateException.class,
         () -> {CheckGame.checkCurrentState(domainCoinNoDoor);} ); //coins left but door is open
     }
@@ -470,7 +470,7 @@ public class DomainTestsIndividualMethods {
         invOneCoin.addCoin();
         Domain domainNoCoinNoDoor = new Domain(List.of(mazeNoCoinNoDoor), invOneCoin, 1);
 
-        CheckGame.state = GameState.PLAYING; 
+        domainNoCoinNoDoor.setGameState(GameState.PLAYING);
         assertThrows(IllegalStateException.class,
         () -> {CheckGame.checkCurrentState(domainNoCoinNoDoor);} ); //coins left but door is open
     }
@@ -507,7 +507,6 @@ public class DomainTestsIndividualMethods {
         Inventory afterInv = new Inventory(8);
         Domain afterDomain = new Domain(List.of(afterMaze), afterInv, 1);
 
-        CheckGame.state = GameState.PLAYING; //set default state
         CheckGame.checkStateChange(preDomain, afterDomain);//must not throw exceptions
     }
 
@@ -543,7 +542,6 @@ public class DomainTestsIndividualMethods {
         Inventory afterInv = new Inventory(8);
         Domain afterDomain = new Domain(List.of(afterMaze), afterInv, 1);
 
-        CheckGame.state = GameState.PLAYING; //set default state
         assertThrows(IllegalStateException.class,
         () -> {CheckGame.checkStateChange(preDomain, afterDomain);} );
     }
@@ -583,7 +581,6 @@ public class DomainTestsIndividualMethods {
         //mess up heros internal location memory
         afterMaze.getTileThat(t -> t.type() == TileType.Hero).info().loc(new Loc(100, 100));
 
-        CheckGame.state = GameState.PLAYING; //set default state
         assertThrows(IllegalStateException.class,
         () -> {CheckGame.checkStateChange(preDomain, afterDomain);} );
     }
@@ -624,7 +621,6 @@ public class DomainTestsIndividualMethods {
         Hero h = (Hero)afterMaze.getTileThat(t -> t.type() == TileType.Hero);
         h.setTileOn(new Wall(new TileInfo(null)));
 
-        CheckGame.state = GameState.PLAYING; //set default state
         assertThrows(IllegalStateException.class,
         () -> {CheckGame.checkStateChange(preDomain, afterDomain);} );
     }
@@ -672,7 +668,6 @@ public class DomainTestsIndividualMethods {
         Inventory afterInv = new Inventory(8);
         Domain afterDomain = new Domain(List.of(afterMaze), afterInv, 1);
 
-        CheckGame.state = GameState.PLAYING; //set default state
         assertThrows(IllegalStateException.class,
         () -> {CheckGame.checkStateChange(preDomain, afterDomain);} );
     }
@@ -722,7 +717,6 @@ public class DomainTestsIndividualMethods {
         afterInv.addItem(new YellowKey(new TileInfo(null)));
         Domain afterDomain = new Domain(List.of(afterMaze), afterInv, 1);
 
-        CheckGame.state = GameState.PLAYING; //set default state
         assertThrows(IllegalStateException.class,
         () -> {CheckGame.checkStateChange(preDomain, afterDomain);} );
     }
@@ -759,7 +753,6 @@ public class DomainTestsIndividualMethods {
         Inventory afterInv = new Inventory(8);
         Domain afterDomain = new Domain(List.of(afterMaze), afterInv, 1);
 
-        CheckGame.state = GameState.PLAYING; //set default state
         assertThrows(IllegalStateException.class,
         () -> {CheckGame.checkStateChange(preDomain, afterDomain);} );
     }
@@ -796,7 +789,6 @@ public class DomainTestsIndividualMethods {
         Inventory afterInv = new Inventory(8);
         Domain afterDomain = new Domain(List.of(afterMaze), afterInv, 1);
 
-        CheckGame.state = GameState.PLAYING; //set default state
         assertThrows(IllegalStateException.class,
         () -> {CheckGame.checkStateChange(preDomain, afterDomain);} );
     }
@@ -833,7 +825,6 @@ public class DomainTestsIndividualMethods {
         Inventory afterInv = new Inventory(8);
         Domain afterDomain = new Domain(List.of(afterMaze), afterInv, 1);
 
-        CheckGame.state = GameState.PLAYING; //set default state
         assertThrows(IllegalStateException.class,
         () -> {CheckGame.checkStateChange(preDomain, afterDomain);} );
     }
@@ -870,7 +861,6 @@ public class DomainTestsIndividualMethods {
         Inventory afterInv = new Inventory(8);
         Domain afterDomain = new Domain(List.of(afterMaze), afterInv, 1);
 
-        CheckGame.state = GameState.PLAYING; //set default state
         assertThrows(IllegalStateException.class,
         () -> {CheckGame.checkStateChange(preDomain, afterDomain);} );
     }
@@ -907,7 +897,6 @@ public class DomainTestsIndividualMethods {
         Inventory afterInv = new Inventory(8);
         Domain afterDomain = new Domain(List.of(afterMaze), afterInv, 1);
 
-        CheckGame.state = GameState.PLAYING; //set default state
         assertThrows(IllegalStateException.class,
         () -> {CheckGame.checkStateChange(preDomain, afterDomain);} );
     }
@@ -944,10 +933,10 @@ public class DomainTestsIndividualMethods {
         Inventory afterInv = new Inventory(8);
         Domain afterDomain = new Domain(List.of(afterMaze), afterInv, 1);
 
-        CheckGame.state = GameState.LOST; //set default state
+        afterDomain.setGameState(GameState.LOST); //set default state
         CheckGame.checkStateChange(preDomain, afterDomain);
 
-        CheckGame.state = GameState.WON; //set default state
+        afterDomain.setGameState(GameState.WON);  //set default state
         CheckGame.checkStateChange(preDomain, afterDomain);
     }
 
@@ -983,7 +972,7 @@ public class DomainTestsIndividualMethods {
         Inventory afterInv = new Inventory(8);
         Domain afterDomain = new Domain(List.of(afterMaze), afterInv, 1);
 
-        CheckGame.state = GameState.BETWEENLEVELS; //set default state
+        afterDomain.setGameState(GameState.BETWEENLEVELS); //set default state
         CheckGame.checkStateChange(preDomain, afterDomain);
     }
 

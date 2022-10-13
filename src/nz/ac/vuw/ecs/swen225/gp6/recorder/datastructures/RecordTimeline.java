@@ -20,13 +20,17 @@ public class RecordTimeline<E> {
         this.timeline = new Stack<>();
     }
 
+    /** 
+     * Creates a new timeline from an existing timeline.
+     */
+    public RecordTimeline(Stack<Pair<Long, E>> timeline){
+        this.timeline = timeline;
+    }
+
     /**
      * Add actions to the timeline
      */
     public void add(Long time, E actions) {
-        // if(time < timeline.peek().getKey()){
-        //     throw new IllegalArgumentException("Time recordered must be chronological.");
-        // }
         this.timeline.add(new Pair<Long, E>(time, actions));
     }
 

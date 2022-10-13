@@ -3,6 +3,8 @@ package nz.ac.vuw.ecs.swen225.gp6.renderer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.DomainEvent;
 /**
  * This class is used to store the commands that the user can input into the log panel.
  * @author loki
@@ -21,12 +23,13 @@ public final class Commands {
     public Commands(LogPanel logPanel) {
         this.logPanel = logPanel;
         addCommands("help", "Displays the availble commands", this::help);
-        addCommands("test", "test", this::test);
         addCommands("clear", "Clears the text area", this::clear);
         addCommands("packsNumber", "Displays the number of texture packs", this::numberOfPacks);
         addCommands("setDogs", "Sets the texture pack to dogs", this::setDogs);
+        addCommands("setCats", "Sets the texture pack to cats", this::setCats);
+        addCommands("autoLose", "Sets the game to auto lose", this::autoLose);
     }
-//------------------------------
+//--------------------------------------------------methods-------------------------------------------------------//
     /**
      * Adds a command to the commands HashMap
      * 
@@ -46,7 +49,10 @@ public final class Commands {
     public void invoke(String s){
         commands.getOrDefault(s, () -> logPanel.println("Command not found")).run();
     }
-    //set themazeRenderer
+    
+    /**
+     * Displays the available commands
+     */
     public void setRenderer(MazeRenderer mazeRenderer){
         this.mazeRenderer = mazeRenderer;
     }
@@ -76,16 +82,6 @@ public final class Commands {
         logPanel.print("Loaded " + num + " textures");
     }
 
-    //Testing command
-    /**
-     * this is for testing new functionality
-     */
-    private void test(){
-        logPanel.println("Running Test");
-        
-    }
-
-    //set texure pack to dogs
     /**
      * sets the texture pack to dogs
      *
@@ -94,6 +90,24 @@ public final class Commands {
         mazeRenderer.setTexturePack("Dogs");
     }
 
+    /**
+     * sets the texture pack to cats
+     *
+     */
+    private void setCats(){
+        mazeRenderer.setTexturePack("Cats");
+    }
 
+
+    /**
+     * auto lose
+     *
+     */
+    private void autoLose(){
+        mazeRenderer.domain.getEventListener(DomainEvent.onLose).forEach(r -> r.run());
+    }
+
+    
+    
 
 }

@@ -35,7 +35,7 @@ public class GameClock {
         app.getGame().pingDomain();
         long currentTime = System.nanoTime();
         timePlayed +=( currentTime - timeStart) * replaySpeed;
-        if (timePlayed > 60_000_000_000L) app.runLoseEvent();
+        if (timePlayed > timeLimit) app.runLoseEvent();
         timeStart = currentTime;
         replayObserver.run();
         app.repaint();
@@ -102,7 +102,7 @@ public class GameClock {
      * @param speed the delay in milliseconds
      */
     public void setReplaySpeed(float speed) {
-        this.replayTimer.setDelay((int)(timeIntervalReplay * speed));
+        this.replayTimer.setDelay((int)(timeIntervalReplay / speed));
         this.replaySpeed = speed;
     }
 

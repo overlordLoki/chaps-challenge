@@ -16,7 +16,7 @@ public class TileInfo{
     private Loc loc;
     private int ping; //to be used later perhaps to keep count of ping cycles
     
-    //FOR ACTORS ONLY ATM:
+    //FOR ACTORS ONLY CURRENTLY:
     private Direction facing;
     private Tile tileOn;
 
@@ -40,7 +40,6 @@ public class TileInfo{
         this.facing = Direction.None;
         this.tileOn = null;
     }
-
     /**
      * Create a tileInfo object only with loc, 
      * pingCount defaults to 0, the imageName to ""
@@ -48,7 +47,6 @@ public class TileInfo{
      * @param loc location of tile
      */
     public TileInfo(Loc loc){this(loc, 0, "", "");}
-
     /**
      * Create a tileInfo object only with loc and imageName,
      * pingCount defaults to 0
@@ -89,8 +87,7 @@ public class TileInfo{
      * 
      * @return tile to replace with this tile when moved
      */
-    public Tile tileOn(){return tileOn;}
-    
+    public Tile tileOn(){return tileOn;}  
     /**
      * gets the direction the tile is facing
      * 

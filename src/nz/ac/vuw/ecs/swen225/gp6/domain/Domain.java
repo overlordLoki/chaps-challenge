@@ -20,6 +20,18 @@ public class Domain {
     private int currentLvlIndex; //Note: first level should be 1
 
     /**
+     * enum to inform us of the current state of the game
+     * integrity check uses this frequently to check rules of the game accordingly
+     */
+    public enum GameState{
+        WON, 
+        LOST, 
+        PLAYING, 
+        BETWEENLEVELS
+    };
+    private GameState state;
+
+    /**
      * enum for domainEvents that the app will be informed of when triggered.
      */
     public enum DomainEvent {
@@ -47,9 +59,9 @@ public class Domain {
         if(currentLvl < 1 || currentLvl > levels.size())
             throw new IndexOutOfBoundsException("currentLvl must be greater than 0(Domain), and smaller or equal to levels.size()");
 
-
         this.levels = levels;
         this.currentLvlIndex = currentLvl;
+        this.state = GameState.PLAYING; //set initial state to playing
         
         //initialise event listeners to empty lists (every domain event should always have an associated list)
         for(DomainEvent e : DomainEvent.values()){eventListeners.put(e, new ArrayList<Runnable>());}
@@ -221,6 +233,12 @@ public class Domain {
     public int getTreasuresLeft(){return getCurrentMaze().getTileCount(TileType.Coin);}
 
     /**
+     * gets state of the game(won, lost, inbetween levels, playing)
+     * @return GameState enum
+     */
+    public GameState getGameState(){return state;}
+
+    /**
      * @return true if game is on last level, else false
      */
     public boolean isLastLevel(){return currentLvlIndex == levels.size();}
@@ -308,6 +326,12 @@ public class Domain {
         if(lvl < 1 || lvl > levels.size()) 
             throw new IndexOutOfBoundsException("invalid level index (Domain.setCurrentLevelIndex)");
         this.currentLvlIndex = lvl;}
+
+    /**
+     * sets state of the game(won, lost, inbetween levels, playing)
+     * @param GameState enum
+     */
+    public void setGameState(GameState state){this.state = state;}
     
     /**
      * If there is another level increments the current level and returns true, 
