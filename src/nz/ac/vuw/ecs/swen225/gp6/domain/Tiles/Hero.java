@@ -10,9 +10,7 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.*;
 /**
  * A class that represents the hero/player in the game.
  */
-public class Hero extends Actor{
-    private static String moveString = "";//TODO remove
-                            
+public class Hero extends Actor{                          
     /**
      * Create a Hero actor
      * @param info tile information
