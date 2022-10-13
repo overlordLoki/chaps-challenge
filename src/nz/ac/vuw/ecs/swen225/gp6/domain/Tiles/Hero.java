@@ -1,6 +1,7 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain.Tiles;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.GameState;
 import nz.ac.vuw.ecs.swen225.gp6.domain.IntegrityCheck.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.*;
@@ -43,7 +44,7 @@ public class Hero extends Actor{
         //if the tile damages the hero, LOSE
         if(t.damagesHero(d)){
             d.getEventListener(Domain.DomainEvent.onLose).forEach(r -> r.run());
-            CheckGame.state = CheckGame.GameState.LOST; //let the integrity checker know the game is LOST
+            d.setGameState(GameState.LOST); //let the domain know the game is LOST
         }
     }
 

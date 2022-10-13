@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.GameState;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.Key.KeyColor;
@@ -25,8 +26,6 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.*;
  * also include string telling which rule has been broken
  */
 public final class CheckGame {
-    public enum GameState{WON, LOST, PLAYING, BETWEENLEVELS};//TODO a method to get state for app
-    public static GameState state = GameState.PLAYING;
     
     /**
      * Checks the integrity of the game after a ping, and the game state is transitioning a step forward.
@@ -43,11 +42,11 @@ public final class CheckGame {
         Inventory afterInv = afterDomain.getInv();
 
          //if the game is won, lost or in between levels, behave appropriately
-        if(state == GameState.WON || state == GameState.LOST){
+        if(afterDomain.getGameState() == GameState.WON ||afterDomain.getGameState() == GameState.LOST){
             return;
         } 
-        if(state == GameState.BETWEENLEVELS){
-            state = GameState.PLAYING;
+        if(afterDomain.getGameState() == GameState.BETWEENLEVELS){
+            afterDomain.setGameState(GameState.PLAYING);
             return;
         }
 
@@ -77,16 +76,16 @@ public final class CheckGame {
         Inventory inv = domain.getInv();
 
         //if the game is won, lost or in between levels, behave appropriately
-        if(state == GameState.WON){
+        if(domain.getGameState() == GameState.WON){
             checkWin(domain);
             return;
         }
-        if(state == GameState.LOST){
+        if(domain.getGameState() == GameState.LOST){
             checkLose(domain);
             return;
         }
-        if(state == GameState.BETWEENLEVELS){
-            state = GameState.PLAYING;
+        if(domain.getGameState() == GameState.BETWEENLEVELS){
+            domain.setGameState(GameState.PLAYING);
             return;
         }
 
