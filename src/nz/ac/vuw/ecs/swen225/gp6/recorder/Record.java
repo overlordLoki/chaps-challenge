@@ -37,12 +37,9 @@ public class Record {
 
     /**
      * Saves the recording to a file
+     * @param slot the slot to save the recording to
      */
     public void saveRecording(int slot){
-        if(!timeline.hasNext()){
-            System.out.println("No events to save");
-            return;
-        }
         try{
             RecorderPersistency.saveTimeline(timeline.getTimeline(), slot);
             System.out.println("Saved recording to file");

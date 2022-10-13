@@ -42,7 +42,6 @@ public class Replay implements Runnable {
         if(actionReady()) {
             executeAction(timeline.next().getValue());
         }
-
     }
 
     /**
@@ -66,7 +65,9 @@ public class Replay implements Runnable {
      * @return this replay object to chain methods
      */
     public Replay step(){
-        app.getGameClock().start();
+        if(checkNextIsValid()) {
+            app.getGameClock().start();
+        }
         this.step = true;
         return this;
     }
@@ -76,9 +77,9 @@ public class Replay implements Runnable {
      * @return this replay object to chain methods
      */
     public Replay autoPlay(){
-        System.out.println("Auto Replay turned on");
-
-        app.getGameClock().start();
+        if(checkNextIsValid()) {
+            app.getGameClock().start();
+        }
         return this;
     }
 
@@ -107,7 +108,6 @@ public class Replay implements Runnable {
      * @return this replay object to chain methods
      */
     public Replay stopReplay(){
-        System.out.println("Replay stopped");
         this.app.getGameClock().stop();
         return this;
     }
@@ -151,11 +151,12 @@ public class Replay implements Runnable {
      */
     private void executeAction(Actions action) throws IllegalArgumentException {
         if(action == null) {throw new IllegalArgumentException("Null action encountered");}
-        action.run(app);
+        action.replay(app);
+        System.out.println("action executed");
         if(step) {
+            app.getGame().pingDomain();
             app.getGameClock().stop();
             this.step = false;
         }
-        System.out.println("action executed");
     }
 }
