@@ -14,7 +14,7 @@ import nz.ac.vuw.ecs.swen225.gp6.persistency.RecorderPersistency;
  *
  * @author: Jayden Hooper
  */
-public class Replay implements Runnable {
+public final class Replay implements Runnable {
     public static final Replay INSTANCE = new Replay();
     private ReplayTimeline<Actions> timeline;
     private App app;
@@ -94,7 +94,7 @@ public class Replay implements Runnable {
      * @param speed the speed to set the replay to
      * @return this replay object to chain methods
      */
-    public Replay setSpeed(int speed) {
+    public Replay speedMultiplier(int speed) {
         int delay = 34 / speed;    // default delay is 34ms
         this.app.getGameClock().setReplaySpeed(delay);
         return this;

@@ -38,13 +38,15 @@ import org.junit.jupiter.api.Test;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Configuration;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller;
+import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Pair;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.AppPersistency;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.DomainPersistency;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Logging;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.RecorderPersistency;
-import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.Pair;
+// import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.Pair;
+
 import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.RecordTimeline;
 
 public class BaseTests {

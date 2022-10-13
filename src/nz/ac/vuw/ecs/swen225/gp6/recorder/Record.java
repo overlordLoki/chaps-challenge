@@ -9,7 +9,7 @@ import nz.ac.vuw.ecs.swen225.gp6.persistency.RecorderPersistency;
  *
  * @author: Jayden Hooper
  */
-public class Record {
+public final class Record {
     public static final Record INSTANCE = new Record();
     private RecordTimeline<Actions> timeline;
 
