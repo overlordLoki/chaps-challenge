@@ -30,7 +30,7 @@ public final class Commands {
         addCommands("autoWin", "Sets the game to auto win", this::autoWin);
         addCommands("autoLose", "Sets the game to auto lose", this::autoLose);
     }
-//------------------------------
+//--------------------------------------------------methods-------------------------------------------------------//
     /**
      * Adds a command to the commands HashMap
      * 
@@ -114,6 +114,7 @@ public final class Commands {
         mazeRenderer.domain.getEventListener(DomainEvent.onLose).forEach(r -> r.run());
     }
 
+    
     
 
 }
