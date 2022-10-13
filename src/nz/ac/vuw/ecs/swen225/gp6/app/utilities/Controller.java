@@ -5,7 +5,6 @@ import nz.ac.vuw.ecs.swen225.gp6.app.App;
 import javax.swing.SwingUtilities;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 

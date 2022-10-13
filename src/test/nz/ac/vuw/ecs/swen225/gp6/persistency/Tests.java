@@ -108,29 +108,6 @@ public class Tests {
         }
     }
 
-    // @Test
-    // public void testMazeDeserialization() {
-    // Maze maze = DomainPersistency.getInitial().getCurrentMaze();
-    // Element doc = DomainPersistency.serialiseMaze(maze);
-    // Maze maze2 = DomainPersistency.deserialiseMaze(doc);
-    // maze2.toString();
-    // assertEquals(maze.toString(), maze2.toString());
-    // }
-
-    // @Test
-    // public void testRecorderTimelineSerialization() {
-    // Stack<Pair<Long, Actions>> timeline = new Stack<Pair<Long, Actions>>();
-    // timeline.add(new Pair<Long, Actions>(10l, Actions.MOVE_DOWN));
-    // timeline.add(new Pair<Long, Actions>(20l, Actions.MOVE_LEFT));
-
-    // Element element =
-    // RecorderPersistency.serialiseTimeline(timeline);
-
-    // assertEquals(element.asXML(), """
-    // <timeline size="2"><MOVE_DOWN time="10"/><MOVE_LEFT
-    // time="20"/></timeline>""");
-    // }
-
     @Test
     public void testRecorderTimelineDeserialisation() {
         Stack<Pair<Long, Actions>> timeline = new Stack<Pair<Long, Actions>>();
@@ -171,18 +148,7 @@ public class Tests {
 
     @Test
     public void testSerialisingConfiguration() {
-        Configuration config = new Configuration(true, new EnumMap<>(Map.ofEntries(
-                Map.entry(MOVE_UP, new Controller.Key(0, VK_UP)),
-                Map.entry(MOVE_DOWN, new Controller.Key(0, VK_DOWN)),
-                Map.entry(MOVE_LEFT, new Controller.Key(0, VK_LEFT)),
-                Map.entry(MOVE_RIGHT, new Controller.Key(0, VK_RIGHT)),
-                Map.entry(PAUSE_GAME, new Controller.Key(0, VK_SPACE)),
-                Map.entry(RESUME_GAME, new Controller.Key(0, VK_ESCAPE)),
-                Map.entry(TO_LEVEL_1, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_1)),
-                Map.entry(TO_LEVEL_2, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_2)),
-                Map.entry(QUIT_TO_MENU, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_X)),
-                Map.entry(SAVE_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_S)),
-                Map.entry(LOAD_GAME, new Controller.Key(InputEvent.CTRL_DOWN_MASK, VK_R)))));
+        Configuration config = Configuration.getDefaultConfiguration();
 
         Element el = AppPersistency.serialise(config);
         Configuration config2 = AppPersistency.deserialise(el);
