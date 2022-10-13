@@ -84,5 +84,4 @@ public class Level {
      * @param direction - the direction for hero to step in next unit of time
      */
     public void makeHeroStep(Direction d){ this.heroNextStep = d;}
-
 }

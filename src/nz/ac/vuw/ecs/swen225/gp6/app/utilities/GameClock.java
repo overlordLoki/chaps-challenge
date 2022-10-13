@@ -90,11 +90,11 @@ public class GameClock {
     public void setObserver(Runnable ob) {this.replayObserver = ob;}
 
     /**
-     * Sets the time limit for this level
+     * Sets the time played in the previous session
      *
-     * @param timeLimit the time limit for this level
+     * @param timePlayed the time played in the previous session
      */
-    public void setTimeLimit(long timeLimit) {this.timeLimit = timeLimit;}
+    public void setTimePlayed(long timePlayed) {this.timePlayed = timePlayed;}
 
     /**
      * Sets the delay between pings for the replay timer

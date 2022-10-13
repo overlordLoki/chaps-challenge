@@ -164,7 +164,8 @@ public class App extends JFrame {
      */
     public void startSavedGame(int slot) {
         updateGameComponents(saves[slot-1]);
-        gameClock.useGameTimer();
+        gameClock.reset();
+        gameClock.setTimePlayed(game.getCurrentTime());
         replay.load(slot);
         transitionToGameScreen();
     }
