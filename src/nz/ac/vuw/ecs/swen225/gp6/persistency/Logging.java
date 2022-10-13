@@ -21,8 +21,7 @@ public class Logging {
         // get time and date string
         String time = LocalDateTime.now().toString();
         // write to file
-        FileWriter out = null;
-        out = new FileWriter("res/log.txt", true);
+        FileWriter out = new FileWriter("res/log.txt", true);
         out.write(time + ": " + message + "\n");
         out.close();
     }
@@ -44,6 +43,15 @@ public class Logging {
             String message = line.substring(line.indexOf(": ") + 1).strip();
             return new Log(date, message);
         }).filter(Objects::nonNull).toList();
+    }
+
+    /**
+     * Clear the log file
+     */
+    public static void clearLogs() throws IOException {
+        FileWriter out = new FileWriter("res/log.txt", false);
+        out.write("");
+        out.close();
     }
 
 }
