@@ -20,6 +20,13 @@ public class RecordTimeline<E> {
         this.timeline = new Stack<>();
     }
 
+    /** 
+     * Creates a new timeline from an existing timeline.
+     */
+    public RecordTimeline(Stack<Pair<Long, E>> timeline){
+        this.timeline = timeline;
+    }
+
     /**
      * Add actions to the timeline
      */
