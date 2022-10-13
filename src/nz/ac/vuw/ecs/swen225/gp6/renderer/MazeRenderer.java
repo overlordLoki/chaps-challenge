@@ -70,7 +70,7 @@ public class MazeRenderer extends JPanel{
      * draws the maze
      */
     private void drawMaze(Graphics g) {
-        //get the maze array
+        //get the maze arrayk
         gameArray = domain.getGameArray();
         //viewport of the maze
         Tile[][] viewport = Viewport.getViewport(gameArray, renderSize);
@@ -296,10 +296,12 @@ public class MazeRenderer extends JPanel{
         BufferedImage box = getImage("popUp");
         g.drawImage(box, 250, 100, 200, 200, null);
         //draw the message in the box
-        String message = domain.getInfoHint();
+        String message1 = "find the keys and dont";
+        String message2 = "let the time run out";
         g.setColor(Color.BLACK);
         g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
-        g.drawString(message, 260, 200);
+        g.drawString(message1, 260, 200);
+        g.drawString(message2, 280, 230);
     }
 
 //--------------------------------------getters and setters----------------------------------------------------------//
