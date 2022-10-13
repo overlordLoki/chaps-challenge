@@ -11,15 +11,16 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.*;
  */
 public class Hero extends Actor{
     private static Direction staticDirection = Direction.Up; //should never be None(can be static atm since we have only one player - also has to be)
-    private static Tile tileOn; //tile the hero will replace when moved 
-    
+    private static Tile tileOn = new Floor((new TileInfo(null))); //tile the hero will replace when moved 
+                                //set the tile initially is on to a floor
     /**
      * Create a Hero actor
      * @param info tile information
      */
     public Hero (TileInfo info){
         super(info);
-        tileOn = new Floor((new TileInfo(info.loc()))); //set the tile initially is on to a floor
+        tileOn.info().loc(info.loc());//this is to make sure tileOn has same location as this tile
+                                      //without this initially an error will be reached
     }
     
     //INFO:
