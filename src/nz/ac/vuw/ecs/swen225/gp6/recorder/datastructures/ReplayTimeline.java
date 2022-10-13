@@ -74,6 +74,14 @@ public class ReplayTimeline<E> {
     }
 
     /**
+     * Returns the next action in the timeline without removing it.
+     * @return returns the time and event of the next action.
+     */
+    public Pair<Long, E> peek(){
+        return forward.peek();
+    }
+
+    /**
      * Checks if there are any previous actions in the timeline
      * @return boolean if there are previous actions
      */
