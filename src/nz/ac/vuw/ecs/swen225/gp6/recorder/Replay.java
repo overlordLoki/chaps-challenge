@@ -42,9 +42,9 @@ public final class Replay implements Runnable {
     }
 
     /**
-     * Load method will load the game from the given file name
-     * @param game the name of the game to load
-     * @return this replay object to chain methods
+     * Load method will load the game from the given file name.
+     * @param slot the slot number to load the game from.
+     * @return this replay object to chain methods.
      * @throws DocumentException
      */
     public Replay load(int slot) {
@@ -59,7 +59,7 @@ public final class Replay implements Runnable {
     /**
      * Method queues the next action in the timeline if available.
      * If there is no next action, the method will popup a message.
-     * @return this replay object to chain methods
+     * @return this replay object to chain methods.
      */
     public Replay step(){
         if(!checkNextIsValid()) {
@@ -72,7 +72,7 @@ public final class Replay implements Runnable {
 
     /**
      * Method enables the autoPlay functionality.
-     * @return this replay object to chain methods
+     * @return this replay object to chain methods.
      */
     public Replay autoPlay(){
         if(checkNextIsValid()) {
@@ -83,7 +83,7 @@ public final class Replay implements Runnable {
 
     /**
      * Method to pause the autoplay feature.
-     * @return this replay object to chain methods
+     * @return this replay object to chain methods.
      */
     public Replay pauseReplay(){
         app.getGameClock().stop();
@@ -92,8 +92,8 @@ public final class Replay implements Runnable {
 
     /**
      * Method sets the speed of the autoplay.
-     * @param speed the speed to set the replay to
-     * @return this replay object to chain methods
+     * @param speed the speed to set the replay to.
+     * @return this replay object to chain methods.
      */
     public Replay speedMultiplier(float speed) {
         this.app.getGameClock().setReplaySpeed(speed);
@@ -124,7 +124,10 @@ public final class Replay implements Runnable {
         return timeline.peek().key() <= time;
     }
 
-    /** Method checks if the timeline is valid */
+    /** 
+     * Method checks if the timeline is valid. 
+     * @return true if the timeline is valid, false otherwise.
+     **/
     private boolean checkNextIsValid(){
         if (!timeline.hasNext()){
             System.out.println("Replay finished"); 
