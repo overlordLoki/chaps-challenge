@@ -114,7 +114,7 @@ public class Configuration {
      *
      * @return the list of action key bindings
      */
-    public EnumMap<Actions, Key> getUserKeyBindings() {return userKeyBindings;}
+    public EnumMap<Actions, Key> getUserKeyBindings() {return userKeyBindings.clone();}
 
     /**
      *  Check if this key combo is already bound to an action.

@@ -4,6 +4,7 @@ import nz.ac.vuw.ecs.swen225.gp6.app.App;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
+import nz.ac.vuw.ecs.swen225.gp6.recorder.Record;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.InventoryPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.LogPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
