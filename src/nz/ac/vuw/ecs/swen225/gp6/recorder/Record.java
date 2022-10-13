@@ -9,19 +9,16 @@ import nz.ac.vuw.ecs.swen225.gp6.persistency.RecorderPersistency;
  *
  * @author: Jayden Hooper
  */
-public class Record {
+public final class Record {
+    public static final Record INSTANCE = new Record();
     private RecordTimeline<Actions> timeline;
 
-    /**
-     * Create a new Record object.
-     */
-    public Record() {
+    /** Create a new Record object. */
+    private Record() {
         this.timeline = new RecordTimeline<>();
     }
 
-    /**
-     * Starts a new recording.
-     */
+    /**  Starts a new recording. */
     public void startRecording(){
         this.timeline = new RecordTimeline<>();
     }
@@ -37,12 +34,9 @@ public class Record {
 
     /**
      * Saves the recording to a file
+     * @param slot the slot to save the recording to
      */
     public void saveRecording(int slot){
-        if(!timeline.hasNext()){
-            System.out.println("No events to save");
-            return;
-        }
         try{
             RecorderPersistency.saveTimeline(timeline.getTimeline(), slot);
             System.out.println("Saved recording to file");

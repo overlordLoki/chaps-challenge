@@ -50,8 +50,8 @@ public class App extends JFrame {
     private final GUI gui               = new GUI(this);
     private final Configuration config  = AppPersistency.load();
     private final Controller controller = new Controller(this);
-    private final Record recorder       = new Record();
-    private final Replay replay         = new Replay(this);
+    private final Record recorder       = Record.INSTANCE;
+    private final Replay replay         = Replay.INSTANCE;
     private boolean inResume            = false;
 
 
@@ -67,6 +67,7 @@ public class App extends JFrame {
         refreshSaves();
         initialiseGUI();
         initialiseCommands();
+        replay.setReplay(this);
         config.update(this);
         controller.update();
     }

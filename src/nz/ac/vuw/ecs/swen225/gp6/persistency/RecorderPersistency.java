@@ -12,7 +12,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
-import nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures.Pair;
+import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Pair;
 
 public class RecorderPersistency {
 
@@ -26,8 +26,8 @@ public class RecorderPersistency {
         Element root = DocumentHelper.createElement("timeline");
         root.addAttribute("size", timeline.size() + "");
         for (Pair<Long, Actions> pair : timeline) {
-            Element action = root.addElement(pair.getValue().toString());
-            action.addAttribute("time", pair.getKey() + "");
+            Element action = root.addElement(pair.value().toString());
+            action.addAttribute("time", pair.key() + "");
         }
         return root;
     }
