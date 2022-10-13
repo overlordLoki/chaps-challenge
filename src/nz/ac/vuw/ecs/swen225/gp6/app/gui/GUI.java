@@ -23,6 +23,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static nz.ac.vuw.ecs.swen225.gp6.app.gui.SwingFactory.*;
@@ -445,17 +446,33 @@ public class GUI {
 
         functionPanel.add(pnModeNormal, MODE_NORMAL);
         functionPanel.add(pnModeReplay, MODE_REPLAY);
-        addAll(pnModeNormal,
-                createActionLabel("Pause", renderPanel,SUBTITLE, true,()->Actions.PAUSE_GAME.run(app))
-                // TODO: remove after debugging
-                , createActionLabel("win", renderPanel, SUBTITLE, true, this::transitionToWinScreen)
-                , createActionLabel("lost", renderPanel, SUBTITLE, true, this::transitionToLostScreen)
+        pnModeNormal.add(createActionLabel("Pause", renderPanel,SUBTITLE, true,()->Actions.PAUSE_GAME.run(app)));
+        JPanel replaySpeed = createClearPanel(BoxLayout.X_AXIS);
+        AtomicReference<Float> speed = new AtomicReference<>(1F);
+        addAll(replaySpeed,
+                createActionLabel("<<", renderPanel,TEXT, true,
+                        () -> {
+                            if (speed.get() <= 0.25) return;
+                            speed.set(speed.get() - 0.25F);
+                            app.getReplay().speedMultiplier(speed.get());
+                            replaySpeed.repaint();}
+                ),
+                createInfoLabel(() -> "" + speed.get(), renderPanel, TEXT, true),
+                createActionLabel(">>", renderPanel,TEXT, true,
+                        () -> {
+                            if (speed.get() >= 10.0F) return;
+                            speed.set(speed.get() + 0.25F);
+                            app.getReplay().speedMultiplier(speed.get());
+                            replaySpeed.repaint();
+                        }
+                )
         );
         addAll(pnModeReplay,
-                createLabel("Replay Mode", renderPanel,SUBTITLE, true),
-                createActionLabel("Pause", renderPanel,SUBTITLE, true, ()->Actions.PAUSE_GAME.run(app)),
-                createActionLabel("Auto", renderPanel,SUBTITLE, true, ()->app.getReplay().autoPlay()),
-                createActionLabel("Step", renderPanel,SUBTITLE, true, ()->app.getReplay().step()));
+                createActionLabel("Menu", renderPanel,TEXT, true,()->Actions.QUIT_TO_MENU.run(app)),
+                createActionLabel("Pause", renderPanel,TEXT, true, ()->app.getReplay().stopReplay()),
+                createActionLabel("Auto", renderPanel,TEXT, true, ()->app.getReplay().autoPlay()),
+                createActionLabel("Step", renderPanel,TEXT, true, ()->app.getReplay().step()),
+                replaySpeed);
 
         addAll(pnStatusTop,
                 createLabel("Level", renderPanel, SUBTITLE, false),
