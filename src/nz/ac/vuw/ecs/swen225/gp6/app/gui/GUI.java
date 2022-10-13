@@ -352,13 +352,7 @@ public class GUI {
                 pnMiddle,
                 Box.createVerticalGlue(),
                 createActionLabel("Confirm", renderPanel, SUBTITLE, true, ()->{
-                    try {
-                        AppPersistency.save(app.getConfiguration());
-                    } catch (IOException e) {
-                        System.err.println("Failed to save configuration.");
-                        e.printStackTrace();
-                        JOptionPane.showMessageDialog(null, "Failed to save configuration.");
-                    }
+                    app.getConfiguration().save(app);
                     menuCardLayout.show(menuPanel, MENU);
                 }));
 
