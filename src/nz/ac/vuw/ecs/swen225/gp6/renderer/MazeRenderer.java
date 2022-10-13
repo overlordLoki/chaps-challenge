@@ -1,7 +1,6 @@
 package nz.ac.vuw.ecs.swen225.gp6.renderer;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -130,6 +129,7 @@ public class MazeRenderer extends JPanel{
         File[] listOfFiles = texturePackRoot.listFiles();
         List<TexturePack> textures1 = new ArrayList<>();
         //for each texture in the folder add it to the list
+        assert listOfFiles != null;
         for (File file : listOfFiles) {
             if(!checkSettingsFile(file)){
                 TexturePack tp = new TexturePack(file.getName(), 
@@ -150,11 +150,6 @@ public class MazeRenderer extends JPanel{
                     textures1.add(tp);
                 }catch(Exception e) {System.out.println("reading setting failed!");}
             }
-        }
-        //exit safely if no texture packs found. 
-        if(textures1.size() == 0) {
-            System.out.println("no texture packs found");
-            System.exit(0);
         }
         return textures1;
     }
@@ -196,7 +191,7 @@ public class MazeRenderer extends JPanel{
      * @return
      */
     private String readSettings(File texturePackFile) {
-        String inputs = "";
+        StringBuilder inputs = new StringBuilder();
         try {
             File settingFile = new File(texturePackFile.getPath() + "/settings.txt");
             Scanner sc = new Scanner(settingFile);
@@ -205,32 +200,16 @@ public class MazeRenderer extends JPanel{
                 String[] split = line.split(":");   
                 String key = split[0].trim();
                 String value = split[1].trim();
-                switch(key) {
-                    case "title":
-                        inputs += value;
-                        break;
-                    case "subtitle":
-                        inputs += value;
-                        break;
-                    case "text":
-                        inputs += value;
-                        break;
-                    case "colorHover":
-                        inputs += value;
-                        break;
-                    case "colorSelected":
-                        inputs += value;
-                        break;  
-                    default:
-                        System.out.println("invalid setting: " + key);
-                        break;
+                switch (key) {
+                    case "title", "subtitle", "text", "colorHover", "colorSelected" -> inputs.append(value);
+                    default -> System.out.println("invalid setting: " + key);
                 }
             }
             sc.close();
         } catch (FileNotFoundException e) {
             System.out.println("settings.txt not found");
         }
-        return inputs;
+        return inputs.toString();
     }
 
     //checkSettingsFile
@@ -242,6 +221,7 @@ public class MazeRenderer extends JPanel{
     private boolean checkSettingsFile(File folder) {
         File[] listOfFiles = folder.listFiles();
         List<String> files = new ArrayList<>();
+        assert listOfFiles != null;
         for (File file : listOfFiles) {
             files.add(file.getName());
         }
@@ -359,7 +339,7 @@ public class MazeRenderer extends JPanel{
      * get list of TexturePacks
      * @return textures
      */
-    public List<TexturePack> getTexturePacks() {return textures;}
+    public List<TexturePack> getTexturePacks() {return textures.stream().toList();}
 
     /**
      * use next texture pack
