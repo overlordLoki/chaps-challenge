@@ -48,7 +48,7 @@ public class Inventory {
     public Inventory(int size, int coins, List<Tile> items){
         if(size < 1) {throw new IllegalArgumentException("Inventory must include atleast one item.");}
         if(coins < 0) {throw new IllegalArgumentException("Inventory's coin number is cannot be negative.");}
-        if(items == null || items.size() > size) {throw new IllegalArgumentException("wrong input for list of items in Inventory");}
+        if(items == null || items.size() > size ||items.contains(null)) {throw new IllegalArgumentException("wrong input for list of items in Inventory");}
 
         this.size = size;
         this.coins = coins;

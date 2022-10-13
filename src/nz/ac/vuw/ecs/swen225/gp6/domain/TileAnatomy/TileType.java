@@ -1,7 +1,6 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.*;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.ClassFinder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -55,6 +54,7 @@ public enum TileType{
     Periphery('*'), //used to draw the peripheries of the maze(out of bound areas)
 
     Other('?'), //used for tiles that are implemented at run time and such
+                        //feeding this into makeTile method will cause an IllegalArgumentException
 
     Null(Character.MIN_VALUE); //used to represent null tiles
 
@@ -84,7 +84,7 @@ public enum TileType{
     public static Tile makeTile(TileType t, TileInfo info){
         if(t == null || info == null) throw new NullPointerException("tile type or tile info cannot be null (TileType.makeTile)");
         try{
-            Class<?> c = ClassFinder.findClass("nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.", t.name());
+            Class<?> c = Class.forName("nz.ac.vuw.ecs.swen225.gp6.domain.Tiles." + t.name());
             return (Tile) c.getDeclaredConstructor(TileInfo.class).newInstance(info);
         }catch(Exception e){
             throw new IllegalArgumentException("There isn't a class for tile type: " + t.name());
@@ -92,10 +92,7 @@ public enum TileType{
     }
 
     /**
-     * this method will return a tile type based on its symbol, this will also look into 
-     * custom tile's folder. Therefore(AT RUNTIME) it may be able to create a wider range of tile types 
-     * than makeTile method since all custom tiles have the TileType.Other, but will have different symbols.
-     * (MOSTLY USED IN TESTING)
+     * this method will return a tile type based on its symbol.
      * 
      * @param symbol symbol of desired tile class
      * @param info an instance of the TileInfo object that has all the necessary
@@ -117,21 +114,8 @@ public enum TileType{
         
         if(type != TileType.Other) return TileType.makeTile(type, info);
         
-        //search in custom tile types
-        try{
-            List<Class<?>> classes = ClassFinder.findAllClassesIn("custom.tiles.");
-            return (Tile)classes.stream()
-            .map(c -> {
-                try{return c.getDeclaredConstructor(TileInfo.class).newInstance(info); }
-                catch(Exception e){ return new Null(new TileInfo(null)); }}
-            )
-            .filter(t -> ((Tile)t).symbol() == symbol)
-            .findFirst()
-            .get();
-        } catch (Exception e){
-            throw new IllegalArgumentException("Tiles class with symbol " + symbol 
-            + " not defined in any tile source(preset tiles or custom ones)");
-        }
+        throw new IllegalArgumentException("Tiles class with symbol " + symbol 
+            + " not defined in preset tiles, it may be in custom tiles!");
         
     }
     

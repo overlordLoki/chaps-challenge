@@ -11,6 +11,7 @@ import nz.ac.vuw.ecs.swen225.gp6.renderer.MusicPlayer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack.Images;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.DomainPersistency;
+import nz.ac.vuw.ecs.swen225.gp6.persistency.AppPersistency;
 
 import javax.swing.*;
 import java.awt.*;
@@ -310,9 +311,9 @@ public class GUI {
                 createInfoActionLabel(()->app.getConfiguration().isMusicOn()? "On" : "Off", renderPanel, TEXT, false, ()->false,
                         ()->{app.getConfiguration().setMusicOn(!app.getConfiguration().isMusicOn());
                             if (app.getConfiguration().isMusicOn()) {
-                                MusicPlayer.playMenuMusic();
+                                MusicPlayer.playMusic();
                             } else {
-                                MusicPlayer.stopMenuMusic();
+                                MusicPlayer.stopMusic();
                             }}),
                 pnViewDistance,
                 pnTexturePack);
@@ -350,7 +351,16 @@ public class GUI {
                 Box.createVerticalGlue(),
                 pnMiddle,
                 Box.createVerticalGlue(),
-                createActionLabel("Confirm", renderPanel, SUBTITLE, true, ()->menuCardLayout.show(menuPanel, MENU)));
+                createActionLabel("Confirm", renderPanel, SUBTITLE, true, ()->{
+                    try {
+                        AppPersistency.save(app.getConfiguration());
+                    } catch (IOException e) {
+                        System.err.println("Failed to save configuration.");
+                        e.printStackTrace();
+                        JOptionPane.showMessageDialog(null, "Failed to save configuration.");
+                    }
+                    menuCardLayout.show(menuPanel, MENU);
+                }));
 
         System.out.println("Done!");
         return pnSettings;

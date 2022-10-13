@@ -25,7 +25,7 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.*;
  * also include string telling which rule has been broken
  */
 public final class CheckGame {
-    public enum GameState{WON, LOST, PLAYING, BETWEENLEVELS};
+    public enum GameState{WON, LOST, PLAYING, BETWEENLEVELS};//TODO a method to get state for app
     public static GameState state = GameState.PLAYING;
     
     /**
@@ -255,6 +255,7 @@ public final class CheckGame {
             //use reflection to find out the damaging tiles on maze, have a tileOn method
             try{
                 Method m = tile.getClass().getMethod("tileOn");
+                m.setAccessible(true);
                 Tile tileOn = (Tile) m.invoke(tile);
                 if(tileOn instanceof Hero){
                     dangerTileOnHero = true;
@@ -288,7 +289,7 @@ public final class CheckGame {
         //check all conditions that player need to win is true
         //current conditions are:
         //-1: hero is on openExitDoor
-        //-2: all coins are in inventory
+        //-2: no coins are on maze(all in inventory)
         if(domain.getTreasuresLeft() != 0){
             throw new IllegalStateException("Not all coins are in inventory, but game is claimed to be won");
         }

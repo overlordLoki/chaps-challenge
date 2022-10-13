@@ -63,7 +63,7 @@ public class MazeRenderer extends JPanel{
         //draw the game as usal
         drawMaze(g);
         //if we drawing info draw it
-        if(domain.heroIsOnInfo() || infoCheat){drawInfo(g);}
+        if(domain.heroIsOnInfo()){drawInfo(g);}
     }
 
     /**
@@ -316,14 +316,19 @@ public class MazeRenderer extends JPanel{
 
 //---------------------------------------drawing info----------------------------------------------------------//
 
-    private boolean infoCheat = false;//if the info cheat is on
     /**
      * draw the info of the game
      * @param g
      */
     private void drawInfo(Graphics g) {
         //draw the box
-        g.drawImage(getImage("popUp"), 250, 100, 200, 200, null);
+        BufferedImage box = getImage("popUp");
+        g.drawImage(box, 250, 100, 200, 200, null);
+        //draw the message in the box
+        String message = domain.getInfoHint();
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
+        g.drawString(message, 260, 200);
     }
 
 //--------------------------------------getters and setters----------------------------------------------------------//
@@ -434,10 +439,4 @@ public class MazeRenderer extends JPanel{
      */
     public BufferedImage getImage(Tile tile) {return texturePack.getImage(tile);}
 
-    //setter for infoCheat
-    /**
-     * set infoCheat
-     * @param infoCheat
-     */
-    public void setInfoCheat(boolean infoCheat) {this.infoCheat = infoCheat;}
 }
