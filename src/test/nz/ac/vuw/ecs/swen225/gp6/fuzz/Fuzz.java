@@ -97,13 +97,8 @@ public class Fuzz {
             Actions action = actionsList.get(randomIndex);
 
             if(action == PAUSE_GAME) {
-                if(r.nextInt(2) != 0) {
-                    PAUSE_GAME.run(app);
-                    System.out.println("Paused game");
-                    robot.delay(2000);
-                    RESUME_GAME.run(app);
-                    System.out.println("Resume game");
-                    robot.delay(2000);
+                if(r.nextInt(15) != 0) {
+                    continue;
                 }else{
                     PAUSE_GAME.run(app);
                     robot.delay(2000);
