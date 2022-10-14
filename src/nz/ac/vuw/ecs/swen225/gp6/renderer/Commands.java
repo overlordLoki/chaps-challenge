@@ -7,22 +7,24 @@ import java.util.List;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.DomainEvent;
 /**
  * This class is used to store the commands that the user can input into the log panel.
+ *
  * @author loki
  */
 public final class Commands {
 //--------------------------------------------------fields-------------------------------------------------------//
     private final LogPanel logPanel;
     private MazeRenderer mazeRenderer;
-    private HashMap<String, Runnable> commands = new HashMap<String, Runnable>();
-    private List<String> helpCommands = new ArrayList<>();
+    private final HashMap<String, Runnable> commands = new HashMap<>();
+    private final List<String> helpCommands = new ArrayList<>();
 //--------------------------------------------------constructor-------------------------------------------------------//
     /**
      * Constructor for Commands
-     * @param logPanel
+     *
+     * @param logPanel the logPanel to be used
      */
     public Commands(LogPanel logPanel) {
         this.logPanel = logPanel;
-        addCommands("help", "Displays the availble commands", this::help);
+        addCommands("help", "Displays the available commands", this::help);
         addCommands("clear", "Clears the text area", this::clear);
         addCommands("packsNumber", "Displays the number of texture packs", this::numberOfPacks);
         addCommands("setDogs", "Sets the texture pack to dogs", this::setDogs);
@@ -33,18 +35,19 @@ public final class Commands {
     /**
      * Adds a command to the commands HashMap
      * 
-     * @param command
-     * @param discription
-     * @param action
+     * @param command the command to be added
+     * @param description the description of the command
+     * @param action the action to be performed
      */
-    public void addCommands(String command, String discription, Runnable action){
+    public void addCommands(String command, String description, Runnable action){
         commands.put(command, action);
-        helpCommands.add(command + " - " + discription);
+        helpCommands.add(command + " - " + description);
     }
 
     /**
      * invokes the command
-     * @param command
+     *
+     * @param s the command to be invoked
      */
     public void invoke(String s){
         commands.getOrDefault(s, () -> logPanel.println("Command not found")).run();
@@ -52,11 +55,13 @@ public final class Commands {
     
     /**
      * Displays the available commands
+     *
+     * @param mazeRenderer the renderer for the maze
      */
     public void setRenderer(MazeRenderer mazeRenderer){
         this.mazeRenderer = mazeRenderer;
     }
-//-----------------------------------------------COMANDS-----------------------------------------------------------//
+//-----------------------------------------------COMMANDS-----------------------------------------------------------//
     /**
      * clears the textArea
      */
@@ -84,7 +89,6 @@ public final class Commands {
 
     /**
      * sets the texture pack to dogs
-     *
      */
     private void setDogs(){
         mazeRenderer.setTexturePack("Dogs");
@@ -92,7 +96,6 @@ public final class Commands {
 
     /**
      * sets the texture pack to cats
-     *
      */
     private void setCats(){
         mazeRenderer.setTexturePack("Cats");
@@ -101,13 +104,8 @@ public final class Commands {
 
     /**
      * auto lose
-     *
      */
     private void autoLose(){
-        mazeRenderer.domain.getEventListener(DomainEvent.onLose).forEach(r -> r.run());
+        mazeRenderer.getDomain().getEventListener(DomainEvent.onLose).forEach(Runnable::run);
     }
-
-    
-    
-
 }

@@ -15,7 +15,7 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Hero;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 
-import static nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack.Images.reloadAllTexturepack;
+import static nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack.Images.reloadAllTexturePack;
 
 /**
  * makes a jPanel that can be added to a JFrame
@@ -25,14 +25,12 @@ import static nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack.Images.reloadAllTex
 public class MazeRenderer extends JPanel{
 //----------------------------fields------------------------------------------------------------------------------//
     static final long serialVersionUID = 1L; //serialVersionUID
-    private List<TexturePack> textures;
+    private final List<TexturePack> textures;
     private static TexturePack texturePack = null;//this is not a bug it is a feature. see report
-    private Tile[][] gameArray; //the array of tiles
-    public Domain domain; //the domain controller
-    public BufferedImage background; //the background image
+    private Domain domain; //the domain controller
     private int patternSize = 100; //the size of the pattern
     private int renderSize = 7; //the size of the render
-    private int minRenderSize = 1, maxRenderSize = 50; //the min and max render size
+    private boolean changingLvl = false; //if the level is changing
 
 
 //----------------------------------Constructor-----------------------------------------------------------//
@@ -57,11 +55,11 @@ public class MazeRenderer extends JPanel{
     public void paintComponent(Graphics g) {
         //call superclass to paint background
         super.paintComponent(g);
-        //if changing Level draw chaing lvl animation and dont draw anything else
-        if(changinglvl){changeLvl(g);return;}
-        //draw the game as usal
+        //if changing Level draw changing lvl animation and don't draw anything else
+        if(changingLvl){changeLvl(g);return;}
+        //draw the game as usual
         drawMaze(g);
-        //if we drawing info draw it
+        //if we are drawing info draw it
         if(domain.heroIsOnInfo()){drawInfo(g);}
     }
 
@@ -69,8 +67,9 @@ public class MazeRenderer extends JPanel{
      * draws the maze
      */
     private void drawMaze(Graphics g) {
-        //get the maze arrayk
-        gameArray = domain.getGameArray();
+        //get the maze array
+        //the array of tiles
+        Tile[][] gameArray = domain.getGameArray();
         //viewport of the maze
         Tile[][] viewport = Viewport.getViewport(gameArray, renderSize);
         //get the width and height of the maze
@@ -81,7 +80,7 @@ public class MazeRenderer extends JPanel{
             for (int j = 0; j < viewport[1].length; j++) {
                 //clear the floor
                 g.drawImage(texturePack.getImage("floor"), i * tileWidth, j * tileHeight, tileWidth, tileHeight, null);
-                // if there is a item draw on top of the floor or a wall tile
+                // if there is an item draw on top of the floor or a wall tile
                 Tile tile = viewport[i][j];
                 if(tile.type() == TileType.Floor) {continue;}
                 //if hero tile then draw the hero depending on the direction
@@ -99,21 +98,18 @@ public class MazeRenderer extends JPanel{
 
     /**
      * get the hero image depending on the direction
-     * @param dir
-     * @return
+     *
+     * @param dir the direction the hero is facing
+     * @return the BufferedImage of the hero
      */
     private BufferedImage getHeroImg(Direction dir) {
-        switch(dir) {
-            case Up:
-                return texturePack.getImage("heroBack");
-            case Down:
-                return texturePack.getImage("heroFront");
-            case Left:
-                return texturePack.getImage("heroSide");
-            case Right:
-                return texturePack.getImage("hero");
-            default: return null;
-        }
+        return switch (dir) {
+            case Up -> texturePack.getImage("heroBack");
+            case Down -> texturePack.getImage("heroFront");
+            case Left -> texturePack.getImage("heroSide");
+            case Right -> texturePack.getImage("hero");
+            default -> null;
+        };
     }
 
 
@@ -122,7 +118,8 @@ public class MazeRenderer extends JPanel{
 
     /**
      * get the texture pack list
-     * @return
+     *
+     * @return the list of texture packs
      */
     public List<TexturePack> getTexturePacksList() {
         File texturePackRoot = new File("res/texturesPacks");
@@ -138,7 +135,6 @@ public class MazeRenderer extends JPanel{
                                                 new Font("Arial", Font.BOLD, 30),
                                                 Color.ORANGE, Color.RED);
                 textures1.add(tp);
-                continue;
             }else{
                 try{
                     String settings = readSettings(file);
@@ -154,41 +150,27 @@ public class MazeRenderer extends JPanel{
         return textures1;
     }
 
-    
-    /**
-     * set the current texturePack and returns the new background image
-     * 
-     * @param texturePack
-     */
-    public void setTexturePack(TexturePack texturePack) {
-        MazeRenderer.texturePack = texturePack;//this is not a bug it is a feature. see report
-        patternSize = 100;
-        reloadAllTexturepack();
-    }
-
-
-    //set texture pack given a string input
     /**
      * set the current texturePack given a string input
-     * @param texturePack
+     *
+     * @param texturePack the texture pack to be set
      */
     public void setTexturePack(String texturePack) {
         for(TexturePack tp : textures) {
             if(tp.getName().equals(texturePack)) {
                 MazeRenderer.texturePack = tp;//this is not a bug it is a feature. see report
                 patternSize = 100;
-                reloadAllTexturepack();
+                reloadAllTexturePack();
                 return;
             }
         }
         System.out.println("texture pack not found");
     }
 
-    //read in setting from setting.txt
     /**
      * read in setting from setting.txt
-     * @param texturePackFile
-     * @return
+     * @param texturePackFile the texture pack folder
+     * @return the settings as a string
      */
     private String readSettings(File texturePackFile) {
         StringBuilder inputs = new StringBuilder();
@@ -212,11 +194,11 @@ public class MazeRenderer extends JPanel{
         return inputs.toString();
     }
 
-    //checkSettingsFile
     /**
      * checkSettingsFile if it exists
-     * @param folder
-     * @return
+     *
+     * @param folder the folder to check
+     * @return true if it exists
      */
     private boolean checkSettingsFile(File folder) {
         File[] listOfFiles = folder.listFiles();
@@ -225,17 +207,15 @@ public class MazeRenderer extends JPanel{
         for (File file : listOfFiles) {
             files.add(file.getName());
         }
-        if(!files.contains("settings.txt")) {
-            return false;
-        }
-        return true;
+        return files.contains("settings.txt");
     }
 
 //----------------------------------------draw change lvl-----------------------------------------------------------//
 
     /**
      * run the change lvl animation
-     * @param g
+     *
+     * @param g the graphics object
      */
     private void changeLvl(Graphics g) {
         g.setColor(Color.BLACK);
@@ -245,19 +225,20 @@ public class MazeRenderer extends JPanel{
         g.drawString("Level " + 2, getWidth()/2 - 100, getHeight()/2);
     }
 
-    private boolean changinglvl = false; //if the level is changing
+
     /**
      * change the level
-     * @param observer
+     *
+     * @param observer the observer to trigger after the cutscene completes
      */
     public void changeLevel(Runnable observer){
-        changinglvl = true;
+        changingLvl = true;
         // run sequence here
         AtomicInteger cutsceneFrames = new AtomicInteger();
         Timer timer = new Timer(10, unused->{
             this.repaint();
             if (cutsceneFrames.getAndIncrement() >= 50){ // max 50 frames
-                changinglvl = false;
+                changingLvl = false;
                 observer.run();
                 ((Timer)unused.getSource()).stop();
             }
@@ -269,7 +250,8 @@ public class MazeRenderer extends JPanel{
 
     /**
      * draw the info of the game
-     * @param g
+     *
+     * @param g the graphics object
      */
     private void drawInfo(Graphics g) {
         //draw the box
@@ -285,29 +267,18 @@ public class MazeRenderer extends JPanel{
     }
 
 //--------------------------------------getters and setters----------------------------------------------------------//
-    //Basic getters and setters
-
-    /**
-     * get min render size
-     * @return minRenderSize
-     */
-    public int getMinRenderSize() {return minRenderSize;}
-    /**
-     * get maximum render size
-     * @return maxRenderSize
-     */
-    public int getMaxRenderSize() {return maxRenderSize;}
-    
 
     /**
      * get render size
+     *
      * @return int
      */
     public int getRenderSize() {return renderSize;}
 
     /**
      * set render size
-     * @param renderSize
+     *
+     * @param renderSize the render size to be set
      */
     public void setRenderSize(int renderSize) {this.renderSize = renderSize;}
 
@@ -330,7 +301,8 @@ public class MazeRenderer extends JPanel{
 
     /**
      * set the maze to be rendered
-     * @param maze
+     *
+     * @param maze the maze to be rendered
      */
     public void setMaze(Domain maze) {this.domain = maze;}
 
@@ -347,7 +319,7 @@ public class MazeRenderer extends JPanel{
     public void useNextTexturePack(){
         int nextIndex = (textures.indexOf(texturePack) + 1 ) % textures.size();
         texturePack = textures.get(nextIndex);
-        reloadAllTexturepack();
+        reloadAllTexturePack();
     }
 
     /**
@@ -357,13 +329,15 @@ public class MazeRenderer extends JPanel{
         int nextIndex = (textures.indexOf(texturePack) - 1 ) % textures.size();
         if(nextIndex < 0) nextIndex = textures.size() - 1;
         texturePack = textures.get(nextIndex);
-        reloadAllTexturepack();
+        reloadAllTexturePack();
     }
 
     /**
      * increase viewport distance
      */
     public void increaseViewDistance() {
+        //the min and max render size
+        int maxRenderSize = 50;
         if(renderSize < maxRenderSize) {
             renderSize++;
         }
@@ -373,6 +347,7 @@ public class MazeRenderer extends JPanel{
      * decrease viewport distance
      */
     public void decreaseViewDistance() {
+        int minRenderSize = 1;
         if(renderSize > minRenderSize) {
             renderSize--;
         }
@@ -380,16 +355,26 @@ public class MazeRenderer extends JPanel{
 
     /**
      * get a image from the image provided
-     * @param String
+     *
+     * @param imgName name of the image
      * @return BufferedImage
      */
     public BufferedImage getImage(String imgName) {return texturePack.getImage(imgName);}
 
     /**
      * get a image from the image provided
-     * @param Tile
+     *
+     * @param tile tile to get image from
      * @return BufferedImage
      */
     public BufferedImage getImage(Tile tile) {return texturePack.getImage(tile);}
+
+
+    /**
+     * Get the current domain
+     *
+     * @return the current domain
+     */
+    public Domain getDomain(){ return domain;}
 
 }
