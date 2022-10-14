@@ -17,6 +17,7 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Inventory;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Level;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.GameState;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.Tile;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileInfo;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
@@ -42,6 +43,7 @@ public class DomainPersistency {
             levels.add(serialiseLevel(level));
         }
         levels.addAttribute("current", Integer.toString(domain.getCurrentLevel()));
+        root.addAttribute("state", domain.getGameState().toString());
         return root;
     }
 
@@ -54,11 +56,14 @@ public class DomainPersistency {
     public static Domain deserialiseDomain(Element root) {
         Element levelEls = root.element("levels");
         int currentLevel = Integer.parseInt(levelEls.attributeValue("current"));
+        String state = root.attributeValue("state");
         List<Level> levels = new ArrayList<Level>();
         for (Element level : levelEls.elements()) {
             levels.add(deserialiseLevel(level));
         }
-        return new Domain(levels, currentLevel);
+        Domain domain = new Domain(levels, currentLevel);
+        domain.setGameState(GameState.valueOf(state));
+        return domain;
     }
 
     /**
