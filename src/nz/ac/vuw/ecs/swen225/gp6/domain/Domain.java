@@ -192,6 +192,7 @@ public class Domain {
 
         CheckGame.checkStateChange(this, nextDomain); //check state change integrity 
 
+        this.state = nextDomain.state; //update domain
         levels.set(this.currentLvlIndex - 1, nextLevels.get(this.currentLvlIndex - 1));//replace ONLY the current level
     
     }
