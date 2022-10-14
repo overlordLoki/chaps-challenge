@@ -7,7 +7,22 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
-public class Logging {
+/**
+ * This utility class is responsible for saving and loading logs.
+ *
+ * @author Benjamin Hong - 300605520
+ */
+public final class Logging {
+    /**
+     * A private constructor to prevent instantiation
+     */
+    private Logging() {
+    }
+
+    /**
+     * A record that represents a log entry. It contains the time and the message.
+     * 
+     */
     public record Log(LocalDateTime date, String message) {
     }
 
@@ -17,9 +32,7 @@ public class Logging {
      * @param string The string to log
      */
     public static void log(String message) throws IOException {
-        // get time and date string
         String time = LocalDateTime.now().toString();
-        // write to file
         FileOutputStream fileStream = new FileOutputStream("res/log.txt", true);
         OutputStreamWriter out = new OutputStreamWriter(fileStream, "UTF-8");
         out.write(time + ": " + message + "\n");
@@ -47,10 +60,12 @@ public class Logging {
 
     /**
      * Clear the log file
+     * 
+     * @return Whether the operation was successful
      */
     public static boolean clearLogs() throws IOException {
         File file = new File("res/log.txt");
-       return file.delete();
+        return file.delete();
     }
 
 }

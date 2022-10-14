@@ -58,18 +58,10 @@ public class Tests {
         File saves = new File("res/saves");
         System.out.println(saves.delete() ? "Deleted saves" : "Not deleted saves");
         Domain domain = DomainPersistency.getInitial();
-        DomainPersistency.save(domain, 1);
-        Domain domain2 = DomainPersistency.loadSave(1);
-        assertEquals(domain.toString(), domain2.toString());
-    }
-
-    @Test
-    public void testDomainSerialisation() {
-        Domain domain = DomainPersistency.getInitial();
         domain.getInv().addItem(TileType.makeTile(TileType.BlueKey, new TileInfo(new Loc(0, 0))));
 
-        Element doc = DomainPersistency.serialiseDomain(domain);
-        Domain domain2 = DomainPersistency.deserialiseDomain(doc);
+        DomainPersistency.save(domain, 1);
+        Domain domain2 = DomainPersistency.loadSave(1);
 
         assertEquals(domain.toString(), domain2.toString());
     }
@@ -109,18 +101,6 @@ public class Tests {
     }
 
     @Test
-    public void testRecorderTimelineDeserialisation() {
-        Stack<Pair<Long, Actions>> timeline = new Stack<Pair<Long, Actions>>();
-        timeline.add(new Pair<Long, Actions>(10l, Actions.MOVE_DOWN));
-        timeline.add(new Pair<Long, Actions>(20l, Actions.MOVE_LEFT));
-
-        Element element = RecorderPersistency.serialiseTimeline(timeline);
-        Stack<Pair<Long, Actions>> timeline2 = RecorderPersistency.deserialiseTimeline(element);
-
-        assertEquals(timeline.toString(), timeline2.toString());
-    }
-
-    @Test
     public void testRecorderTimelineSavingLoading() throws IOException, DocumentException {
         Stack<Pair<Long, Actions>> timeline = new Stack<Pair<Long, Actions>>();
         timeline.add(new Pair<Long, Actions>(10l, Actions.MOVE_DOWN));
@@ -146,16 +126,6 @@ public class Tests {
         assertTrue(logs.get(0).message().equals("test"));
         assertTrue(logs.get(1).message().equals("test2"));
         assertTrue(logs.get(2).message().equals("test3"));
-    }
-
-    @Test
-    public void testSerialisingConfiguration() {
-        Configuration config = Configuration.getDefaultConfiguration();
-
-        Element el = AppPersistency.serialise(config);
-        Configuration config2 = AppPersistency.deserialise(el);
-
-        assertEquals(config.toString(), config2.toString());
     }
 
     @Test

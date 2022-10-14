@@ -12,7 +12,18 @@ import org.dom4j.io.SAXReader;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Pair;
 
-public class RecorderPersistency {
+/**
+ * This utility class is responsible for saving and loading recorder timelines
+ * for the Recorder package.
+ *
+ * @author Benjamin Hong - 300605520
+ */
+public final class RecorderPersistency {
+    /**
+     * A private constructor to prevent instantiation
+     */
+    private RecorderPersistency() {
+    }
 
     /**
      * serialise a record timeline object to an XML document
@@ -20,25 +31,25 @@ public class RecorderPersistency {
      * @param timeline The timeline to serialise
      * @return The serialised timeline
      */
-    public static Element serialiseTimeline(Stack<Pair<Long, Actions>> timeline) {
-        Element root = DocumentHelper.createElement("timeline");
-        root.addAttribute("size", timeline.size() + "");
+    private static Element serialiseTimeline(Stack<Pair<Long, Actions>> timeline) {
+        Element element = DocumentHelper.createElement("timeline");
+        element.addAttribute("size", timeline.size() + "");
         for (Pair<Long, Actions> pair : timeline) {
-            Element action = root.addElement(pair.value().toString());
+            Element action = element.addElement(pair.value().toString());
             action.addAttribute("time", pair.key() + "");
         }
-        return root;
+        return element;
     }
 
     /**
      * Deserialise a record timeline object from an XML document
      * 
-     * @param document The XML document to deserialise
+     * @param element The XML element to deserialise
      * @return The deserialised timeline
      */
-    public static Stack<Pair<Long, Actions>> deserialiseTimeline(Element root) {
+    private static Stack<Pair<Long, Actions>> deserialiseTimeline(Element element) {
         Stack<Pair<Long, Actions>> timeline = new Stack<Pair<Long, Actions>>();
-        for (Element action : root.elements()) {
+        for (Element action : element.elements()) {
             timeline.add(new Pair<Long, Actions>(Long.parseLong(action.attributeValue("time")),
                     Actions.valueOf(action.getName())));
         }
@@ -46,7 +57,7 @@ public class RecorderPersistency {
     }
 
     /**
-     * Save a timeline to a file
+     * Save a timeline to a slot
      * 
      * @param timeline The timeline to save
      * @param slot     The slot to save to
@@ -70,7 +81,7 @@ public class RecorderPersistency {
     }
 
     /**
-     * Load a timeline from a file
+     * Load a timeline from a save slot
      * 
      * @param slot The slot to load from
      * @return The loaded timeline

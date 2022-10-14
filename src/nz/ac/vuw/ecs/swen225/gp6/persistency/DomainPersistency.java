@@ -1,10 +1,17 @@
 package nz.ac.vuw.ecs.swen225.gp6.persistency;
 
 import java.io.*;
+import java.lang.reflect.Constructor;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.function.BiFunction;
 
 import org.dom4j.Document;
@@ -27,15 +34,114 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Wall;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 
-public class DomainPersistency {
+/**
+ * This utility class is responsible for saving and loading classes in the
+ * Domain
+ * package.
+ *
+ * @author Benjamin Hong - 300605520
+ */
+public final class DomainPersistency {
+    /**
+     * A private constructor to prevent instantiation
+     */
+    private DomainPersistency() {
+    }
+
+    /**
+     * A map that maps the tile type to the name in the XML file
+     */
+    private final static Map<TileType, String> typeToString = new EnumMap<TileType, String>(TileType.class) {
+        {
+            put(TileType.Hero, "hero");
+            put(TileType.Empty, "empty");
+            put(TileType.Floor, "floor");
+            put(TileType.Wall, "wall");
+            put(TileType.ExitDoor, "exitDoor");
+            put(TileType.ExitDoorOpen, "exitDoorOpen");
+            put(TileType.BlueLock, "blueLock");
+            put(TileType.GreenLock, "greenLock");
+            put(TileType.OrangeLock, "orangeLock");
+            put(TileType.YellowLock, "yellowLock");
+            put(TileType.BlueKey, "blueKey");
+            put(TileType.GreenKey, "greenKey");
+            put(TileType.OrangeKey, "orangeKey");
+            put(TileType.YellowKey, "yellowKey");
+            put(TileType.Coin, "coin");
+            put(TileType.Info, "info");
+            put(TileType.Null, "null");
+        }
+    };
+
+    /**
+     * A map that maps the name in the XML file to the tile type
+     */
+    private final static Map<String, TileType> stringToType = Map.ofEntries(Map.entry("hero", TileType.Hero),
+            Map.entry("empty", TileType.Empty), Map.entry("floor", TileType.Floor), Map.entry("wall", TileType.Wall),
+            Map.entry("exitDoor", TileType.ExitDoor), Map.entry("exitDoorOpen", TileType.ExitDoorOpen),
+            Map.entry("blueLock", TileType.BlueLock), Map.entry("greenLock", TileType.GreenLock),
+            Map.entry("orangeLock", TileType.OrangeLock), Map.entry("yellowLock", TileType.YellowLock),
+            Map.entry("blueKey", TileType.BlueKey), Map.entry("greenKey", TileType.GreenKey),
+            Map.entry("orangeKey", TileType.OrangeKey), Map.entry("yellowKey", TileType.YellowKey),
+            Map.entry("coin", TileType.Coin), Map.entry("info", TileType.Info), Map.entry("null", TileType.Null));
+
+    /**
+     * A map that holds the converter from an XML element to a tile
+     */
+    private final static Map<String, BiFunction<Element, Loc, Tile>> tagToTiler = new HashMap<>() {
+        {
+            put("key", (element, loc) -> {
+                return TileType.makeTile(stringToType.get(element.attributeValue("color") + "Key"), new TileInfo(loc));
+            });
+            put("lock", (element, loc) -> {
+                return TileType.makeTile(stringToType.get(element.attributeValue("color") + "Lock"), new TileInfo(loc));
+            });
+            put("custom", (element, loc) -> {
+                String customTile = element.attributeValue("class");
+                String source = element.attributeValue("source");
+
+                try {
+                    File jar = new File("res/levels/" + source);
+
+                    URLClassLoader child = new URLClassLoader(
+                            new URL[] { jar.toURI().toURL() },
+                            DomainPersistency.class.getClassLoader());
+
+                    Class<?> clazz = Class.forName("custom.tiles." + customTile, true, child);
+                    Constructor<?> ctor = clazz.getConstructor(TileInfo.class);
+                    return (Tile) ctor.newInstance(new TileInfo(loc, 0,
+                            Character.toLowerCase(customTile.charAt(0)) + customTile.substring(1), source));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return TileType.makeTile(TileType.Null, new TileInfo(loc));
+                }
+            });
+            put("info", (element, loc) -> {
+                String message = element.attributeValue("message");
+                return TileType.makeTile(TileType.Info, new TileInfo(loc, 0, "", message));
+            });
+        }
+    };
+
+    /**
+     * The default converter from an XML element to a tile
+     *
+     * @param element
+     * @param loc
+     * @return the tile
+     */
+    private static Tile defaultTiler(Element element, Loc loc) {
+        String name = element.getName();
+        return TileType.makeTile(stringToType.get(name), new TileInfo(loc));
+    }
+
     /**
      * Serialise a domain to an XML document
      *
      * @param domain The domain to serialise
-     *
      * @return The serialised domain as an XML document
      */
-    public static Element serialiseDomain(Domain domain) {
+    private static Element serialiseDomain(Domain domain) {
         Element root = DocumentHelper.createElement("domain");
         Element levels = root.addElement("levels");
         for (int i = 0; i < domain.getMazes().size(); i++) {
@@ -53,7 +159,7 @@ public class DomainPersistency {
      * @param root The XML element to deserialise
      * @return The deserialised domain
      */
-    public static Domain deserialiseDomain(Element root) {
+    private static Domain deserialiseDomain(Element root) {
         Element levelEls = root.element("levels");
         int currentLevel = Integer.parseInt(levelEls.attributeValue("current"));
         String state = root.attributeValue("state");
@@ -73,7 +179,7 @@ public class DomainPersistency {
      *
      * @return The serialised level as an XML element
      */
-    public static Element serialiseLevel(Level level) {
+    private static Element serialiseLevel(Level level) {
         Element root = DocumentHelper.createElement("level");
         root.addAttribute("index", Integer.toString(level.lvl - 1));
         root.addAttribute("name", "Level " + (level.lvl));
@@ -93,7 +199,7 @@ public class DomainPersistency {
      * @param level The XML element to deserialise
      * @return The deserialised level
      */
-    public static Level deserialiseLevel(Element level) {
+    private static Level deserialiseLevel(Element level) {
         int index = Integer.parseInt(level.attributeValue("index"));
         int timeLimit = Integer
                 .parseInt(level.attributeValue("timeLimit") == null ? "60" : level.attributeValue("timeLimit"));
@@ -104,13 +210,7 @@ public class DomainPersistency {
 
         Maze maze = deserialiseMaze(level.element("grid"));
         Element inventory = level.element("inventory");
-        Inventory inv;
-
-        if (inventory == null) {
-            inv = new Inventory(8);
-        } else {
-            inv = deserialiseInventory(inventory);
-        }
+        Inventory inv = inventory == null ? new Inventory(8) : deserialiseInventory(inventory);
 
         return new Level(maze, inv, index + 1, timeLimit, timeCurrent, dir);
     }
@@ -118,18 +218,9 @@ public class DomainPersistency {
     /**
      * Serialise a maze to an XML document
      * 
-     * Example:
-     * <level index="1" name="Level 1">
-     * <grid width="10" height="10">
-     * <cell x="5" y="0">
-     * <wall />
-     * </cell>
-     * </grid>
-     * </level>
-     * 
      * @param maze The maze to serialise
      */
-    public static Element serialiseMaze(Maze maze) {
+    private static Element serialiseMaze(Maze maze) {
         Element grid = DocumentHelper.createElement("grid");
         grid.addAttribute("width", Integer.toString(maze.width()));
         grid.addAttribute("height", Integer.toString(maze.height()));
@@ -154,7 +245,7 @@ public class DomainPersistency {
      * @param grid The XML element to deserialise
      * @return The unserialised maze
      */
-    public static Maze deserialiseMaze(Element grid) {
+    private static Maze deserialiseMaze(Element grid) {
         int width = Integer.parseInt(grid.attributeValue("width"));
         int height = Integer.parseInt(grid.attributeValue("height"));
         Maze maze = new Maze(new Tile[width][height]);
@@ -183,8 +274,8 @@ public class DomainPersistency {
      * 
      * @return The serialised tile as an XML element
      */
-    public static Element serialiseTile(Tile tile) {
-        String name = Helper.typeToString.get(tile.type());
+    private static Element serialiseTile(Tile tile) {
+        String name = typeToString.get(tile.type());
 
         if (null == name) {
             // it's a custom tile
@@ -192,11 +283,11 @@ public class DomainPersistency {
             custom.addAttribute("class", tile.getClass().getSimpleName());
             custom.addAttribute("source", tile.info().message());
             return custom;
-        } else if (name.contains("Key") || name.contains("Lock") && name.equals("exitLock")) {
+        } else if (name.contains("Key") || name.contains("Lock") && "exitLock".equals(name)) {
             Element element = DocumentHelper.createElement(name.contains("Key") ? "key" : "lock");
-            element.addAttribute("color", name.replace("Key", "").replace("Lock", "").toLowerCase());
+            element.addAttribute("color", name.replace("Key", "").replace("Lock", "").toLowerCase(Locale.ENGLISH));
             return element;
-        } else if (name.equals("info")) {
+        } else if ("info".equals(name)) {
             Element element = DocumentHelper.createElement("info");
             element.addAttribute("message", ((Info) tile).message());
             return element;
@@ -212,10 +303,10 @@ public class DomainPersistency {
      * @return The deserialised tile
      */
     private static Tile deserialiseTile(Element element, Loc loc) {
-        BiFunction<Element, Loc, Tile> tiler = Helper.tagToTiler.get(element.getName());
+        BiFunction<Element, Loc, Tile> tiler = tagToTiler.get(element.getName());
 
         if (tiler == null) {
-            tiler = Helper::defaultTiler;
+            tiler = DomainPersistency::defaultTiler;
         }
 
         return tiler.apply(element, loc);
@@ -231,7 +322,7 @@ public class DomainPersistency {
      * 
      * @param inventory The inventory to serialise
      */
-    public static Element serialiseInventory(Inventory inventory) {
+    private static Element serialiseInventory(Inventory inventory) {
         Element root = DocumentHelper.createElement("inventory");
         for (Tile item : inventory.getItems()) {
             root.add(serialiseTile(item));
@@ -247,7 +338,7 @@ public class DomainPersistency {
      * @param root The XML element to deserialise
      * @return The deserialised inventory
      */
-    public static Inventory deserialiseInventory(Element root) {
+    private static Inventory deserialiseInventory(Element root) {
         int size = Integer.parseInt(root.attributeValue("size"));
         List<Tile> items = new ArrayList<>();
         for (Element item : root.elements()) {
@@ -255,30 +346,6 @@ public class DomainPersistency {
         }
         int coins = Integer.parseInt(root.attributeValue("coins"));
         return new Inventory(size, coins, items);
-    }
-
-    /**
-     * 
-     * 
-     * @return The loaded maze
-     */
-    public static Domain loadSave(int slot) throws DocumentException {
-        SAXReader reader = new SAXReader();
-        try {
-            InputStream in = new FileInputStream("res/saves/" + slot + ".xml");
-            Document document = reader.read(in);
-            return deserialiseDomain(document.getRootElement());
-        } catch (FileNotFoundException e) {
-            return getInitial();
-        }
-    }
-
-    /**
-     * Delete a save file
-     */
-    public static boolean delete(int slot) throws IOException {
-        File file = new File("res/saves/" + slot + ".xml");
-        return file.delete();
     }
 
     /**
@@ -322,6 +389,33 @@ public class DomainPersistency {
         m.setTileAt(new Loc(4, 6), TileType.ExitDoor);
 
         return m;
+    }
+
+    /**
+     * Load a saved game from a slot
+     * 
+     * @param slot The slot to load from
+     * @return The loaded domain
+     */
+    public static Domain loadSave(int slot) throws DocumentException {
+        SAXReader reader = new SAXReader();
+        try {
+            InputStream in = new FileInputStream("res/saves/" + slot + ".xml");
+            Document document = reader.read(in);
+            return deserialiseDomain(document.getRootElement());
+        } catch (FileNotFoundException e) {
+            return getInitial();
+        }
+    }
+
+    /**
+     * Delete a saved game from a slot
+     * 
+     * @param slot The slot to delete
+     */
+    public static boolean delete(int slot) throws IOException {
+        File file = new File("res/saves/" + slot + ".xml");
+        return file.delete();
     }
 
     /**

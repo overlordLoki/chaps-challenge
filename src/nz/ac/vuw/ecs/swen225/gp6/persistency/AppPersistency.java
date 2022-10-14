@@ -1,6 +1,9 @@
 package nz.ac.vuw.ecs.swen225.gp6.persistency;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.EnumMap;
 
 import org.dom4j.Document;
@@ -12,7 +15,18 @@ import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Configuration;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller.Key;
 
-public class AppPersistency {
+/**
+ * This utility class is responsible for saving and loading the Configuration
+ * class in the App package.
+ *
+ * @author Benjamin Hong - 300605520
+ */
+public final class AppPersistency {
+    /**
+     * A private constructor to prevent instantiation
+     */
+    private AppPersistency() {
+    }
 
     /**
      * Serialise the configuration file
@@ -20,7 +34,7 @@ public class AppPersistency {
      * @param config The configuration object
      * @return The xml element
      */
-    public static Element serialise(Configuration config) {
+    private static Element serialise(Configuration config) {
         Element root = DocumentHelper.createElement("configuration");
 
         // add texture pack
@@ -31,8 +45,9 @@ public class AppPersistency {
         Element keyBindings = root.addElement("keyBindings");
         for (Actions action : Actions.values()) {
             Key key = config.getUserKeyBindings().get(action);
-            if (key == null)
+            if (key == null) {
                 continue;
+            }
             Element keyElement = keyBindings.addElement(action.name());
             keyElement.addAttribute("modifier", Integer.toString(key.modifier()));
             keyElement.addAttribute("key", Integer.toString(key.key()));
@@ -55,7 +70,7 @@ public class AppPersistency {
      * @param element The xml element
      * @return Configuration object
      */
-    public static Configuration deserialise(Element root) {
+    private static Configuration deserialise(Element root) {
         // get texture pack
         String texturePack = root.element("texturePack").getText();
 
@@ -63,8 +78,9 @@ public class AppPersistency {
         EnumMap<Actions, Key> keyBindings = new EnumMap<>(Actions.class);
         for (Actions action : Actions.values()) {
             Element keyElement = root.element("keyBindings").element(action.name());
-            if (keyElement == null)
+            if (keyElement == null) {
                 continue;
+            }
             int modifier = Integer.parseInt(keyElement.attributeValue("modifier"));
             int key = Integer.parseInt(keyElement.attributeValue("key"));
             keyBindings.put(action, new Key(modifier, key));
@@ -89,12 +105,12 @@ public class AppPersistency {
         try {
             Document document = reader.read("res/config.xml");
             return deserialise(document.getRootElement());
-        } catch (Throwable e) {
+        } catch (Exception e) {
             try {
                 System.out.println("Failed to load configuration: " + e.getMessage());
                 Document document = reader.read("res/defaultConfig.xml");
                 return deserialise(document.getRootElement());
-            } catch (Throwable f) {
+            } catch (Exception f) {
                 f.printStackTrace();
                 return Configuration.getDefaultConfiguration();
             }

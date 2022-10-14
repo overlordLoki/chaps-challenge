@@ -10,7 +10,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * Package-private class for the App. Handles the output streams and redirects
+ * Class for the App package. Handles the output streams and redirects
  * all outputs to:
  * <P>
  * 1. Normal output
@@ -22,17 +22,27 @@ import java.util.concurrent.LinkedBlockingQueue;
  * 3. Log file in /res
  * </P>
  *
- * @author Ben Hong
+ * @author Benjamin Hong - 300605520
  */
 public class Interceptor extends PrintStream {
     private final NonBlockingLog logger;
 
+    /**
+     * Constructor for the Interceptor class
+     *
+     * @param out The output stream
+     */
     public Interceptor(OutputStream out) {
         super(out, true);
         logger = new NonBlockingLog();
         logger.start();
     }
 
+    /**
+     * Print a string to the output stream
+     *
+     * @param s The string to print
+     */
     @Override
     public void print(String s) {
         // super.print(s); // this line enables output to stdout
@@ -40,11 +50,22 @@ public class Interceptor extends PrintStream {
         GUI.getLogPanel().print(s); // this line enables output to log panel
     }
 
+    /**
+     * Print a line to the output stream
+     *
+     * @param s The string to print
+     */
     @Override
     public void println(String s) {
         print(s + "\n");
     }
 
+    /**
+     * Print a format string to the output stream
+     * 
+     * @param format The format string
+     * @param args   The arguments
+     */
     @Override
     public PrintStream printf(String format, Object... args) {
         print(String.format(format, args));
@@ -52,13 +73,27 @@ public class Interceptor extends PrintStream {
     }
 }
 
+/**
+ * The NonBlockingLog class is a thread that handles the logging in a
+ * non-blocking way.
+ * 
+ * @author Benjamin Hong - 300605520
+ */
 class NonBlockingLog extends Thread {
     private final BlockingQueue<String> queue = new LinkedBlockingQueue<>();
 
+    /**
+     * Add a string to the queue for logging
+     * 
+     * @param s The string to add
+     */
     public void add(String s) {
         queue.add(s);
     }
 
+    /**
+     * Run the thread
+     */
     public void run() {
         try {
             while (true) {
