@@ -54,20 +54,20 @@ public class Fuzz {
     public static void pasuseStrategy(App app) throws AWTException {
         SAVE_GAME.run(app);
         System.out.println("s = 2");
-        robot.delay(2000);
+        robot.delay(1000);
 
         mouseTest(200, 650);
         System.out.println("Saved game: 2" );
-        robot.delay(2000);
+        robot.delay(1000);
 
         QUIT_TO_MENU.run(app);
         System.out.println("Quit to menu");
-        robot.delay(2000);
+        robot.delay(1000);
 
         LOAD_GAME.run(app);
         app.startSavedGame(1);
         System.out.println("Loaded game: 2");
-        robot.delay(2000);
+        robot.delay(1000);
     }
 
     /**
@@ -100,13 +100,13 @@ public class Fuzz {
             Actions action = actionsList.get(randomIndex);
 
             if(action == PAUSE_GAME) {
-                if(r.nextInt(15) != 0) {
-                    continue;
-                }else{
+                if(r.nextInt(50) == 0) {
                     PAUSE_GAME.run(app);
-                    robot.delay(2000);
+                    robot.delay(1000);
                     System.out.println("Paused game");
                     pasuseStrategy(app);
+                }else{
+                    continue;
                 }
 
             }else{
@@ -261,7 +261,7 @@ public class Fuzz {
 
         robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
         System.out.println("Mouse press");
-        robot.delay(2000);
+        robot.delay(1000);
         robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
     }
 
@@ -444,10 +444,10 @@ public class Fuzz {
             System.exit(0);
         }
 
-        //exit the game after test complete
-//        System.out.println("All Tests Complete");
-//        JOptionPane.showMessageDialog(null, "All Tests Complete");
-//        System.exit(0);
+//        exit the game after test complete
+        System.out.println("All Tests Complete");
+        JOptionPane.showMessageDialog(null, "All Tests Complete");
+        System.exit(0);
     }
 
     @Test
