@@ -232,6 +232,7 @@ public class DomainPersistency {
             root.add(serialiseTile(item));
         }
         root.addAttribute("size", inventory.size() + "");
+        root.addAttribute("coins", inventory.coins() + "");
         return root;
     }
 
@@ -242,11 +243,13 @@ public class DomainPersistency {
      * @return The deserialised inventory
      */
     public static Inventory deserialiseInventory(Element root) {
-        Inventory inv = new Inventory(Integer.parseInt(root.attributeValue("size")));
+        int size = Integer.parseInt(root.attributeValue("size"));
+        List<Tile> items = new ArrayList<>();
         for (Element item : root.elements()) {
-            inv.addItem(deserialiseTile(item, new Loc(0, 0)));
+            items.add(deserialiseTile(item, new Loc(0, 0)));
         }
-        return inv;
+        int coins = Integer.parseInt(root.attributeValue("coins"));
+        return new Inventory(size, coins, items);
     }
 
     /**
