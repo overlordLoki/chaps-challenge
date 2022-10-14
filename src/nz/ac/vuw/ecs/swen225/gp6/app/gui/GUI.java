@@ -4,6 +4,7 @@ import nz.ac.vuw.ecs.swen225.gp6.app.App;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.InventoryPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.LogPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static nz.ac.vuw.ecs.swen225.gp6.app.gui.SwingFactory.*;
+import static nz.ac.vuw.ecs.swen225.gp6.app.gui.GUI.Components.*;
 
 /**
  * Package-private class for creating panels used by the App.
@@ -30,24 +32,30 @@ import static nz.ac.vuw.ecs.swen225.gp6.app.gui.SwingFactory.*;
  * @author Jeff Lin
  */
 public class GUI {
-    private static final String MENU      = "Menu";
-    private static final String NEW_GAME  = "Start New Game!";
-    private static final String LOAD_GAME = "Load Game";
-    private static final String SAVE_GAME = "Save Game";
-    private static final String SETTINGS  = "Settings";
-    private static final String LOGS      = "Logs";
-    private static final String CREDITS   = "Credits";
-    private static final String EXIT      = "Exit";
+    enum Components{
+        MENU("Menu"),
+        NEW_GAME("Start New Game!"),
+        LOAD_GAME("Load Game"),
+        SAVE_GAME("Save Game"),
+        SETTINGS("Settings"),
+        LOGS("Logs"),
+        CREDITS("Credits"),
+        EXIT("Exit"),
 
-    private static final String GAME    = "Game";
-    private static final String LOOSE   = "Loose";
-    private static final String VICTORY = "Victory";
+        GAME("Game"),
+        LOOSE("Loose"),
+        VICTORY("Victory"),
 
-    private static final String STATUS_PAUSE = "Pause";
-    private static final String STATUS_RESUME = "Resume";
+        STATUS_PAUSE("Pause"),
+        STATUS_RESUME("Resume"),
+        MODE_REPLAY("Replay"),
+        MODE_NORMAL("Normal");
 
-    private static final String MODE_REPLAY = "Replay";
-    private static final String MODE_NORMAL = "Normal";
+        public final String name;
+        Components(String name){
+            this.name = name;
+        }
+    }
 
     private static final LogPanel logPanel = new LogPanel();
 
@@ -103,8 +111,8 @@ public class GUI {
         renderPanel.setFocusable(true);
         configureMenuScreen(app);
         configureGameScreen(app);
-        outerPanel.add(menuPanel, MENU);
-        outerPanel.add(gamePanel, GAME);
+        outerPanel.add(menuPanel, MENU.name);
+        outerPanel.add(gamePanel, GAME.name);
     }
 
     /**
@@ -113,12 +121,12 @@ public class GUI {
      * @param app The App object.
      */
     void configureMenuScreen(App app){
-        menuPanel.add(configurePanelMenu(app), MENU);
-        menuPanel.add(configurePanelLoad(app), LOAD_GAME);
-        menuPanel.add(configurePanelSave(app), SAVE_GAME);
-        menuPanel.add(configurePanelSettings(app), SETTINGS);
-        menuPanel.add(configurePanelCredits(), CREDITS);
-        menuPanel.add(configurePanelExit(), EXIT);
+        menuPanel.add(configurePanelMenu(app), MENU.name);
+        menuPanel.add(configurePanelLoad(app), LOAD_GAME.name);
+        menuPanel.add(configurePanelSave(app), SAVE_GAME.name);
+        menuPanel.add(configurePanelSettings(app), SETTINGS.name);
+        menuPanel.add(configurePanelCredits(), CREDITS.name);
+        menuPanel.add(configurePanelExit(), EXIT.name);
     }
 
     /**
@@ -127,9 +135,9 @@ public class GUI {
      * @param app The App object.
      */
     void configureGameScreen(App app){
-        gamePanel.add(configurePanelGame(app), GAME);
-        gamePanel.add(configurePanelLost(app), LOOSE);
-        gamePanel.add(configurePanelVictory(app), VICTORY);
+        gamePanel.add(configurePanelGame(app), GAME.name);
+        gamePanel.add(configurePanelLost(app), LOOSE.name);
+        gamePanel.add(configurePanelVictory(app), VICTORY.name);
     }
 
 
@@ -143,17 +151,17 @@ public class GUI {
         JPanel pnMenu = createBackgroundPanel(Images.Background, BoxLayout.Y_AXIS);
         // assemble the panel
         pnMenu.add(Box.createVerticalGlue());
-        List.of(createActionLabel(NEW_GAME, renderPanel, SUBTITLE, true, app::startNewGame),
-                createActionLabel(LOAD_GAME, renderPanel, SUBTITLE, true, ()->transitionToLoadScreen(app)),
-                createActionLabel(SETTINGS, renderPanel, SUBTITLE, true, ()->menuCardLayout.show(menuPanel, SETTINGS)),
-                createActionLabel(LOGS, renderPanel, SUBTITLE, true, ()-> {
+        List.of(createActionLabel(NEW_GAME.name, renderPanel, SUBTITLE, true, app::startNewGame),
+                createActionLabel(LOAD_GAME.name, renderPanel, SUBTITLE, true, ()->transitionToLoadScreen(app)),
+                createActionLabel(SETTINGS.name, renderPanel, SUBTITLE, true, ()->menuCardLayout.show(menuPanel, SETTINGS.name)),
+                createActionLabel(LOGS.name, renderPanel, SUBTITLE, true, ()-> {
                     JFrame frame = new JFrame("Logs");
                     setSize(frame, 500,500,500,500,500,500);
                     frame.add(logPanel);
                     frame.setVisible(true);
                 }),
-                createActionLabel(CREDITS, renderPanel, SUBTITLE, true, ()->menuCardLayout.show(menuPanel, CREDITS)),
-                createActionLabel(EXIT, renderPanel, SUBTITLE, true, ()->menuCardLayout.show(menuPanel, EXIT))
+                createActionLabel(CREDITS.name, renderPanel, SUBTITLE, true, ()->menuCardLayout.show(menuPanel, CREDITS.name)),
+                createActionLabel(EXIT.name, renderPanel, SUBTITLE, true, ()->menuCardLayout.show(menuPanel, EXIT.name))
         ).forEach(pnMenu::add);
 
         System.out.println("Done!");
@@ -257,7 +265,10 @@ public class GUI {
             addAll(pnInfo, pnStatus, pnLoadInv);
             addAll(pnOptions,
                     Box.createHorizontalGlue(),
-                    createActionLabel("Resume!", renderPanel, TEXT, true, ()->app.startSavedGame(slot)),
+                    createActionLabel("Resume!", renderPanel, TEXT, true, ()->{
+                              if (app.getSave(slot).getGameState() != Domain.GameState.PLAYING){
+                                  JOptionPane.showMessageDialog(null, "This save is for replay only!");
+                              }else {app.startSavedGame(slot);}}),
                     Box.createHorizontalGlue(),
                     createActionLabel("Replay", renderPanel, TEXT, true, ()->app.startSavedReplay(slot)),
                     Box.createHorizontalGlue(),
@@ -353,7 +364,7 @@ public class GUI {
                 Box.createVerticalGlue(),
                 createActionLabel("Confirm", renderPanel, SUBTITLE, true, ()->{
                     app.getConfiguration().save(app);
-                    menuCardLayout.show(menuPanel, MENU);
+                    menuCardLayout.show(menuPanel, MENU.name);
                 }));
 
         System.out.println("Done!");
@@ -375,7 +386,7 @@ public class GUI {
                 createLabel("Renderer: Loki", renderPanel, SUBTITLE, true),
         });
         addAll(pnCredits, Box.createVerticalGlue(),
-                createActionLabel("Back", renderPanel,SUBTITLE, true, ()->menuCardLayout.show(menuPanel, MENU)));
+                createActionLabel("Back", renderPanel,SUBTITLE, true, ()->menuCardLayout.show(menuPanel, MENU.name)));
 
         System.out.println("Done!");
         return pnCredits;
@@ -388,7 +399,7 @@ public class GUI {
         JPanel pnOption = createClearPanel(BoxLayout.X_AXIS);
         // combine all components
         addAll(pnOption, Box.createHorizontalGlue(),
-                createActionLabel("No", renderPanel,SUBTITLE, true, ()->menuCardLayout.show(menuPanel, MENU)),
+                createActionLabel("No", renderPanel,SUBTITLE, true, ()->menuCardLayout.show(menuPanel, MENU.name)),
                 Box.createHorizontalGlue(),
                 createActionLabel("Yes", renderPanel,SUBTITLE, true, ()->{
                     System.out.println("Exiting...");
@@ -440,8 +451,8 @@ public class GUI {
         pnInventory.setAlignmentX(Component.CENTER_ALIGNMENT);
         renderPanel.setLayout(new GridBagLayout());
 
-        functionPanel.add(pnModeNormal, MODE_NORMAL);
-        functionPanel.add(pnModeReplay, MODE_REPLAY);
+        functionPanel.add(pnModeNormal, MODE_NORMAL.name);
+        functionPanel.add(pnModeReplay, MODE_REPLAY.name);
         pnModeNormal.add(createActionLabel("Pause", renderPanel,SUBTITLE, true,()->Actions.PAUSE_GAME.run(app)));
         JPanel replaySpeed = createClearPanel(BoxLayout.X_AXIS);
         AtomicReference<Float> speed = new AtomicReference<>(1F);
@@ -498,8 +509,8 @@ public class GUI {
 
         JPanel pnOnPause = creatTransparentPanel(Images.Empty_tile, 0.8f);
         JPanel pnOnResume = createClearPanel(BoxLayout.Y_AXIS);
-        pausePanel.add(pnOnResume, STATUS_RESUME);
-        pausePanel.add(pnOnPause, STATUS_PAUSE);
+        pausePanel.add(pnOnResume, STATUS_RESUME.name);
+        pausePanel.add(pnOnPause, STATUS_PAUSE.name);
 
         addAll(pnOnPause,
                 Box.createVerticalGlue(),
@@ -605,9 +616,9 @@ public class GUI {
      * Transitions to the menu screen.
      */
     public void transitionToMenuScreen(){
-        functionCardLayout.show(functionPanel, MODE_NORMAL);
-        menuCardLayout.show(menuPanel, MENU);
-        outerCardLayout.show(outerPanel, MENU);
+        functionCardLayout.show(functionPanel, MODE_NORMAL.name);
+        menuCardLayout.show(menuPanel, MENU.name);
+        outerCardLayout.show(outerPanel, MENU.name);
     }
 
     /**
@@ -617,8 +628,8 @@ public class GUI {
      */
     public void transitionToLoadScreen(App app){
         app.refreshSaves();
-        menuCardLayout.show(menuPanel, LOAD_GAME);
-        outerCardLayout.show(outerPanel, MENU);
+        menuCardLayout.show(menuPanel, LOAD_GAME.name);
+        outerCardLayout.show(outerPanel, MENU.name);
     }
 
     /**
@@ -628,18 +639,18 @@ public class GUI {
      */
     public void transitionToSaveScreen(App app){
         app.refreshSaves();
-        menuCardLayout.show(menuPanel, SAVE_GAME);
-        outerCardLayout.show(outerPanel, MENU);
+        menuCardLayout.show(menuPanel, SAVE_GAME.name);
+        outerCardLayout.show(outerPanel, MENU.name);
     }
 
     /**
      * Transitions to the game screen.
      */
     public void transitionToGameScreen(){
-        functionCardLayout.show(functionPanel, MODE_NORMAL);
-        pauseCardLayout.show(pausePanel, STATUS_RESUME);
-        gameCardLayout.show(gamePanel, GAME);
-        outerCardLayout.show(outerPanel, GAME);
+        functionCardLayout.show(functionPanel, MODE_NORMAL.name);
+        pauseCardLayout.show(pausePanel, STATUS_RESUME.name);
+        gameCardLayout.show(gamePanel, GAME.name);
+        outerCardLayout.show(outerPanel, GAME.name);
         renderPanel.grabFocus();
     }
 
@@ -647,39 +658,39 @@ public class GUI {
      * Transitions to the game screen.
      */
     public void transitionToReplayScreen(){
-        functionCardLayout.show(functionPanel, MODE_REPLAY);
-        pauseCardLayout.show(pausePanel, STATUS_RESUME);
-        gameCardLayout.show(gamePanel, GAME);
-        outerCardLayout.show(outerPanel, GAME);
+        functionCardLayout.show(functionPanel, MODE_REPLAY.name);
+        pauseCardLayout.show(pausePanel, STATUS_RESUME.name);
+        gameCardLayout.show(gamePanel, GAME.name);
+        outerCardLayout.show(outerPanel, GAME.name);
     }
 
     /**
      * Transitions to the winning screen.
      */
     public void transitionToWinScreen(){
-        gameCardLayout.show(gamePanel, VICTORY);
-        outerCardLayout.show(outerPanel, GAME);
+        gameCardLayout.show(gamePanel, VICTORY.name);
+        outerCardLayout.show(outerPanel, GAME.name);
     }
 
     /**
      * Transitions to the losing screen.
      */
     public void transitionToLostScreen(){
-        gameCardLayout.show(gamePanel, LOOSE);
-        outerCardLayout.show(outerPanel, GAME);
+        gameCardLayout.show(gamePanel, LOOSE.name);
+        outerCardLayout.show(outerPanel, GAME.name);
     }
 
     /**
      * Brings up the pause screen.
      */
     public void showPausePanel(){
-        pauseCardLayout.show(pausePanel, STATUS_PAUSE);
+        pauseCardLayout.show(pausePanel, STATUS_PAUSE.name);
     }
 
     /**
      * Hides the pause screen and continue with resume screen.
      */
     public void showResumePanel(){
-        pauseCardLayout.show(pausePanel, STATUS_RESUME);
+        pauseCardLayout.show(pausePanel, STATUS_RESUME.name);
     }
 }
