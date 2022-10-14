@@ -53,17 +53,18 @@ public class Fuzz {
 
     public static void pasuseStrategy(App app) {
         SAVE_GAME.run(app);
-        int s = r.nextInt(2) + 1;
-        System.out.println("s = " + s);
-        app.getRecorder().saveRecording(s);
-        System.out.println("Saved game: " + s);
+        System.out.println("s = " + 1);
+        app.getRecorder().saveRecording(1);
+        System.out.println("Saved game: " + 1);
         robot.delay(2000);
+
         QUIT_TO_MENU.run(app);
         System.out.println("Quit to menu");
         robot.delay(2000);
+
         LOAD_GAME.run(app);
-        app.startSavedGame(s);
-        System.out.println("Loaded game: " + s);
+        app.startSavedGame(1);
+        System.out.println("Loaded game: " + 1);
         robot.delay(2000);
     }
 
