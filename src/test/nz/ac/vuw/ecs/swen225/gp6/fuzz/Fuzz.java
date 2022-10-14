@@ -53,9 +53,11 @@ public class Fuzz {
 
     public static void pasuseStrategy(App app) {
         SAVE_GAME.run(app);
-        System.out.println("s = " + 1);
-        app.getRecorder().saveRecording(1);
-        System.out.println("Saved game: " + 1);
+        System.out.println("s = 2");
+        robot.delay(2000);
+
+
+        System.out.println("Saved game: 2" );
         robot.delay(2000);
 
         QUIT_TO_MENU.run(app);
@@ -63,8 +65,8 @@ public class Fuzz {
         robot.delay(2000);
 
         LOAD_GAME.run(app);
-        app.startSavedGame(1);
-        System.out.println("Loaded game: " + 1);
+        app.startSavedGame(2);
+        System.out.println("Loaded game: 2");
         robot.delay(2000);
     }
 
@@ -90,7 +92,7 @@ public class Fuzz {
         JOptionPane.showMessageDialog(null,"Start Fuzzing");
         app.startNewGame();
         app.transitionToGameScreen();
-//        showLog();
+        showLog();
 
         while (true) {
             //get a random action from the action list
