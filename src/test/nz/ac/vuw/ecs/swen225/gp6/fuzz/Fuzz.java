@@ -4,13 +4,13 @@ import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
 import org.junit.Test;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;
-
 import static java.awt.event.KeyEvent.*;
 import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.*;
 
@@ -51,12 +51,12 @@ public class Fuzz {
         frame.setVisible(true);
     }
 
-    public static void pasuseStrategy(App app) {
+    public static void pasuseStrategy(App app) throws AWTException {
         SAVE_GAME.run(app);
         System.out.println("s = 2");
         robot.delay(2000);
 
-
+        mouseTest(200, 650);
         System.out.println("Saved game: 2" );
         robot.delay(2000);
 
@@ -65,7 +65,7 @@ public class Fuzz {
         robot.delay(2000);
 
         LOAD_GAME.run(app);
-        app.startSavedGame(2);
+        app.startSavedGame(1);
         System.out.println("Loaded game: 2");
         robot.delay(2000);
     }
@@ -75,7 +75,7 @@ public class Fuzz {
      * @Input: int number of actions for test
      * @return a random action in App we initialized
      */
-    public static void testLevel1(){
+    public static void testLevel1() throws AWTException {
         //initialize the app environment, set all the actions into a list
         SwingUtilities.invokeLater(()->{
             app = new App();
@@ -252,17 +252,17 @@ public class Fuzz {
      * This method is used to test specific mouse combination
      * @return robot will do the specific mouse event and return messages
      */
-    public static void mouseTest() throws AWTException {
-//        App app = new App();
-//        app.transitionToGameScreen();
-//        Robot robot = new Robot();
-//        robot.setAutoDelay(100);
-//
-//        robot.mouseMove(600, 550);
-//        System.out.println("Mouse move to: " + 600 + ", " + 550);
-//        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
-//        System.out.println("Mouse press");
-//        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+    public static void mouseTest(int x, int y) throws AWTException {
+        Robot robot = new Robot();
+        robot.setAutoDelay(100);
+
+        robot.mouseMove(x, y);
+        System.out.println("Mouse move to: " + x + ", " + y);
+
+        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+        System.out.println("Mouse press");
+        robot.delay(2000);
+        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
     }
 
     /**
@@ -451,7 +451,7 @@ public class Fuzz {
     }
 
     @Test
-    public void test_level1() {
+    public void test_level1() throws AWTException {
         testLevel1();
     }
 
