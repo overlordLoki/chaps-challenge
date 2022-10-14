@@ -88,14 +88,14 @@ public class Tests {
     }
 
     @Test
-    public void testCorruptLevel() throws IOException, DocumentException {
+    public void testCorruptLevel() throws IOException {
         try {
             FileOutputStream fileStream = new FileOutputStream("res/levels/level1.xml", true);
             OutputStreamWriter fw = new OutputStreamWriter(fileStream, "UTF-8");
             fw.write("corrupt adfhiufhoiwjlr");
             fw.close();
 
-            // try to load the level
+            System.out.println("Test that parsing fails and fallback level is used:");
             Domain domain = DomainPersistency.getInitial();
             assertEquals(domain.getCurrentMaze().toString(), DomainPersistency.fallbackMaze().toString());
         } finally {
@@ -136,14 +136,16 @@ public class Tests {
     public void testLogging() throws IOException {
         Logging.clearLogs();
         Interceptor interceptor = new Interceptor(System.out);
-        interceptor.println("test");
+        interceptor.print("test\n");
         interceptor.println("test2");
+        interceptor.printf("test%d", 3);
 
         List<Log> logs = Logging.getLogs();
 
-        assertTrue(logs.size() == 2);
+        assertTrue(logs.size() == 3);
         assertTrue(logs.get(0).message().equals("test"));
         assertTrue(logs.get(1).message().equals("test2"));
+        assertTrue(logs.get(2).message().equals("test3"));
     }
 
     @Test
@@ -185,7 +187,8 @@ public class Tests {
             fw.write("corrupt adfhiufhoiwjlr");
             fw.close();
 
-            Configuration config = AppPersistency.load();
+            System.out.println("Test that parsing fails and fallback config is used:");
+            AppPersistency.load();
         } finally {
             String data = Files.readString(new File("res/config.xml").toPath());
             data = data.replace("corrupt adfhiufhoiwjlr", "");
@@ -208,7 +211,8 @@ public class Tests {
             fwD.write("corrupt adfhiufhoiwjlr");
             fwD.close();
 
-            AppPersistency.load();
+            System.out.println("Test that parsing fails and fallback config is used:");
+            assertEquals(Configuration.getDefaultConfiguration().toString(), AppPersistency.load().toString());
         } finally {
             String data = Files.readString(new File("res/config.xml").toPath());
             data = data.replace("corrupt adfhiufhoiwjlr", "");
