@@ -97,6 +97,11 @@ public class App extends JFrame {
     private void initialiseCommands() {
         LogPanel logPanel = GUI.getLogPanel();
         logPanel.addCommands("nextLvl", "Jump to the next level", this::runWinEvent);
+        logPanel.addCommands("win", "Win the game", ()->{
+            gameClock.stop();
+            inResume = false;
+            gui.transitionToWinScreen();
+        });
     }
 
 

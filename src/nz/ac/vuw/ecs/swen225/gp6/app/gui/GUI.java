@@ -3,9 +3,7 @@ package nz.ac.vuw.ecs.swen225.gp6.app.gui;
 import nz.ac.vuw.ecs.swen225.gp6.app.App;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller;
-import nz.ac.vuw.ecs.swen225.gp6.app.utilities.GameClock;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
-import nz.ac.vuw.ecs.swen225.gp6.recorder.Record;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.InventoryPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.LogPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
@@ -13,7 +11,6 @@ import nz.ac.vuw.ecs.swen225.gp6.renderer.MusicPlayer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack.Images;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.DomainPersistency;
-import nz.ac.vuw.ecs.swen225.gp6.persistency.AppPersistency;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +20,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static nz.ac.vuw.ecs.swen225.gp6.app.gui.SwingFactory.*;
@@ -122,7 +118,7 @@ public class GUI {
         menuPanel.add(configurePanelSave(app), SAVE_GAME);
         menuPanel.add(configurePanelSettings(app), SETTINGS);
         menuPanel.add(configurePanelCredits(), CREDITS);
-        menuPanel.add(configurePanelExit(app), EXIT);
+        menuPanel.add(configurePanelExit(), EXIT);
     }
 
     /**
@@ -385,7 +381,7 @@ public class GUI {
         return pnCredits;
     }
 
-    private JPanel configurePanelExit(App app) {
+    private JPanel configurePanelExit() {
         System.out.print("Configuring Exit Panel... ");
 
         JPanel pnExit   = createRepeatableBackgroundPanel(Images.Pattern_2, renderPanel, BoxLayout.Y_AXIS);

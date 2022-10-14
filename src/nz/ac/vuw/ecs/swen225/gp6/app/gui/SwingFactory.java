@@ -1,24 +1,17 @@
 package nz.ac.vuw.ecs.swen225.gp6.app.gui;
 
-import nz.ac.vuw.ecs.swen225.gp6.app.App;
-import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
-import nz.ac.vuw.ecs.swen225.gp6.persistency.DomainPersistency;
-import nz.ac.vuw.ecs.swen225.gp6.renderer.InventoryPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MazeRenderer;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
 
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.function.BooleanSupplier;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 class SwingFactory {
