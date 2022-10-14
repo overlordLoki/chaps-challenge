@@ -2,7 +2,6 @@ package nz.ac.vuw.ecs.swen225.gp6.domain.Tiles;
 
 import nz.ac.vuw.ecs.swen225.gp6.domain.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.GameState;
-import nz.ac.vuw.ecs.swen225.gp6.domain.IntegrityCheck.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.*;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.*;

@@ -174,6 +174,7 @@ public class App extends JFrame {
         gameClock.reset();
         gameClock.setTimePlayed(game.getCurrentTime());
         replay.load(slot);
+        recorder.stitchRecording(slot);
         transitionToGameScreen();
     }
 
@@ -184,7 +185,6 @@ public class App extends JFrame {
      */
     public void startSavedReplay(int slot) {
         updateGameComponents(DomainPersistency.getInitial());
-        // TODO: load replay module
         gameClock.useReplayTimer();
         replay.load(slot);
         System.out.print("Transitioning to replay screen... ");
