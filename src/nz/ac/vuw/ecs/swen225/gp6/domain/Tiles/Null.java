@@ -1,5 +1,6 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain.Tiles;
 
+import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.AbstractTile;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileInfo;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
@@ -23,5 +24,10 @@ public class Null extends AbstractTile {
   @Override
   public TileType type() {
     return TileType.Null;
+  }
+
+  @Override
+  public void ping(Domain d){
+    throw new RuntimeException("Null Tile should not be in game and is not pingable.");
   }
 }
