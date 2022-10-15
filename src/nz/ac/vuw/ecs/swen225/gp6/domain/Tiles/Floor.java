@@ -1,16 +1,25 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain.Tiles;
 
-import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.*;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.AbstractTile;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileInfo;
+import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
 
 /**
  * A class representing an empty floor tile, which both hero and enemy can move onto.
  */
-public class Floor extends AbstractTile{
-    /**
-     * Create a floor tile
-     * @param info tile information
-     */
-    public Floor (TileInfo info){super(info);}
+public class Floor extends AbstractTile {
 
-    @Override public TileType type(){ return TileType.Floor;}
+  /**
+   * Create a floor tile.
+   *
+   * @param info tile information
+   */
+  public Floor(TileInfo info) {
+    super(info);
+  }
+
+  @Override
+  public TileType type() {
+    return TileType.Floor;
+  }
 }
