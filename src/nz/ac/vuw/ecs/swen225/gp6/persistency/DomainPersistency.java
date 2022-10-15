@@ -402,6 +402,7 @@ public final class DomainPersistency {
    *
    * @param slot The slot to load from
    * @return The loaded domain
+   * @throws DocumentException If the XML document is malformed
    */
   public static Domain loadSave(int slot) throws DocumentException {
     SAXReader reader = new SAXReader();
@@ -418,6 +419,8 @@ public final class DomainPersistency {
    * Delete a saved game from a slot.
    *
    * @param slot The slot to delete
+   * @return True if the save was deleted, false otherwise
+   * @throws IOException If the file could not be deleted
    */
   public static boolean delete(int slot) throws IOException {
     File file = new File("res/saves/" + slot + ".xml");
@@ -464,6 +467,7 @@ public final class DomainPersistency {
    *
    * @param domain The domain to save
    * @param slot   The save slot to save to
+   * @throws IOException If the file could not be written
    */
   public static void save(Domain domain, int slot) throws IOException {
     Element root = serialiseDomain(domain);

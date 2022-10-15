@@ -28,6 +28,7 @@ public final class Logging {
    * Log the string to the log file.
    *
    * @param message The string to log
+   * @throws IOException If the file cannot be written to
    */
   public static void log(String message) throws IOException {
     String time = LocalDateTime.now().toString();
@@ -41,6 +42,7 @@ public final class Logging {
    * Get the log file.
    *
    * @return List of log entries
+   * @throws IOException If the file cannot be read
    */
   public static List<Log> getLogs() throws IOException {
     List<String> lines = Files.readAllLines(Paths.get("res/log.txt"));
@@ -61,7 +63,7 @@ public final class Logging {
    *
    * @return Whether the operation was successful
    */
-  public static boolean clearLogs() throws IOException {
+  public static boolean clearLogs() {
     File file = new File("res/log.txt");
     return file.delete();
   }

@@ -121,6 +121,7 @@ public final class AppPersistency {
    * Save configuration to res/config.xml.
    *
    * @param config The configuration object
+   * @throws IOException If the file cannot be written to
    */
   public static void save(Configuration config) throws IOException {
     Element element = serialise(config);

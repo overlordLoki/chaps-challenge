@@ -64,6 +64,7 @@ public final class RecorderPersistency {
    *
    * @param timeline The timeline to save
    * @param slot     The slot to save to
+   * @throws IOException If the file cannot be written to
    */
   public static void saveTimeline(Stack<Pair<Long, Actions>> timeline, int slot)
       throws IOException {
@@ -89,6 +90,7 @@ public final class RecorderPersistency {
    *
    * @param slot The slot to load from
    * @return The loaded timeline
+   * @throws DocumentException If the XML document is malformed
    */
   public static Stack<Pair<Long, Actions>> loadTimeline(int slot) throws DocumentException {
     SAXReader reader = new SAXReader();
