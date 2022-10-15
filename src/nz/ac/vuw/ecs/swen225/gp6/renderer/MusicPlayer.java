@@ -40,21 +40,26 @@ public final class MusicPlayer {
      * plays the game music
      */
     public static void useGameMusic(){resetMusic(gameMusic);}
+
     /**
      * plays the menu music
      */
     public static void useMenuMusic(){resetMusic(menuMusic);}
+
     /**
      * resumes the music
      */
     public static void playMusic() {currentMusic.loop(Clip.LOOP_CONTINUOUSLY);}
+
     /**
      * pauses the music
      */
     public static void stopMusic() {currentMusic.stop();}
+
     /**
      * resets the music
-     * @param music
+     *
+     * @param music the music to be played next
      */
     public static void resetMusic(Clip music) {
         currentMusic.setMicrosecondPosition(0);

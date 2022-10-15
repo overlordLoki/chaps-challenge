@@ -71,8 +71,9 @@ public class LogPanel extends JPanel{
 //-----------------------------------------------------methods-------------------------------------------------------//
     /**
      * appends String to textArea
-     * @param s
-     * @return
+     *
+     * @param s String to be appended
+     * @return the String that was appended
      */
     public String print(String s) {
         textDisplay.append(s);
@@ -82,29 +83,37 @@ public class LogPanel extends JPanel{
 
     /**
      * appends String to textArea with a new line
+     *
+     * @param s String to be appended
+     * @return the String that was appended
      */
     public String println(String s) {
         return print(s + "\n");
     }
 
     /**
-     * return the text area
-     * @return textArea
+     * clears the text area
      */
     public void clear() {
         textDisplay.setText("");
     }
 
+
     /**
      * adds a command to the commands
+     *
+     * @param command  command to be added
+     * @param description description of the command
+     * @param action action to be performed
      */
-    public void addCommands(String command, String discription, Runnable action) {
-        commands.addCommands(command, discription, action);
+    public void addCommands(String command, String description, Runnable action) {
+        commands.addCommands(command, description, action);
     }
 
     /**
      * sets the mazeRenderer
-     * @param mazeRenderer
+     *
+     * @param mazeRenderer mazeRenderer to be set
      */
     public void setRenderer(MazeRenderer mazeRenderer) {
         commands.setRenderer(mazeRenderer);
