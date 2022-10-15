@@ -45,5 +45,4 @@ public class Info extends AbstractTile {//future idea: not disappear after once 
     return this;
   } //the info tile is permanent
 
-  //TODO: display info if heros on it
 }

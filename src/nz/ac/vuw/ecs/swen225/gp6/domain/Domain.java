@@ -26,8 +26,8 @@ public class Domain {
       = new EnumMap<DomainEvent, List<Runnable>>(DomainEvent.class);
 
     
-   //CONSTRUCTORS:
-
+  //CONSTRUCTORS:
+  
   /**
    * constructor with a list of levels.
    *

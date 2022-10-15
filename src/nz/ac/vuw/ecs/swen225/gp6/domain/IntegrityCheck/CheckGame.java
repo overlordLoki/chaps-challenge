@@ -27,9 +27,6 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
  * ping (by looking at the new altered domain, and making sure certain rules are always followed)
  * <p>
  * this class should be UPDATED REGULARLY to keep up with any new futures the game will have.
- *
- * @throws IllegalStateException in its check methods, to inform if the game is in an invalid state,
- * it must also include string telling which rule has been broken
  */
 public final class CheckGame {
 
@@ -39,7 +36,10 @@ public final class CheckGame {
    * state)
    *
    * @param preDomain  the pre-ping domain that will be changed by one step
-   * @param postDomain the post-ping domain that will be compared with the pre-ping one
+   * @param afterDomain the post-ping domain that will be compared with the pre-ping one
+   *
+   * @throws IllegalStateException in its check methods, to inform if the game is in an invalid state,
+   * it must also include string telling which rule has been broken
    */
   public static void checkStateChange(Domain preDomain, Domain afterDomain) {
     Maze preMaze = preDomain.getCurrentMaze();
@@ -77,6 +77,9 @@ public final class CheckGame {
    * Checks the integrity of the maze and inventory of a given game.
    *
    * @param domain the game that the maze and inventory will be accessed of
+   * 
+   * @throws IllegalStateException in its check methods, to inform if the game is in an invalid state,
+   * it must also include string telling which rule has been broken
    */
   public static void checkCurrentState(Domain domain) {
     Maze maze = domain.getCurrentMaze();
@@ -103,7 +106,7 @@ public final class CheckGame {
     }
 
     //COIN:
-    //check that there is atleast 1 coin in total in game
+    //check that there is at least 1 coin in total in game
     if (getAllTiles(maze, TileType.Coin).size() + inv.coins() < 1) {
       throw new IllegalStateException("There are no(or negative) coins in game");
     }
@@ -134,6 +137,9 @@ public final class CheckGame {
    * @param afterMaze post ping maze
    * @param afterInv  post ping inventory
    * @param preDomain pre ping domain
+   * 
+   * @throws IllegalStateException in its check methods, to inform if the game is in an invalid state,
+   * it must also include string telling which rule has been broken
    */
   private static void checkHeroStateChange(Maze preMaze, Inventory preInv, Maze afterMaze,
       Inventory afterInv,
@@ -213,13 +219,16 @@ public final class CheckGame {
    * claimed to be lost.
    *
    * @param domain domain to check on
+   * 
+   * @throws IllegalStateException in its check methods, to inform if the game is in an invalid state,
+   * it must also include string telling which rule has been broken
    */
   private static void checkLose(Domain domain) {
     Maze maze = domain.getCurrentMaze();
 
     //check if one of the conditions that make the player lose is true
     //NOTE: must be extended if these conditions are extended
-    //current conditons:
+    //current conditions:
     //-1: hero moved on a damaging tile
     //-2: damaging tile moved on a hero
     //-3.. to be added later
@@ -259,6 +268,9 @@ public final class CheckGame {
    * claimed to be won.
    *
    * @param domain domain to check on
+   * 
+   * @throws IllegalStateException in its check methods, to inform if the game is in an invalid state,
+   * it must also include string telling which rule has been broken
    */
   private static void checkWin(Domain domain) {
     Maze maze = domain.getCurrentMaze();
