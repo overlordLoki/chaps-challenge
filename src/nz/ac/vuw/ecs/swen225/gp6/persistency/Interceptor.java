@@ -85,12 +85,12 @@ public class Interceptor extends PrintStream {
      *
      * @param s The string to add
      */
-    public void add(String s) {
+    void add(String s) {
       queue.add(s);
     }
 
     /**
-     * Run the thread.
+     * Run the thread. This waits for a string to be added to the queue and then logs it.
      */
     public void run() {
       try {

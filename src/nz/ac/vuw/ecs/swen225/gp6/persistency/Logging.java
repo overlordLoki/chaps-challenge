@@ -39,7 +39,7 @@ public final class Logging {
   }
 
   /**
-   * Get the log file.
+   * Get a list of all the logs. The log file exists at res/logs.txt
    *
    * @return List of log entries
    * @throws IOException If the file cannot be read
