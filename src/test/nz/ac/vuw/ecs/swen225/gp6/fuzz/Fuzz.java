@@ -98,29 +98,22 @@ public class Fuzz {
             //get a random action from the action list
             int randomIndex = r.nextInt(actionsList.size());
             Actions action = actionsList.get(randomIndex);
-
-            if(action == PAUSE_GAME) {
-                if(r.nextInt(50) == 0) {
+            if (action == PAUSE_GAME) {
+                if (r.nextInt(50) == 0) {
                     PAUSE_GAME.run(app);
                     robot.delay(1000);
                     System.out.println("Paused game");
                     pasuseStrategy(app);
-                }else{
+                } else {
                     continue;
                 }
-
-            }else{
+            } else {
                 action.run(app);
             }
             System.out.print("Action: " + actionsList.get(randomIndex) + " >>> \n");
             robot.delay(100);
-
         }
-
-
     }
-
-
 
     public static void testLevel2(){
         //initialize the app environment, set all the actions into a list
