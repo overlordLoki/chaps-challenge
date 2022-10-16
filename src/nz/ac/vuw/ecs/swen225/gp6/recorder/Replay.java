@@ -37,7 +37,7 @@ public final class Replay implements Runnable {
     if (app == null) {
       throw new IllegalArgumentException("App cannot be null");
     }
-    this.app = app;
+    this.app = app; // SpotBugs issue, but Replay needs App to modify time.
     app.getGameClock().setObserver(this);
   }
 

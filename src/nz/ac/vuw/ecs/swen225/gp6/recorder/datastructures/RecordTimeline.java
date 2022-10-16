@@ -30,7 +30,7 @@ public class RecordTimeline<E> {
    * @param timeline the timeline to start from.
    */
   public RecordTimeline(Stack<Pair<Long, E>> timeline) {
-    this.timeline = timeline;
+    this.timeline = (Stack) timeline.clone();
   }
 
   /**
@@ -49,7 +49,7 @@ public class RecordTimeline<E> {
    * @return The stack of pairs representing the timeline.
    */
   public Stack<Pair<Long, E>> getTimeline() {
-    return timeline;
+    return (Stack) timeline.clone();
   }
 
   @Override
