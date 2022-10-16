@@ -8,9 +8,11 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
 
 /**
  * This class represents a info tile which when only hero can move on, and will display hints for
- * the current level. Each level currently atmost can have one of these tiles.
+ * the current level. Each level currently at most can have one of these tiles.
+ *
+ * @author Name: Mahdi Najafi ID: 300606634
  */
-public class Info extends AbstractTile {//future idea: not disappear after once usage
+public class Info extends AbstractTile { //future idea: not disappear after once usage
 
   /**
    * Create a info tile.

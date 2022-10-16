@@ -12,6 +12,8 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Tiles.Null;
 /**
  * The Inventory class represents the space that a player holds items that they have picked up. Each
  * level has a separate inventory.
+ *
+ * @author Name: Mahdi Najafi ID: 300606634
  */
 public class Inventory {
 
@@ -72,7 +74,7 @@ public class Inventory {
   }
 
   /**
-   * gets the items (as an umodifiable list)
+   * gets the items (as an umodifiable list).
    *
    * @return list of tiles in inventory (it will not include the Null type tiles)
    */
@@ -143,6 +145,8 @@ public class Inventory {
   }
 
   /**
+   * finds out if the inventory has a certain typed item.
+   *
    * @return true if a tile type found in inv, otherwise false
    */
   public boolean hasItem(TileType itemName) {

@@ -22,11 +22,16 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 
 
 /**
- * This class contains a set of static method to check the integrity of the game: - before a ping
- * step is successfully completed (by comparing the previous maze and inv to next ones) - after a
- * ping (by looking at the new altered domain, and making sure certain rules are always followed)
- * <p>
- * this class should be UPDATED REGULARLY to keep up with any new futures the game will have.
+ * <p>This class contains a set of static method to check the integrity of the game. </p>
+ * <p>- before a ping: step is successfully completed (by comparing the previous maze
+ * and inv to next ones).</p>
+ * <p>- after a ping: by looking at the new altered domain, and making sure certain rules
+ * are always followed.</p>
+ *
+ * <p> This class should be UPDATED REGULARLY to keep up with any new futures the game will
+ * have.</p>
+ *
+ * @author Name: Mahdi Najafi ID: 300606634
  */
 public final class CheckGame {
 
@@ -35,11 +40,11 @@ public final class CheckGame {
    * forward. (so the domain have correctly transitioned from before ping state to after ping
    * state)
    *
-   * @param preDomain  the pre-ping domain that will be changed by one step
+   * @param preDomain   the pre-ping domain that will be changed by one step
    * @param afterDomain the post-ping domain that will be compared with the pre-ping one
-   *
-   * @throws IllegalStateException in its check methods, to inform if the game is in an invalid state,
-   * it must also include string telling which rule has been broken
+   * @throws IllegalStateException in its check methods, to inform if the game is in an invalid
+   *                               state, it must also include string telling which rule has been
+   *                               broken.
    */
   public static void checkStateChange(Domain preDomain, Domain afterDomain) {
     Maze preMaze = preDomain.getCurrentMaze();
@@ -60,7 +65,8 @@ public final class CheckGame {
     //HERO:
     checkHeroStateChange(preMaze, preInv, afterMaze, afterInv, preDomain);
 
-    //Perhaps extend in future by having a way to identify all moving things and collectively check them
+    //Perhaps extend in future by having a way to identify all moving things
+    //and collectively check them
 
     //COINS:
     //check there is the same amounts of coins in the maze and inventory combined before and after
@@ -77,13 +83,13 @@ public final class CheckGame {
    * Checks the integrity of the maze and inventory of a given game.
    *
    * @param domain the game that the maze and inventory will be accessed of
-   * 
-   * @throws IllegalStateException in its check methods, to inform if the game is in an invalid state,
-   * it must also include string telling which rule has been broken
+   * @throws IllegalStateException in its check methods, to inform if the game is in an invalid
+   *                               state, it must also include string telling which rule has been
+   *                               broken
    */
   public static void checkCurrentState(Domain domain) {
-    Maze maze = domain.getCurrentMaze();
-    Inventory inv = domain.getInv();
+    final Maze maze = domain.getCurrentMaze();
+    final Inventory inv = domain.getInv();
 
     //if the game is won, lost or in between levels, behave appropriately
     if (domain.getGameState() == GameState.WON) {
@@ -130,16 +136,16 @@ public final class CheckGame {
 
   /**
    * helper method called by checkStateChange() method, checks the integrity of hero as the state of
-   * game changes
+   * game changes.
    *
    * @param preMaze   pre ping maze
    * @param preInv    pre ping inventory
    * @param afterMaze post ping maze
    * @param afterInv  post ping inventory
    * @param preDomain pre ping domain
-   * 
-   * @throws IllegalStateException in its check methods, to inform if the game is in an invalid state,
-   * it must also include string telling which rule has been broken
+   * @throws IllegalStateException in its check methods, to inform if the game is in an invalid
+   *                               state, it must also include string telling which rule has been
+   *                               broken
    */
   private static void checkHeroStateChange(Maze preMaze, Inventory preInv, Maze afterMaze,
       Inventory afterInv,
@@ -147,16 +153,16 @@ public final class CheckGame {
 
     Hero h = (Hero) getTile(afterMaze, TileType.Hero);
     //check hero isn't out of bounds(not on a periphery tile or its memory of location is in bound)
-    if (!Loc.checkInBound(h.info().loc(), afterMaze) ||
-        h.tileOn().type() == TileType.Periphery) {
+    if (!Loc.checkInBound(h.info().loc(), afterMaze)
+        || h.tileOn().type() == TileType.Periphery) {
       throw new IllegalStateException("Hero has moved out of bounds");
     }
 
     Loc heroNewLoc = h.info().loc();
     Tile tileToOccupy = preMaze.getTileAt(heroNewLoc);
-      if (tileToOccupy instanceof Hero) {
-          return; //if hero hasn't moved then no need to check
-      }
+    if (tileToOccupy instanceof Hero) {
+      return; //if hero hasn't moved then no need to check
+    }
 
     //check if hero is moved on an obstruction
     if (tileToOccupy.obstructsHero(preDomain)) {
@@ -169,7 +175,8 @@ public final class CheckGame {
       throw new IllegalStateException("Hero has the wrong onTile field");
     }
 
-    //check if hero in moved on a door that needs a key, correct key is in and removed from inventory
+    //check if hero in moved on a door that needs a key, correct key is in
+    //and removed from inventory
     if (tileToOccupy instanceof Door && ((Door) tileToOccupy).color() != KeyColor.NONE) {
       KeyColor doorColor = ((Door) tileToOccupy).color();
       List<Tile> items = preInv.getItems();
@@ -184,11 +191,12 @@ public final class CheckGame {
         throw new IllegalStateException("The correct key has not been removed from the inventory");
       }
     }
-    //check if hero moved on an item(not a coin), it has been added to the inventory(if inventory is not full)
+    //check if hero moved on an item(not a coin), it has been added to the inventory
+    // (if inventory is not full)
     if (tileToOccupy instanceof Item && !(tileToOccupy instanceof Coin)
         && !preInv.isFull()) {
-      if (preInv.countItem(i -> i.type() == tileToOccupy.type()) !=
-          afterInv.countItem(i -> i.type() == tileToOccupy.type()) - 1) {
+      if (preInv.countItem(i -> i.type() == tileToOccupy.type())
+          != afterInv.countItem(i -> i.type() == tileToOccupy.type()) - 1) {
         throw new IllegalStateException("The item has not been added to the inventory");
       }
     }
@@ -198,7 +206,8 @@ public final class CheckGame {
       throw new IllegalStateException("The coin has not been added to the inventory");
     }
 
-    //check previous tile is not item(picakble) tile, i.e check item disappears (if inventory is not full)
+    //check previous tile is not item(picakble) tile,
+    // i.e check item disappears (if inventory is not full)
     Tile tileToLeave = afterMaze.getTileAt(
         getTile(preMaze, TileType.Hero).info().loc()); //tile left behind
     if (tileToLeave instanceof Item
@@ -219,9 +228,9 @@ public final class CheckGame {
    * claimed to be lost.
    *
    * @param domain domain to check on
-   * 
-   * @throws IllegalStateException in its check methods, to inform if the game is in an invalid state,
-   * it must also include string telling which rule has been broken
+   * @throws IllegalStateException in its check methods, to inform if the game is in an invalid
+   *                               state, it must also include string telling which rule has been
+   *                               broken
    */
   private static void checkLose(Domain domain) {
     Maze maze = domain.getCurrentMaze();
@@ -268,9 +277,9 @@ public final class CheckGame {
    * claimed to be won.
    *
    * @param domain domain to check on
-   * 
-   * @throws IllegalStateException in its check methods, to inform if the game is in an invalid state,
-   * it must also include string telling which rule has been broken
+   * @throws IllegalStateException in its check methods, to inform if the game is in an invalid
+   *                               state, it must also include string telling which rule has been
+   *                               broken
    */
   private static void checkWin(Domain domain) {
     Maze maze = domain.getCurrentMaze();

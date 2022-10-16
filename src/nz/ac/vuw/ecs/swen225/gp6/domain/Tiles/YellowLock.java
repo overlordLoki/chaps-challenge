@@ -7,6 +7,8 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.Key.KeyColor;
 
 /**
  * A class representing a yellow lock that can be unlocked by a yellow key.
+ *
+ * @author Name: Mahdi Najafi ID: 300606634
  */
 public class YellowLock extends Door {
 

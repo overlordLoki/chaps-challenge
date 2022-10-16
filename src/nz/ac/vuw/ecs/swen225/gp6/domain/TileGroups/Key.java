@@ -5,6 +5,8 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileInfo;
 /**
  * This is an abstract class for all kinds of keys, and each key must have a KeyColor enum
  * associated with it.
+ *
+ * @author Name: Mahdi Najafi ID: 300606634
  */
 public abstract class Key extends Item {
 

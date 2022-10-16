@@ -8,6 +8,8 @@ import java.util.Arrays;
  * tile class that to be implemented in game(in compile time), must be in tiles folder and the class
  * file must have the same name as its enum type. Note2: Any tiles that are added to the game at run
  * time will have the type "Other".
+ *
+ * @author Name: Mahdi Najafi ID: 300606634
  */
 public enum TileType {
   //ACTORS:
@@ -89,8 +91,8 @@ public enum TileType {
     try {
       Class<?> c = Class.forName("nz.ac.vuw.ecs.swen225.gp6.domain.Tiles." + t.name());
       return (Tile) c.getDeclaredConstructor(TileInfo.class).newInstance(info);
-    } catch (NoSuchMethodException | SecurityException | ClassNotFoundException |
-             InstantiationException | IllegalAccessException
+    } catch (NoSuchMethodException | SecurityException | ClassNotFoundException
+             | InstantiationException | IllegalAccessException
              | IllegalArgumentException | java.lang.reflect.InvocationTargetException e) {
       throw new IllegalArgumentException("There isn't a class for tile type: " + t.name());
     }
@@ -114,8 +116,8 @@ public enum TileType {
           } catch (Exception e) {
             return false;
           }
-        }).
-        findFirst()
+        })
+        .findFirst()
         .orElse(TileType.Other);
 
     if (type != TileType.Other) {

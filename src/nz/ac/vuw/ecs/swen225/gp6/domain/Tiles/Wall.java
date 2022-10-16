@@ -7,6 +7,8 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
 
 /**
  * A class representing a wall, which hero and enemy actors cannot move on.
+ *
+ * @author Name: Mahdi Najafi ID: 300606634
  */
 public class Wall extends AbstractTile {
 
