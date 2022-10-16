@@ -22,11 +22,12 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 
 
 /**
- * <p>This class contains a set of static method to check the integrity of the game: - before a
- * ping
- * step is successfully completed (by comparing the previous maze and inv to next ones) - after a
- * ping (by looking at the new altered domain, and making sure certain rules are always followed).
- * </p>
+ * <p>This class contains a set of static method to check the integrity of the game. </p>
+ * <p>- before a ping: step is successfully completed (by comparing the previous maze
+ * and inv to next ones).</p>
+ * <p>- after a ping: by looking at the new altered domain, and making sure certain rules
+ * are always followed.</p>
+ *
  * <p> This class should be UPDATED REGULARLY to keep up with any new futures the game will
  * have.</p>
  *
