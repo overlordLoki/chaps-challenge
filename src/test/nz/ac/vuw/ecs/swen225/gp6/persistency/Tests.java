@@ -194,6 +194,15 @@ public class Tests {
   }
 
   @Test
+  public void testEmptyLogFile() throws IOException {
+    Logging.clearLogs();
+
+    List<Log> logs = Logging.getLogs();
+
+    Assert.assertEquals(0, logs.size());
+  }
+
+  @Test
   public void testLogging() throws IOException {
     Logging.clearLogs();
     Interceptor interceptor = new Interceptor(System.out);
