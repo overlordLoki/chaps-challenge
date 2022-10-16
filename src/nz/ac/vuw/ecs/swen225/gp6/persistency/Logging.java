@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,17 +46,21 @@ public final class Logging {
    * @throws IOException If the file cannot be read
    */
   public static List<Log> getLogs() throws IOException {
-    List<String> lines = Files.readAllLines(Paths.get("res/log.txt"));
+    try {
+      List<String> lines = Files.readAllLines(Paths.get("res/log.txt"));
 
-    return lines.stream().map(line -> {
-      if (!line.contains(": ")) {
-        return null;
-      }
-      String dateString = line.substring(0, line.indexOf(": "));
-      LocalDateTime date = LocalDateTime.parse(dateString);
-      String message = line.substring(line.indexOf(": ") + 1).strip();
-      return new Log(date, message);
-    }).filter(Objects::nonNull).toList();
+      return lines.stream().map(line -> {
+        if (!line.contains(": ")) {
+          return null;
+        }
+        String dateString = line.substring(0, line.indexOf(": "));
+        LocalDateTime date = LocalDateTime.parse(dateString);
+        String message = line.substring(line.indexOf(": ") + 1).strip();
+        return new Log(date, message);
+      }).filter(Objects::nonNull).toList();
+    } catch (NoSuchFileException e) {
+      return List.of();
+    }
   }
 
   /**
