@@ -17,6 +17,7 @@ import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Controller;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.GameClock;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.DomainEvent;
+import nz.ac.vuw.ecs.swen225.gp6.domain.Domain.GameState;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.AppPersistency;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.DomainPersistency;
 import nz.ac.vuw.ecs.swen225.gp6.persistency.Interceptor;
@@ -138,6 +139,7 @@ public class App extends JFrame {
   public void runLoseEvent() {
     gameClock.stop();
     inResume = false;
+    game.setGameState(GameState.LOST);
     System.out.println("You lose!");
     this.gui.transitionToLostScreen();
   }
