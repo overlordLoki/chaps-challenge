@@ -9,16 +9,13 @@ import javax.swing.JOptionPane;
 import nz.ac.vuw.ecs.swen225.gp6.app.gui.GUI;
 
 /**
- * Class for the App package. Handles the output streams and redirects all outputs to:
- * <p>
- * 1. Normal output
- * </P>
- * <p>
- * 2. In-game log panel display
- * </P>
- * <p>
- * 3. Log file in /res
- * </P>
+ * Class for intercepting System.out calls. Handles the output streams and redirects all outputs to:
+ *
+ * <p>1. Normal output
+ *
+ * <p>2. In-game log panel display
+ *
+ * <p>3. Log file in /res
  *
  * @author Benjamin Hong - 300605520
  */
@@ -63,7 +60,7 @@ public class Interceptor extends PrintStream {
    * Print a format string to the output stream.
    *
    * @param format The format string
-   * @param args   The arguments
+   * @param args The arguments
    */
   @Override
   public PrintStream printf(String format, Object... args) {
@@ -89,9 +86,7 @@ public class Interceptor extends PrintStream {
       queue.add(s);
     }
 
-    /**
-     * Run the thread. This waits for a string to be added to the queue and then logs it.
-     */
+    /** Run the thread. This waits for a string to be added to the queue and then logs it. */
     public void run() {
       try {
         while (true) {
