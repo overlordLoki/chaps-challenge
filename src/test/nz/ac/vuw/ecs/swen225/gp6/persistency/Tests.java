@@ -120,22 +120,6 @@ public class Tests {
   }
 
   @Test
-  public void testLogging() throws IOException {
-    Logging.clearLogs();
-    Interceptor interceptor = new Interceptor(System.out);
-    interceptor.print("test\n");
-    interceptor.println("test2");
-    interceptor.printf("test%d", 3);
-
-    List<Log> logs = Logging.getLogs();
-
-    Assert.assertEquals(3, logs.size());
-    Assert.assertEquals("test", logs.get(0).message());
-    Assert.assertEquals("test2", logs.get(1).message());
-    Assert.assertEquals("test3", logs.get(2).message());
-  }
-
-  @Test
   public void testConfiguration() throws IOException {
     Configuration config = new Configuration(true, new EnumMap<>(Map.ofEntries(
         Map.entry(MOVE_UP, new Controller.Key(0, VK_UP)),
@@ -207,5 +191,37 @@ public class Tests {
       fwd.write(datad);
       fwd.close();
     }
+  }
+
+  @Test
+  public void testEmptyLogFile() throws IOException {
+    Logging.clearLogs();
+
+    List<Log> logs = Logging.getLogs();
+
+    Assert.assertEquals(0, logs.size());
+  }
+
+  @Test
+  public void testLogging() throws IOException {
+    Logging.clearLogs();
+    Interceptor interceptor = new Interceptor(System.out);
+    interceptor.print("test\n");
+    interceptor.println("test2");
+    interceptor.printf("test%d", 3);
+
+    List<Log> logs = Logging.getLogs();
+
+    // Wait for logs to be written
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    Assert.assertEquals(3, logs.size());
+    Assert.assertEquals("test", logs.get(0).message());
+    Assert.assertEquals("test2", logs.get(1).message());
+    Assert.assertEquals("test3", logs.get(2).message());
   }
 }
