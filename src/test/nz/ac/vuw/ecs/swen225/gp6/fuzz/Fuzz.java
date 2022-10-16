@@ -1,12 +1,12 @@
 package test.nz.ac.vuw.ecs.swen225.gp6.fuzz;
 import nz.ac.vuw.ecs.swen225.gp6.app.App;
+import nz.ac.vuw.ecs.swen225.gp6.app.gui.GUI;
 import nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions;
 import org.junit.Test;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -28,12 +28,11 @@ public class Fuzz {
     static final Random r = new Random();
     /**
      * Setup App object and Robot object for test environment
-     * actionsList is a list will store all the actions for robot to get redomly
+     * actionsList is a list will store all the actions for robot to get randomly
      */
     static App app;
     static Robot robot;
     static List<Actions> actionsList = List.of();
-
     static {
         try {robot = new Robot();}
         catch (AWTException e) {throw new RuntimeException(e);}
@@ -48,11 +47,11 @@ public class Fuzz {
         frame.setPreferredSize(new Dimension(500, 500));
         frame.setMinimumSize(new Dimension(500, 500));
         frame.setMaximumSize(new Dimension(500, 500));
-        frame.add(app.getGUI().getLogPanel());
+        frame.add(GUI.getLogPanel());
         frame.setVisible(true);
     }
 
-    public static void pasuseStrategy(App app) throws AWTException {
+    public static void pausesStrategy(App app) throws AWTException {
         SAVE_GAME.run(app);
         System.out.println("s = 2");
         robot.delay(1000);
@@ -74,7 +73,7 @@ public class Fuzz {
     /**
      * This method is used to get the random action from the actionsList
      */
-    public static void testLevel1() throws AWTException {
+    public static void testLevel1(){
         //initialize the app environment, set all the actions into a list
         SwingUtilities.invokeLater(()->{
             app = new App();
@@ -82,17 +81,20 @@ public class Fuzz {
                     MOVE_UP,
                     MOVE_DOWN,
                     MOVE_LEFT,
-                    MOVE_RIGHT
-//                    PAUSE_GAME,
-//                    RESUME_GAME
+                    MOVE_RIGHT,
+                    PAUSE_GAME,
+                    RESUME_GAME
             );
         });
         // Start robot automating sequence
         JOptionPane.showMessageDialog(null,"Start Fuzzing");
         app.startNewGame();
         app.transitionToGameScreen();
-        showLog();
+        testingStuff();
+    }
 
+    private static void testingStuff() {
+        showLog();
         while (true) {
             //get a random action from the action list
             int randomIndex = r.nextInt(actionsList.size());
@@ -102,7 +104,7 @@ public class Fuzz {
                     PAUSE_GAME.run(app);
                     robot.delay(1000);
                     System.out.println("Paused game");
-                    pasuseStrategy(app);
+                    RESUME_GAME.run(app);
                 } else {
                     continue;
                 }
@@ -111,12 +113,6 @@ public class Fuzz {
             }
             System.out.print("Action: " + actionsList.get(randomIndex) + " >>> \n");
             robot.delay(100);
-
-            System.out.println(app.getGameClock().getTimeLeft());
-            if(app.getGameClock().getTimeLeft() < 0){
-                System.out.println("Time is up");
-                break;
-            }
 
             if(app.getGame().getGameState().name().equals("LOST") || app.getGame().getGameState().name().equals("WON")){
                 break;
@@ -145,41 +141,12 @@ public class Fuzz {
         app.startNewGame();
         app.transitionToGameScreen();
         TO_LEVEL_2.run(app);
-        showLog();
-
-        //initialize the game running status
-        boolean isRunning = true;
-        while (isRunning) {
-            try {
-                //get a random action from the action list
-                int randomIndex = r.nextInt(actionsList.size());
-                actionsList.get(randomIndex).run(app);
-                System.out.print("Action: " + actionsList.get(randomIndex) + " >>> \n");
-                robot.delay(100);
-                Field[] appF = app.getClass().getDeclaredFields();
-
-                //check if the game is finished or not, also catch the exception
-                for (Field f : appF){
-                    if(f.getName().equals("inResume")
-                            && actionsList.get(randomIndex) != PAUSE_GAME
-                            && actionsList.get(randomIndex) == RESUME_GAME){
-                        f.setAccessible(true);
-                        isRunning = (boolean) f.get(app);
-                    }
-                }
-            } catch (Exception e) {
-                isRunning = false;
-                System.out.println("Testing Level: "+app.getGame().getCurrentLevel() + " Completed");
-            }
-
-        }
-
+        testingStuff();
     }
     /**
      * This method is used to keep testing in one level
-     * @return loop of random action in App we initialized until the first level is done
      */
-    public static void unlimittest(){
+    public static void unlimitedTest() throws AWTException {
         SwingUtilities.invokeLater(()->{
             app = new App();
             app.startNewGame();
@@ -190,23 +157,51 @@ public class Fuzz {
                     MOVE_LEFT,
                     MOVE_RIGHT,
                     PAUSE_GAME,
-                    RESUME_GAME
+                    RESUME_GAME,
+                    TO_LEVEL_2,
+                    TO_LEVEL_1
             );
         });
-        int move = 0;
-        boolean finish = true;
 
         robot.delay(1000); // wait 1 second before start testing
-        while (finish){
+        while (true) {
+            //get a random action from the action list
             int randomIndex = r.nextInt(actionsList.size());
+            Actions action = actionsList.get(randomIndex);
+            if (action == PAUSE_GAME) {
+                if (r.nextInt(50) == 0) {
+                    PAUSE_GAME.run(app);
+                    robot.delay(1000);
+                    System.out.println("Paused game");
+                    pausesStrategy(app);
+                } else {
+                    continue;
+                }
+            } else if (action == TO_LEVEL_2) {
+                if (r.nextInt(50) == 0) {
+                    TO_LEVEL_2.run(app);
+                    robot.delay(1000);
+                    System.out.println("To level 2");
+                } else {
+                    continue;
+                }
+            } else if (action == TO_LEVEL_1) {
+                if (r.nextInt(50) == 0) {
+                    TO_LEVEL_1.run(app);
+                    robot.delay(1000);
+                    System.out.println("To level 1");
+                } else {
+                    continue;
+                }
+            } else {
+                action.run(app);
+            }
 
-            actionsList.get(randomIndex).run(app);
-            System.out.print("Action: " + actionsList.get(randomIndex) + " >>> number: " + move + "moves apply.");
+            System.out.print("Action: " + actionsList.get(randomIndex) + " >>> \n");
             robot.delay(100);
-            move++;
 
-            if(app.getGame().getCurrentLevel() ==2){
-                finish = false;
+            if(app.getGame().getGameState().name().equals("LOST") || app.getGame().getGameState().name().equals("WON")){
+                break;
             }
         }
         JOptionPane.showMessageDialog(null, "First level test Complete");
@@ -216,7 +211,6 @@ public class Fuzz {
 
     /**
      * This method is used to test specific key combination
-     * @return robot will press specific key combination
      */
     public static void switchKeyTest(int switchLevel) throws AWTException {
         SwingUtilities.invokeLater(()->{
@@ -270,7 +264,6 @@ public class Fuzz {
 
     /**
      * This method is used to test specific mouse combination
-     * @return robot will do the specific mouse event and return messages
      */
     public static void mouseTest(int x, int y) throws AWTException {
         Robot robot = new Robot();
@@ -287,7 +280,6 @@ public class Fuzz {
 
     /**
      * This method is just hardcode to test level 1 can be passed
-     * @return print out the key event
      */
     static List<Actions> test1HC = new ArrayList<>();
     public static void hardCode(){
@@ -437,7 +429,6 @@ public class Fuzz {
     }
     /**
      * This method is used to print out the key event message what App get and action done
-     * @return message of key event
      */
     public static void key_Event_Print(int e){
         System.out.println("Action key pressed: " + KeyEvent.getKeyText(e));
@@ -449,29 +440,25 @@ public class Fuzz {
     public static void main(String[] args) throws AWTException {
 
         //this panel is used to show the fuzz test method
-        String[] buttons = { "hardCode", "testLevel2", "testLevel1", "unlimittest" ,"Cancel" };
+        String[] buttons = { "hardCode", "testLevel2", "testLevel1", "unlimited" ,"Cancel" };
         int rc = JOptionPane.showOptionDialog(null, "Choose a test", "Test",
-                JOptionPane.WARNING_MESSAGE, 0, null, buttons, buttons[4]);
-        if (rc == 0) {
-            hardCode();
-        } else if (rc == 1) {
-            testLevel2();
-        } else if (rc == 2) {
-            testLevel1();
-        } else if (rc == 3) {
-            unlimittest();
-        } else {
-            System.exit(0);
+                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, buttons, buttons[4]);
+        switch (rc){
+            case 0 -> hardCode();
+            case 1 -> testLevel2();
+            case 2 -> testLevel1();
+            case 3 -> unlimitedTest();
+            default -> System.exit(0);
         }
 
-//        exit the game after test complete
+        //exit the game after test complete
         System.out.println("All Tests Complete");
         JOptionPane.showMessageDialog(null, "All Tests Complete");
         System.exit(0);
     }
 
     @Test
-    public void test_level1() throws AWTException {
+    public void test_level1(){
         testLevel1();
     }
 
@@ -489,7 +476,7 @@ public class Fuzz {
     @Test
     public void test_hardcode() {
         hardCode();
-        assert this.app.getGame().getCurrentLevel() == 2;
+        assert app.getGame().getCurrentLevel() == 2;
     }
 
     @Test
@@ -503,6 +490,4 @@ public class Fuzz {
         switchKeyTest(1);
         assert app.getGame().getCurrentLevel() == 1;
     }
-
-
 }
