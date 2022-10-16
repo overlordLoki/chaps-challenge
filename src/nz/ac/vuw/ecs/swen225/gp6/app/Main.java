@@ -8,13 +8,14 @@ import javax.swing.SwingUtilities;
  * @author Jeff Lin
  */
 public class Main {
-    /**
-     * Main method of the application.
-     *
-     * @param args No arguments required for this application
-     */
-    public static void main(String... args) {
-        ClassLoader.getSystemClassLoader().setDefaultAssertionStatus(true);
-        SwingUtilities.invokeLater(App::new);
-    }
+
+  /**
+   * Main method of the application.
+   *
+   * @param args No arguments required for this application
+   */
+  public static void main(String... args) {
+    ClassLoader.getSystemClassLoader().setDefaultAssertionStatus(true);
+    SwingUtilities.invokeLater(App::new);
+  }
 }

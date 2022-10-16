@@ -355,9 +355,10 @@ public final class DomainPersistency {
   }
 
   /**
-   * Create a new test maze.
+   * Create a fallback maze to be used when the level files cannot be read. As this maze is more
+   * basic than the default maze, it should only be used as a fallback.
    *
-   * @return The test maze
+   * @return The fallback maze
    */
   public static Maze fallbackMaze() {
     int width = 10;
@@ -398,7 +399,7 @@ public final class DomainPersistency {
   }
 
   /**
-   * Load a saved game from a slot.
+   * Load a saved game from a slot. The associated file exists in res/saves/[slot].xml
    *
    * @param slot The slot to load from
    * @return The loaded domain
@@ -416,7 +417,7 @@ public final class DomainPersistency {
   }
 
   /**
-   * Delete a saved game from a slot.
+   * Delete a saved game from a slot. The associated file in res/saves/[slot].xml is deleted.
    *
    * @param slot The slot to delete
    * @return True if the save was deleted, false otherwise
@@ -428,7 +429,7 @@ public final class DomainPersistency {
   }
 
   /**
-   * Get the initial domain.
+   * Get the initial domain object. It contains all levels found in res/levels.
    *
    * @return The initial domain
    */
@@ -463,7 +464,7 @@ public final class DomainPersistency {
   }
 
   /**
-   * Save a domain to a file.
+   * Save a domain object to a save slot. The associated file exists in res/saves/[slot].xml
    *
    * @param domain The domain to save
    * @param slot   The save slot to save to

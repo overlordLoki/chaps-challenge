@@ -61,6 +61,7 @@ public final class RecorderPersistency {
 
   /**
    * Save a timeline to a slot.
+   * The associated file exists in res/recordings/[slot].xml
    *
    * @param timeline The timeline to save
    * @param slot     The slot to save to
@@ -87,10 +88,11 @@ public final class RecorderPersistency {
 
   /**
    * Load a timeline from a save slot.
+   * The associated file exists in res/recordings/[slot].xml
    *
    * @param slot The slot to load from
    * @return The loaded timeline
-   * @throws DocumentException If the XML document is malformed
+   * @throws DocumentException If the XML document is malformed or cannot be read
    */
   public static Stack<Pair<Long, Actions>> loadTimeline(int slot) throws DocumentException {
     SAXReader reader = new SAXReader();

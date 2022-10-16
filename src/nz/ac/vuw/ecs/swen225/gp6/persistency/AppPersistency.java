@@ -15,8 +15,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 /**
- * This utility class is responsible for saving and loading the Configuration class in the App
- * package.
+ * This utility class is responsible for saving and loading the classes in the App package.
  *
  * @author Benjamin Hong - 300605520
  */
@@ -29,7 +28,7 @@ public final class AppPersistency {
   }
 
   /**
-   * Serialise the configuration file.
+   * Serialise the configuration object.
    *
    * @param config The configuration object
    * @return The xml element
@@ -65,7 +64,7 @@ public final class AppPersistency {
   }
 
   /**
-   * Deserialise the configuration file.
+   * Deserialise a configuration XML element.
    *
    * @param element The xml element
    * @return Configuration object
