@@ -206,11 +206,13 @@ public class Fuzz {
      * This method is used to test specific key combination
      * @return robot will press specific key combination
      */
-    public static void keyTest() throws AWTException {
-        App app = new App();
-        app.startNewGame();
-        app.transitionToGameScreen();
-
+    public static void switchKeyTest(int switchLevel) throws AWTException {
+        SwingUtilities.invokeLater(()->{
+            app = new App();
+            app.startNewGame();
+            app.transitionToGameScreen();
+        });
+        JOptionPane.showMessageDialog(null,"Start Fuzzing");
         Robot robot = new Robot();
         robot.setAutoDelay(100);
 
@@ -222,23 +224,36 @@ public class Fuzz {
         key_Event_Print(VK_W);
         robot.keyRelease(VK_W);
 
-        robot.keyPress(KeyEvent.VK_CONTROL);
-        robot.setAutoDelay(100);
-        robot.keyPress(KeyEvent.VK_1);
-        robot.setAutoDelay(100);
-        System.out.println( KeyEvent.getKeyText(KeyEvent.VK_CONTROL) +"and " +
-                            KeyEvent.getKeyText(KeyEvent.VK_1) +" pressed");
-        robot.keyRelease(KeyEvent.VK_CONTROL);
-        robot.keyRelease(KeyEvent.VK_1);
+        try {
+            if(switchLevel == 1){
+                robot.keyPress(KeyEvent.VK_CONTROL);
+                robot.setAutoDelay(100);
+                robot.keyPress(KeyEvent.VK_1);
+                robot.setAutoDelay(100);
 
-        robot.keyPress(KeyEvent.VK_CONTROL);
-        robot.setAutoDelay(100);
-        robot.keyPress(KeyEvent.VK_2);
-        robot.setAutoDelay(100);
-        System.out.println( KeyEvent.getKeyText(KeyEvent.VK_CONTROL)+ "and " +
-                            KeyEvent.getKeyText(KeyEvent.VK_2) + " pressed");
-        robot.keyRelease(KeyEvent.VK_CONTROL);
-        robot.keyRelease(KeyEvent.VK_2);
+                key_Event_Print(KeyEvent.VK_1);
+                robot.keyRelease(KeyEvent.VK_1);
+                robot.keyRelease(KeyEvent.VK_CONTROL);
+
+                System.out.println( KeyEvent.getKeyText(KeyEvent.VK_CONTROL) +"and " +
+                        KeyEvent.getKeyText(KeyEvent.VK_1) +" pressed");
+
+            }else if(switchLevel == 2) {
+                robot.keyPress(KeyEvent.VK_CONTROL);
+                robot.setAutoDelay(100);
+                robot.keyPress(KeyEvent.VK_2);
+                robot.setAutoDelay(100);
+                key_Event_Print(KeyEvent.VK_2);
+                robot.keyRelease(KeyEvent.VK_CONTROL);
+                robot.keyRelease(KeyEvent.VK_2);
+
+                System.out.println( KeyEvent.getKeyText(KeyEvent.VK_CONTROL)+ "and " +
+                        KeyEvent.getKeyText(KeyEvent.VK_2) + " pressed");
+            }
+
+        } catch (Exception e) {
+            System.out.println("The Switch Level should be 1 or 2" + e);
+        }
     }
 
     /**
@@ -456,5 +471,26 @@ public class Fuzz {
     @Test
     public void test_music_setting() {
         music_test();
+        assert (!app.getConfiguration().isMusicOn());
     }
+
+    @Test
+    public void test_hardcode() {
+        hardCode();
+        assert this.app.getGame().getCurrentLevel() == 2;
+    }
+
+    @Test
+    public void test_switchLevel1() throws AWTException {
+        switchKeyTest(2);
+        assert app.getGame().getCurrentLevel() == 2;
+    }
+
+    @Test
+    public void test_switchLevel2() throws AWTException {
+        switchKeyTest(1);
+        assert app.getGame().getCurrentLevel() == 1;
+    }
+
+
 }
