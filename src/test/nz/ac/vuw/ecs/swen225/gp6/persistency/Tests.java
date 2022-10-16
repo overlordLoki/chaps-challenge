@@ -210,14 +210,14 @@ public class Tests {
     interceptor.println("test2");
     interceptor.printf("test%d", 3);
 
-    List<Log> logs = Logging.getLogs();
-
     // Wait for logs to be written
     try {
       Thread.sleep(1000);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
+
+    List<Log> logs = Logging.getLogs();
 
     Assert.assertEquals(3, logs.size());
     Assert.assertEquals("test", logs.get(0).message());
