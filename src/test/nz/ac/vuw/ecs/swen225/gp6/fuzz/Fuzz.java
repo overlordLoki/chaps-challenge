@@ -33,14 +33,15 @@ public class Fuzz {
     static App app;
     static Robot robot;
     static List<Actions> actionsList = List.of();
-    /**
-     * Initialize the test robot
-     */
+
     static {
         try {robot = new Robot();}
         catch (AWTException e) {throw new RuntimeException(e);}
     }
 
+    /**
+     * This method is used to get the random action from the actionsList
+     */
     public static void showLog(){
         //set the log panel visible during the test
         JFrame frame = new JFrame("Logs");
@@ -71,9 +72,7 @@ public class Fuzz {
     }
 
     /**
-     * This method is used to generate a random action
-     * @Input: int number of actions for test
-     * @return a random action in App we initialized
+     * This method is used to get the random action from the actionsList
      */
     public static void testLevel1() throws AWTException {
         //initialize the app environment, set all the actions into a list
@@ -83,9 +82,9 @@ public class Fuzz {
                     MOVE_UP,
                     MOVE_DOWN,
                     MOVE_LEFT,
-                    MOVE_RIGHT,
-                    PAUSE_GAME,
-                    RESUME_GAME
+                    MOVE_RIGHT
+//                    PAUSE_GAME,
+//                    RESUME_GAME
             );
         });
         // Start robot automating sequence
@@ -112,9 +111,22 @@ public class Fuzz {
             }
             System.out.print("Action: " + actionsList.get(randomIndex) + " >>> \n");
             robot.delay(100);
+
+            System.out.println(app.getGameClock().getTimeLeft());
+            if(app.getGameClock().getTimeLeft() < 0){
+                System.out.println("Time is up");
+                break;
+            }
+
+            if(app.getGame().getGameState().name().equals("LOST") || app.getGame().getGameState().name().equals("WON")){
+                break;
+            }
         }
     }
 
+    /**
+     * This method is used to get the random action from the actionsList
+     */
     public static void testLevel2(){
         //initialize the app environment, set all the actions into a list
         SwingUtilities.invokeLater(()->{
