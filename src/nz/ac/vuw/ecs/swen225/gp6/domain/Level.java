@@ -59,7 +59,7 @@ public class Level {
    * direction to None.
    *
    * @param maze - the maze of the level
-   * @param lvl - the level number 1,2, ...
+   * @param lvl  - the level number 1,2, ...
    */
   public Level(Maze maze, int lvl) {
     this(maze, new Inventory(8), lvl, 60, 0, Direction.None);

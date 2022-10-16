@@ -15,7 +15,7 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
 public abstract class Item extends AbstractTile {
 
   boolean invWasFull = false; //returns true if this item was
-                              //attempted to be added to a full inventory
+  //attempted to be added to a full inventory
 
   /**
    * constructor for an item.

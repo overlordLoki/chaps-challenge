@@ -3,8 +3,8 @@ package nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Domain;
 
 /**
- * This is the tile interface that every tile in this game must implement,
- * and it has a wide range of methods most with default implementations.
+ * This is the tile interface that every tile in this game must implement, and it has a wide range
+ * of methods most with default implementations.
  *
  * @author Name: Mahdi Najafi ID: 300606634
  */
@@ -80,10 +80,11 @@ public interface Tile {
    */
   default Tile replaceWith() {
     return TileType.makeTile(TileType.Floor, new TileInfo(info().loc(), info().ping(), "", ""));
-  } 
+  }
 
   /**
-   * <p>Sets the given tile t instead of this tile on maze, changing the domain to do so. NOTE1: may
+   * <p>Sets the given tile t instead of this tile on maze, changing the domain to do so. NOTE1:
+   * may
    * alter domain. NOTE2: does not check wether it's possible for tile t to move on this
    * tile(thoroughly)! Although often it has a set of exceptions that will be thrown if a completely
    * unexpected input is given.</p>

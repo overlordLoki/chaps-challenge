@@ -29,7 +29,7 @@ public class Null extends AbstractTile {
   }
 
   @Override
-  public void ping(Domain d){
+  public void ping(Domain d) {
     throw new RuntimeException("Null Tile should not be in game and is not pingable.");
   }
 }

@@ -79,9 +79,9 @@ public class Maze {
    * <p>gets a copy of tile array.</p>
    *
    * <p>IMPORTANT NOTE: some custom added tiles may not be in the preset tiles
-   * and unless the game is running and persistency has to load the tiles onto
-   * the game(as java class files to custom.tiles), they won't be able to be
-   * instantiated by makeTileFromSymbol and an exception will be thrown.</p>
+   * and unless the game is running and persistency has to load the tiles onto the game(as java
+   * class files to custom.tiles), they won't be able to be instantiated by makeTileFromSymbol and
+   * an exception will be thrown.</p>
    *
    * @return a copy of tile array (DEEP CLONE)
    * @throws RuntimeException if any tile cannot be instantiated
@@ -101,7 +101,7 @@ public class Maze {
                                | java.lang.reflect.InvocationTargetException e) {
                         throw new RuntimeException(
                             "cannot initiate the tile class(with TileInfo()): "
-                            + t.getClass().getName());
+                                + t.getClass().getName());
                       }
                     }
                 )

@@ -1,6 +1,6 @@
 /**
- * This package includes classes that are used to group
- * together certain similar tiles and decrease code duplication.
+ * This package includes classes that are used to group together certain similar tiles and decrease
+ * code duplication.
  *
  * @author Name: Mahdi Najafi ID: 300606634
  */

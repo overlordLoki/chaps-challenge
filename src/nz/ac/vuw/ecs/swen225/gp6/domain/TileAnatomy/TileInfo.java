@@ -4,10 +4,9 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 
 /**
- * A class with some information that all tiles need to recieve to be initiated.
- * It includes fields that are common to most tiles.
- * This is to avoid adding more and more parameters to each tile class,
- * and being able to pass larger chunks of information with one parameter.
+ * A class with some information that all tiles need to recieve to be initiated. It includes fields
+ * that are common to most tiles. This is to avoid adding more and more parameters to each tile
+ * class, and being able to pass larger chunks of information with one parameter.
  *
  * @author Name: Mahdi Najafi ID: 300606634
  */
@@ -15,7 +14,7 @@ public class TileInfo {
 
   private final String imageName;
   private final String message; //only used for info tile currently but
-                                // can be used to store messages in tiles
+  // can be used to store messages in tiles
   private Loc loc;
   private int ping; //to be used later perhaps to keep count of ping cycles
 
@@ -57,7 +56,7 @@ public class TileInfo {
   /**
    * Create a tileInfo object only with loc and imageName, pingCount defaults to 0.
    *
-   * @param loc  location of tile
+   * @param loc       location of tile
    * @param imageName the name of the image file
    */
   public TileInfo(Loc loc, String imageName) {

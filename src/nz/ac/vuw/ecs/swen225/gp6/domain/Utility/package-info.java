@@ -1,6 +1,6 @@
 /**
- * This package includes classes that are to provide utility useful functions
- * to the rest of the program.
+ * This package includes classes that are to provide utility useful functions to the rest of the
+ * program.
  *
  * @author Name: Mahdi Najafi ID: 300606634
  */

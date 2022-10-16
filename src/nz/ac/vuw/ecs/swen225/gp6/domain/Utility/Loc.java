@@ -3,7 +3,7 @@ package nz.ac.vuw.ecs.swen225.gp6.domain.Utility;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
 
 /**
- * location for maze tiles, index 0 to max - 1
+ * location for maze tiles, index 0 to max - 1.
  *
  * @author Name: Mahdi Najafi ID: 300606634
  */
@@ -28,6 +28,10 @@ public class Loc {
   }
 
   /**
+   * Checks wether a location is in bound of a given maze.
+   *
+   * @param l maze to check
+   * @param m maze to check
    * @return true if a given location is in bounds, else false.
    */
   public static boolean checkInBound(Loc l, Maze m) {
@@ -35,6 +39,8 @@ public class Loc {
   }
 
   /**
+   * returns the x co ordinate.
+   *
    * @return x co ordinate of location
    */
   public int x() {
@@ -42,6 +48,8 @@ public class Loc {
   }
 
   /**
+   * returns the y co ordinate.
+   *
    * @return y co ordinate of location.
    */
   public int y() {
@@ -76,17 +84,16 @@ public class Loc {
 
   /**
    * if x and y coordinates of this location is equal to a given object that is also a location,
-   * return true, else false
+   * return true, else false.
    *
    * @param o object to compare to.
    * @return true if o is a location and shares same x and y values as this location
    */
   @Override
   public boolean equals(Object o) {
-    if (!(o instanceof Loc)) {
+    if (!(o instanceof Loc loc)) {
       return false; //if not loc object
     }
-    Loc loc = (Loc) o;
     return this.x() == loc.x() && this.y() == loc.y(); //if x's or y's dont match
   }
 

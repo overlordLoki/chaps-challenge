@@ -27,9 +27,8 @@ public class Domain {
   private EnumMap<DomainEvent, List<Runnable>> eventListeners
       = new EnumMap<DomainEvent, List<Runnable>>(DomainEvent.class);
 
-    
   //CONSTRUCTORS:
-  
+
   /**
    * constructor with a list of levels.
    *
@@ -63,8 +62,8 @@ public class Domain {
    * empty inv). Levels are created internally from mazes in order. Also timelimits default to 120
    * seconds, and current times to 0 for each level.
    *
-   * @param mazes     - must be in order.
-   * @param inv  - inventory for current level
+   * @param mazes      - must be in order.
+   * @param inv        - inventory for current level
    * @param currentLvl - the index of the current level starting at 1
    */
   public Domain(List<Maze> mazes, Inventory inv, int currentLvl) {
