@@ -27,7 +27,6 @@ import static nz.ac.vuw.ecs.swen225.gp6.app.gui.SwingFactory.createInfoActionLab
 import static nz.ac.vuw.ecs.swen225.gp6.app.gui.SwingFactory.createInfoLabel;
 import static nz.ac.vuw.ecs.swen225.gp6.app.gui.SwingFactory.createLabel;
 import static nz.ac.vuw.ecs.swen225.gp6.app.gui.SwingFactory.createRepeatableBackgroundPanel;
-import static nz.ac.vuw.ecs.swen225.gp6.app.gui.SwingFactory.setSize;
 
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -38,6 +37,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -62,12 +63,20 @@ import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack.Images;
 
 /**
- * Package-private class for creating panels used by the App.
+ * Graphical User Interface class responsible for all GUI components and logic used by the App.
  *
  * @author Jeff Lin
  */
-public class GUI {
+public class GUI extends JFrame {
 
+  /**
+   * Minimum Width of the window.
+   */
+  public static final int WIDTH = 1200;
+  /**
+   * Minimum Height of the window.
+   */
+  public static final int HEIGHT = 800;
   private static final LogPanel logPanel = new LogPanel();
   private final JPanel outerPanel = createClearPanel(BoxLayout.Y_AXIS);
   private final JPanel menuPanel = createClearPanel(BoxLayout.Y_AXIS);
@@ -121,16 +130,29 @@ public class GUI {
    */
   public void configureGUI(App app) {
     assert SwingUtilities.isEventDispatchThread() : "Not in EDT";
+
+    this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    this.setIconImage(TexturePack.Images.Hero.getImg());
+    this.setVisible(true);
+    this.addWindowListener(new WindowAdapter() {
+      public void windowClosed(WindowEvent e) {
+        System.out.println("Application closed with exit code 0");
+        System.exit(0);
+      }
+    });
+    this.setMinimumSize(new Dimension(WIDTH, HEIGHT));
+    this.setContentPane(outerPanel);
     outerPanel.setLayout(outerCardLayout);
     menuPanel.setLayout(menuCardLayout);
     gamePanel.setLayout(gameCardLayout);
     functionPanel.setLayout(functionCardLayout);
     pausePanel.setLayout(pauseCardLayout);
     renderPanel.setFocusable(true);
-    configureMenuScreen(app);
-    configureGameScreen(app);
+    this.configureMenuScreen(app);
+    this.configureGameScreen(app);
     outerPanel.add(menuPanel, MENU.name);
     outerPanel.add(gamePanel, GAME.name);
+    this.pack();
   }
 
   /**
@@ -175,7 +197,7 @@ public class GUI {
             () -> menuCardLayout.show(menuPanel, SETTINGS.name)),
         createActionLabel(LOGS.name, renderPanel, SUBTITLE, true, () -> {
           JFrame frame = new JFrame("Logs");
-          setSize(frame, 500, 500, 500, 500, 500, 500);
+          SwingFactory.setSize(frame, 500, 500, 500, 500, 500, 500);
           frame.add(logPanel);
           frame.setVisible(true);
         }),
@@ -269,7 +291,7 @@ public class GUI {
             renderPanel, TEXT, true));
     if (isSave) {    // Options for Saving
       JPanel pnSaveInv = saveInventoryPanels[slot - 1];
-      setSize(pnSaveInv, 150, 300, 150, 300, 150, 300);
+      SwingFactory.setSize(pnSaveInv, 150, 300, 150, 300, 150, 300);
       addAll(pnInfo, pnStatus, pnSaveInv);
       addAll(pnOptions,
           Box.createHorizontalGlue(),
@@ -279,7 +301,7 @@ public class GUI {
               DomainPersistency.save(app.getGame(), slot);
               app.getRecorder().saveRecording(slot);
               app.refreshSaves();
-              app.repaint();
+              this.repaint();
             } catch (IOException e) {
               System.out.println("Failed to save game in slot: " + slot);
               e.printStackTrace();
@@ -290,7 +312,7 @@ public class GUI {
           Box.createHorizontalGlue());
     } else {  // Options for Loading
       JPanel pnLoadInv = loadInventoryPanels[slot - 1];
-      setSize(pnLoadInv, 150, 300, 150, 300, 150, 300);
+      SwingFactory.setSize(pnLoadInv, 150, 300, 150, 300, 150, 300);
       addAll(pnInfo, pnStatus, pnLoadInv);
       addAll(pnOptions,
           Box.createHorizontalGlue(),
@@ -308,7 +330,7 @@ public class GUI {
             try {
               DomainPersistency.delete(slot);
               app.refreshSaves();
-              app.repaint();
+              this.repaint();
             } catch (Exception e) {
               System.out.println("Failed to delete save file.");
               e.printStackTrace();
@@ -339,17 +361,17 @@ public class GUI {
     // assemble this panel
     addAll(pnViewDistance,
         createActionLabel("<<<  ", renderPanel, TEXT, false,
-            () -> runAndRepaint(app, renderPanel::decreaseViewDistance).run()),
+            () -> runAndRepaint(renderPanel::decreaseViewDistance).run()),
         createInfoLabel(() -> renderPanel.getRenderSize() + "", renderPanel, TEXT, true),
         createActionLabel("  >>>", renderPanel, TEXT, false,
-            () -> runAndRepaint(app, renderPanel::increaseViewDistance).run()));
+            () -> runAndRepaint(renderPanel::increaseViewDistance).run()));
     addAll(pnTexturePack,
         createActionLabel("<<<  ", renderPanel, TEXT, false,
-            () -> runAndRepaint(app, renderPanel::usePrevTexturePack).run()),
+            () -> runAndRepaint(renderPanel::usePrevTexturePack).run()),
         createInfoLabel(() -> renderPanel.getCurrentTexturePack().getName() + "", renderPanel, TEXT,
             false),
         createActionLabel("  >>>", renderPanel, TEXT, false,
-            () -> runAndRepaint(app, renderPanel::useNextTexturePack).run()));
+            () -> runAndRepaint(renderPanel::useNextTexturePack).run()));
     addAll(pnBindingL,
         createLabel("Play Sound", renderPanel, TEXT, false),
         createLabel("View Distance", renderPanel, TEXT, false),
@@ -491,10 +513,10 @@ public class GUI {
     final int height = 75 * 4;
     pnStatus.setMaximumSize(new Dimension(200, 1000));
     pnRight.setMaximumSize(new Dimension(200, 1000));
-    setSize(renderPanel, 700, 700, 600, 600, 800, 800);
-    setSize(pnMaze, 700, 700, 600, 600, 800, 800);
-    setSize(pnInventory, width, height, width, height, width, height);
-    setSize(functionPanel, 200, 200, 200, 200, 200, 200);
+    SwingFactory.setSize(renderPanel, 700, 700, 600, 600, 800, 800);
+    SwingFactory.setSize(pnMaze, 700, 700, 600, 600, 800, 800);
+    SwingFactory.setSize(pnInventory, width, height, width, height, width, height);
+    SwingFactory.setSize(functionPanel, 200, 200, 200, 200, 200, 200);
     pnInventory.setAlignmentX(Component.CENTER_ALIGNMENT);
     renderPanel.setLayout(new GridBagLayout());
 
@@ -613,10 +635,10 @@ public class GUI {
   //================================== Helper Methods ============================================//
   //==============================================================================================//
 
-  private Runnable runAndRepaint(App app, Runnable runnable) {
+  private Runnable runAndRepaint(Runnable runnable) {
     return () -> {
       runnable.run();
-      app.repaint();
+      this.repaint();
     };
   }
 
@@ -634,15 +656,6 @@ public class GUI {
   //==============================================================================================//
   //================================== Getter Methods ============================================//
   //==============================================================================================//
-
-  /**
-   * Gets the outermost panel of this GUI.
-   *
-   * @return the outermost panel
-   */
-  public JPanel getOuterPanel() {
-    return outerPanel;
-  }
 
   /**
    * Gets the Maze Renderer of this GUI.
