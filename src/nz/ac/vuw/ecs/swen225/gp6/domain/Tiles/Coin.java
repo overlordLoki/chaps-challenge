@@ -9,6 +9,8 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.Item;
 /**
  * Coin class is a collectible item in the game that the hero must collect to be able to finish the
  * level. The term coin and treasure are used interchangeably throughout the code.
+ *
+ * @author Name: Mahdi Najafi ID: 300606634
  */
 public class Coin extends Item {
 

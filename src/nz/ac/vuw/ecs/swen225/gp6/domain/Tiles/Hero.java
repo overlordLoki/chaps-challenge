@@ -12,6 +12,8 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 
 /**
  * A class that represents the hero/player in the game.
+ *
+ * @author Name: Mahdi Najafi ID: 300606634
  */
 public class Hero extends Actor {
 
@@ -40,6 +42,8 @@ public class Hero extends Actor {
   }
 
   /**
+   * gets the direction the hero is facing.
+   *
    * @return direction that hero is facing (not necessarily will move to)
    */
   public Direction dir() {

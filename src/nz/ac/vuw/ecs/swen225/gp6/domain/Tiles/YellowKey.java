@@ -7,6 +7,8 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.Key;
 /**
  * A class representing yellow key which when picked up by hero, can be used to unlock yellow
  * locks.
+ *
+ * @author Name: Mahdi Najafi ID: 300606634
  */
 public class YellowKey extends Key {
 

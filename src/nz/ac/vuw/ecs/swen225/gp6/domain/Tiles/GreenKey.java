@@ -6,6 +6,8 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.Key;
 
 /**
  * A class representing green key which when picked up by hero, can be used to unlock green locks.
+ *
+ * @author Name: Mahdi Najafi ID: 300606634
  */
 public class GreenKey extends Key {
 

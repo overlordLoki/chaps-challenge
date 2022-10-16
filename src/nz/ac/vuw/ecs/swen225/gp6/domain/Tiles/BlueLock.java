@@ -7,6 +7,8 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.Key.KeyColor;
 
 /**
  * A class representing a blue lock that can be unlocked by a blue key.
+ *
+ * @author Name: Mahdi Najafi ID: 300606634
  */
 public class BlueLock extends Door {
 

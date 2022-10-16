@@ -10,6 +10,8 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.Key.KeyColor;
 
 /**
  * An abstract class that all door tiles must inherit.
+ *
+ * @author Name: Mahdi Najafi ID: 300606634
  */
 public abstract class Door extends AbstractTile {
 
@@ -46,7 +48,8 @@ public abstract class Door extends AbstractTile {
 
   @Override
   public void setOn(Tile t, Domain d) {
-    //also throws null pointer exception if t is null, you will see this pattern of checking in few overriden setOn methods
+    //also throws null pointer exception if t is null,
+    //you will see this pattern of checking in few overridden setOn methods
     if (t.type() != TileType.Hero) {
       throw new IllegalArgumentException("only hero can move on door");
     }
@@ -55,7 +58,7 @@ public abstract class Door extends AbstractTile {
     }
 
     Inventory inv = d.getInv();
-    int prevSize = inv.getItems().size();//to check later if size of inventory changed
+    int prevSize = inv.getItems().size(); //to check later if size of inventory changed
 
     //if item in inventory is a key with the correct color, remove it
     inv.getItems().stream().filter(tile -> tile instanceof Key && ((Key) tile).color() == color())

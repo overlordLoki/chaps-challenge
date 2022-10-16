@@ -14,6 +14,8 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 /**
  * Represents a complete game state, with levels. Each level includes an inventory, maze, level
  * number direction of heros next move, time limit, current time, etc.
+ *
+ * @author Name: Mahdi Najafi ID: 300606634
  */
 public class Domain {
 
@@ -49,7 +51,8 @@ public class Domain {
     this.currentLvlIndex = currentLvl;
     this.state = GameState.PLAYING; //set initial state to playing
 
-    //initialise event listeners to empty lists (every domain event should always have an associated list)
+    //initialise event listeners to empty lists
+    // (every domain event should always have an associated list)
     for (DomainEvent e : DomainEvent.values()) {
       eventListeners.put(e, new ArrayList<Runnable>());
     }
@@ -60,8 +63,8 @@ public class Domain {
    * empty inv). Levels are created internally from mazes in order. Also timelimits default to 120
    * seconds, and current times to 0 for each level.
    *
-   * @param domain     - must be in order.
-   * @param inventory  - inventory for current level
+   * @param mazes     - must be in order.
+   * @param inv  - inventory for current level
    * @param currentLvl - the index of the current level starting at 1
    */
   public Domain(List<Maze> mazes, Inventory inv, int currentLvl) {
@@ -71,9 +74,9 @@ public class Domain {
 
     levels = new ArrayList<Level>();
     IntStream.range(0, mazes.size()).forEach(i -> {
-      levels.add(currentLvl == i + 1 ?
+      levels.add(currentLvl == i + 1
           //initialise all inventories to empty ones except current levels to given one
-          new Level(mazes.get(i), inv, i + 1, 120, 0, Direction.None) :
+          ? new Level(mazes.get(i), inv, i + 1, 120, 0, Direction.None) :
           new Level(mazes.get(i), i + 1));
     });
   }
@@ -129,7 +132,7 @@ public class Domain {
   /**
    * gets the list of event listeners for a given event.
    *
-   * @param e the event to get the listeners for
+   * @param event the event to get the listeners for
    * @return the list of listeners for the given event
    */
   public List<Runnable> getEventListener(DomainEvent event) {
@@ -203,7 +206,7 @@ public class Domain {
 
     this.state = nextDomain.state; //update domain
     levels.set(this.currentLvlIndex - 1,
-        nextLevels.get(this.currentLvlIndex - 1));//replace ONLY the current level
+        nextLevels.get(this.currentLvlIndex - 1)); //replace ONLY the current level
 
   }
 
@@ -269,7 +272,7 @@ public class Domain {
   }
 
   /**
-   * gets number of treasures left on current level's maze
+   * gets number of treasures left on current level's maze.
    *
    * @return number of treasures left
    */
@@ -278,7 +281,7 @@ public class Domain {
   }
 
   /**
-   * gets state of the game(won, lost, inbetween levels, playing)
+   * gets state of the game(won, lost, inbetween levels, playing).
    *
    * @return GameState enum
    */
@@ -287,15 +290,17 @@ public class Domain {
   }
 
   /**
-   * sets state of the game(won, lost, inbetween levels, playing)
+   * sets state of the game(won, lost, inbetween levels, playing).
    *
-   * @param GameState enum
+   * @param state enum
    */
   public void setGameState(GameState state) {
     this.state = state;
   }
 
   /**
+   * finds out if it's the last level of the game.
+   *
    * @return true if game is on last level, else false
    */
   public boolean isLastLevel() {
@@ -303,6 +308,8 @@ public class Domain {
   }
 
   /**
+   * find out if the hero is on info tile.
+   *
    * @return true if the hero is on the info tile of the level, else false
    */
   public boolean heroIsOnInfo() {
@@ -335,7 +342,7 @@ public class Domain {
   }
 
   /**
-   * gets a copy of current level's maze's game array (shallow copy)
+   * gets a copy of current level's maze's game array (shallow copy).
    *
    * @return a copy of current level's maze's game array
    */
@@ -347,7 +354,7 @@ public class Domain {
 
   /**
    * a specific toString method that uses the toString methods in maze and inventory as well as
-   * displaying the current level
+   * displaying the current level.
    *
    * @return string representation of the Maze and Inventory at the moment
    */
@@ -362,8 +369,8 @@ public class Domain {
   /**
    * add an event listener to the domain.
    *
-   * @param event    the event to listen for
-   * @param listener the listener to add
+   * @param event the event to listen for
+   * @param toRun the listener to add
    * @throws NullPointerException if the event or listener is null
    */
   public void addEventListener(DomainEvent event, Runnable toRun) {
@@ -392,7 +399,7 @@ public class Domain {
 
   /**
    * enum to inform us of the current state of the game integrity check uses this frequently to
-   * check rules of the game accordingly
+   * check rules of the game accordingly.
    */
   public enum GameState {
     WON,

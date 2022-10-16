@@ -4,6 +4,8 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Maze;
 
 /**
  * location for maze tiles, index 0 to max - 1
+ *
+ * @author Name: Mahdi Najafi ID: 300606634
  */
 public class Loc {
 

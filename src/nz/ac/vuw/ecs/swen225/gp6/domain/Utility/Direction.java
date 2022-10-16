@@ -4,6 +4,8 @@ import java.util.Arrays;
 
 /**
  * Direction enum class that stores all possible moving directions for actors in this game.
+ *
+ * @author Name: Mahdi Najafi ID: 300606634
  */
 public enum Direction {
   Up(0, -1, 'U'),
@@ -46,7 +48,7 @@ public enum Direction {
   /**
    * transforms a given location with this direction.
    *
-   * @param loc loc to transform
+   * @param l loc to transform
    */
   public Loc transformLoc(Loc l) {
     return new Loc(l.x() + x, l.y() + y);

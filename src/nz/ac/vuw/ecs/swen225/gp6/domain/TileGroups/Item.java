@@ -9,10 +9,13 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
 /**
  * Everything that the player can pick up, including all kinds of key, all kinds of treasure and
  * tool, must extend this class.
+ *
+ * @author Name: Mahdi Najafi ID: 300606634
  */
 public abstract class Item extends AbstractTile {
 
-  boolean invWasFull = false; //returns true if this item was attempted to be added to a full inventory
+  boolean invWasFull = false; //returns true if this item was
+                              //attempted to be added to a full inventory
 
   /**
    * constructor for an item.
@@ -44,7 +47,7 @@ public abstract class Item extends AbstractTile {
 
     int oldInvSize = d.getInventory().size();
     invWasFull = !d.getInv().addItem(this); //try to put this item in the inventory if not full
-    d.getCurrentMaze().setTileAt(info.loc(), t);//replace the item on maze
+    d.getCurrentMaze().setTileAt(info.loc(), t); //replace the item on maze
 
     assert invWasFull || oldInvSize == d.getInventory().size() - 1 :
         "Inventory size should have increased by 1 after adding item.";
