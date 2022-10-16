@@ -1,6 +1,6 @@
 /**
- * This package contains the game Fuzz test including the game functional JUnit Test
- * and First / Second Level auto Fuzz tests.
+ * This package contains the game Fuzz test including the game functional JUnit Test and First /
+ * Second Level auto Fuzz tests.
  *
  * @author Ray Wang 300491848
  */
