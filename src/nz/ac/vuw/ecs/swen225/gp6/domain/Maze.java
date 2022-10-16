@@ -14,6 +14,8 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 
 /**
  * A class that holds a 2d array of tiles representing the maze in the game.
+ *
+ * @author Name: Mahdi Najafi ID: 300606634
  */
 public class Maze {
 
@@ -74,11 +76,12 @@ public class Maze {
   //TILE GETTERS:
 
   /**
-   * gets a copy of tile array
-   * <p>
-   * IMPORTANT NOTE: some custom added tiles may not be in the preset tiles and unless the game is
-   * running and persistency has load the tiles onto the game(as java class files to custom.tiles),
-   * they won't be able to be instantiated by makeTileFromSymbol and an exception will be thrown.
+   * <p>gets a copy of tile array.</p>
+   *
+   * <p>IMPORTANT NOTE: some custom added tiles may not be in the preset tiles
+   * and unless the game is running and persistency has to load the tiles onto the game(as java
+   * class files to custom.tiles), they won't be able to be instantiated by makeTileFromSymbol and
+   * an exception will be thrown.</p>
    *
    * @return a copy of tile array (DEEP CLONE)
    * @throws RuntimeException if any tile cannot be instantiated
@@ -91,12 +94,14 @@ public class Maze {
                 .forEach(y -> {
                       Tile t = tileArray[x][y];
                       try {
-                        copy[x][y] = t.getClass().getConstructor(TileInfo.class).newInstance(t.info());
+                        copy[x][y] = t.getClass().getConstructor(TileInfo.class)
+                            .newInstance(t.info());
                       } catch (NoSuchMethodException | InstantiationException
-                               | IllegalAccessException |
-                               java.lang.reflect.InvocationTargetException e) {
-                        throw new RuntimeException("cannot initiate the tile class(with TileInfo()): "
-                            + t.getClass().getName());
+                               | IllegalAccessException
+                               | java.lang.reflect.InvocationTargetException e) {
+                        throw new RuntimeException(
+                            "cannot initiate the tile class(with TileInfo()): "
+                                + t.getClass().getName());
                       }
                     }
                 )
@@ -105,7 +110,7 @@ public class Maze {
   }
 
   /**
-   * finds location of a given tile (exactly the same object)
+   * finds location of a given tile (exactly the same object).
    *
    * @param t tile object to find
    * @return loc of tile object if found, else null
@@ -141,7 +146,7 @@ public class Maze {
 
   /**
    * gets the tile at the given x and y co ordinates in the array if location is out of bounds
-   * return null typed tile
+   * return null typed tile.
    *
    * @param x x coord
    * @param y y coord

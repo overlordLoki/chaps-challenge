@@ -8,6 +8,8 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 
 /**
  * an actor abstract class that all moving creatures must inherit, including hero.
+ *
+ * @author Name: Mahdi Najafi ID: 300606634
  */
 public abstract class Actor extends AbstractTile {
 

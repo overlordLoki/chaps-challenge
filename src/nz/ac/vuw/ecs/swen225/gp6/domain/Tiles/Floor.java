@@ -6,6 +6,8 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
 
 /**
  * A class representing an empty floor tile, which both hero and enemy can move onto.
+ *
+ * @author Name: Mahdi Najafi ID: 300606634
  */
 public class Floor extends AbstractTile {
 

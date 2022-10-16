@@ -50,7 +50,7 @@ public final class Commands {
      * @param s the command to be invoked
      */
     public void invoke(String s){
-        commands.getOrDefault(s, () -> logPanel.println("Command not found")).run();
+        commands.getOrDefault(s, () -> logPanel.println("Command not found, type \"help\" to see a list of available commands")).run();
     }
     
     /**

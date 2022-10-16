@@ -8,6 +8,8 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy.TileType;
 /**
  * This class is only made to aid the renderer with drawing out of bound tiles, no hero, enemy or
  * any other tile should be able to move on this tile.
+ *
+ * @author Name: Mahdi Najafi ID: 300606634
  */
 public class Periphery extends AbstractTile {
 

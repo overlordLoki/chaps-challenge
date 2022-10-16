@@ -5,6 +5,8 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 /**
  * The level class is used to group all information related to a level together. Such as the maze,
  * inventory, direction of players next movement, etc.
+ *
+ * @author Name: Mahdi Najafi ID: 300606634
  */
 public class Level {
 
@@ -56,8 +58,8 @@ public class Level {
    * 120 s, and the current time to 0 s, inventory to an empty inventory of size 8 and heros
    * direction to None.
    *
-   * @param maze
-   * @param lvl
+   * @param maze - the maze of the level
+   * @param lvl  - the level number 1,2, ...
    */
   public Level(Maze maze, int lvl) {
     this(maze, new Inventory(8), lvl, 60, 0, Direction.None);
@@ -66,6 +68,8 @@ public class Level {
   //GETTERS:
 
   /**
+   * Get the current time of the level.
+   *
    * @return current time on level
    */
   public long getCurrentTime() {
@@ -90,6 +94,8 @@ public class Level {
   //SETTERS:
 
   /**
+   * Get the direction of the hero's next step.
+   *
    * @return direction enum for next step of hero
    */
   public Direction getHeroNextStep() {
@@ -100,7 +106,7 @@ public class Level {
    * sets the movement direction of hero, which the hero will try to move towards if possible in
    * NEXT ping.
    *
-   * @param direction - the direction for hero to step in next unit of time
+   * @param d - the direction for hero to step in next unit of time
    */
   public void makeHeroStep(Direction d) {
     this.heroNextStep = d;

@@ -3,16 +3,18 @@ package nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Direction;
 import nz.ac.vuw.ecs.swen225.gp6.domain.Utility.Loc;
 
-/*
- * A class with some information that all tiles need to recieve to be initiated.
- * It includes fields that are common to most tiles.
- * This is to avoid adding more and more parameters to each tile class,
- * and being able to pass larger chunks of information with one parameter.
+/**
+ * A class with some information that all tiles need to recieve to be initiated. It includes fields
+ * that are common to most tiles. This is to avoid adding more and more parameters to each tile
+ * class, and being able to pass larger chunks of information with one parameter.
+ *
+ * @author Name: Mahdi Najafi ID: 300606634
  */
 public class TileInfo {
 
   private final String imageName;
-  private final String message; //only used for info tile currently but can be used to store messages in tiles
+  private final String message; //only used for info tile currently but
+  // can be used to store messages in tiles
   private Loc loc;
   private int ping; //to be used later perhaps to keep count of ping cycles
 
@@ -35,14 +37,15 @@ public class TileInfo {
     this.imageName = imageName;
     this.message = message;
 
-    //these are values that inform us this is first time the actor is created(no pings have been done yet)
-    //they must be set to some value very quickly
+    //these are values that inform us this is first time the actor
+    //is created(no pings have been done yet).
+    //Also they must be set to some value very quickly.
     this.facing = Direction.None;
     this.tileOn = null;
   }
 
   /**
-   * Create a tileInfo object only with loc, pingCount defaults to 0, the imageName to ""
+   * Create a tileInfo object only with loc, pingCount defaults to 0, the imageName to "".
    *
    * @param loc location of tile
    */
@@ -53,7 +56,8 @@ public class TileInfo {
   /**
    * Create a tileInfo object only with loc and imageName, pingCount defaults to 0.
    *
-   * @param
+   * @param loc       location of tile
+   * @param imageName the name of the image file
    */
   public TileInfo(Loc loc, String imageName) {
     this(loc, 0, imageName, "");

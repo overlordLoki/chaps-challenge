@@ -9,6 +9,8 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.Key.KeyColor;
 /**
  * A class representing a exit door that represents the exit door when all coins/treasures aren't
  * yet collected. No one can pass through it until all coins are collected.
+ *
+ * @author Name: Mahdi Najafi ID: 300606634
  */
 public class ExitDoor extends Door {
 
@@ -34,7 +36,7 @@ public class ExitDoor extends Door {
   @Override
   public boolean obstructsHero(Domain d) {
     return true;
-  }//no one can go through un opened exit door
+  } //no one can go through un opened exit door
 
   @Override
   public boolean obstructsEnemy(Domain d) {

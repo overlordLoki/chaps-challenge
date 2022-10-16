@@ -9,8 +9,10 @@ import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.Door;
 import nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups.Key.KeyColor;
 
 /**
- * A class representing a exit door that represents the exit door when all coins/treasures are
- * collected an the player can pass through it to pass the level.
+ * A class representing an exit door that represents the exit door when all coins/treasures are
+ * collected and the player can pass through it to pass the level.
+ *
+ * @author Name: Mahdi Najafi ID: 300606634
  */
 public class ExitDoorOpen extends Door {
 
@@ -36,6 +38,8 @@ public class ExitDoorOpen extends Door {
   }
 
   /**
+   * Check if the hero is on the tile.
+   *
    * @return true if hero is on the tile, false otherwise
    */
   public boolean heroOn() {

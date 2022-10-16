@@ -1,8 +1,10 @@
 package nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy;
 
 /**
- * This class is the parent class of all tiles in the game.
- * It contains the information of the tile, and the methods that are common to all tiles.
+ * This class is the parent class of all tiles in the game. It contains the information of the tile,
+ * and the methods that are common to all tiles.
+ *
+ * @author Name: Mahdi Najafi ID: 300606634
  */
 public abstract class AbstractTile implements Tile {
 
