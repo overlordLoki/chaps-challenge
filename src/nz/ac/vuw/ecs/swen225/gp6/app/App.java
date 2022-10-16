@@ -3,12 +3,8 @@ package nz.ac.vuw.ecs.swen225.gp6.app;
 import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.QUIT_TO_MENU;
 import static nz.ac.vuw.ecs.swen225.gp6.app.utilities.Actions.RESUME_GAME;
 
-import java.awt.Dimension;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.stream.IntStream;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import nz.ac.vuw.ecs.swen225.gp6.app.gui.GUI;
@@ -25,7 +21,6 @@ import nz.ac.vuw.ecs.swen225.gp6.recorder.Record;
 import nz.ac.vuw.ecs.swen225.gp6.recorder.Replay;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.LogPanel;
 import nz.ac.vuw.ecs.swen225.gp6.renderer.MusicPlayer;
-import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack;
 import org.dom4j.DocumentException;
 
 
@@ -34,20 +29,8 @@ import org.dom4j.DocumentException;
  *
  * @author Jeff Lin
  */
-public class App extends JFrame {
+public class App {
 
-  /**
-   * The serial version UID for this update.
-   */
-  public static final long serialVersionUID = 1L;
-  /**
-   * Minimum Width of the window.
-   */
-  public static final int WIDTH = 1200;
-  /**
-   * Minimum Height of the window.
-   */
-  public static final int HEIGHT = 800;
   private final Domain[] saves = new Domain[3];
   private final GameClock gameClock = new GameClock(this);
   private final GUI gui = new GUI(this);
@@ -82,22 +65,8 @@ public class App extends JFrame {
    */
   public void initialiseGui() {
     gui.configureGUI(this);
-    setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    setIconImage(TexturePack.Images.Hero.getImg());
-    setVisible(true);
-    addWindowListener(new WindowAdapter() {
-      public void windowClosed(WindowEvent e) {
-        System.out.println("Application closed with exit code 0");
-        System.exit(0);
-      }
-    });
-    setMinimumSize(new Dimension(WIDTH, HEIGHT));
-    setContentPane(gui.getOuterPanel());
     gui.getRenderPanel().addKeyListener(controller);
-    System.out.print("Transitioning to menu screen... ");
     QUIT_TO_MENU.run(this);
-    System.out.println("Complete");
-    pack();
   }
 
   private void initialiseCommands() {

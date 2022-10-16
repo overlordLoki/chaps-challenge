@@ -30,7 +30,7 @@ public class GameClock {
       app.runLoseEvent();
     }
     timeStart = currentTime;
-    app.repaint();
+    app.getGUI().repaint();
   });
 
   private final Timer replayTimer = new Timer(timeIntervalReplay, unused -> {
@@ -43,7 +43,7 @@ public class GameClock {
     }
     timeStart = currentTime;
     replayObserver.run();
-    app.repaint();
+    app.getGUI().repaint();
   });
   private Timer timer = gameTimer;
 
