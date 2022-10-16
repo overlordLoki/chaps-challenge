@@ -69,6 +69,14 @@ import nz.ac.vuw.ecs.swen225.gp6.renderer.TexturePack.Images;
  */
 public class GUI extends JFrame {
 
+  /**
+   * Minimum Width of the window.
+   */
+  public static final int WIDTH = 1200;
+  /**
+   * Minimum Height of the window.
+   */
+  public static final int HEIGHT = 800;
   private static final LogPanel logPanel = new LogPanel();
   private final JPanel outerPanel = createClearPanel(BoxLayout.Y_AXIS);
   private final JPanel menuPanel = createClearPanel(BoxLayout.Y_AXIS);
