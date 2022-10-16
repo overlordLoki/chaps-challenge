@@ -88,9 +88,19 @@ public class Fuzz {
         });
         // Start robot automating sequence
         JOptionPane.showMessageDialog(null,"Start Fuzzing");
+        long startTime = System.currentTimeMillis();
         app.startNewGame();
         app.transitionToGameScreen();
-        testingStuff();
+
+        // after 1 minute, the test closed
+        while(true){
+            testingStuff();
+            // after 1 minute, the test closed
+            if(System.currentTimeMillis() - startTime > 60000){
+                System.out.println("1 min Test finished");
+                System.exit(0);
+            }
+        }
     }
 
     private static void testingStuff() {
@@ -141,7 +151,17 @@ public class Fuzz {
         app.startNewGame();
         app.transitionToGameScreen();
         TO_LEVEL_2.run(app);
-        testingStuff();
+        long startTime = System.currentTimeMillis();
+
+        // after 1 minute, the test closed
+        while(true){
+            testingStuff();
+            // after 1 minute, the test closed
+            if(System.currentTimeMillis() - startTime > 60000){
+                System.out.println("1 min Test finished");
+                System.exit(0);
+            }
+        }
     }
     /**
      * This method is used to keep testing in one level
@@ -441,9 +461,8 @@ public class Fuzz {
 
         //this panel is used to show the fuzz test method
         String[] buttons = { "hardCode", "testLevel2", "testLevel1", "unlimited" ,"Cancel" };
-        int rc = JOptionPane.showOptionDialog(null, "Choose a test", "Test",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, buttons, buttons[4]);
-        switch (rc){
+        switch (JOptionPane.showOptionDialog(null, "Choose a test", "Test",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, buttons, buttons[4])){
             case 0 -> hardCode();
             case 1 -> testLevel2();
             case 2 -> testLevel1();
