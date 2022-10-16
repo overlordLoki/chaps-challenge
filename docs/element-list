@@ -1,0 +1,13 @@
+nz.ac.vuw.ecs.swen225.gp6.app
+nz.ac.vuw.ecs.swen225.gp6.app.gui
+nz.ac.vuw.ecs.swen225.gp6.app.utilities
+nz.ac.vuw.ecs.swen225.gp6.domain
+nz.ac.vuw.ecs.swen225.gp6.domain.IntegrityCheck
+nz.ac.vuw.ecs.swen225.gp6.domain.TileAnatomy
+nz.ac.vuw.ecs.swen225.gp6.domain.TileGroups
+nz.ac.vuw.ecs.swen225.gp6.domain.Tiles
+nz.ac.vuw.ecs.swen225.gp6.domain.Utility
+nz.ac.vuw.ecs.swen225.gp6.persistency
+nz.ac.vuw.ecs.swen225.gp6.recorder
+nz.ac.vuw.ecs.swen225.gp6.recorder.datastructures
+nz.ac.vuw.ecs.swen225.gp6.renderer
