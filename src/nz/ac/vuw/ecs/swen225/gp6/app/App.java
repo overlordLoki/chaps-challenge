@@ -34,7 +34,7 @@ import org.dom4j.DocumentException;
  *
  * @author Jeff Lin
  */
-public class App extends JFrame {
+public class App {
 
   /**
    * The serial version UID for this update.
@@ -82,22 +82,8 @@ public class App extends JFrame {
    */
   public void initialiseGui() {
     gui.configureGUI(this);
-    setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    setIconImage(TexturePack.Images.Hero.getImg());
-    setVisible(true);
-    addWindowListener(new WindowAdapter() {
-      public void windowClosed(WindowEvent e) {
-        System.out.println("Application closed with exit code 0");
-        System.exit(0);
-      }
-    });
-    setMinimumSize(new Dimension(WIDTH, HEIGHT));
-    setContentPane(gui.getOuterPanel());
     gui.getRenderPanel().addKeyListener(controller);
-    System.out.print("Transitioning to menu screen... ");
     QUIT_TO_MENU.run(this);
-    System.out.println("Complete");
-    pack();
   }
 
   private void initialiseCommands() {
