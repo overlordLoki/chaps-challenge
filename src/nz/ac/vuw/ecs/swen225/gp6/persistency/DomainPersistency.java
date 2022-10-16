@@ -45,90 +45,96 @@ import org.dom4j.io.SAXReader;
  * @author Benjamin Hong - 300605520
  */
 public final class DomainPersistency {
-
-  /**
-   * A map that maps the tile type to the name in the XML file.
-   */
-  private static final Map<TileType, String> typeToString = new EnumMap<TileType, String>(
-      TileType.class) {
-    {
-      put(TileType.Hero, "hero");
-      put(TileType.Empty, "empty");
-      put(TileType.Floor, "floor");
-      put(TileType.Wall, "wall");
-      put(TileType.ExitDoor, "exitDoor");
-      put(TileType.ExitDoorOpen, "exitDoorOpen");
-      put(TileType.BlueLock, "blueLock");
-      put(TileType.GreenLock, "greenLock");
-      put(TileType.OrangeLock, "orangeLock");
-      put(TileType.YellowLock, "yellowLock");
-      put(TileType.BlueKey, "blueKey");
-      put(TileType.GreenKey, "greenKey");
-      put(TileType.OrangeKey, "orangeKey");
-      put(TileType.YellowKey, "yellowKey");
-      put(TileType.Coin, "coin");
-      put(TileType.Info, "info");
-      put(TileType.Null, "null");
-    }
-  };
-  /**
-   * A map that maps the name in the XML file to the tile type.
-   */
-  private static final Map<String, TileType> stringToType = Map.ofEntries(
-      Map.entry("hero", TileType.Hero),
-      Map.entry("empty", TileType.Empty), Map.entry("floor", TileType.Floor),
-      Map.entry("wall", TileType.Wall),
-      Map.entry("exitDoor", TileType.ExitDoor), Map.entry("exitDoorOpen", TileType.ExitDoorOpen),
-      Map.entry("blueLock", TileType.BlueLock), Map.entry("greenLock", TileType.GreenLock),
-      Map.entry("orangeLock", TileType.OrangeLock), Map.entry("yellowLock", TileType.YellowLock),
-      Map.entry("blueKey", TileType.BlueKey), Map.entry("greenKey", TileType.GreenKey),
-      Map.entry("orangeKey", TileType.OrangeKey), Map.entry("yellowKey", TileType.YellowKey),
-      Map.entry("coin", TileType.Coin), Map.entry("info", TileType.Info),
-      Map.entry("null", TileType.Null));
   /**
    * A map that holds the converter from an XML element to a tile.
    */
-  private static final Map<String, BiFunction<Element, Loc, Tile>> tagToTiler = new HashMap<>() {
-    {
-      put("key", (element, loc) -> {
-        return TileType.makeTile(stringToType.get(element.attributeValue("color") + "Key"),
-            new TileInfo(loc));
-      });
-      put("lock", (element, loc) -> {
-        return TileType.makeTile(stringToType.get(element.attributeValue("color") + "Lock"),
-            new TileInfo(loc));
-      });
-      put("custom", (element, loc) -> {
-        String customTile = element.attributeValue("class");
-        String source = element.attributeValue("source");
+  private static final Map<String, BiFunction<Element, Loc, Tile>> tagToTiler =
+      new HashMap<>() {
+        {
+          put(
+              "key",
+              (element, loc) -> {
+                return makeTile(
+                    TileType.valueOf(capitalise(element.attributeValue("color")) + "Key"), loc);
+              });
+          put(
+              "lock",
+              (element, loc) -> {
+                return makeTile(
+                    TileType.valueOf(capitalise(element.attributeValue("color")) + "Lock"), loc);
+              });
+          put(
+              "custom",
+              (element, loc) -> {
+                String customTile = element.attributeValue("class");
+                String source = element.attributeValue("source");
 
-        try {
-          File jar = new File("res/levels/" + source);
+                try {
+                  File jar = new File("res/levels/" + source);
 
-          URLClassLoader child = new URLClassLoader(
-              new URL[]{jar.toURI().toURL()},
-              DomainPersistency.class.getClassLoader());
+                  URLClassLoader child =
+                      new URLClassLoader(
+                          new URL[]{jar.toURI().toURL()},
+                          DomainPersistency.class.getClassLoader());
 
-          Class<?> clazz = Class.forName("custom.tiles." + customTile, true, child);
-          Constructor<?> ctor = clazz.getConstructor(TileInfo.class);
-          return (Tile) ctor.newInstance(new TileInfo(loc, 0,
-              Character.toLowerCase(customTile.charAt(0)) + customTile.substring(1), source));
-        } catch (Exception e) {
-          e.printStackTrace();
-          return TileType.makeTile(TileType.Null, new TileInfo(loc));
+                  Class<?> clazz = Class.forName("custom.tiles." + customTile, true, child);
+                  Constructor<?> ctor = clazz.getConstructor(TileInfo.class);
+                  return (Tile)
+                      ctor.newInstance(
+                          new TileInfo(
+                              loc,
+                              0,
+                              Character.toLowerCase(customTile.charAt(0)) + customTile.substring(1),
+                              source));
+                } catch (Exception e) {
+                  e.printStackTrace();
+                  return makeTile(TileType.Null, loc);
+                }
+              });
+          put(
+              "info",
+              (element, loc) -> {
+                String message = element.attributeValue("message");
+                return TileType.makeTile(TileType.Info, new TileInfo(loc, 0, "", message));
+              });
         }
-      });
-      put("info", (element, loc) -> {
-        String message = element.attributeValue("message");
-        return TileType.makeTile(TileType.Info, new TileInfo(loc, 0, "", message));
-      });
-    }
-  };
+      };
 
   /**
    * A private constructor to prevent instantiation.
    */
   private DomainPersistency() {
+  }
+
+  /**
+   * Capitalizes the first letter of the string.
+   *
+   * @param s the string to capitalize
+   * @return the capitalized string
+   */
+  private static String capitalise(String s) {
+    return s.substring(0, 1).toUpperCase(Locale.ENGLISH) + s.substring(1);
+  }
+
+  /**
+   * Un-capitalizes the first letter of the string.
+   *
+   * @param s the string to un-capitalize
+   * @return the un-capitalized string
+   */
+  private static String uncapitalise(String s) {
+    return s.substring(0, 1).toLowerCase(Locale.ENGLISH) + s.substring(1);
+  }
+
+  /**
+   * A shortcut method to make a tile.
+   *
+   * @param tileTupe the type of the tile
+   * @param loc      the location of the tile
+   * @return the tile
+   */
+  private static Tile makeTile(TileType tileType, Loc loc) {
+    return TileType.makeTile(tileType, new TileInfo(loc));
   }
 
   /**
@@ -140,7 +146,7 @@ public final class DomainPersistency {
    */
   private static Tile defaultTiler(Element element, Loc loc) {
     String name = element.getName();
-    return TileType.makeTile(stringToType.get(name), new TileInfo(loc));
+    return makeTile(TileType.valueOf(capitalise(name)), loc);
   }
 
   /**
@@ -208,12 +214,14 @@ public final class DomainPersistency {
    */
   private static Level deserialiseLevel(Element level) {
     int index = Integer.parseInt(level.attributeValue("index"));
-    int timeLimit = Integer
-        .parseInt(
+    int timeLimit =
+        Integer.parseInt(
             level.attributeValue("timeLimit") == null ? "60" : level.attributeValue("timeLimit"));
-    long timeCurrent = Long
-        .parseLong(level.attributeValue("timeCurrent") == null ? "0"
-            : level.attributeValue("timeCurrent"));
+    long timeCurrent =
+        Long.parseLong(
+            level.attributeValue("timeCurrent") == null
+                ? "0"
+                : level.attributeValue("timeCurrent"));
     String direction =
         level.attributeValue("direction") == null ? "None" : level.attributeValue("direction");
     Direction dir = Direction.valueOf(direction);
@@ -284,9 +292,9 @@ public final class DomainPersistency {
    * @return The serialised tile as an XML element
    */
   private static Element serialiseTile(Tile tile) {
-    String name = typeToString.get(tile.type());
+    String name = uncapitalise(tile.type().toString());
 
-    if (null == name) {
+    if ("other".equals(name)) {
       // it's a custom tile
       Element custom = DocumentHelper.createElement("custom");
       custom.addAttribute("class", tile.getClass().getSimpleName());
@@ -294,8 +302,8 @@ public final class DomainPersistency {
       return custom;
     } else if (name.contains("Key") || name.contains("Lock") && "exitLock".equals(name)) {
       Element element = DocumentHelper.createElement(name.contains("Key") ? "key" : "lock");
-      element.addAttribute("color",
-          name.replace("Key", "").replace("Lock", "").toLowerCase(Locale.ENGLISH));
+      element.addAttribute(
+          "color", name.replace("Key", "").replace("Lock", "").toLowerCase(Locale.ENGLISH));
       return element;
     } else if ("info".equals(name)) {
       Element element = DocumentHelper.createElement("info");
@@ -443,12 +451,13 @@ public final class DomainPersistency {
         throw new DocumentException("No levels found");
       }
       List<File> files = Arrays.asList(filesArr);
-      files.sort(new Comparator<File>() {
-        @Override
-        public int compare(File o1, File o2) {
-          return o1.getName().compareTo(o2.getName());
-        }
-      });
+      files.sort(
+          new Comparator<File>() {
+            @Override
+            public int compare(File o1, File o2) {
+              return o1.getName().compareTo(o2.getName());
+            }
+          });
       List<Level> levels = new ArrayList<Level>();
       for (File file : files) {
         if (file.getName().endsWith(".xml")) {
@@ -486,5 +495,4 @@ public final class DomainPersistency {
     document.write(out);
     out.close();
   }
-
 }
